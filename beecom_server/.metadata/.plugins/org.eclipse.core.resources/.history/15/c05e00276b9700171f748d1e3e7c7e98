@@ -1,0 +1,5 @@
+package bc_server;
+
+public class BPPacket_CONNACK extends BPPacket {
+
+}

@@ -1,0 +1,9 @@
+package bc_server;
+
+public interface BPPacket {
+	int Decrypt();
+	int ParseFixedHeader();
+	int ParseVariableHeader();
+	int ParsePayload();
+	int CheckCRC();
+}

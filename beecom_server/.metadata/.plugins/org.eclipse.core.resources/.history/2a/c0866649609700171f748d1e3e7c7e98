@@ -1,0 +1,5 @@
+package bc_server;
+
+public enum abc {
+
+}

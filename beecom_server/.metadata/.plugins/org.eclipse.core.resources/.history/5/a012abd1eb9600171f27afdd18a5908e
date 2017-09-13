@@ -1,0 +1,7 @@
+package bc_server;
+
+import org.apache.mina.core.service.IoHandlerAdapter;
+
+public class BcServerHandler extends IoHandlerAdapter {
+
+}
