@@ -1,5 +1,9 @@
 package bc_server;
 
+/**
+ * @author Ansersion
+ *
+ */
 
 import java.util.Date;
 

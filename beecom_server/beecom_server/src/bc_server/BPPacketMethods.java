@@ -1,5 +1,9 @@
 package bc_server;
 
+/**
+ * @author Ansersion
+ *
+ */
 public interface BPPacketMethods {
 	int Decrypt(EncryptType etEncryptType) throws Exception;
 	

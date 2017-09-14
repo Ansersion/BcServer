@@ -1,0 +1,20 @@
+/**
+ * 
+ */
+package bc_server;
+
+/**
+ * @author Ansersion
+ *
+ */
+public class BPPacketFlags {
+	Boolean Bit0 = new Boolean(false);
+	Boolean Bit1 = new Boolean(false);
+	Boolean Bit2 = new Boolean(false);
+	Boolean Bit3 = new Boolean(false);
+	
+	Boolean EncryptionMSB = Bit2;
+	Boolean EncryptionLSB = Bit1;
+	Boolean Crc = Bit0;
+	Boolean SymTable = Bit1;
+}

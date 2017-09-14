@@ -1,8 +1,15 @@
 package bc_server;
 
+/**
+ * @author Ansersion
+ *
+ */
 public class BPPacket implements BPPacketMethods{
 	
 	byte[] BPPacketData;
+	FixedHeader FxHeader = new FixedHeader();
+	VariableHeader VrbHeader = new VariableHeader();
+	Payload Pld = new Payload();
 	
     /**
      * Decrypt the packet data.

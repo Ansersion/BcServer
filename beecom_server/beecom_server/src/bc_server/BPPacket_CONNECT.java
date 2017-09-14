@@ -1,6 +1,12 @@
 package bc_server;
 
+/**
+ * @author Ansersion
+ *
+ */
 public class BPPacket_CONNECT extends BPPacket {
+	
+	
 
 	@Override
 	public int Decrypt(EncryptType etEncryptType) throws Exception {

@@ -1,5 +1,10 @@
 package bc_server;
 
+/**
+ * @author Ansersion
+ *
+ */
+
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolEncoderAdapter;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
