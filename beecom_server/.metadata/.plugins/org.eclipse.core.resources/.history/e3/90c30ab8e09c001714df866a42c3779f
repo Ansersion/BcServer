@@ -1,0 +1,52 @@
+/**
+ * 
+ */
+package bc_server;
+
+/**
+ * @author Ansersion
+ *
+ */
+public class FixedHeader {
+	BPPacketType PacketType = BPPacketType.INVALID;
+	BPPacketFlags PacketFlags = new BPPacketFlags();
+	int RemainingLength = 0;
+	
+	public static final byte CRC_TYPE_MASK = 0x01;
+	public static final int CRC_TYPE_BIT_OFFSET = 0;
+	
+	public static final byte SYM_TABLE_FLAG_MASK = 0x01;
+	public static final int SYM_TABLE_FLAG_BIT_OFFSET = 1;
+	
+	public static final byte ENCRYPT_TYPE_MASK = 0x03;
+	public static final int ENCRYPT_TYPE_BIT_OFFSET = 1;
+	
+	public FixedHeader(BPPacketType type) {
+		PacketType = type;
+	}
+	
+	public FixedHeader() {
+	}
+	
+	public void setPacketType(BPPacketType type) {
+		PacketType = type;
+	}
+	
+	public void setPacketFlags(BPPacketFlags flags) {
+		PacketFlags = flags;
+	}
+	
+	public void setRemainLen(int len) {
+		RemainingLength = len;
+	}
+	
+	public CrcChecksum getCrcChk(byte encoded_byte) {
+		if(((encoded_byte >> CRC_TYPE_BIT_OFFSET) & CRC_TYPE_MASK) == 1) {
+			return CrcChecksum.CRC16;
+		} else {
+			return CrcChecksum.CRC32;
+		}
+	}
+	
+
+}

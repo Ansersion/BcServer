@@ -1,2 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<qualifiedTypeNameHistroy/>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="bc_server.BcServerHandler"/>
+<fullyQualifiedTypeName name="bc_server.FixedHeader"/>
+<fullyQualifiedTypeName name="bc_server.CrcChecksum"/>
+<fullyQualifiedTypeName name="sun.font.TrueTypeFont"/>
+</qualifiedTypeNameHistroy>

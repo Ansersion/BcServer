@@ -1,4 +1,5 @@
-content_assist_lru_history=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><history maxLHS\="100" maxRHS\="10"/>
+content_assist_autoactivation_triggers_java=.
+content_assist_lru_history=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><history maxLHS\="100" maxRHS\="10"><lhs name\="bc_server.CrcChecksum"><rhs name\="bc_server.CrcChecksum"/></lhs></history>
 content_assist_number_of_computers=13
 content_assist_proposals_background=255,255,255
 content_assist_proposals_foreground=60,60,60
@@ -14,6 +15,7 @@ org.eclipse.jdt.ui.text.custom_templates=<?xml version\="1.0" encoding\="UTF-8" 
 org.eclipse.jdt.ui.text.templates_migrated=true
 org.eclipse.jface.textfont=1|Monospace|10.0|0|GTK|1|;
 proposalOrderMigrated=true
+sourceHoverBackgroundColor=255,255,255
 spelling_locale_initialized=true
 tabWidthPropagated=true
 useAnnotationsPrefPage=true

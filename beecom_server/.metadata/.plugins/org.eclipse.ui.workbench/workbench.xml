@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<workbench progressCount="21" version="2.0">
+<workbench progressCount="18" version="2.0">
 <workbenchAdvisor/>
 <window height="767" maximized="true" width="1018" x="65" y="24">
 <fastViewData fastViewLocation="1024"/>
@@ -19,7 +19,7 @@
 <coolItem id="group.nav" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.ui.workbench.navigate" itemType="typeToolBarContribution" x="232" y="30"/>
 <coolItem id="group.editor" itemType="typeGroupMarker"/>
-<coolItem id="org.eclipse.jdt.ui.ClassFileEditor" itemType="typePlaceholder" x="-1" y="-1"/>
+<coolItem id="org.eclipse.jdt.ui.ClassFileEditor" itemType="typeToolBarContribution" x="-1" y="-1"/>
 <coolItem id="org.eclipse.jdt.ui.ClassFileEditorNoSource" itemType="typeToolBarContribution" x="-1" y="-1"/>
 <coolItem id="org.eclipse.jdt.ui.CompilationUnitEditor" itemType="typeToolBarContribution" x="-1" y="-1"/>
 <coolItem id="group.help" itemType="typeGroupMarker"/>
@@ -36,17 +36,34 @@
 <part id="2"/>
 <part id="3"/>
 <part id="4"/>
+<part id="5"/>
+<part id="6"/>
+<part id="7"/>
+<part id="8"/>
+<part id="9"/>
+<part id="10"/>
+<part id="11"/>
+<part id="12"/>
+<part id="13"/>
+<part id="14"/>
+<part id="15"/>
+<part id="16"/>
+<part id="17"/>
+<part id="18"/>
+<part id="19"/>
+<part id="20"/>
+<part id="21"/>
 </presentation>
 </folder>
 </info>
 </editorArea>
 <editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BPPacketFlags.java" partName="BPPacketFlags.java" path="/home/hubing/bc_server/beecom_server/beecom_server/src/bc_server/BPPacketFlags.java" title="BPPacketFlags.java" tooltip="beecom_server/src/bc_server/BPPacketFlags.java" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/beecom_server/src/bc_server/BPPacketFlags.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="104" selectionTopPixel="0"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="1134" selectionTopPixel="396"/>
 </editor>
 <editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BcServerMain.java" partName="BcServerMain.java" path="/home/hubing/bc_server/beecom_server/beecom_server/src/bc_server/BcServerMain.java" title="BcServerMain.java" tooltip="beecom_server/src/bc_server/BcServerMain.java" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/beecom_server/src/bc_server/BcServerMain.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="1346" selectionTopPixel="219"/>
+<editorState selectionHorizontalPixel="0" selectionLength="12" selectionOffset="294" selectionTopPixel="0"/>
 </editor>
 <editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BcCodecFactory.java" partName="BcCodecFactory.java" path="/home/hubing/bc_server/beecom_server/beecom_server/src/bc_server/BcCodecFactory.java" title="BcCodecFactory.java" tooltip="beecom_server/src/bc_server/BcCodecFactory.java" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/beecom_server/src/bc_server/BcCodecFactory.java"/>
@@ -54,17 +71,85 @@
 </editor>
 <editor activePart="true" focus="true" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BcDecoder.java" partName="BcDecoder.java" path="/home/hubing/bc_server/beecom_server/beecom_server/src/bc_server/BcDecoder.java" title="BcDecoder.java" tooltip="beecom_server/src/bc_server/BcDecoder.java" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/beecom_server/src/bc_server/BcDecoder.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="0" selectionTopPixel="0"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="1602" selectionTopPixel="438"/>
 </editor>
 <editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BcEncoder.java" partName="BcEncoder.java" path="/home/hubing/bc_server/beecom_server/beecom_server/src/bc_server/BcEncoder.java" title="BcEncoder.java" tooltip="beecom_server/src/bc_server/BcEncoder.java" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/beecom_server/src/bc_server/BcEncoder.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="53" selectionTopPixel="0"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BcServerHandler.java" partName="BcServerHandler.java" path="/home/hubing/bc_server/beecom_server/beecom_server/src/bc_server/BcServerHandler.java" title="BcServerHandler.java" tooltip="beecom_server/src/bc_server/BcServerHandler.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/beecom_server/src/bc_server/BcServerHandler.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="274" selectionTopPixel="0"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BPPacket_CONNECT.java" partName="BPPacket_CONNECT.java" path="/home/hubing/bc_server/beecom_server/beecom_server/src/bc_server/BPPacket_CONNECT.java" title="BPPacket_CONNECT.java" tooltip="beecom_server/src/bc_server/BPPacket_CONNECT.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/beecom_server/src/bc_server/BPPacket_CONNECT.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="537" selectionTopPixel="0"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="EncryptType.java" partName="EncryptType.java" path="/home/hubing/bc_server/beecom_server/beecom_server/src/bc_server/EncryptType.java" title="EncryptType.java" tooltip="beecom_server/src/bc_server/EncryptType.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/beecom_server/src/bc_server/EncryptType.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="14" selectionOffset="186" selectionTopPixel="0"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.ClassFileEditor" name="AbstractIoService.class" partName="AbstractIoService.class" path="/tmp/AbstractIoService.class7483018327904750468.class" title="AbstractIoService.class" tooltip="org.apache.mina.core.service.AbstractIoService" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.jdt.ui.ClassFileEditorInputFactory" org.eclipse.jdt.ui.ClassFileIdentifier="=beecom_server/mina\/mina-core-2.0.16.jar&lt;org.apache.mina.core.service(AbstractIoService.class"/>
+<editorState selectionHorizontalPixel="0" selectionLength="10" selectionOffset="11044" selectionTopPixel="4800"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.ClassFileEditor" name="IoHandlerAdapter.class" partName="IoHandlerAdapter.class" path="/tmp/IoHandlerAdapter.class5624405897529251705.class" title="IoHandlerAdapter.class" tooltip="org.apache.mina.core.service.IoHandlerAdapter" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.jdt.ui.ClassFileEditorInputFactory" org.eclipse.jdt.ui.ClassFileIdentifier="=beecom_server/mina\/mina-core-2.0.16.jar&lt;org.apache.mina.core.service(IoHandlerAdapter.class"/>
+<editorState selectionHorizontalPixel="0" selectionLength="16" selectionOffset="1283" selectionTopPixel="120"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BPPacketMethods.java" partName="BPPacketMethods.java" path="/home/hubing/bc_server/beecom_server/beecom_server/src/bc_server/BPPacketMethods.java" title="BPPacketMethods.java" tooltip="beecom_server/src/bc_server/BPPacketMethods.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/beecom_server/src/bc_server/BPPacketMethods.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="318" selectionTopPixel="0"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BPPacket.java" partName="BPPacket.java" path="/home/hubing/bc_server/beecom_server/beecom_server/src/bc_server/BPPacket.java" title="BPPacket.java" tooltip="beecom_server/src/bc_server/BPPacket.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/beecom_server/src/bc_server/BPPacket.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="1033" selectionTopPixel="306"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="FixedHeader.java" partName="FixedHeader.java" path="/home/hubing/bc_server/beecom_server/beecom_server/src/bc_server/FixedHeader.java" title="FixedHeader.java" tooltip="beecom_server/src/bc_server/FixedHeader.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/beecom_server/src/bc_server/FixedHeader.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="847" selectionTopPixel="218"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.ClassFileEditor" name="CumulativeProtocolDecoder.class" partName="CumulativeProtocolDecoder.class" path="/tmp/CumulativeProtocolDecoder.class398223284178187649.class" title="CumulativeProtocolDecoder.class" tooltip="org.apache.mina.filter.codec.CumulativeProtocolDecoder" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.jdt.ui.ClassFileEditorInputFactory" org.eclipse.jdt.ui.ClassFileIdentifier="=beecom_server/mina\/mina-core-2.0.16.jar&lt;org.apache.mina.filter.codec(CumulativeProtocolDecoder.class"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="8493" selectionTopPixel="2760"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.ClassFileEditor" name="IoSession.class" partName="IoSession.class" path="/tmp/IoSession.class6684466481334569207.class" title="IoSession.class" tooltip="org.apache.mina.core.session.IoSession" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.jdt.ui.ClassFileEditorInputFactory" org.eclipse.jdt.ui.ClassFileIdentifier="=beecom_server/mina\/mina-core-2.0.16.jar&lt;org.apache.mina.core.session(IoSession.class"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="3" selectionTopPixel="0"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="CrcChecksum.java" partName="CrcChecksum.java" path="/home/hubing/bc_server/beecom_server/beecom_server/src/bc_server/CrcChecksum.java" title="CrcChecksum.java" tooltip="beecom_server/src/bc_server/CrcChecksum.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/beecom_server/src/bc_server/CrcChecksum.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="8584" selectionTopPixel="0"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.ClassFileEditor" name="IoBuffer.class" partName="IoBuffer.class" path="/tmp/IoBuffer.class3632681704830671832.class" title="IoBuffer.class" tooltip="org.apache.mina.core.buffer.IoBuffer" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.jdt.ui.ClassFileEditorInputFactory" org.eclipse.jdt.ui.ClassFileIdentifier="=beecom_server/mina\/mina-core-2.0.16.jar&lt;org.apache.mina.core.buffer(IoBuffer.class"/>
+<editorState selectionHorizontalPixel="0" selectionLength="4" selectionOffset="8782" selectionTopPixel="3000"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.ClassFileEditor" name="TextLineCodecFactory.class" partName="TextLineCodecFactory.class" path="/tmp/TextLineCodecFactory.class764871741137564556.class" title="TextLineCodecFactory.class" tooltip="org.apache.mina.filter.codec.textline.TextLineCodecFactory" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.jdt.ui.ClassFileEditorInputFactory" org.eclipse.jdt.ui.ClassFileIdentifier="=beecom_server/mina\/mina-core-2.0.16.jar&lt;org.apache.mina.filter.codec.textline(TextLineCodecFactory.class"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="2853" selectionTopPixel="555"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.ClassFileEditor" name="TextLineDecoder.class" partName="TextLineDecoder.class" path="/tmp/TextLineDecoder.class8449469261481459269.class" title="TextLineDecoder.class" tooltip="org.apache.mina.filter.codec.textline.TextLineDecoder" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.jdt.ui.ClassFileEditorInputFactory" org.eclipse.jdt.ui.ClassFileIdentifier="=beecom_server/mina\/mina-core-2.0.16.jar&lt;org.apache.mina.filter.codec.textline(TextLineDecoder.class"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="3304" selectionTopPixel="1827"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BPPacketType.java" partName="BPPacketType.java" path="/home/hubing/bc_server/beecom_server/beecom_server/src/bc_server/BPPacketType.java" title="BPPacketType.java" tooltip="beecom_server/src/bc_server/BPPacketType.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/beecom_server/src/bc_server/BPPacketType.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="12" selectionOffset="2648" selectionTopPixel="0"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="VariableHeader.java" partName="VariableHeader.java" path="/home/hubing/bc_server/beecom_server/beecom_server/src/bc_server/VariableHeader.java" title="VariableHeader.java" tooltip="beecom_server/src/bc_server/VariableHeader.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/beecom_server/src/bc_server/VariableHeader.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="0" selectionTopPixel="0"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Payload.java" partName="Payload.java" path="/home/hubing/bc_server/beecom_server/beecom_server/src/bc_server/Payload.java" title="Payload.java" tooltip="beecom_server/src/bc_server/Payload.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/beecom_server/src/bc_server/Payload.java"/>
 <editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="0" selectionTopPixel="0"/>
 </editor>
 </editors>
 <views>
 <view id="org.eclipse.jdt.ui.JavadocView" partName="Javadoc"/>
 <view id="org.eclipse.jdt.ui.TypeHierarchy" partName="Type Hierarchy">
-<viewState hidefields="false" hidelocaltypes="false" hidenonpublic="false" hidestatic="false" input="=beecom_server/mina\/mina-core-2.0.16.jar&lt;org.apache.mina.transport.socket.nio(NioSocketAcceptor.class[NioSocketAcceptor" link_editors="0" mv_vertical_scroll="0" orientation="3" qualified_names="0" ratio="350" selection="=beecom_server/mina\/mina-core-2.0.16.jar&lt;org.apache.mina.transport.socket.nio(NioSocketAcceptor.class[NioSocketAcceptor" showinherited="false" sortbydefiningtype="false" vertical_scroll="0" view="2" workingSetName=""/>
+<viewState hidefields="false" hidelocaltypes="false" hidenonpublic="false" hidestatic="false" input="=beecom_server/mina\/mina-core-2.0.16.jar&lt;org.apache.mina.filter.codec.textline(TextLineDecoder.class[TextLineDecoder" link_editors="0" mv_vertical_scroll="0" orientation="3" qualified_names="0" ratio="350" selection="=beecom_server/mina\/mina-core-2.0.16.jar&lt;org.apache.mina.filter.codec.textline(TextLineDecoder.class[TextLineDecoder" showinherited="false" sortbydefiningtype="false" vertical_scroll="0" view="2" workingSetName=""/>
 </view>
 <view id="org.eclipse.jdt.ui.PackageExplorer" partName="Package Explorer">
 <viewState group_libraries="1" layout="2" linkWithEditor="0" rootMode="1" workingSetName="">
@@ -98,7 +183,9 @@
 <view id="org.eclipse.ui.views.ProblemView" partName="Problems">
 <viewState PRIMARY_SORT_FIELD="org.eclipse.ui.ide.severityAndDescriptionField" categoryGroup="org.eclipse.ui.ide.severity" markerContentGenerator="org.eclipse.ui.ide.problemsGenerator" partName="Problems">
 <expanded>
-<category IMemento.internal.id="Warnings (6 items)"/>
+<category IMemento.internal.id="Errors"/>
+<category IMemento.internal.id="Warnings (1 item)"/>
+<category IMemento.internal.id="Warnings"/>
 </expanded>
 <columnWidths org.eclipse.ui.ide.locationField="105" org.eclipse.ui.ide.markerType="834" org.eclipse.ui.ide.pathField="140" org.eclipse.ui.ide.resourceField="105" org.eclipse.ui.ide.severityAndDescriptionField="193"/>
 <visible IMemento.internal.id="org.eclipse.ui.ide.severityAndDescriptionField"/>
@@ -136,7 +223,7 @@
 <viewState CommonNavigator.LINKING_ENABLED="0" org.eclipse.ui.navigator.resources.workingSets.showTopLevelWorkingSets="0"/>
 </view>
 </views>
-<perspectives activePart="org.eclipse.jdt.ui.PackageExplorer" activePerspective="org.eclipse.jdt.ui.JavaPerspective">
+<perspectives activePart="org.eclipse.jdt.ui.CompilationUnitEditor" activePerspective="org.eclipse.jdt.ui.JavaPerspective">
 <perspective editorAreaTrimState="2" editorAreaVisible="1" fixed="0" version="0.016">
 <descriptor class="org.eclipse.ui.internal.ide.application.ResourcePerspective" id="org.eclipse.ui.resourcePerspective" label="Resource"/>
 <alwaysOnActionSet id="org.eclipse.ui.cheatsheets.actionSet"/>
@@ -319,175 +406,168 @@
 <workingSets/>
 <navigationHistory>
 <editors>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/beecom_server/src/bc_server/FixedHeader.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/beecom_server/src/bc_server/EncryptType.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/beecom_server/src/bc_server/BPPacketType.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/beecom_server/src/bc_server/BPPacketFlags.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/beecom_server/src/bc_server/BcCodecFactory.java"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/beecom_server/src/bc_server/BcDecoder.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/beecom_server/src/bc_server/BcEncoder.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/beecom_server/src/bc_server/BcServerHandler.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/beecom_server/src/bc_server/BcServerMain.java"/>
-<editor factoryID="org.eclipse.jdt.ui.ClassFileEditorInputFactory" id="org.eclipse.jdt.ui.ClassFileEditor" org.eclipse.jdt.ui.ClassFileIdentifier="=beecom_server/mina\/mina-core-2.0.16.jar&lt;org.apache.mina.core.service(AbstractIoService.class"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/beecom_server/src/bc_server/FixedHeader.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/beecom_server/src/bc_server/BPPacketFlags.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/beecom_server/src/bc_server/BPPacketType.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/beecom_server/src/bc_server/EncryptType.java"/>
+<editor factoryID="org.eclipse.jdt.ui.ClassFileEditorInputFactory" id="org.eclipse.jdt.ui.ClassFileEditor" org.eclipse.jdt.ui.ClassFileIdentifier="=beecom_server/mina\/mina-core-2.0.16.jar&lt;org.apache.mina.core.buffer(IoBufferWrapper.class"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/beecom_server/src/bc_server/VariableHeader.java"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/beecom_server/src/bc_server/Payload.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/beecom_server/src/bc_server/BPPacket_CONNECT.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/beecom_server/src/bc_server/BPPacket.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/beecom_server/src/bc_server/BPPacketFlags.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/beecom_server/src/bc_server/CrcChecksum.java"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/beecom_server/src/bc_server/BcServerMain.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/beecom_server/src/bc_server/BcCodecFactory.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/beecom_server/src/bc_server/BcDecoder.java"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/beecom_server/src/bc_server/BcEncoder.java"/>
+<editor factoryID="org.eclipse.jdt.ui.ClassFileEditorInputFactory" id="org.eclipse.jdt.ui.ClassFileEditor" org.eclipse.jdt.ui.ClassFileIdentifier="=beecom_server/mina\/mina-core-2.0.16.jar&lt;org.apache.mina.filter.codec(CumulativeProtocolDecoder.class"/>
 </editors>
-<item historyLabel="BPPacketFlags.java" index="3">
-<position info="not_deleted" x="726" y="0"/>
+<item historyLabel="BPPacketFlags.java" index="2">
+<position info="not_deleted" x="806" y="0"/>
 </item>
-<item historyLabel="BPPacketType.java" index="2">
-<position info="not_deleted" x="1246" y="0"/>
+<item historyLabel="BPPacketFlags.java" index="2">
+<position info="not_deleted" x="1426" y="0"/>
 </item>
-<item historyLabel="BPPacketFlags.java" index="3">
-<position info="not_deleted" x="726" y="0"/>
+<item historyLabel="EncryptType.java" index="4">
+<position info="not_deleted" x="186" y="14"/>
 </item>
-<item historyLabel="BPPacketType.java" index="2">
-<position info="not_deleted" x="1246" y="0"/>
+<item historyLabel="BPPacketFlags.java" index="2">
+<position info="not_deleted" x="1134" y="0"/>
 </item>
-<item historyLabel="BPPacketFlags.java" index="3">
-<position info="not_deleted" x="726" y="0"/>
+<item historyLabel="BcDecoder.java" index="0">
+<position info="not_deleted" x="1664" y="0"/>
 </item>
-<item historyLabel="BPPacketFlags.java" index="3">
-<position info="not_deleted" x="557" y="0"/>
+<item historyLabel="FixedHeader.java" index="1">
+<position info="not_deleted" x="552" y="0"/>
 </item>
-<item historyLabel="BPPacketFlags.java" index="3">
-<position info="not_deleted" x="85" y="0"/>
+<item historyLabel="BcDecoder.java" index="0">
+<position/>
 </item>
-<item historyLabel="FixedHeader.java" index="0">
-<position info="not_deleted" x="178" y="0"/>
+<item historyLabel="FixedHeader.java" index="1">
+<position info="not_deleted" x="552" y="0"/>
 </item>
-<item historyLabel="BPPacketFlags.java" index="3">
-<position info="not_deleted" x="358" y="0"/>
+<item historyLabel="BcDecoder.java" index="0">
+<position info="not_deleted" x="1512" y="0"/>
 </item>
-<item historyLabel="BPPacketType.java" index="2">
-<position info="not_deleted" x="1246" y="0"/>
+<item historyLabel="FixedHeader.java" index="1">
+<position info="not_deleted" x="1051" y="0"/>
 </item>
-<item historyLabel="BPPacketFlags.java" index="3">
-<position info="not_deleted" x="145" y="0"/>
+<item historyLabel="BcDecoder.java" index="0">
+<position info="not_deleted" x="820" y="8"/>
 </item>
-<item historyLabel="FixedHeader.java" index="0">
-<position info="not_deleted" x="178" y="0"/>
+<item historyLabel="FixedHeader.java" index="1">
+<position info="not_deleted" x="1048" y="0"/>
 </item>
-<item historyLabel="FixedHeader.java" index="0">
-<position info="not_deleted" x="255" y="0"/>
+<item historyLabel="BPPacketFlags.java" index="2">
+<position info="not_deleted" x="1134" y="0"/>
 </item>
-<item historyLabel="FixedHeader.java" index="0">
-<position info="not_deleted" x="464" y="0"/>
+<item historyLabel="FixedHeader.java" index="1">
+<position info="not_deleted" x="1048" y="0"/>
 </item>
-<item historyLabel="BcCodecFactory.java" index="4">
-<position info="not_deleted" x="231" y="0"/>
+<item historyLabel="BcDecoder.java" index="0">
+<position info="not_deleted" x="823" y="0"/>
 </item>
-<item historyLabel="BcDecoder.java" index="5">
-<position info="not_deleted" x="414" y="0"/>
+<item historyLabel="IoBufferWrapper.class" index="5">
+<position info="not_deleted" x="5916" y="0"/>
 </item>
-<item historyLabel="BcEncoder.java" index="6">
-<position info="not_deleted" x="394" y="0"/>
+<item historyLabel="FixedHeader.java" index="1">
+<position info="not_deleted" x="1048" y="0"/>
 </item>
-<item historyLabel="BcServerHandler.java" index="7">
-<position info="not_deleted" x="234" y="0"/>
+<item historyLabel="IoBufferWrapper.class" index="5">
+<position info="not_deleted" x="5916" y="0"/>
 </item>
-<item historyLabel="BcServerMain.java" index="8">
-<position info="not_deleted" x="1328" y="0"/>
+<item historyLabel="FixedHeader.java" index="1">
+<position info="not_deleted" x="653" y="0"/>
 </item>
-<item historyLabel="AbstractIoService.class" index="9">
-<position info="not_deleted" x="4777" y="0"/>
+<item historyLabel="BPPacketType.java" index="3">
+<position info="not_deleted" x="2648" y="12"/>
 </item>
-<item historyLabel="FixedHeader.java" index="0">
-<position info="not_deleted" x="461" y="0"/>
+<item historyLabel="FixedHeader.java" index="1">
+<position info="not_deleted" x="653" y="0"/>
 </item>
-<item historyLabel="AbstractIoService.class" index="9">
-<position info="not_deleted" x="9549" y="0"/>
-</item>
-<item historyLabel="FixedHeader.java" index="0">
-<position info="not_deleted" x="461" y="0"/>
-</item>
-<item historyLabel="VariableHeader.java" index="10">
-<position info="not_deleted" x="286" y="0"/>
-</item>
-<item historyLabel="FixedHeader.java" index="0">
-<position info="not_deleted" x="81" y="0"/>
-</item>
-<item historyLabel="Payload.java" index="11">
-<position info="not_deleted" x="56" y="0"/>
-</item>
-<item historyLabel="VariableHeader.java" index="10">
-<position info="not_deleted" x="69" y="0"/>
-</item>
-<item historyLabel="FixedHeader.java" index="0">
-<position info="not_deleted" x="81" y="0"/>
-</item>
-<item historyLabel="Payload.java" index="11">
-<position info="not_deleted" x="56" y="0"/>
-</item>
-<item historyLabel="FixedHeader.java" index="0">
-<position info="not_deleted" x="81" y="0"/>
-</item>
-<item historyLabel="EncryptType.java" index="1">
-<position info="not_deleted" x="473" y="0"/>
-</item>
-<item historyLabel="FixedHeader.java" index="0">
-<position info="not_deleted" x="81" y="0"/>
-</item>
-<item historyLabel="VariableHeader.java" index="10">
-<position info="not_deleted" x="286" y="0"/>
-</item>
-<item historyLabel="Payload.java" index="11">
-<position info="not_deleted" x="56" y="0"/>
-</item>
-<item historyLabel="BPPacket_CONNECT.java" index="12">
-<position info="not_deleted" x="219" y="0"/>
-</item>
-<item historyLabel="BPPacket.java" index="13">
-<position info="not_deleted" x="879" y="0"/>
-</item>
-<item historyLabel="BPPacket.java" index="13">
-<position info="not_deleted" x="166" y="0"/>
-</item>
-<item historyLabel="BPPacket.java" index="13">
-<position info="not_deleted" x="216" y="0"/>
-</item>
-<item historyLabel="BPPacket.java" index="13">
-<position info="not_deleted" x="101" y="0"/>
-</item>
-<item historyLabel="BPPacket_CONNECT.java" index="12">
-<position info="not_deleted" x="94" y="0"/>
-</item>
-<item historyLabel="BPPacket.java" index="13">
-<position info="not_deleted" x="101" y="0"/>
-</item>
-<item historyLabel="AbstractIoService.class" index="9">
-<position info="not_deleted" x="9549" y="0"/>
-</item>
-<item historyLabel="BPPacket.java" index="13">
-<position info="not_deleted" x="101" y="0"/>
-</item>
-<item historyLabel="AbstractIoService.class" index="9">
-<position info="not_deleted" x="9080" y="0"/>
-</item>
-<item historyLabel="BPPacketFlags.java" index="14">
-<position info="not_deleted" x="104" y="0"/>
-</item>
-<item historyLabel="BcServerMain.java" index="15">
-<position info="not_deleted" x="1346" y="0"/>
-</item>
-<item historyLabel="BcCodecFactory.java" index="16">
-<position info="not_deleted" x="287" y="0"/>
-</item>
-<item historyLabel="BcDecoder.java" index="17">
+<item historyLabel="VariableHeader.java" index="6">
 <position info="not_deleted" x="0" y="0"/>
 </item>
-<item historyLabel="BcEncoder.java" index="18">
+<item historyLabel="Payload.java" index="7">
 <position info="not_deleted" x="0" y="0"/>
 </item>
-<item active="true" historyLabel="BcDecoder.java" index="17">
-<position info="not_deleted" x="0" y="0"/>
+<item historyLabel="CrcChecksum.java" index="8">
+<position info="not_deleted" x="8584" y="0"/>
+</item>
+<item historyLabel="BcServerMain.java" index="9">
+<position info="not_deleted" x="857" y="0"/>
+</item>
+<item historyLabel="BcServerMain.java" index="9">
+<position info="not_deleted" x="294" y="12"/>
+</item>
+<item historyLabel="BcEncoder.java" index="10">
+<position info="not_deleted" x="53" y="0"/>
+</item>
+<item historyLabel="BcDecoder.java" index="0">
+<position info="not_deleted" x="53" y="44"/>
+</item>
+<item historyLabel="FixedHeader.java" index="1">
+<position info="not_deleted" x="1048" y="0"/>
+</item>
+<item historyLabel="BcDecoder.java" index="0">
+<position info="not_deleted" x="53" y="44"/>
+</item>
+<item historyLabel="FixedHeader.java" index="1">
+<position info="not_deleted" x="1048" y="0"/>
+</item>
+<item historyLabel="BcEncoder.java" index="10">
+<position info="not_deleted" x="53" y="0"/>
+</item>
+<item historyLabel="BcDecoder.java" index="0">
+<position info="not_deleted" x="1501" y="0"/>
+</item>
+<item historyLabel="FixedHeader.java" index="1">
+<position info="not_deleted" x="1048" y="0"/>
+</item>
+<item historyLabel="BcDecoder.java" index="0">
+<position info="not_deleted" x="1501" y="0"/>
+</item>
+<item historyLabel="FixedHeader.java" index="1">
+<position info="not_deleted" x="703" y="0"/>
+</item>
+<item historyLabel="BcEncoder.java" index="10">
+<position info="not_deleted" x="53" y="0"/>
+</item>
+<item historyLabel="BcDecoder.java" index="0">
+<position info="not_deleted" x="1485" y="16"/>
+</item>
+<item historyLabel="FixedHeader.java" index="1">
+<position info="not_deleted" x="703" y="0"/>
+</item>
+<item historyLabel="FixedHeader.java" index="1">
+<position info="not_deleted" x="1044" y="0"/>
+</item>
+<item historyLabel="BcDecoder.java" index="0">
+<position info="not_deleted" x="1773" y="0"/>
+</item>
+<item historyLabel="FixedHeader.java" index="1">
+<position info="not_deleted" x="541" y="0"/>
+</item>
+<item historyLabel="BcDecoder.java" index="0">
+<position info="not_deleted" x="1773" y="0"/>
+</item>
+<item historyLabel="BcDecoder.java" index="0">
+<position info="not_deleted" x="792" y="8"/>
+</item>
+<item historyLabel="CumulativeProtocolDecoder.class" index="11">
+<position info="not_deleted" x="3" y="0"/>
+</item>
+<item historyLabel="CumulativeProtocolDecoder.class" index="11">
+<position info="not_deleted" x="3948" y="25"/>
+</item>
+<item historyLabel="CumulativeProtocolDecoder.class" index="11">
+<position info="not_deleted" x="8493" y="0"/>
+</item>
+<item historyLabel="FixedHeader.java" index="1">
+<position info="not_deleted" x="847" y="0"/>
+</item>
+<item historyLabel="EncryptType.java" index="4">
+<position info="not_deleted" x="186" y="14"/>
+</item>
+<item active="true" historyLabel="BcDecoder.java" index="0">
+<position info="not_deleted" x="796" y="0"/>
 </item>
 </navigationHistory>
 <input factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/" type="8"/>
@@ -506,23 +586,14 @@
 </trimLayout>
 </window>
 <mruList>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BcEncoder.java" tooltip="beecom_server/src/bc_server/BcEncoder.java">
-<persistable path="/beecom_server/src/bc_server/BcEncoder.java"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Payload.java" tooltip="beecom_server/src/bc_server/Payload.java">
+<persistable path="/beecom_server/src/bc_server/Payload.java"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BcDecoder.java" tooltip="beecom_server/src/bc_server/BcDecoder.java">
-<persistable path="/beecom_server/src/bc_server/BcDecoder.java"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="VariableHeader.java" tooltip="beecom_server/src/bc_server/VariableHeader.java">
+<persistable path="/beecom_server/src/bc_server/VariableHeader.java"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BcCodecFactory.java" tooltip="beecom_server/src/bc_server/BcCodecFactory.java">
-<persistable path="/beecom_server/src/bc_server/BcCodecFactory.java"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BcServerMain.java" tooltip="beecom_server/src/bc_server/BcServerMain.java">
-<persistable path="/beecom_server/src/bc_server/BcServerMain.java"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BPPacketFlags.java" tooltip="beecom_server/src/bc_server/BPPacketFlags.java">
-<persistable path="/beecom_server/src/bc_server/BPPacketFlags.java"/>
-</file>
-<file factoryID="org.eclipse.jdt.ui.ClassFileEditorInputFactory" id="org.eclipse.jdt.ui.ClassFileEditor" name="AbstractIoService.class" tooltip="org.apache.mina.core.service.AbstractIoService">
-<persistable org.eclipse.jdt.ui.ClassFileIdentifier="=beecom_server/mina\/mina-core-2.0.16.jar&lt;org.apache.mina.core.service(AbstractIoService.class"/>
+<file factoryID="org.eclipse.jdt.ui.ClassFileEditorInputFactory" id="org.eclipse.jdt.ui.ClassFileEditor" name="IoBufferWrapper.class" tooltip="org.apache.mina.core.buffer.IoBufferWrapper">
+<persistable org.eclipse.jdt.ui.ClassFileIdentifier="=beecom_server/mina\/mina-core-2.0.16.jar&lt;org.apache.mina.core.buffer(IoBufferWrapper.class"/>
 </file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BPPacketType.java" tooltip="beecom_server/src/bc_server/BPPacketType.java">
 <persistable path="/beecom_server/src/bc_server/BPPacketType.java"/>
@@ -530,26 +601,35 @@
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="CRCChecksum.java" tooltip="beecom_server/src/bc_server/CRCChecksum.java">
 <persistable path="/beecom_server/src/bc_server/CRCChecksum.java"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="VariableHeader.java" tooltip="beecom_server/src/bc_server/VariableHeader.java">
-<persistable path="/beecom_server/src/bc_server/VariableHeader.java"/>
+<file factoryID="org.eclipse.jdt.ui.ClassFileEditorInputFactory" id="org.eclipse.jdt.ui.ClassFileEditor" name="TextLineDecoder.class" tooltip="org.apache.mina.filter.codec.textline.TextLineDecoder">
+<persistable org.eclipse.jdt.ui.ClassFileIdentifier="=beecom_server/mina\/mina-core-2.0.16.jar&lt;org.apache.mina.filter.codec.textline(TextLineDecoder.class"/>
+</file>
+<file factoryID="org.eclipse.jdt.ui.ClassFileEditorInputFactory" id="org.eclipse.jdt.ui.ClassFileEditor" name="TextLineCodecFactory.class" tooltip="org.apache.mina.filter.codec.textline.TextLineCodecFactory">
+<persistable org.eclipse.jdt.ui.ClassFileIdentifier="=beecom_server/mina\/mina-core-2.0.16.jar&lt;org.apache.mina.filter.codec.textline(TextLineCodecFactory.class"/>
+</file>
+<file factoryID="org.eclipse.jdt.ui.ClassFileEditorInputFactory" id="org.eclipse.jdt.ui.ClassFileEditor" name="IoBuffer.class" tooltip="org.apache.mina.core.buffer.IoBuffer">
+<persistable org.eclipse.jdt.ui.ClassFileIdentifier="=beecom_server/mina\/mina-core-2.0.16.jar&lt;org.apache.mina.core.buffer(IoBuffer.class"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="CrcChecksum.java" tooltip="beecom_server/src/bc_server/CrcChecksum.java">
+<persistable path="/beecom_server/src/bc_server/CrcChecksum.java"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="CrcType.java" tooltip="beecom_server/src/bc_server/CrcType.java">
+<persistable path="/beecom_server/src/bc_server/CrcType.java"/>
+</file>
+<file factoryID="org.eclipse.jdt.ui.ClassFileEditorInputFactory" id="org.eclipse.jdt.ui.ClassFileEditor" name="IoSession.class" tooltip="org.apache.mina.core.session.IoSession">
+<persistable org.eclipse.jdt.ui.ClassFileIdentifier="=beecom_server/mina\/mina-core-2.0.16.jar&lt;org.apache.mina.core.session(IoSession.class"/>
+</file>
+<file factoryID="org.eclipse.jdt.ui.ClassFileEditorInputFactory" id="org.eclipse.jdt.ui.ClassFileEditor" name="CumulativeProtocolDecoder.class" tooltip="org.apache.mina.filter.codec.CumulativeProtocolDecoder">
+<persistable org.eclipse.jdt.ui.ClassFileIdentifier="=beecom_server/mina\/mina-core-2.0.16.jar&lt;org.apache.mina.filter.codec(CumulativeProtocolDecoder.class"/>
 </file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="FixedHeader.java" tooltip="beecom_server/src/bc_server/FixedHeader.java">
 <persistable path="/beecom_server/src/bc_server/FixedHeader.java"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Payload.java" tooltip="beecom_server/src/bc_server/Payload.java">
-<persistable path="/beecom_server/src/bc_server/Payload.java"/>
-</file>
-<file factoryID="org.eclipse.jdt.ui.ClassFileEditorInputFactory" id="org.eclipse.jdt.ui.ClassFileEditor" name="AbstractIoSession.class" tooltip="org.apache.mina.core.session.AbstractIoSession">
-<persistable org.eclipse.jdt.ui.ClassFileIdentifier="=beecom_server/mina\/mina-core-2.0.16.jar&lt;org.apache.mina.core.session(AbstractIoSession.class"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BPPacket_CONNACK.java" tooltip="beecom_server/src/bc_server/BPPacket_CONNACK.java">
-<persistable path="/beecom_server/src/bc_server/BPPacket_CONNACK.java"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BPPacket.java" tooltip="beecom_server/src/bc_server/BPPacket.java">
+<persistable path="/beecom_server/src/bc_server/BPPacket.java"/>
 </file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BPPacketMethods.java" tooltip="beecom_server/src/bc_server/BPPacketMethods.java">
 <persistable path="/beecom_server/src/bc_server/BPPacketMethods.java"/>
-</file>
-<file factoryID="org.eclipse.jdt.ui.ClassFileEditorInputFactory" id="org.eclipse.jdt.ui.ClassFileEditor" name="IoHandler.class" tooltip="org.apache.mina.core.service.IoHandler">
-<persistable org.eclipse.jdt.ui.ClassFileIdentifier="=beecom_server/mina\/mina-core-2.0.16.jar&lt;org.apache.mina.core.service(IoHandler.class"/>
 </file>
 </mruList>
 </workbench>

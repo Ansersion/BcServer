@@ -1,5 +1,6 @@
 package bc_server;
 
+
 /**
  * @author Ansersion
  *
@@ -17,6 +18,7 @@ public class BPPacket implements BPPacketMethods{
      * @return The number of bytes of the cryptograph 
      * @throws Exception If an error occurred while decrypting
      */
+	@Override
 	public int Decrypt(EncryptType etEncryptType) throws Exception {
 		return 0;
 	}
@@ -26,28 +28,32 @@ public class BPPacket implements BPPacketMethods{
      * @return The number of bytes of the cryptograph 
      * @throws Exception If an error occurred while decrypting
      */
+	@Override
 	public int ParseFixedHeader() throws Exception {
 		return 0;
 	}
 	/**
      * {@inheritDoc}
      */
+	@Override
 	public int ParseVariableHeader() throws Exception {
 		return 0;
 	}
+	@Override
 	public int ParsePayload() throws Exception {
 		return 0;
 	}
-	public void CheckCRC(CrcType ctCrc) throws Exception {
+	@Override
+	public void CheckCRC(CrcChecksum ctCrc) throws Exception {
 		try {
-			if(CrcType.CRC16 == ctCrc) {
-				if(0 != CrcType.calcCrc16(BPPacketData)) {
+			if(CrcChecksum.CRC16 == ctCrc) {
+				if(0 != CrcChecksum.calcCrc16(BPPacketData)) {
 					throw new Exception("Check CRC16 Error");
 				}
 				return;
 			}
-			if(CrcType.CRC32 == ctCrc) {
-				if(0 != CrcType.calcCrc32(BPPacketData)) {
+			if(CrcChecksum.CRC32 == ctCrc) {
+				if(0 != CrcChecksum.calcCrc32(BPPacketData)) {
 					throw new Exception("Check CRC32 Error");
 				}
 				return;

@@ -33,7 +33,7 @@ public class BPPacket_CONNECT extends BPPacket {
 	}
 
 	@Override
-	public void CheckCRC(CrcType ctCrc) throws Exception {
+	public void CheckCRC(CrcChecksum ctCrc) throws Exception {
 		// TODO Auto-generated method stub
 	}
 
