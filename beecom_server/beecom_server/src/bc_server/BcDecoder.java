@@ -22,6 +22,7 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 	final String PAYLOAD = new String("PAYLOAD");
 	final String CRC_CHECKSUM = new String("CRC CHECKSUM");
 	final String DECODE_STATE = new String("DECODE STATE");
+	final String BP_PACKET = new String("BP PACKET");
 
 	@Override
 	protected boolean doDecode(IoSession session, IoBuffer io_in,
@@ -35,6 +36,7 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 			session.setAttribute(FIXED_HEADER, new FixedHeader());
 			session.setAttribute(VARIABLE_HEADER, new VariableHeader());
 			session.setAttribute(PAYLOAD, new Payload());
+			session.setAttribute(BP_PACKET, null);
 			session.setAttribute(DECODE_STATE, DecodeState.DEC_FX_HEAD);
 		}
 
@@ -54,18 +56,30 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 				fxHead.getCrcChk();
 				fxHead.getEncryptType();
 				fxHead.setRemainLen(io_in);
+				session.setAttribute(BP_PACKET, BPPackFactory.createBPPack(fxHead));
 				session.setAttribute(DECODE_STATE, DecodeState.DEC_VRB_HEAD);
 			}
 			ret = true;
 			break;
 		case DEC_VRB_HEAD:
+			BPPacket bp_pack = (BPPacket)session.getAttribute(BP_PACKET);
+			try {
+				ret = bp_pack.parseVariableHeader(io_in);
+				if(ret) {
+					session.setAttribute(DECODE_STATE, DecodeState.DEC_PLD);
+				}
+			} catch(Exception e) {
+				System.out.println("Error: decode variable header err!");
+				e.printStackTrace();
+				throw e;
+			}
 			break;
 		case DEC_PLD:
 			break;
 		case DEC_CRC:
 			break;
 		default:
-			break;
+			throw new Exception("Error: Bad decode state!");
 		}
 
 		return ret;

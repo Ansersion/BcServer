@@ -1,0 +1,70 @@
+package bc_server;
+
+import org.apache.mina.core.buffer.IoBuffer;
+
+/**
+ * @author Ansersion
+ * 
+ */
+public class BPPacket_CONNECT extends BPPacket {
+
+	public BPPacket_CONNECT(FixedHeader fx_header) {
+		super(fx_header);
+	}
+
+	public BPPacket_CONNECT() {
+	}
+
+	@Override
+	public int Decrypt(EncryptType etEncryptType) throws Exception {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int parseFixedHeader() throws Exception {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean parseVariableHeader(IoBuffer io_buf) throws Exception {
+		// TODO Auto-generated method stub
+		int client_id_len = 0;
+		byte encoded_byte = 0;
+		boolean ret = false;
+		if (io_buf.remaining() >= 3) {
+			encoded_byte = (byte)io_buf.getChar();
+			super.parseVrbHeadLevel(encoded_byte);
+
+			encoded_byte = (byte)io_buf.getChar();
+			super.parseVrbHeadFlags(encoded_byte);
+			
+			encoded_byte = (byte)io_buf.getChar();
+			client_id_len = super.parseVrbClientIdLen(encoded_byte);
+			
+		}
+		if(io_buf.remaining() >= client_id_len) {
+			byte[] id = new byte[client_id_len];
+			for(int i = 0; i < client_id_len; i++) {
+				id[i] = (byte)io_buf.getChar();
+			}
+			int client_id = super.parseVrbClientId(id, client_id_len);
+
+		}
+
+		return false;
+	}
+
+	@Override
+	public int parsePayload() throws Exception {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void checkCRC(CrcChecksum ctCrc) throws Exception {
+		// TODO Auto-generated method stub
+	}
+
+}

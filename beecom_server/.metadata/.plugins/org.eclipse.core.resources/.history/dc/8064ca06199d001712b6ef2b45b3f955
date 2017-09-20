@@ -1,0 +1,73 @@
+package bc_server;
+
+/**
+ * @author Ansersion
+ *
+ */
+
+import org.apache.mina.core.buffer.IoBuffer;
+import org.apache.mina.core.session.IoSession;
+import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
+import org.apache.mina.filter.codec.ProtocolDecoderOutput;
+
+public class BcDecoder extends CumulativeProtocolDecoder {
+
+	public enum DecodeState {
+		DEC_INVALID, DEC_FX_HEAD, DEC_VRB_HEAD, DEC_PLD, DEC_CRC;
+	}
+
+	final String NEW_CONNECTION = new String("NEW CONNECTION");
+	final String FIXED_HEADER = new String("FIXED HEADER");
+	final String VARIABLE_HEADER = new String("VARIABLE HEADER");
+	final String PAYLOAD = new String("PAYLOAD");
+	final String CRC_CHECKSUM = new String("CRC CHECKSUM");
+	final String DECODE_STATE = new String("DECODE STATE");
+
+	@Override
+	protected boolean doDecode(IoSession session, IoBuffer io_in,
+			ProtocolDecoderOutput decoder_out) throws Exception {
+		// TODO Auto-generated method stub
+		
+		boolean ret = false;
+		
+		if (!session.containsAttribute(NEW_CONNECTION)) {
+			session.setAttribute(NEW_CONNECTION, true);
+			session.setAttribute(FIXED_HEADER, new FixedHeader());
+			session.setAttribute(VARIABLE_HEADER, new VariableHeader());
+			session.setAttribute(PAYLOAD, new Payload());
+			session.setAttribute(DECODE_STATE, DecodeState.DEC_FX_HEAD);
+		}
+
+		DecodeState curr_state = (DecodeState) session
+				.getAttribute(DECODE_STATE);
+
+		switch (curr_state) {
+		case DEC_FX_HEAD:
+			// The length of fixed-header is 3 at most 
+			if (io_in.remaining() >= 3) { 
+				FixedHeader fxHead = (FixedHeader)session.getAttribute(FIXED_HEADER);
+				byte encoded_byte;
+				encoded_byte = (byte)io_in.getChar();
+				
+				fxHead.setBPType(encoded_byte);
+				fxHead.setFlags(encoded_byte);
+				fxHead.getCrcChk();
+				fxHead.getEncryptType();
+				fxHead.setRemainLen(io_in);
+				session.setAttribute(DECODE_STATE, DecodeState.DEC_VRB_HEAD);
+			}
+			ret = true;
+			break;
+		case DEC_VRB_HEAD:
+			break;
+		case DEC_PLD:
+			break;
+		case DEC_CRC:
+			break;
+		default:
+			break;
+		}
+
+		return ret;
+	}
+}

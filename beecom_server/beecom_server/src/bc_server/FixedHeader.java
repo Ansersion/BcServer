@@ -68,4 +68,7 @@ public class FixedHeader {
 		return PacketFlags.getEncryptType();
 	}
 
+	public BPPacketType getPacketType() {
+		return PacketType;
+	}
 }
