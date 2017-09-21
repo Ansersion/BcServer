@@ -13,10 +13,12 @@ import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 public class BcDecoder extends CumulativeProtocolDecoder {
 
 	public enum DecodeState {
-		DEC_INVALID, DEC_FX_HEAD, DEC_VRB_HEAD, DEC_PLD, DEC_CRC;
+		// DEC_INVALID, DEC_FX_HEAD, DEC_VRB_HEAD, DEC_PLD, DEC_CRC;
+		DEC_INVALID, DEC_FX_HEAD, DEC_REMAINING_DATA;
 	}
 
 	final String NEW_CONNECTION = new String("NEW CONNECTION");
+	final String BAD_CONNECTION = new String("BAD CONNECTION");
 	final String FIXED_HEADER = new String("FIXED HEADER");
 	final String VARIABLE_HEADER = new String("VARIABLE HEADER");
 	final String PAYLOAD = new String("PAYLOAD");
@@ -33,6 +35,7 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 		
 		if (!session.containsAttribute(NEW_CONNECTION)) {
 			session.setAttribute(NEW_CONNECTION, true);
+			session.setAttribute(BAD_CONNECTION, false);
 			session.setAttribute(FIXED_HEADER, new FixedHeader());
 			session.setAttribute(VARIABLE_HEADER, new VariableHeader());
 			session.setAttribute(PAYLOAD, new Payload());
@@ -57,11 +60,42 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 				fxHead.getEncryptType();
 				fxHead.setRemainLen(io_in);
 				session.setAttribute(BP_PACKET, BPPackFactory.createBPPack(fxHead));
-				session.setAttribute(DECODE_STATE, DecodeState.DEC_VRB_HEAD);
+				// session.setAttribute(DECODE_STATE, DecodeState.DEC_VRB_HEAD);
+				session.setAttribute(DECODE_STATE, DecodeState.DEC_REMAINING_DATA);
+			} else {
+				ret = false;
+				break;
 			}
-			ret = true;
+		case DEC_REMAINING_DATA:
+			FixedHeader fxHead = (FixedHeader)session.getAttribute(FIXED_HEADER);
+			if(io_in.remaining() >= fxHead.getRemainingLen()) {
+				byte[] remaining_data = new byte[fxHead.getRemainingLen()];
+				io_in.get(remaining_data);
+				if(!CrcChecksum.crcCheck(remaining_data, fxHead.getCrcChk())) {
+					session.setAttribute(BAD_CONNECTION, true);
+					session.setAttribute(DECODE_STATE, DecodeState.DEC_FX_HEAD);
+					ret = false;
+					return ret;
+				}
+				BPPacket bp_pack = (BPPacket)session.getAttribute(BP_PACKET);
+				try {
+					// bp_pack.setRemainingData(remaining_data);
+					bp_pack.parseVariableHeader(remaining_data);
+					bp_pack.parsePayload(remaining_data);
+				} catch(Exception e) {
+					session.setAttribute(DECODE_STATE, DecodeState.DEC_FX_HEAD);
+					e.printStackTrace();
+					throw e;
+				}
+				session.setAttribute(DECODE_STATE, DecodeState.DEC_FX_HEAD);
+				decoder_out.write(bp_pack);
+				ret = true;
+			} else {
+				ret = false;
+			}
 			break;
-		case DEC_VRB_HEAD:
+			
+			/*
 			BPPacket bp_pack = (BPPacket)session.getAttribute(BP_PACKET);
 			try {
 				ret = bp_pack.parseVariableHeader(io_in);
@@ -74,11 +108,14 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 				throw e;
 			}
 			break;
+			
 		case DEC_PLD:
 			break;
 		case DEC_CRC:
 			break;
+			*/
 		default:
+			session.setAttribute(DECODE_STATE, DecodeState.DEC_FX_HEAD);
 			throw new Exception("Error: Bad decode state!");
 		}
 

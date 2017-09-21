@@ -22,6 +22,13 @@ public class FixedHeader {
 	public FixedHeader() {
 	}
 	
+	public void reset() {
+		PacketType = BPPacketType.INVALID;
+		PacketFlags.reset();
+		RemainingLength = 0;
+		CrcType = CrcChecksum.CRC32;
+	}
+	
 	public void setPacketType(BPPacketType type) {
 		PacketType = type;
 	}
@@ -70,5 +77,15 @@ public class FixedHeader {
 
 	public BPPacketType getPacketType() {
 		return PacketType;
+	}
+	
+	/*
+	public boolean getUsrNameFlag() {
+		return PacketFlags.getUsrNameFlag();
+	}
+	*/
+	
+	public int getRemainingLen() {
+		return RemainingLength;
 	}
 }

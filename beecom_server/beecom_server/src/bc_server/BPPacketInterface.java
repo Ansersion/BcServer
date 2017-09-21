@@ -17,8 +17,11 @@ public interface BPPacketInterface {
 	public int parseFixedHeader() throws Exception;
 	public int parseVariableHeader() throws Exception;
 	public boolean parseVariableHeader(IoBuffer io_buf) throws Exception;
+	public boolean parseVariableHeader(byte[] buf) throws Exception;
 	public int parsePayload() throws Exception;
-	public void checkCRC(CrcChecksum ctCrc) throws Exception;
+	public boolean parsePayload(IoBuffer io_buf) throws Exception;
+	public boolean parsePayload(byte[] buf) throws Exception;
+	public boolean checkCRC(CrcChecksum ctCrc) throws Exception;
 	public void setFixedHeader(FixedHeader fx_header) throws Exception;
 	public void setVariableHeader(VariableHeader vrb_header) throws Exception;
 	public void setPayload(Payload pld) throws Exception;

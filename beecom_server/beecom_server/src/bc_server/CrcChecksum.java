@@ -113,5 +113,20 @@ public class CrcChecksum {
     		throw new Exception("Undefined CRC type");
     	}
     }
+    
+    public static boolean crcCheck(byte[] data, CrcChecksum ccCrc) {
+    	boolean ret = false;
+    	if(CrcChecksum.CRC16 == ccCrc) {
+    		ret = (0 == calcCrc16(data) ? true : false);
+    	} else if(CrcChecksum.CRC32 == ccCrc) {
+    		ret = (0 == calcCrc32(data) ? true : false);
+    	} else {
+    		ret = false;
+    		System.out.println("Error: Unknown CrcChecksum type");
+    	}
+    	
+    	return ret;
+    	
+    }
 
 }

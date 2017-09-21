@@ -92,5 +92,25 @@ public class VariableHeader {
 		Timeout = timeout;
 		return Timeout;
 	}
+	
+	public boolean getUserNameFlag() {
+		return UserFlag;
+	}
+	
+	public boolean getPwdFlag() {
+		return PwdFlag;
+	}
+	
+	public int getClientId() {
+		return ClientID;
+	}
+	
+	public boolean getUserLoginFlag() {
+		return UserLoginFlag;
+	}
+	
+	public boolean getDeviceLoginFlag() {
+		return DeviceLoginFlag;
+	}
 
 }

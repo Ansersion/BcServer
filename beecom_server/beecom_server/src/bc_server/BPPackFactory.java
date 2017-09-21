@@ -22,4 +22,19 @@ public class BPPackFactory {
 		
 		return ret;
 	}
+	
+	public static BPPacket createBPPackAck(BPPacket pack_req) {
+		
+		BPPacket ret;
+		
+		BPPacketType pack_req_type = pack_req.getPackTypeFxHead();
+		
+		if(pack_req_type == BPPacketType.CONNECT) {
+			ret = new BPPacket_CONNACK();
+		} else {
+			ret = null;
+		}
+		
+		return ret;
+	}
 }
