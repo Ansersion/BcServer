@@ -67,6 +67,10 @@ public class FixedHeader {
 		PacketFlags.reset(encoded_byte);
 	}
 	
+	public byte getFlags() {
+		return PacketFlags.getFlags();
+	}
+	
 	public CrcChecksum getCrcChk() {
 		return PacketFlags.getCrcChk();
 	}

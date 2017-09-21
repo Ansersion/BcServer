@@ -11,6 +11,9 @@ public class Payload {
 
 	byte[] UserName = null;
 	byte[] Password = null;
+	int ClntIdLen;
+	int ClntId;
+	int SymSetVer;
 	
 	public void setUserName(byte[] user_name) {
 		UserName = user_name;
@@ -56,5 +59,17 @@ public class Payload {
 	public void reset() {
 		UserName = null;
 		Password = null;
+	}
+	
+	public int getClntIdLen() {
+		return ClntIdLen;
+	}
+	
+	public int getClntId() {
+		return ClntId;
+	}
+	
+	public int getSymSetVer() {
+		return SymSetVer;
 	}
 }

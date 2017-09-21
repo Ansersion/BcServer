@@ -8,21 +8,24 @@ import org.apache.mina.core.buffer.IoBuffer;
  */
 public class BPPacket implements BPPacketInterface {
 
-	byte[] BPPacketData;
+	IoBuffer BPPacketData;
 	FixedHeader FxHeader; // = new FixedHeader();
 	VariableHeader VrbHeader; // = new VariableHeader();
 	Payload Pld; // = new Payload();
 	CrcChecksum Crc;
 
 	public BPPacket() {
+		BPPacketData.setAutoExpand(true);
 	}
 
 	public BPPacket(FixedHeader fx_header) {
+		BPPacketData.setAutoExpand(true);
 		FxHeader = fx_header;
 	}
 	
 	public void setRemainingData(byte[] data) {
-		BPPacketData = data;
+		BPPacketData.clear();
+		BPPacketData.put(data);
 	}
 
 	/**
@@ -92,15 +95,17 @@ public class BPPacket implements BPPacketInterface {
 	@Override
 	public boolean checkCRC(CrcChecksum ccCrc) throws Exception {
 		// try {
+		byte[] data = new byte[BPPacketData.remaining()];
+		BPPacketData.get(data);
 			if(CrcChecksum.CRC16 == ccCrc) {
-				if(0 != CrcChecksum.calcCrc16(BPPacketData)) {
+				if(0 != CrcChecksum.calcCrc16(data)) {
 					// throw new Exception("Check CRC16 Error");
 					return false;
 				}
 				return true;
 			}
 			if(CrcChecksum.CRC32 == ccCrc) {
-				if(0 != CrcChecksum.calcCrc32(BPPacketData)) {
+				if(0 != CrcChecksum.calcCrc32(data)) {
 					// throw new Exception("Check CRC32 Error");
 					return false;
 				}
@@ -163,8 +168,20 @@ public class BPPacket implements BPPacketInterface {
 		return false;
 	}
 	
+	public IoBuffer getIoBuffer() {
+		return BPPacketData;
+	}
+	
 	public BPPacketType getPackTypeFxHead() {
 		return FxHeader.getPacketType();
+	}
+	
+	public int getPackTypeIntFxHead() {
+		return FxHeader.getPacketType().getType();
+	}
+	
+	public byte getPackFlagsByteFxHead() {
+		return FxHeader.getFlags();
 	}
 	
 	public boolean getUsrNameFlagVrbHead() {
@@ -210,5 +227,98 @@ public class BPPacket implements BPPacketInterface {
 	public boolean getDevLoginFlagVrbHead() {
 		return VrbHeader.getDeviceLoginFlag();
 	}
+
+	@Override
+	public boolean assembleFixedHeader() throws Exception {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean assembleVariableHeader() throws Exception {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean assemblePayload() throws Exception {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/*
+	@Override
+	public boolean assembleCrc() throws Exception {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	*/
+	
+	@Override
+	public byte[] getPackByByte() throws Exception {
+		// TODO Auto-generated method stub
+		byte[] data = new byte[BPPacketData.remaining()];
+		return data;
+	}
+
+	@Override
+	public boolean assembleStart() throws Exception {
+		// TODO Auto-generated method stub
+		BPPacketData = IoBuffer.allocate(256, false);
+		BPPacketData.clear();
+		return false;
+	}
+
+	@Override
+	public boolean assembleEnd() throws Exception {
+		// TODO Auto-generated method stub
+		int CrcLen = (Crc == CrcChecksum.CRC32 ? 4 : 2);
+		int pack_data_len = BPPacketData.remaining() - 2;
+		
+		if(pack_data_len + CrcLen > 256) {
+			int data_len_old = BPPacketData.minimumCapacity();
+			byte byte_buf[] = new byte[data_len_old - 1 - 1];
+			BPPacketData.flip();
+			byte encoded_byte = BPPacketData.get();
+			// skip 1 byte of temporary "RemainingLength"
+			BPPacketData.get();
+			BPPacketData.get(byte_buf);
+			
+			BPPacketData.clear();
+			
+			BPPacketData.put(encoded_byte);
+			
+			int data_len_new = data_len_old + 1;
+			do {
+				encoded_byte = (byte)(data_len_new % 128);
+				
+				data_len_new = data_len_new / 128;
+				// if there are more data to encode, set the top bit of this byte
+				if ( data_len_new > 0 ) {
+					encoded_byte = (byte)(encoded_byte | 0x80);
+				}
+				BPPacketData.put(encoded_byte);
+			} while ( data_len_new > 0 );
+
+		} else {
+			int limit_tmp = BPPacketData.limit();
+			BPPacketData.rewind();
+			BPPacketData.get();
+			BPPacketData.put((byte)pack_data_len);
+			BPPacketData.flip();
+			BPPacketData.limit(limit_tmp);
+			
+		}
+		return false;
+	}
+
+	public VariableHeader getVrbHeader() {
+		return VrbHeader;
+	}
+	
+	public Payload getPld() {
+		return Pld;
+	}
+	
 
 }

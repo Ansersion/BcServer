@@ -8,15 +8,13 @@ package bc_server;
  *
  */
 public class VariableHeader {
-
-	
-	
 	
 	int Level = 0;
 	int ClientIDLen = 0;
 	int ClientID = 0;
 	int AliveTime = 0;
 	int Timeout = 0;
+	int RetCode = 0;
 	
 	Boolean Bit0 = new Boolean(false);
 	Boolean Bit1 = new Boolean(false);
@@ -111,6 +109,29 @@ public class VariableHeader {
 	
 	public boolean getDeviceLoginFlag() {
 		return DeviceLoginFlag;
+	}
+	
+	public int getLevel() {
+		return Level;
+	}
+	
+	
+	public byte getFlags() {
+		byte ret = 0;
+		ret |= (Bit0 == true) ? (0x01 << 0) : 0;
+		ret |= (Bit1 == true) ? (0x01 << 1) : 0;
+		ret |= (Bit2 == true) ? (0x01 << 2) : 0;
+		ret |= (Bit3 == true) ? (0x01 << 3) : 0;
+		ret |= (Bit4 == true) ? (0x01 << 4) : 0;
+		ret |= (Bit5 == true) ? (0x01 << 5) : 0;
+		ret |= (Bit6 == true) ? (0x01 << 6) : 0;
+		ret |= (Bit7 == true) ? (0x01 << 7) : 0;
+		
+		return ret;
+	}
+	
+	public int getRetCode() {
+		return RetCode;
 	}
 
 }

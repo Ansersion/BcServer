@@ -67,4 +67,14 @@ public class BPPacketFlags {
 		// only support NO_ENCRYPTION now
 		return EncryptType.NO_ENCRYPTION;
 	}
+	
+	public byte getFlags() {
+		byte ret = 0;
+		ret |= (Bit0 == true) ? (0x01 << 0) : 0;
+		ret |= (Bit1 == true) ? (0x01 << 1) : 0;
+		ret |= (Bit2 == true) ? (0x01 << 2) : 0;
+		ret |= (Bit3 == true) ? (0x01 << 3) : 0;
+		
+		return ret;
+	}
 }

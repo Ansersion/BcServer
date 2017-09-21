@@ -4,4 +4,5 @@
 <fullyQualifiedTypeName name="bc_server.FixedHeader"/>
 <fullyQualifiedTypeName name="bc_server.CrcChecksum"/>
 <fullyQualifiedTypeName name="sun.font.TrueTypeFont"/>
+<fullyQualifiedTypeName name="java.nio.ByteBuffer"/>
 </qualifiedTypeNameHistroy>
