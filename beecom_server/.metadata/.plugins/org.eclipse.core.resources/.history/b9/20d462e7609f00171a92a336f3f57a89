@@ -15,7 +15,6 @@ public class VariableHeader {
 	int AliveTime = 0;
 	int Timeout = 0;
 	int RetCode = 0;
-	int PackSeq = 0;
 	
 	Boolean Bit0 = new Boolean(false);
 	Boolean Bit1 = new Boolean(false);
@@ -30,14 +29,6 @@ public class VariableHeader {
 	Boolean PwdFlag = Bit6;
 	Boolean UserLoginFlag = Bit2;
 	Boolean DeviceLoginFlag = Bit1;
-	Boolean LanChinese = Bit7;
-	Boolean LanEnglish = Bit6;
-	Boolean LanFrench = Bit5;
-	Boolean LanRussian = Bit4;
-	Boolean LanArabic = Bit3;
-	Boolean LanSpanish = Bit2;
-	Boolean OtherLanguageFlag = Bit1;
-
 	
 	public void parseLevel(byte encoded_byte) {
 		Level = encoded_byte;

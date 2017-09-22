@@ -1,0 +1,69 @@
+/**
+ * 
+ */
+package bc_server;
+
+import java.util.HashMap;
+import java.util.Vector;
+
+/**
+ * @author Ansersion
+ *
+ */
+
+class SigData {
+	Vector<Byte> Vct1ByteData;
+	Vector<Short> Vct2ByteData;
+	Vector<Integer> Vct4ByteData;
+
+	
+	SigData() {
+		Vct1ByteData = new Vector<Byte>();
+		Vct2ByteData = new Vector<Short>();
+		Vct4ByteData = new Vector<Integer>();
+
+	}
+	
+	public int parseSigData(byte type_and_num, byte[] data, int offset) {
+		int offset_old = offset;
+		
+		int type = (type_and_num >> 6) & 0x3;
+		int num = type_and_num & 0x3F;
+		
+		if(0x00 == type) {
+			
+		} else if(0x01 == type) {
+			
+		} else if(0x10 == type) {
+			
+		} else {
+			System.out.println("ValueType " + type + " Not supported yet");
+		}
+		
+		return offset - offset_old;
+	}
+}
+public class DeviceSignalData {
+	Integer DevId[];
+	HashMap<Integer, SigData> SigDataMap;
+	int ValueTypeNum;
+	
+	public DeviceSignalData(int DevNum) {
+		DevId = new Integer[DevNum];
+		SigDataMap = new HashMap<Integer, SigData>();
+		ValueTypeNum = 0;
+	}
+	
+	public int parseSigMap(byte[] data, int offset) {
+		int offset_old = offset;
+		byte encoded_byte = data[offset++];
+		
+		ValueTypeNum = encoded_byte;
+		for(int i = 0; i < ValueTypeNum; i++) {
+			encoded_byte = data[offset++];
+		}
+		
+		return offset - offset_old;
+	}
+	
+}

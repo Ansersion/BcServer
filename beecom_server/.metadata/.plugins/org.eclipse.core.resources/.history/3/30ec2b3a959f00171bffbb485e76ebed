@@ -320,11 +320,11 @@ public class BPPacket implements BPPacketInterface {
 		return Pld;
 	}
 	
-	public static int assemble2ByteBigend(byte msb, byte lsb) {
+	public static short assemble2ByteBigend(byte msb, byte lsb) {
 		int ret = 0;
 		ret = msb;
 		ret = (ret << 8) | lsb;
-		return ret;
+		return (short)ret;
 	}
 	
 

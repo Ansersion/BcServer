@@ -47,9 +47,8 @@ public class BPPacket_CONNECT extends BPPacket {
 			encoded_byte = io_buf.get();
 			super.parseVrbHeadFlags(encoded_byte);
 
-			// encoded_byte = io_buf.get();
-			// client_id_len = super.parseVrbClientIdLen(encoded_byte);
-			client_id_len = 2;
+			encoded_byte = io_buf.get();
+			client_id_len = super.parseVrbClientIdLen(encoded_byte);
 
 			// client ID(client_id_len byte) + alive time(2 byte) + timeout(1
 			// byte)
@@ -57,7 +56,6 @@ public class BPPacket_CONNECT extends BPPacket {
 			for (int i = 0; i < client_id_len; i++) {
 				id[i] = (byte) io_buf.get();
 			}
-			
 			super.parseVrbClientId(id, client_id_len);
 
 			byte alive_time_msb = io_buf.get();
