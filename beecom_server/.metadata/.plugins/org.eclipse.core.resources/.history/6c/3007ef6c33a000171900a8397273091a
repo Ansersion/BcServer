@@ -1,0 +1,41 @@
+/**
+ * 
+ */
+package bc_server;
+
+/**
+ * @author Ansersion
+ *
+ */
+
+
+class SigDataAck {
+	boolean HasCustomSig;
+
+
+	SigDataAck() {
+
+	}
+
+	SigDataAck(boolean custom_sig_flag) {
+		HasCustomSig = custom_sig_flag;
+
+	}
+
+	public void setCustomSigFlag(boolean custom_sig_flag) {
+		HasCustomSig = custom_sig_flag;
+	}
+
+	public boolean getCustomSigFlag() {
+		return HasCustomSig;
+	}
+	
+	public void addNoCusSig(short sig) {
+
+	}
+
+}
+
+public class DevSigDataAck {
+
+}

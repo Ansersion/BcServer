@@ -79,7 +79,6 @@ public class BPPacket_GET extends BPPacket {
 		
 		try {
 			int counter = 0;
-			byte encoded_byte = 0;
 			
 			DeviceNum = buf[counter++];
 			DevSigData = new DeviceSignalData(DeviceNum);

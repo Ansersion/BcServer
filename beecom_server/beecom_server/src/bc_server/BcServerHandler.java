@@ -47,41 +47,6 @@ public class BcServerHandler extends IoHandlerAdapter {
         	session.write(pack_ack);
         	
     	}
-    	
-
-    	
-    	
-
-    	// System.out.println("mymessage>>>>>>>>>>"+x);
-        // Date date = new Date();
-        // session.write(date.toString() );
-    	/*
-        IoBuffer buf = (IoBuffer) message;
-        // Print out read buffer content.
-        while (buf.hasRemaining()) {
-            System.out.println("byte" + (char) buf.get());
-        }
-        System.out.flush();
-        */
-    	/*
-        String str = message.toString();
-
-        System.out.println("mymessage>>>>>>>>>>"+str);
-        
-        Date date = new Date();
-        session.write(date.toString() );
-        */
-        
-    	/*
-        String str = message.toString();
-        if(str.trim().equalsIgnoreCase("quit")) {
-            session.closeNow();
-            return;
-        }
-        System.out.println("mymessage>>>>>>>>>>"+str);
-        Date date = new Date();
-        session.write(date.toString() );
-        */
         
     }
     //会话空闲

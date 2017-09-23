@@ -1,0 +1,37 @@
+/**
+ * 
+ */
+package bc_server;
+
+import java.util.HashMap;
+
+/**
+ * @author Ansersion
+ *
+ */
+
+
+class SigDataAck {
+
+	
+	short DeviceID;
+	HashMap<Short, Byte> Map1ByteDataSig;
+	HashMap<Short, Short> Map2ByteDataSig;
+	HashMap<Short, Integer> Map4ByteDataSig;
+	
+	SigDataAck() {
+		DeviceID = 0;
+		Map1ByteDataSig = new HashMap<Short, Byte>();
+		Map2ByteDataSig = new HashMap<Short, Short>();
+		Map4ByteDataSig = new HashMap<Short, Integer>();
+	}
+	
+	public void addNoCusSig(short sig) {
+		
+	}
+
+}
+
+public class DevSigDataAck {
+
+}

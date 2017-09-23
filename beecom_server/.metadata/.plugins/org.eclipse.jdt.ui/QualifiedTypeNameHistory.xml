@@ -5,4 +5,5 @@
 <fullyQualifiedTypeName name="bc_server.CrcChecksum"/>
 <fullyQualifiedTypeName name="sun.font.TrueTypeFont"/>
 <fullyQualifiedTypeName name="java.nio.ByteBuffer"/>
+<fullyQualifiedTypeName name="java.util.Map.Entry"/>
 </qualifiedTypeNameHistroy>

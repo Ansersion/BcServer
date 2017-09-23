@@ -55,7 +55,8 @@ public class VariableHeader {
 	}
 	
 	public void parseClientId(byte id_msb, byte id_lsb) {
-		
+		ClientID = id_msb;
+		ClientID = (ClientID << 8) | id_lsb;
 	}
 	
 	public int parseClientIdLen(byte len) {

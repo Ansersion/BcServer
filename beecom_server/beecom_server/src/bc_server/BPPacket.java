@@ -320,11 +320,32 @@ public class BPPacket implements BPPacketInterface {
 		return Pld;
 	}
 	
-	public static int assemble2ByteBigend(byte msb, byte lsb) {
+	public static short assemble2ByteBigend(byte msb, byte lsb) {
 		int ret = 0;
 		ret = msb;
 		ret = (ret << 8) | lsb;
-		return ret;
+		return (short)ret;
+	}
+	
+	/*
+	public static short assemble2ByteBigend(byte[] data, Integer offset) {
+		int ret = 0;
+		
+		ret = data[offset.intValue()];
+		offset++;
+		ret = (ret << 8) | data[offset.intValue()];
+		offset++;
+		
+		return (short)ret;
+	}
+	*/                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+	
+	public static short assemble2ByteBigend(byte[] data, int offset) {
+		int ret = 0;
+		ret = data[offset++];
+		ret = (ret << 8) | data[offset++];
+		
+		return (short)ret;
 	}
 	
 
