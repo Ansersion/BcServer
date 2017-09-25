@@ -14,11 +14,11 @@ public class BPPacket_CONNECT extends BPPacket {
 
 	ParseVrbState PrsVrbSt = ParseVrbState.PARSE_STATE_1;
 
-	public BPPacket_CONNECT(FixedHeader fx_header) {
+	protected BPPacket_CONNECT(FixedHeader fx_header) {
 		super(fx_header);
 	}
 
-	public BPPacket_CONNECT() {
+	protected BPPacket_CONNECT() {
 	}
 
 	@Override

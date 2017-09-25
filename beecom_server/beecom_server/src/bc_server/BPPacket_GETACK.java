@@ -14,13 +14,13 @@ import java.util.Iterator;
 public class BPPacket_GETACK extends BPPacket {
 
 	int DeviceNum;
-	Vector<DevSigDataAck> VctDevSigData;
+	Vector<DevSigData> VctDevSigData;
 
-	public BPPacket_GETACK(FixedHeader fx_header) {
+	protected BPPacket_GETACK(FixedHeader fx_header) {
 		super(fx_header);
 	}
 
-	public BPPacket_GETACK(FixedHeader fx_header, int dev_num) {
+	protected BPPacket_GETACK(FixedHeader fx_header, int dev_num) {
 		super(fx_header);
 		DeviceNum = dev_num;
 	}
@@ -61,7 +61,7 @@ public class BPPacket_GETACK extends BPPacket {
 		getIoBuffer().putShort(dev_num);
 
 		for (int i = 0; i < dev_num; i++) {
-			DevSigDataAck sig_data_ack = VctDevSigData.get(i);
+			DevSigData sig_data_ack = VctDevSigData.get(i);
 			int sig_num;
 			sig_num = sig_data_ack.get1ByteDataMap().size();
 

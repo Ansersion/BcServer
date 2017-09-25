@@ -14,16 +14,16 @@ public class BPPacket implements BPPacketInterface {
 	Payload Pld; // = new Payload();
 	CrcChecksum Crc;
 
-	public BPPacket() {
+	protected BPPacket() {
 		BPPacketData.setAutoExpand(true);
 	}
 
-	public BPPacket(FixedHeader fx_header) {
+	protected BPPacket(FixedHeader fx_header) {
 		BPPacketData.setAutoExpand(true);
 		FxHeader = fx_header;
 	}
 	
-	public void setRemainingData(byte[] data) {
+	protected void setRemainingData(byte[] data) {
 		BPPacketData.clear();
 		BPPacketData.put(data);
 	}

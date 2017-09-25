@@ -13,7 +13,7 @@ import org.apache.mina.core.buffer.IoBuffer;
 public class BPPacket_GET extends BPPacket {
 	
 	int PackSeq;
-	DeviceSignalData DevSigData = null; 
+	DeviceSignals DevSigData = null; 
 	int DeviceNum;
 	
 	@Override
@@ -30,11 +30,11 @@ public class BPPacket_GET extends BPPacket {
 				id[i] = (byte) io_buf.get();
 			}
 			super.parseVrbClientId(id, client_id_len);
-
-			PackSeq = io_buf.getUnsignedShort();
 			
 			encoded_byte = io_buf.get();
 			super.parseVrbHeadFlags(encoded_byte);
+
+			PackSeq = io_buf.getUnsignedShort();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -58,12 +58,14 @@ public class BPPacket_GET extends BPPacket {
 				id[i] = buf[counter++];
 			}
 			super.parseVrbClientId(id, client_id_len);
-			byte pack_seq_msb = buf[counter++];
-			byte pack_seq_lsb = buf[counter++];
-			PackSeq = BPPacket.assemble2ByteBigend(pack_seq_msb, pack_seq_lsb);
 			
 			encoded_byte = buf[counter++];
 			super.parseVrbHeadFlags(encoded_byte);
+			
+			byte pack_seq_msb = buf[counter++];
+			byte pack_seq_lsb = buf[counter++];
+			PackSeq = BPPacket.assemble2ByteBigend(pack_seq_msb, pack_seq_lsb);
+
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -81,7 +83,7 @@ public class BPPacket_GET extends BPPacket {
 			int counter = 0;
 			
 			DeviceNum = buf[counter++];
-			DevSigData = new DeviceSignalData(DeviceNum);
+			DevSigData = new DeviceSignals(DeviceNum);
 			
 			counter += DevSigData.parseSigMap(buf, counter);
 
