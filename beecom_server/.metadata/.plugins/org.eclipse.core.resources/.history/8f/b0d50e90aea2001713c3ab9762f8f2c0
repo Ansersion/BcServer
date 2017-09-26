@@ -94,22 +94,14 @@ public class BPPacket_REPORT extends BPPacket {
 				DevName[i] = buf[counter + DevNameLen - 1 - i];
 			}
 			
-			boolean end_flag;
-			int part1, part2;
 			do {
 				byte part = buf[counter++];
-				part1 = BPPartitation.parsePart1(part);
-				part2 = BPPartitation.parsePart2(part);
-				end_flag = BPPartitation.parseEndFlag(part);
-				BPPartitation new_part = BPPartitation.createPartitation(part1, part2);
+				int part1 = (part >> 4) & 0xF;
+				int part2 = (part >> 1) & 0x7;
+				boolean end_flag = ((part >> 0) & 0x1) == 0x1;
+				// BPPart
 				
-				counter += new_part.parseSymTable(buf, counter);
-				
-				// TODO: add the custom symbol table
-				
-				Partitation.addElement(BPPartitation.createPartitation(part1, part2));
-				
-			}while(!end_flag);
+			}while(false);
 
 			
 

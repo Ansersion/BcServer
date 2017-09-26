@@ -105,7 +105,7 @@ public class BPPacket_REPORT extends BPPacket {
 				
 				counter += new_part.parseSymTable(buf, counter);
 				
-				// TODO: add the custom symbol table
+				// TODO: add report custom symbol table
 				
 				Partitation.addElement(BPPartitation.createPartitation(part1, part2));
 				
