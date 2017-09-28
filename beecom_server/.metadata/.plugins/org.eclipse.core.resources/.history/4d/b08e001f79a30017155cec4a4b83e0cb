@@ -1,0 +1,23 @@
+/**
+ * 
+ */
+package bc_server;
+
+import java.io.UnsupportedEncodingException;
+
+
+/**
+ * @author Ansersion
+ *
+ */
+public class UserDB {
+	UserDB() {
+		
+	}
+	
+	public boolean ChkUserName(byte[] name) throws UnsupportedEncodingException {
+		String curr_name = new String(name);
+		String test_name = new String("Ansersion");
+		return curr_name.equals(test_name);
+	}
+}

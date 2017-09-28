@@ -40,12 +40,10 @@ public class BcServerHandler extends IoHandlerAdapter {
         	BPPacket pack_ack = BPPackFactory.createBPPackAck(decoded_pack);
         	/* check user/pwd valid */
         	if(!UserDB.ChkUserName(user_name)) {
-        		System.out.println("Invalid user name:" + user_name);
-        		return;
+        		
         	}
         	if(!UserDB.ChkUserPwd(user_name, password)) {
-        		System.out.println(user_name + ": Incorrect password '" + password + "'");
-        		return;
+        		
         	}
 
         	/* check client_id valid */
@@ -56,36 +54,17 @@ public class BcServerHandler extends IoHandlerAdapter {
         	session.write(pack_ack);
         	
     	} else if(BPPacketType.GET == pack_type) {
-    		/* check if there is device update report */
-    		/* if (so) {
-    		 * 	push command to get the latest data 
-    		 * 
-    		 * }
-    		 * 	return current data;
-    		 * }
-    		 */
-    		
     		
     	} else if(BPPacketType.POST == pack_type) {
     		
     	} else if(BPPacketType.PING == pack_type) {
-    		/* update alive-time of the client ID with this socket */ 
-    	} else if(BPPacketType.PUSHACK == pack_type) {
-    		/* check if server get it*/
-    		/* if(so) {
-    		 *  reply it(for GET/POST)
-    		 *  }
-    		 */
+    		
+    	} else if(BPPacketType.PUSH == pack_type) {
+    		
     	} else if(BPPacketType.REPORT == pack_type) {
-    		/* update the device ID map */
+    		
     	} else if(BPPacketType.DISCONN == pack_type) {
-           	int client_id = decoded_pack.getClientId();
-           	/* check if client ID is valid */ 
-           	/* if(so) {
-           	 * 	update the client ID database
-           	 * }
-           	 * close the socket
-           	 */
+    		
     	} else {
     		throw new Exception("Error: messageRecevied: Not supported packet type");
     	}

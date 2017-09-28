@@ -58,9 +58,8 @@ public class BcServerHandler extends IoHandlerAdapter {
     	} else if(BPPacketType.GET == pack_type) {
     		/* check if there is device update report */
     		/* if (so) {
-    		 * 	push command to get the latest data 
-    		 * 
-    		 * }
+    		 * 	get the latest data
+    		 * } else {
     		 * 	return current data;
     		 * }
     		 */
@@ -69,15 +68,11 @@ public class BcServerHandler extends IoHandlerAdapter {
     	} else if(BPPacketType.POST == pack_type) {
     		
     	} else if(BPPacketType.PING == pack_type) {
-    		/* update alive-time of the client ID with this socket */ 
-    	} else if(BPPacketType.PUSHACK == pack_type) {
-    		/* check if server get it*/
-    		/* if(so) {
-    		 *  reply it(for GET/POST)
-    		 *  }
-    		 */
+    		
+    	} else if(BPPacketType.PUSH == pack_type) {
+    		
     	} else if(BPPacketType.REPORT == pack_type) {
-    		/* update the device ID map */
+    		
     	} else if(BPPacketType.DISCONN == pack_type) {
            	int client_id = decoded_pack.getClientId();
            	/* check if client ID is valid */ 
