@@ -4,6 +4,4 @@ cscope*
 .*swp
 .depend
 a.out
-.metadata/*
-.metadata
-*/.metadata
+*/.metadata/*
