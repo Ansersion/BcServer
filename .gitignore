@@ -4,4 +4,5 @@ cscope*
 .*swp
 .depend
 a.out
-*/.metadata/*
+beecom_server/.metadata
+beecom_server/.metadata/*

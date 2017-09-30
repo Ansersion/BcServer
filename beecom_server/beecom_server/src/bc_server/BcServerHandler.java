@@ -47,7 +47,6 @@ public class BcServerHandler extends IoHandlerAdapter {
         		System.out.println(user_name + ": Incorrect password '" + password + "'");
         		return;
         	}
-        	
 
         	/* check client_id valid */
         	/* update login flags */
