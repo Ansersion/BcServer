@@ -227,6 +227,18 @@ public class BPPacket implements BPPacketInterface {
 	public boolean getDevLoginFlagVrbHead() {
 		return VrbHeader.getDeviceLoginFlag();
 	}
+	
+	public boolean getChineseFlag() {
+		return VrbHeader.getChineseFlag();
+	}
+	
+	public boolean getEnglishFlag() {
+		return VrbHeader.getEnglishFlag();
+	}
+	
+	public int getPackSeq() {
+		return VrbHeader.getPackSeq();
+	}
 
 	@Override
 	public boolean assembleFixedHeader() throws Exception {

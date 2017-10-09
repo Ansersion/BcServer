@@ -143,5 +143,16 @@ public class VariableHeader {
 	public int getRetCode() {
 		return RetCode;
 	}
+	
+	public boolean getChineseFlag() {
+		return LanChinese;
+	}
 
+	public boolean getEnglishFlag() {
+		return LanEnglish;
+	}
+	
+	public int getPackSeq() {
+		return PackSeq;
+	}
 }
