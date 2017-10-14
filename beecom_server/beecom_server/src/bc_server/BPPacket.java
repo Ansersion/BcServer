@@ -15,11 +15,22 @@ public class BPPacket implements BPPacketInterface {
 	CrcChecksum Crc;
 
 	protected BPPacket() {
+		// BPPacketData.setAutoExpand(true);
+		BPPacketData = IoBuffer.allocate(256, false);
 		BPPacketData.setAutoExpand(true);
+		FxHeader = new FixedHeader();
+		VrbHeader = new VariableHeader();
+		Pld = new Payload();
+		BPPacketData.clear();
 	}
 
 	protected BPPacket(FixedHeader fx_header) {
+		// BPPacketData.setAutoExpand(true);
+		BPPacketData = IoBuffer.allocate(256, false);
 		BPPacketData.setAutoExpand(true);
+		VrbHeader = new VariableHeader();
+		Pld = new Payload();
+		BPPacketData.clear();
 		FxHeader = fx_header;
 	}
 	
@@ -41,6 +52,21 @@ public class BPPacket implements BPPacketInterface {
 	@Override
 	public int Decrypt(EncryptType etEncryptType) throws Exception {
 		return 0;
+	}
+	
+	public void putFxHead2Buf() {
+		BPPacketData.clear();
+		BPPacketData.put(FxHeader.getFirstByte());
+		int len = FxHeader.getRemainingLen();
+		byte encoded_byte;
+		do {
+			encoded_byte = (byte)(len % 128);
+			len = len / 128;
+			if(len > 0) {
+				encoded_byte |= 128;
+			}
+			BPPacketData.put(encoded_byte);
+		} while (len > 0);
 	}
 
 	/**
@@ -276,7 +302,7 @@ public class BPPacket implements BPPacketInterface {
 	@Override
 	public boolean assembleStart() throws Exception {
 		// TODO Auto-generated method stub
-		BPPacketData = IoBuffer.allocate(256, false);
+		// BPPacketData = IoBuffer.allocate(256, false);
 		BPPacketData.clear();
 		return false;
 	}
@@ -323,7 +349,11 @@ public class BPPacket implements BPPacketInterface {
 		}
 		return false;
 	}
-
+	
+	public FixedHeader getFxHead() {
+		return FxHeader;
+	}
+	
 	public VariableHeader getVrbHeader() {
 		return VrbHeader;
 	}

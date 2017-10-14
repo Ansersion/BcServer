@@ -8,6 +8,7 @@ package bc_server;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import org.apache.mina.core.session.IdleStatus;
+import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 
@@ -27,7 +28,7 @@ public class BcServerMain {
         //添加日志记录
         BcAcceptor.getFilterChain().addLast("logger",new LoggingFilter());
         //添加编码解码器
-        // BcAcceptor.getFilterChain().addLast("codec",new ProtocolCodecFilter(new TextLineCodecFactory()));
+        BcAcceptor.getFilterChain().addLast("codec",new ProtocolCodecFilter(new BcCodecFactory()));
         // BcAcceptor.getFilterChain().addLast("mycoder", new ProtocolCodecFilter(new ByteArrayCodecFactory()));
         //添加处理器(用于接收数据后处理处理数据逻辑)
         BcAcceptor.setHandler(new BcServerHandler());

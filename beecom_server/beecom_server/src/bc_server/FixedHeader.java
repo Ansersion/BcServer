@@ -13,7 +13,7 @@ public class FixedHeader {
 	BPPacketType PacketType = BPPacketType.INVALID;
 	BPPacketFlags PacketFlags = new BPPacketFlags();
 	int RemainingLength = 0;
-	CrcChecksum CrcType = CrcChecksum.CRC32;
+	// CrcChecksum CrcType = CrcChecksum.CRC32;
 	
 	public FixedHeader(BPPacketType type) {
 		PacketType = type;
@@ -26,7 +26,7 @@ public class FixedHeader {
 		PacketType = BPPacketType.INVALID;
 		PacketFlags.reset();
 		RemainingLength = 0;
-		CrcType = CrcChecksum.CRC32;
+		// CrcType = CrcChecksum.CRC32;
 	}
 	
 	public void setPacketType(BPPacketType type) {
@@ -47,7 +47,7 @@ public class FixedHeader {
 			int len = 0;
 			byte encoded_byte;
 			do {
-				encoded_byte = (byte)io.getChar();
+				encoded_byte = (byte)io.get();
 				len += (encoded_byte & 0x7F) * multiplier;
 				multiplier *= 128;
 				if (multiplier > 128) {
@@ -83,6 +83,12 @@ public class FixedHeader {
 		return PacketType;
 	}
 	
+	public byte getFirstByte() {
+		byte type = PacketType.getTypeByte();
+		byte flag = PacketFlags.getFlags();
+		return (byte)(type | flag);
+		
+	}
 	/*
 	public boolean getUsrNameFlag() {
 		return PacketFlags.getUsrNameFlag();

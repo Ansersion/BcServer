@@ -39,7 +39,8 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 			session.setAttribute(FIXED_HEADER, new FixedHeader());
 			session.setAttribute(VARIABLE_HEADER, new VariableHeader());
 			session.setAttribute(PAYLOAD, new Payload());
-			session.setAttribute(BP_PACKET, null);
+			// session.setAttribute(BP_PACKET, null);
+			// session.setAttribute(BP_PACKET, new FixedHeader());
 			session.setAttribute(DECODE_STATE, DecodeState.DEC_FX_HEAD);
 		}
 
@@ -50,16 +51,26 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 		case DEC_FX_HEAD:
 			// The length of fixed-header is 3 at most 
 			if (io_in.remaining() >= 3) { 
-				FixedHeader fxHead = (FixedHeader)session.getAttribute(FIXED_HEADER);
-				byte encoded_byte;
-				encoded_byte = (byte)io_in.getChar();
-				
+				// FixedHeader fxHead = (FixedHeader)session.getAttribute(FIXED_HEADER);
+				// byte encoded_byte;
+				// encoded_byte = (byte)io_in.get();
+				BPPacket bp_pack = BPPackFactory.createBPPack(io_in);
+				if(null == bp_pack) {
+					throw new Exception("Error: cannot create BPPacket!");
+				}
+				bp_pack.putFxHead2Buf();
+				/*
 				fxHead.setBPType(encoded_byte);
 				fxHead.setFlags(encoded_byte);
 				fxHead.getCrcChk();
 				fxHead.getEncryptType();
 				fxHead.setRemainLen(io_in);
-				session.setAttribute(BP_PACKET, BPPackFactory.createBPPack(fxHead));
+				BPPacket bp_pack = BPPackFactory.createBPPack(fxHead);
+				*/
+				// bp_pack.getIoBuffer().put(encoded_byte);
+				// bp_pack.getIoBuffer().put((byte)fxHead.getRemainingLen());
+				session.setAttribute(BP_PACKET, bp_pack);
+				
 				// session.setAttribute(DECODE_STATE, DecodeState.DEC_VRB_HEAD);
 				session.setAttribute(DECODE_STATE, DecodeState.DEC_REMAINING_DATA);
 			} else {
@@ -67,21 +78,36 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 				break;
 			}
 		case DEC_REMAINING_DATA:
-			FixedHeader fxHead = (FixedHeader)session.getAttribute(FIXED_HEADER);
+			BPPacket bp_pack = (BPPacket)session.getAttribute(BP_PACKET);
+			FixedHeader fxHead = bp_pack.getFxHead();
+			IoBuffer pack_io_buf = bp_pack.getIoBuffer();
 			if(io_in.remaining() >= fxHead.getRemainingLen()) {
 				byte[] remaining_data = new byte[fxHead.getRemainingLen()];
 				io_in.get(remaining_data);
-				if(!CrcChecksum.crcCheck(remaining_data, fxHead.getCrcChk())) {
+				int vrb_pos = pack_io_buf.position();
+				pack_io_buf.put(remaining_data);
+				bp_pack.getIoBuffer().flip();
+				bp_pack.getIoBuffer().limit();
+				byte[] data = new byte[bp_pack.getIoBuffer().limit() - 4];
+				
+				pack_io_buf.get(data);
+				long crc_get = pack_io_buf.getUnsignedInt();
+				if(!CrcChecksum.crcCheck(data, fxHead.getCrcChk(), crc_get)) {
 					session.setAttribute(BAD_CONNECTION, true);
 					session.setAttribute(DECODE_STATE, DecodeState.DEC_FX_HEAD);
 					ret = false;
 					return ret;
 				}
-				BPPacket bp_pack = (BPPacket)session.getAttribute(BP_PACKET);
+				// BPPacket bp_pack = (BPPacket)session.getAttribute(BP_PACKET);
 				try {
 					// bp_pack.setRemainingData(remaining_data);
-					bp_pack.parseVariableHeader(remaining_data);
-					bp_pack.parsePayload(remaining_data);
+					pack_io_buf.rewind();
+					pack_io_buf.position(vrb_pos);
+					// bp_pack.parseVariableHeader(remaining_data);
+					bp_pack.parseVariableHeader();
+					// bp_pack.parsePayload(remaining_data);
+					bp_pack.parsePayload();
+					
 				} catch(Exception e) {
 					session.setAttribute(DECODE_STATE, DecodeState.DEC_FX_HEAD);
 					e.printStackTrace();

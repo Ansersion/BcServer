@@ -26,17 +26,31 @@ public class VariableHeader {
 	Boolean Bit6 = new Boolean(false);
 	Boolean Bit7 = new Boolean(false);
 	
-	Boolean UserFlag = Bit7;
-	Boolean PwdFlag = Bit6;
-	Boolean UserLoginFlag = Bit2;
-	Boolean DeviceLoginFlag = Bit1;
-	Boolean LanChinese = Bit7;
-	Boolean LanEnglish = Bit6;
-	Boolean LanFrench = Bit5;
-	Boolean LanRussian = Bit4;
-	Boolean LanArabic = Bit3;
-	Boolean LanSpanish = Bit2;
-	Boolean OtherLanguageFlag = Bit1;
+	Boolean UserFlag;
+	Boolean PwdFlag;
+	Boolean UserLoginFlag;
+	Boolean DeviceLoginFlag;
+	Boolean LanChinese;
+	Boolean LanEnglish;
+	Boolean LanFrench;
+	Boolean LanRussian;
+	Boolean LanArabic;
+	Boolean LanSpanish;
+	Boolean OtherLanguageFlag;
+	
+	VariableHeader() {
+		UserFlag = Bit7;
+		PwdFlag = Bit6;
+		UserLoginFlag = Bit2;
+		DeviceLoginFlag = Bit1;
+		LanChinese = Bit7;
+		LanEnglish = Bit6;
+		LanFrench = Bit5;
+		LanRussian = Bit4;
+		LanArabic = Bit3;
+		LanSpanish = Bit2;
+		OtherLanguageFlag = Bit1;
+	}
 
 	
 	public void parseLevel(byte encoded_byte) {
@@ -44,14 +58,14 @@ public class VariableHeader {
 	}
 	
 	public void parseFlags(byte flags) {
-		Bit0 = (0x01 & flags) == 1;
-		Bit1 = (0x02 & flags) == 1;
-		Bit2 = (0x04 & flags) == 1;
-		Bit3 = (0x08 & flags) == 1;
-		Bit4 = (0x10 & flags) == 1;
-		Bit5 = (0x20 & flags) == 1;
-		Bit6 = (0x40 & flags) == 1;
-		Bit7 = (0x80 & flags) == 1;
+		Bit0 = (0x01 & flags) == 0x01;
+		Bit1 = (0x02 & flags) == 0x02;
+		Bit2 = (0x04 & flags) == 0x04;
+		Bit3 = (0x08 & flags) == 0x08;
+		Bit4 = (0x10 & flags) == 0x10;
+		Bit5 = (0x20 & flags) == 0x20;
+		Bit6 = (0x40 & flags) == 0x40;
+		Bit7 = (0x80 & flags) == 0x80;
 	}
 	
 	public void parseClientId(byte id_msb, byte id_lsb) {
@@ -102,11 +116,13 @@ public class VariableHeader {
 	}
 	
 	public boolean getUserNameFlag() {
-		return UserFlag;
+		// return UserFlag;
+		return Bit7;
 	}
 	
 	public boolean getPwdFlag() {
-		return PwdFlag;
+		// return PwdFlag;
+		return Bit6;
 	}
 	
 	public int getClientId() {
@@ -154,5 +170,17 @@ public class VariableHeader {
 	
 	public int getPackSeq() {
 		return PackSeq;
+	}
+	
+	public void setClientId(int id) {
+		ClientID = id;
+	}
+	
+	public void setAliveTime(int time) {
+		AliveTime = time;
+	}
+	
+	public void setTimeout(int timeout) {
+		Timeout = timeout;
 	}
 }

@@ -33,6 +33,8 @@ public class BPPacketType {
     
 	public static final BPPacketType INVALID_14 = INVALID;
 	public static final BPPacketType INVALID_15 = INVALID;
+	
+	public static final byte CONNECT_BYTE = 0x10;
     
     private static HashMap<Integer, BPPacketType> BPMap;
     static {
@@ -85,6 +87,10 @@ public class BPPacketType {
     public int getType() {
     	return iType;
     } 
+    
+    public byte getTypeByte() {
+    	return (byte)((iType & BPPACK_TYPE_MASK) << BPPACK_TYPE_BIT_OFFSET);
+    }
     
     public static BPPacketType getType(byte encoded_type) {
     	int index = (encoded_type >>> BPPACK_TYPE_BIT_OFFSET) & BPPACK_TYPE_MASK;

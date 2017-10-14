@@ -39,7 +39,15 @@ public class CrcChecksum {
     public static long calcCrc32(byte[] data) {
     	Crc32.reset();
     	Crc32.update(data);
-        return Crc32.getValue();  
+    	
+    	/*
+    	byte[] d = new byte[2];
+    	d[0] = 'a';
+    	d[1] = 'b';
+    	Crc32.update(d);
+    	*/
+    	long value = Crc32.getValue();
+        return value;  
     } 
     
     static byte[] crc16_tab_h = { (byte) 0x00, (byte) 0xC1, (byte) 0x81, (byte) 0x40, (byte) 0x01, (byte) 0xC0, (byte) 0x80, (byte) 0x41, (byte) 0x01, (byte) 0xC0, (byte) 0x80, (byte) 0x41, (byte) 0x00, (byte) 0xC1, (byte) 0x81, (byte) 0x40, (byte) 0x01, (byte) 0xC0, (byte) 0x80, (byte) 0x41, (byte) 0x00, (byte) 0xC1, (byte) 0x81, (byte) 0x40, (byte) 0x00, (byte) 0xC1, (byte) 0x81, (byte) 0x40, (byte) 0x01, (byte) 0xC0, (byte) 0x80, (byte) 0x41, (byte) 0x01, (byte) 0xC0, (byte) 0x80, (byte) 0x41, (byte) 0x00, (byte) 0xC1, (byte) 0x81, (byte) 0x40, (byte) 0x00, (byte) 0xC1, (byte) 0x81, (byte) 0x40, (byte) 0x01, (byte) 0xC0, (byte) 0x80, (byte) 0x41, (byte) 0x00, (byte) 0xC1, (byte) 0x81, (byte) 0x40, (byte) 0x01, (byte) 0xC0, (byte) 0x80, (byte) 0x41, (byte) 0x01, (byte) 0xC0,  
@@ -114,12 +122,12 @@ public class CrcChecksum {
     	}
     }
     
-    public static boolean crcCheck(byte[] data, CrcChecksum ccCrc) {
+    public static boolean crcCheck(byte[] data, CrcChecksum ccCrc, long crc) {
     	boolean ret = false;
     	if(CrcChecksum.CRC16 == ccCrc) {
     		ret = (0 == calcCrc16(data) ? true : false);
     	} else if(CrcChecksum.CRC32 == ccCrc) {
-    		ret = (0 == calcCrc32(data) ? true : false);
+    		return crc == calcCrc32(data);
     	} else {
     		ret = false;
     		System.out.println("Error: Unknown CrcChecksum type");

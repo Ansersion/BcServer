@@ -108,7 +108,9 @@ public class User_DB {
 		
 		// Maybe truncate ID
 		User_DB_Record user_db_record = user_db.getUserRecordList().get((int)id);
-		return password.equals(user_db_record.getPassword());
+		String str_p = new String(password);
+		System.out.println("PWD mysql: " + user_db_record.getPassword());
+		return str_p.equals(user_db_record.getPassword());
 	}
 
 	// static public short nextNewClientId() {

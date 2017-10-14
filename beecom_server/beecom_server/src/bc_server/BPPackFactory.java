@@ -3,6 +3,8 @@
  */
 package bc_server;
 
+import org.apache.mina.core.buffer.IoBuffer;
+
 /**
  * @author Ansersion
  * 
@@ -22,6 +24,41 @@ public class BPPackFactory {
 		
 		return ret;
 	}
+	
+	public static BPPacket createBPPack(byte first_byte) {
+		
+		BPPacket ret;
+		
+		if((first_byte & 0xF0) == BPPacketType.CONNECT.getTypeByte()) {
+			ret = new BPPacket_CONNECT();
+		} else if((first_byte & 0xF0) == BPPacketType.CONNACK.getTypeByte()) {
+			ret = new BPPacket_CONNACK();
+		} else {
+			ret = null;
+		}
+		
+		return ret;
+	}
+	
+	public static BPPacket createBPPack(IoBuffer io) {
+		
+		BPPacket ret;
+		byte b = io.get();
+		ret = createBPPack(b);
+		FixedHeader fxHead = ret.getFxHead();
+		fxHead.setBPType(b);
+		fxHead.setFlags(b);
+		// fxHead.setCrcChk(b);
+		// fxHead.getEncryptType();
+		try {
+			fxHead.setRemainLen(io);
+		} catch(Exception e) {
+			e.printStackTrace();
+			ret = null;
+		}
+		return ret;
+	}
+	
 	
 	public static BPPacket createBPPackAck(BPPacket pack_req) {
 		
