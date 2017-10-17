@@ -28,11 +28,11 @@ public class BPPacket_RPRTACK extends BPPacket {
 		// TODO Auto-generated method stub
 		byte encoded_byte;
 		
-		encoded_byte = (byte)getVrbHeader().getLevel();
+		encoded_byte = (byte)getVrbHead().getLevel();
 		getIoBuffer().put(encoded_byte);
-		encoded_byte = getVrbHeader().getFlags();
+		encoded_byte = getVrbHead().getFlags();
 		getIoBuffer().put(encoded_byte);
-		encoded_byte = (byte)getVrbHeader().getRetCode();
+		encoded_byte = (byte)getVrbHead().getRetCode();
 		
 		return false;
 	}

@@ -27,7 +27,7 @@ public class BPPacket_DISCONN extends BPPacket {
 
 			byte client_id_msb = buf[counter++];
 			byte client_id_lsb = buf[counter++];
-			super.getVrbHeader().parseClientId(client_id_msb, client_id_lsb);
+			super.getVrbHead().parseClientId(client_id_msb, client_id_lsb);
 
 		} catch (Exception e) {
 			e.printStackTrace();

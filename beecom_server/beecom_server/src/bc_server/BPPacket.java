@@ -8,6 +8,8 @@ import org.apache.mina.core.buffer.IoBuffer;
  */
 public class BPPacket implements BPPacketInterface {
 
+	static final int BP_LEVEL = 0;
+	
 	IoBuffer BPPacketData;
 	FixedHeader FxHeader; // = new FixedHeader();
 	VariableHeader VrbHeader; // = new VariableHeader();
@@ -310,10 +312,10 @@ public class BPPacket implements BPPacketInterface {
 	@Override
 	public boolean assembleEnd() throws Exception {
 		// TODO Auto-generated method stub
-		int CrcLen = (Crc == CrcChecksum.CRC32 ? 4 : 2);
-		int pack_data_len = BPPacketData.remaining() - 2;
+		int CrcLen = (getFxHead().getCrcChk() == CrcChecksum.CRC32 ? 4 : 2);
+		int pack_rmn_len = BPPacketData.position() - 2 + CrcLen;
 		
-		if(pack_data_len + CrcLen > 256) {
+		if(pack_rmn_len > 256) {
 			int data_len_old = BPPacketData.minimumCapacity();
 			byte byte_buf[] = new byte[data_len_old - 1 - 1];
 			BPPacketData.flip();
@@ -339,12 +341,20 @@ public class BPPacket implements BPPacketInterface {
 			} while ( data_len_new > 0 );
 
 		} else {
-			int limit_tmp = BPPacketData.limit();
+			//int limit_tmp = BPPacketData.limit();
+			//BPPacketData.rewind();
+			//BPPacketData.get();
+			//BPPacketData.put((byte)pack_data_len);
+			int pos_crc = BPPacketData.position();
 			BPPacketData.rewind();
 			BPPacketData.get();
-			BPPacketData.put((byte)pack_data_len);
+			BPPacketData.put((byte)pack_rmn_len);
+			BPPacketData.position(pos_crc);
+			byte[] buf = BPPacketData.array();
+			long crc = CrcChecksum.calcCrc32(buf);
+			BPPacketData.putUnsignedInt(crc);
 			BPPacketData.flip();
-			BPPacketData.limit(limit_tmp);
+			//BPPacketData.limit(limit_tmp);
 			
 		}
 		return false;
@@ -354,7 +364,7 @@ public class BPPacket implements BPPacketInterface {
 		return FxHeader;
 	}
 	
-	public VariableHeader getVrbHeader() {
+	public VariableHeader getVrbHead() {
 		return VrbHeader;
 	}
 	

@@ -47,10 +47,10 @@ public class BPPacketFlags {
 		Bit3 = (0x08 & flags) == 1;
 	}
 	public void setCrc32() {
-		Crc16 = false;
+		Bit0 = false;
 	}
 	public void setCrc16() {
-		Crc16 = true;
+		Bit0 = true;
 	}
 	public void setSymTable() {
 		SymTable = true;
@@ -60,7 +60,7 @@ public class BPPacketFlags {
 	}
 	
 	public CrcChecksum getCrcChk() {
-		return Crc16 == true ? CrcChecksum.CRC16 : CrcChecksum.CRC32;
+		return Bit0 == true ? CrcChecksum.CRC16 : CrcChecksum.CRC32;
 	}
 	
 	public EncryptType getEncryptType() {

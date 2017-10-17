@@ -139,14 +139,14 @@ public class BPPacket_CONNECT extends BPPacket {
 			//	id[i] = getIoBuffer().get();
 			// }
 			int client_id = getIoBuffer().getUnsignedShort();
-			getVrbHeader().setClientId(client_id);
+			getVrbHead().setClientId(client_id);
 			// super.parseVrbClientId(id, client_id_len);
 
 			int alive_time = getIoBuffer().getUnsignedShort();
-			getVrbHeader().setAliveTime(alive_time);
+			getVrbHead().setAliveTime(alive_time);
 
 			int time_out = getIoBuffer().get();
-			getVrbHeader().setTimeout(time_out);
+			getVrbHead().setTimeout(time_out);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;

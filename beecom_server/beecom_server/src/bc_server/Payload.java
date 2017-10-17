@@ -72,4 +72,16 @@ public class Payload {
 	public int getSymSetVer() {
 		return SymSetVer;
 	}
+	
+	public void setClientId(int id) {
+		ClntId = id;
+	}
+	
+	public void setClientIdLen(int len) {
+		ClntIdLen = len;
+	}
+	
+	public void setClientIdLen() {
+		ClntIdLen = 2;
+	}
 }

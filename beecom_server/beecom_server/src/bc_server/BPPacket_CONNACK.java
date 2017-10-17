@@ -13,7 +13,30 @@ public class BPPacket_CONNACK extends BPPacket {
 		super(fx_header);
 	}
 	
-	protected BPPacket_CONNACK() {}
+	protected BPPacket_CONNACK() {
+		super();
+		FixedHeader fx_head = getFxHead();
+		fx_head.setPacketType(BPPacketType.CONNACK);
+		fx_head.setCrcType(CrcChecksum.CRC32);
+	}
+	
+	protected BPPacket_CONNACK(BPPacket_CONNECT pack_con) {
+		super();
+		FixedHeader fx_head = getFxHead();
+		fx_head.setPacketType(BPPacketType.CONNACK);
+		fx_head.setCrcType(pack_con.getFxHead().getCrcChk());
+		VariableHeader vrb_head = getVrbHead();
+		if(pack_con.getVrbHead().getLevel() > BPPacket.BP_LEVEL) {
+			vrb_head.setLevel(BPPacket.BP_LEVEL);
+			vrb_head.setRetCode(0x01);
+		} else {
+			vrb_head.setLevel(pack_con.getVrbHead().getLevel());
+			if(0 == pack_con.getVrbHead().getClientId()) {
+				vrb_head.setNewCliIdFlg();
+			}
+			vrb_head.setRetCode(0x00);
+		}
+	}
 	
 	/*
 	@Override
@@ -42,11 +65,12 @@ public class BPPacket_CONNACK extends BPPacket {
 		// TODO Auto-generated method stub
 		byte encoded_byte;
 		
-		encoded_byte = (byte)getVrbHeader().getLevel();
+		encoded_byte = (byte)getVrbHead().getLevel();
 		getIoBuffer().put(encoded_byte);
-		encoded_byte = getVrbHeader().getFlags();
+		encoded_byte = getVrbHead().getFlags();
 		getIoBuffer().put(encoded_byte);
-		encoded_byte = (byte)getVrbHeader().getRetCode();
+		encoded_byte = (byte)getVrbHead().getRetCode();
+		getIoBuffer().put(encoded_byte);
 		
 		return false;
 	}
@@ -59,13 +83,16 @@ public class BPPacket_CONNACK extends BPPacket {
 		encoded_byte = (byte)getPld().getClntIdLen();
 		getIoBuffer().put(encoded_byte);
 		
-		int client_id = getPld().getClntId();
+		short client_id = (short)getPld().getClntId();
+		/*
 		encoded_byte = (byte)((client_id & 0xff00) >> 8);
 		getIoBuffer().put(encoded_byte);
 		encoded_byte = (byte)((client_id & 0xff));
 		getIoBuffer().put(encoded_byte);
-		encoded_byte = (byte)getPld().getSymSetVer();
-		getIoBuffer().put(encoded_byte);
+		*/
+		getIoBuffer().putUnsignedShort(client_id);
+		// encoded_byte = (byte)getPld().getSymSetVer();
+		// getIoBuffer().put(encoded_byte);
 		
 		return false;
 	}

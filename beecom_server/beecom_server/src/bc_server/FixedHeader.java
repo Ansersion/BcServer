@@ -67,6 +67,16 @@ public class FixedHeader {
 		PacketFlags.reset(encoded_byte);
 	}
 	
+	public void setCrcType(CrcChecksum crc) {
+		if(crc == CrcChecksum.CRC32) {
+			PacketFlags.setCrc32();
+		} else if(crc == CrcChecksum.CRC16) {
+			PacketFlags.setCrc16();
+		} else {
+			System.out.println("Error(FixedHeader): unknown CRC type");
+		}
+	}
+	
 	public byte getFlags() {
 		return PacketFlags.getFlags();
 	}

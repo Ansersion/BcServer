@@ -55,10 +55,13 @@ public class BcServerHandler extends IoHandlerAdapter {
 			/* check client_id valid */
 			ClientID_DB cli_ID_DB = ClientID_DB.getInstance();
 			client_id = ClientID_DB.distributeID(client_id);
+			pack_ack.getPld().setClientIdLen();
+			pack_ack.getPld().setClientId(client_id);
 			/* update login flags */
 			BPSession newBPSession = new BPSession(user_name.getBytes(),
 					password, client_id, user_login_flag, dev_login_flag);
 			CliId2SsnMap.put(client_id, newBPSession);
+			
 
 			session.write(pack_ack);
 

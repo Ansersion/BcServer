@@ -183,4 +183,16 @@ public class VariableHeader {
 	public void setTimeout(int timeout) {
 		Timeout = timeout;
 	}
+	
+	public void setLevel(int level) {
+		Level = level;
+	}
+	
+	public void setRetCode(int code) {
+		RetCode = code;
+	}
+	
+	public void setNewCliIdFlg() {
+		Bit7 = true;
+	}
 }
