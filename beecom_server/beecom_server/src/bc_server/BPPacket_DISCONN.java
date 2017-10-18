@@ -38,6 +38,21 @@ public class BPPacket_DISCONN extends BPPacket {
 	}
 	
 	@Override
+	public int parseVariableHeader() throws Exception {
+		// TODO Auto-generated method stub
+
+		try {
+			int client_id = getIoBuffer().getUnsignedShort();
+			getVrbHead().setClientId(client_id);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+
+		return 0;
+	}
+	
+	@Override
 	public boolean parsePayload(byte[] buf) throws Exception {
 		// TODO Auto-generated method stub
 		
@@ -50,5 +65,13 @@ public class BPPacket_DISCONN extends BPPacket {
 	
 		return true;
 	}
+	
+	@Override
+	public int parsePayload() throws Exception {
+		// TODO Auto-generated method stub
+		// No payload
+		return 0;
+	}
+
 
 }

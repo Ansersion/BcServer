@@ -17,8 +17,6 @@ public class BcServerHandler extends IoHandlerAdapter {
 
 	Map<Integer, BPSession> CliId2SsnMap = new HashMap<Integer, BPSession>();
 
-
-
 	// 捕获异常
 	@Override
 	public void exceptionCaught(IoSession session, Throwable cause)
@@ -34,7 +32,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 
 		BPPacketType pack_type = decoded_pack.getPackTypeFxHead();
 		if (BPPacketType.CONNECT == pack_type) {
-			int client_id = decoded_pack.getClientId();
+			int client_id_old = decoded_pack.getClientId();
 			String user_name = new String(decoded_pack.getUserNamePld());
 			byte[] password = decoded_pack.getPasswordPld();
 			boolean user_login_flag = decoded_pack.getUsrLoginFlagVrbHead();
@@ -53,8 +51,25 @@ public class BcServerHandler extends IoHandlerAdapter {
 			}
 
 			/* check client_id valid */
-			ClientID_DB cli_ID_DB = ClientID_DB.getInstance();
-			client_id = ClientID_DB.distributeID(client_id);
+			int client_id;
+			if(0 == client_id_old) {
+				client_id = ClientID_DB.distributeID(client_id_old);
+			} else if(CliId2SsnMap.containsKey(client_id_old)) {
+				// TODL: check if the id expired
+				client_id = client_id_old;
+			} else {
+				// maybe the client_id_old is expired
+				client_id = client_id_old;
+				pack_ack.setClntIdExpired(true);
+			}
+			// TODO: if client_id == 0 -> error
+			if(pack_ack.isClntIdExpired()) {
+				// TODO: use macro instead of constant number
+				pack_ack.getVrbHead().setRetCode(0x08);
+			}
+			if(client_id != client_id_old) {
+				pack_ack.setNewClntIdFlg(true);
+			}
 			pack_ack.getPld().setClientIdLen();
 			pack_ack.getPld().setClientId(client_id);
 			/* update login flags */
@@ -62,7 +77,6 @@ public class BcServerHandler extends IoHandlerAdapter {
 					password, client_id, user_login_flag, dev_login_flag);
 			CliId2SsnMap.put(client_id, newBPSession);
 			
-
 			session.write(pack_ack);
 
 		} else if (BPPacketType.GET == pack_type) {
@@ -90,6 +104,8 @@ public class BcServerHandler extends IoHandlerAdapter {
 			/* update the device ID map */
 		} else if (BPPacketType.DISCONN == pack_type) {
 			int client_id = decoded_pack.getClientId();
+			System.out.println("Disconn " + client_id);
+			CliId2SsnMap.remove(client_id);
 			/* check if client ID is valid */
 			/*
 			 * if(so) { update the client ID database } close the socket

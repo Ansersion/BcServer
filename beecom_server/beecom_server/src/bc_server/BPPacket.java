@@ -15,6 +15,7 @@ public class BPPacket implements BPPacketInterface {
 	VariableHeader VrbHeader; // = new VariableHeader();
 	Payload Pld; // = new Payload();
 	CrcChecksum Crc;
+	boolean ClntIdExpired;
 
 	protected BPPacket() {
 		// BPPacketData.setAutoExpand(true);
@@ -24,6 +25,7 @@ public class BPPacket implements BPPacketInterface {
 		VrbHeader = new VariableHeader();
 		Pld = new Payload();
 		BPPacketData.clear();
+		ClntIdExpired = false;
 	}
 
 	protected BPPacket(FixedHeader fx_header) {
@@ -34,6 +36,7 @@ public class BPPacket implements BPPacketInterface {
 		Pld = new Payload();
 		BPPacketData.clear();
 		FxHeader = fx_header;
+		ClntIdExpired = false;
 	}
 	
 	protected void setRemainingData(byte[] data) {
@@ -226,6 +229,18 @@ public class BPPacket implements BPPacketInterface {
 	
 	public void setPldPassword(byte[] password) {
 		Pld.setPassword(password);
+	}
+	
+	public void setNewClntIdFlg(boolean b) {
+		VrbHeader.setNewCliIdFlg();
+	}
+	
+	public void setClntIdExpired(boolean b) {
+		ClntIdExpired = b;
+	}
+	
+	public boolean isClntIdExpired() {
+		return ClntIdExpired;
 	}
 	
 	public int getClientId() {

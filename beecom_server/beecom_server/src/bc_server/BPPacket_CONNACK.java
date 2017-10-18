@@ -28,12 +28,14 @@ public class BPPacket_CONNACK extends BPPacket {
 		VariableHeader vrb_head = getVrbHead();
 		if(pack_con.getVrbHead().getLevel() > BPPacket.BP_LEVEL) {
 			vrb_head.setLevel(BPPacket.BP_LEVEL);
+			// TODO: use macro instead of constant number
 			vrb_head.setRetCode(0x01);
 		} else {
 			vrb_head.setLevel(pack_con.getVrbHead().getLevel());
 			if(0 == pack_con.getVrbHead().getClientId()) {
 				vrb_head.setNewCliIdFlg();
 			}
+			// TODO: use macro instead of constant number
 			vrb_head.setRetCode(0x00);
 		}
 	}

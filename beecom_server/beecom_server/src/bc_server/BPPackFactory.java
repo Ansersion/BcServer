@@ -28,11 +28,14 @@ public class BPPackFactory {
 	public static BPPacket createBPPack(byte first_byte) {
 		
 		BPPacket ret;
+		byte type = BPPacketType.DISCONN.getTypeByte();
 		
-		if((first_byte & 0xF0) == BPPacketType.CONNECT.getTypeByte()) {
+		if(((first_byte >> 4) & 0x0F) == BPPacketType.CONNECT.getType()) {
 			ret = new BPPacket_CONNECT();
-		} else if((first_byte & 0xF0) == BPPacketType.CONNACK.getTypeByte()) {
+		} else if(((first_byte >> 4) & 0x0F) == BPPacketType.CONNACK.getType()) {
 			ret = new BPPacket_CONNACK();
+		} else if(((first_byte >> 4)& 0x0F) == BPPacketType.DISCONN.getType()) {
+			ret = new BPPacket_DISCONN();
 		} else {
 			ret = null;
 		}

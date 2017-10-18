@@ -1,4 +1,5 @@
 create database bc_server_db character set utf8;
+use bc_server_db;
 create table user_info
 (
     id int unsigned not null auto_increment primary key,
@@ -7,4 +8,4 @@ create table user_info
     phone varchar(128) null default "",
     password char(32) not null
 );
-insert into user_info (name, password) values("Ansersion", "hubing123456");
+insert into user_info (name, password) values("Ansersion", "a123456");
