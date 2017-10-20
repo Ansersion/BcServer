@@ -195,4 +195,8 @@ public class VariableHeader {
 	public void setNewCliIdFlg() {
 		Bit7 = true;
 	}
+	
+	public void setPackSeq(int pack_seq) {
+		PackSeq = pack_seq;
+	}
 }

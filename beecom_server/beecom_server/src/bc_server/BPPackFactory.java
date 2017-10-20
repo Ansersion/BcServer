@@ -34,6 +34,10 @@ public class BPPackFactory {
 			ret = new BPPacket_CONNECT();
 		} else if(((first_byte >> 4) & 0x0F) == BPPacketType.CONNACK.getType()) {
 			ret = new BPPacket_CONNACK();
+		} else if (((first_byte >> 4) & 0x0F) == BPPacketType.PING.getType()){
+			ret = new BPPacket_PING();
+		} else if(((first_byte >> 4) & 0x0F) == BPPacketType.PINGACK.getType()) {
+			ret = new BPPacket_PINGACK();
 		} else if(((first_byte >> 4)& 0x0F) == BPPacketType.DISCONN.getType()) {
 			ret = new BPPacket_DISCONN();
 		} else {
