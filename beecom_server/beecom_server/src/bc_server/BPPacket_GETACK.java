@@ -25,6 +25,14 @@ public class BPPacket_GETACK extends BPPacket {
 		DeviceNum = dev_num;
 	}
 
+	
+	protected BPPacket_GETACK() {
+		super();
+		FixedHeader fx_head = getFxHead();
+		fx_head.setPacketType(BPPacketType.GETACK);
+		fx_head.setCrcType(CrcChecksum.CRC32);
+	}
+	
 	public void setDevNum(int num) {
 		DeviceNum = num;
 	}

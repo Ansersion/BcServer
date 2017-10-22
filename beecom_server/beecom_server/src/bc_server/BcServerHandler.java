@@ -95,6 +95,36 @@ public class BcServerHandler extends IoHandlerAdapter {
 
 		} else if (BPPacketType.PING == pack_type) {
 			/* update alive-time of the client ID with this socket */
+			int client_id = decoded_pack.getClientId();
+			String user_name = new String(decoded_pack.getUserNamePld());
+			byte[] password = decoded_pack.getPasswordPld();
+			boolean user_login_flag = decoded_pack.getUsrLoginFlagVrbHead();
+			boolean dev_login_flag = decoded_pack.getDevLoginFlagVrbHead();
+
+			BPPacket pack_ack = BPPackFactory.createBPPackAck(decoded_pack);
+			
+			/*
+			CliId2SsnMap.containsKey(client_id)
+			// TODO: if client_id == 0 -> error
+			if(pack_ack.isClntIdExpired()) {
+				// TODO: use macro instead of constant number
+				pack_ack.getVrbHead().setRetCode(0x08);
+			}
+			if(client_id != client_id_old) {
+				pack_ack.setNewClntIdFlg(true);
+			}
+			pack_ack.getPld().setClientIdLen();
+			pack_ack.getPld().setClientId(client_id);
+			*/
+			/* update login flags */
+			/*
+			BPSession newBPSession = new BPSession(user_name.getBytes(),
+					password, client_id, user_login_flag, dev_login_flag);
+			CliId2SsnMap.put(client_id, newBPSession);
+			
+			session.write(pack_ack);
+			*/
+
 		} else if (BPPacketType.PUSHACK == pack_type) {
 			/* check if server get it */
 			/*

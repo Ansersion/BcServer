@@ -28,11 +28,12 @@ public class BPPacket_PINGACK extends BPPacket {
 		// TODO Auto-generated method stub
 		byte encoded_byte;
 		
-		encoded_byte = (byte)getVrbHead().getLevel();
-		getIoBuffer().put(encoded_byte);
 		encoded_byte = getVrbHead().getFlags();
 		getIoBuffer().put(encoded_byte);
-		encoded_byte = (byte)getVrbHead().getRetCode();
+		int client_id = getVrbHead().getClientId();
+		getIoBuffer().putUnsignedShort(client_id);
+		int pack_seq = getVrbHead().getPackSeq();
+		getIoBuffer().putUnsignedShort(pack_seq);
 		
 		return false;
 	}
@@ -40,18 +41,6 @@ public class BPPacket_PINGACK extends BPPacket {
 	@Override
 	public boolean assemblePayload() throws Exception {
 		// TODO Auto-generated method stub
-		byte encoded_byte;
-		
-		encoded_byte = (byte)getPld().getClntIdLen();
-		getIoBuffer().put(encoded_byte);
-		
-		int client_id = getPld().getClntId();
-		encoded_byte = (byte)((client_id & 0xff00) >> 8);
-		getIoBuffer().put(encoded_byte);
-		encoded_byte = (byte)((client_id & 0xff));
-		getIoBuffer().put(encoded_byte);
-		encoded_byte = (byte)getPld().getSymSetVer();
-		getIoBuffer().put(encoded_byte);
 		
 		return false;
 	}

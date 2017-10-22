@@ -172,6 +172,14 @@ public class VariableHeader {
 		return PackSeq;
 	}
 	
+	public boolean getReportToken() {
+		return Bit3;
+	}
+	
+	public boolean getPushToken() {
+		return Bit3;
+	}
+	
 	public void setClientId(int id) {
 		ClientID = id;
 	}
