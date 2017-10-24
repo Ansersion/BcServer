@@ -74,6 +74,40 @@ public class BPPacket_POST extends BPPacket {
 	}
 	
 	@Override
+	public int parseVariableHeader() throws Exception {
+		// TODO Auto-generated method stub
+		try {
+
+			byte flags = getIoBuffer().get();
+			super.parseVrbHeadFlags(flags);
+			
+			int client_id = getIoBuffer().getUnsignedShort();
+			getVrbHead().setClientId(client_id);
+
+			int pack_seq = getIoBuffer().getUnsignedShort();
+			getVrbHead().setPackSeq(pack_seq);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+
+		return 0;
+	}
+
+	@Override
+	public int parsePayload() throws Exception {
+		// TODO Auto-generated method stub
+		try {
+			// No payload for PING
+		} catch (Exception e) {
+			System.out.println("Error(PING): parsePayload error");
+			e.printStackTrace();
+			throw e;
+		}
+		return 0;
+	}
+	
+	@Override
 	public boolean parsePayload(byte[] buf) throws Exception {
 		// TODO Auto-generated method stub
 		

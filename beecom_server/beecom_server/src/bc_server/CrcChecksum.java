@@ -2,6 +2,8 @@ package bc_server;
 
 /**
  * @author Ansersion
+ * 
+ * @see Thanks(CRC16): http://blog.csdn.net/trbbadboy/article/details/42145461/ 
  *
  */
 import java.util.zip.CRC32;
