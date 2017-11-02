@@ -41,13 +41,15 @@ public class CrcChecksum {
     public static long calcCrc32(byte[] data) {
     	Crc32.reset();
     	Crc32.update(data);
-    	
-    	/*
-    	byte[] d = new byte[2];
-    	d[0] = 'a';
-    	d[1] = 'b';
-    	Crc32.update(d);
-    	*/
+    
+    	long value = Crc32.getValue();
+        return value;  
+    } 
+    
+    public static long calcCrc32(byte[] data, int off, int len) {
+    	Crc32.reset();
+    	Crc32.update(data, off, len);
+    
     	long value = Crc32.getValue();
         return value;  
     } 

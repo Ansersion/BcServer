@@ -366,7 +366,7 @@ public class BPPacket implements BPPacketInterface {
 			BPPacketData.put((byte)pack_rmn_len);
 			BPPacketData.position(pos_crc);
 			byte[] buf = BPPacketData.array();
-			long crc = CrcChecksum.calcCrc32(buf);
+			long crc = CrcChecksum.calcCrc32(buf, 0, pos_crc);
 			BPPacketData.putUnsignedInt(crc);
 			BPPacketData.flip();
 			//BPPacketData.limit(limit_tmp);
