@@ -3,6 +3,11 @@
  */
 package bc_server;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+
 /**
  * @author Ansersion
  *
@@ -14,6 +19,8 @@ public class Payload {
 	int ClntIdLen;
 	int ClntId;
 	int SymSetVer;
+	
+	Map<Integer, List<Integer> > MapDevId2SigIdLst = new HashMap<Integer, List<Integer> >();
 	
 	public void setUserName(byte[] user_name) {
 		UserName = user_name;
@@ -83,5 +90,13 @@ public class Payload {
 	
 	public void setClientIdLen() {
 		ClntIdLen = 2;
+	}
+	
+	public void clrMapDevId2SigIdList() {
+		MapDevId2SigIdLst.clear();
+	}
+	
+	public Map<Integer, List<Integer> > getMapDev2SigLst() {
+		return MapDevId2SigIdLst;
 	}
 }

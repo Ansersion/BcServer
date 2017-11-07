@@ -55,7 +55,12 @@ public class BPPacket_GETACK extends BPPacket {
 	@Override
 	public boolean assembleVariableHeader() throws Exception {
 		// TODO Auto-generated method stub
-		// byte encoded_byte;
+		byte encoded_byte;
+		
+		int pack_seq = getVrbHead().getPackSeq();
+		getIoBuffer().putUnsignedShort(pack_seq);
+		byte ret_code = (byte)getVrbHead().getRetCode();
+		getIoBuffer().put(ret_code);
 
 		return false;
 	}
@@ -65,8 +70,8 @@ public class BPPacket_GETACK extends BPPacket {
 		// TODO Auto-generated method stub
 		byte encoded_byte;
 
-		short dev_num = (short) (VctDevSigData.size() & 0x0000FFFF);
-		getIoBuffer().putShort(dev_num);
+		int dev_num = VctDevSigData.size() & 0x0000FFFF;
+		getIoBuffer().putUnsignedShort(dev_num);
 
 		for (int i = 0; i < dev_num; i++) {
 			DevSigData sig_data_ack = VctDevSigData.get(i);
@@ -83,13 +88,13 @@ public class BPPacket_GETACK extends BPPacket {
 					// set the value type of bit6, bit7 to '00b'
 					encoded_byte |= 0x00;
 					getIoBuffer().put(encoded_byte);
-					Map<Short, Byte> map = sig_data_ack.get1ByteDataMap();
+					Map<Integer, Byte> map = sig_data_ack.get1ByteDataMap();
 
 					Iterator it = map.entrySet().iterator();
 					while (it.hasNext()) {
 
 						Map.Entry entry = (Map.Entry) it.next();
-						getIoBuffer().putShort((Short) entry.getKey());
+						getIoBuffer().putUnsignedShort((Integer) entry.getKey());
 						getIoBuffer().put((Byte) entry.getValue());
 					}
 
@@ -107,7 +112,7 @@ public class BPPacket_GETACK extends BPPacket {
 					// set the value type of bit6, bit7 to '00b'
 					encoded_byte |= 0x40;
 					getIoBuffer().put(encoded_byte);
-					Map<Short, Short> map = sig_data_ack.get2ByteDataMap();
+					Map<Integer, Short> map = sig_data_ack.get2ByteDataMap();
 					Iterator it = map.entrySet().iterator();
 					while (it.hasNext()) {
 						Map.Entry entry = (Map.Entry) it.next();
@@ -129,7 +134,7 @@ public class BPPacket_GETACK extends BPPacket {
 					// set the value type of bit6, bit7 to '00b'
 					encoded_byte |= 0x80;
 					getIoBuffer().put(encoded_byte);
-					Map<Short, Integer> map = sig_data_ack.get4ByteDataMap();
+					Map<Integer, Integer> map = sig_data_ack.get4ByteDataMap();
 					Iterator it = map.entrySet().iterator();
 					while (it.hasNext()) {
 						Map.Entry entry = (Map.Entry) it.next();

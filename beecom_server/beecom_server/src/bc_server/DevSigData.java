@@ -14,14 +14,14 @@ import java.util.Map;
 
 class SigDatas {
 
-	HashMap<Short, Byte> Map1ByteDataSig;
-	HashMap<Short, Short> Map2ByteDataSig;
-	HashMap<Short, Integer> Map4ByteDataSig;
+	Map<Integer, Byte> Map1ByteDataSig;
+	Map<Integer, Short> Map2ByteDataSig;
+	Map<Integer, Integer> Map4ByteDataSig;
 	
 	SigDatas() {
-		Map1ByteDataSig = new HashMap<Short, Byte>();
-		Map2ByteDataSig = new HashMap<Short, Short>();
-		Map4ByteDataSig = new HashMap<Short, Integer>();
+		Map1ByteDataSig = new HashMap<Integer, Byte>();
+		Map2ByteDataSig = new HashMap<Integer, Short>();
+		Map4ByteDataSig = new HashMap<Integer, Integer>();
 	}
 	
 	public void addNoCusSig(short sig) {
@@ -40,15 +40,15 @@ public class DevSigData {
 		// SigData = new SigData();
 	}
 	
-	public HashMap<Short, Byte> get1ByteDataMap() {
+	public Map<Integer, Byte> get1ByteDataMap() {
 		return SigData.Map1ByteDataSig;
 	}
 	
-	public HashMap<Short, Short> get2ByteDataMap() {
+	public Map<Integer, Short> get2ByteDataMap() {
 		return SigData.Map2ByteDataSig;
 	}
 	
-	public HashMap<Short, Integer> get4ByteDataMap() {
+	public Map<Integer, Integer> get4ByteDataMap() {
 		return SigData.Map4ByteDataSig;
 	}
 	

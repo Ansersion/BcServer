@@ -24,11 +24,7 @@ public class BcEncoder extends ProtocolEncoderAdapter {
 		pack_to_encode.assembleVariableHeader();
 		pack_to_encode.assemblePayload();
 		pack_to_encode.assembleEnd();
-		// pack_to_encode.assembleCrc();
-		
-		// byte[] pack_buf = pack_to_encode.getPackByByte();
-		
-		// IoBuffer buf = IoBuffer.allocate(pack_buf.length, false);
+
 		IoBuffer buf = pack_to_encode.getIoBuffer();
 		
 		arg2.write(buf);
