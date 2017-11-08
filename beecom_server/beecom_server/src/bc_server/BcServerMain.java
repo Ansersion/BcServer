@@ -31,14 +31,21 @@ public class BcServerMain {
 
 		BPSysSigLangResTable sig_lang_res_tab = BPSysSigLangResTable.getSysSigLangResTable();
 		try {
-			sig_lang_res_tab.loadRes();
+			sig_lang_res_tab.loadTab();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		BPSysEnmLangResTable enm_lang_res_tab = BPSysEnmLangResTable.getSysEnmLangResTable();
 		try {
-			enm_lang_res_tab.loadRes();
+			enm_lang_res_tab.loadTab();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		BPSysSigTable sys_sig_tab = BPSysSigTable.getSysSigTable();
+		try {
+			sys_sig_tab.loadTab();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

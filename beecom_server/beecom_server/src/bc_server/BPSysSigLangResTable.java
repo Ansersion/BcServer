@@ -35,7 +35,7 @@ public class BPSysSigLangResTable {
 		SysSigLangRes_Lst = new ArrayList<List<List<String>>>();
 	}
 
-	public boolean loadRes() throws FileNotFoundException,
+	public boolean loadTab() throws FileNotFoundException,
 			UnsupportedEncodingException {
 		FileInputStream fis = new FileInputStream(
 				"/mnt/hgfs/share/sys_signal_language_resource.csv");

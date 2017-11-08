@@ -32,7 +32,7 @@ public class BPSysEnmLangResTable {
 		SysEnmLangRes_Lst = new ArrayList<List<String>>();
 	}
 
-	public boolean loadRes() throws FileNotFoundException,
+	public boolean loadTab() throws FileNotFoundException,
 			UnsupportedEncodingException {
 		FileInputStream fis = new FileInputStream(
 				"/mnt/hgfs/share/sys_enum_language_resource.csv");
