@@ -46,8 +46,7 @@ public class BPSysSigLangResTable {
 		boolean ret = false;
 
 		try {
-			String s, s2 = new String();
-			int counter = 0;
+			String s;
 			String pattern = "^(.*),(.*),(.*),(.*),(.*),(.*),(.*)$";
 			Pattern r = Pattern.compile(pattern);
 			sys_sig_lang_in.readLine();
@@ -57,7 +56,6 @@ public class BPSysSigLangResTable {
 
 				while ((s = sys_sig_lang_in.readLine()) != null) {
 					List<String> lang_res_tmp = new ArrayList<String>();
-					s2 = s + "\n";
 					Matcher m = r.matcher(s);
 					if (m.find()) {
 

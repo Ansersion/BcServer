@@ -1,0 +1,10 @@
+use bc_server_db;
+update user_info set name="张三" where id = 2;
+update user_info set name="李四" where id = 3;
+update user_info set name="王五" where id = 4;
+update user_info set name="Ansersion4" where id = 5;
+update user_info set name="Ansersion5" where id = 6;
+update user_info set name="Ansersion6" where id = 7;
+update user_info set name="Ansersion7" where id = 8;
+update user_info set name="Ansersion8" where id = 9;
+update user_info set name="Ansersion9" where id = 10;

@@ -100,9 +100,9 @@ public class BPSysSigTable {
 		/* 0-ro, 1-rw */
 		byte permission;
 		byte accuracy;
-		BPValue val_min = new BPValue();
-		BPValue val_max = new BPValue();
-		BPValue val_def = new BPValue();
+		BPValue val_min;
+		BPValue val_max;
+		BPValue val_def;
 		Map<Integer, Integer> map_enm_lang_res = null;
 		boolean en_statistics;
 		// 0-note, 1-warning, 2-serious, 3-emergency
@@ -143,6 +143,7 @@ public class BPSysSigTable {
 							is_alm = false;
 						} else {
 							sys_sig_in.close();
+							// is_alm = false;
 							throw new Exception(m.group(1) + ": is alarm error");
 						}
 						/* 0-u32, 1-u16, 2-i32, 3-i16, 4-enum, 5-float, 6-string */
@@ -171,6 +172,7 @@ public class BPSysSigTable {
 						str_tmp = m.group(6);
 						Scanner scanner_unit = new Scanner(str_tmp)
 								.useDelimiter("ULR");
+						
 						try {
 							if (scanner_unit.hasNext() == false) {
 								sys_sig_in.close();
@@ -196,6 +198,11 @@ public class BPSysSigTable {
 						}
 
 						accuracy = (byte) Integer.parseInt(m.group(8));
+						
+						val_min = new BPValue();
+						val_max = new BPValue();
+						val_def = new BPValue();
+						
 						val_min.setValueType(val_type);
 						val_max.setValueType(val_type);
 						val_def.setValueType(val_type);
@@ -245,8 +252,8 @@ public class BPSysSigTable {
 						} else {
 							sys_sig_in.close();
 							throw new Exception(m.group(1) + ": enable statistics error");
+							// en_statistics = false;
 						}
-
 						if (is_alm) {
 							alm_class = Byte.parseByte(m.group(14));
 							dly_bef_alm = Integer.parseInt(m.group(15));
@@ -284,7 +291,7 @@ public class BPSysSigTable {
 				s_debug += SysSigInfo_Lst.get(i).EnStatistics + ","
 						+ SysSigInfo_Lst.get(i).AlmClass + ","
 						+ SysSigInfo_Lst.get(i).DlyBefAlm + ","
-						+ SysSigInfo_Lst.get(i).DlyAftAlm;
+						+ SysSigInfo_Lst.get(i).DlyAftAlm + "\n";
 			}
 			System.out.println(s_debug);
 

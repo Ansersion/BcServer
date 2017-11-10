@@ -2,7 +2,7 @@ create database bc_server_db character set utf8;
 use bc_server_db;
 create table user_info
 (
-    id int unsigned not null auto_increment primary key,
+    user_id int unsigned not null auto_increment primary key,
     name varchar(128) null default "",
     e_mail varchar(256)  null default "",
     phone varchar(128) null default "",
