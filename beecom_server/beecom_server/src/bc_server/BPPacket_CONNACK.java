@@ -95,6 +95,7 @@ public class BPPacket_CONNACK extends BPPacket {
 		getIoBuffer().putUnsignedShort(client_id);
 		// encoded_byte = (byte)getPld().getSymSetVer();
 		// getIoBuffer().put(encoded_byte);
+		getIoBuffer().putUnsignedShort(BPSysSigTable.BP_SYS_SIG_SET_VERSION);
 		
 		return false;
 	}

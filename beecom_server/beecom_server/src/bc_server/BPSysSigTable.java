@@ -70,6 +70,7 @@ public class BPSysSigTable {
 	List<SysSigInfo> SysSigInfo_Lst;
 
 	static BPSysSigTable SysSigTab = null;
+	public static int BP_SYS_SIG_SET_VERSION = 0;
 
 	public static BPSysSigTable getSysSigTable() {
 		if (null == SysSigTab) {
