@@ -8,6 +8,14 @@ package bc_server;
  *
  */
 public class BPPacket_RPRTACK extends BPPacket {
+	
+	protected BPPacket_RPRTACK() {
+		super();
+		FixedHeader fx_head = getFxHead();
+		fx_head.setPacketType(BPPacketType.RPRTACK);
+		fx_head.setCrcType(CrcChecksum.CRC32);
+	}
+	
 	@Override
 	public boolean assembleFixedHeader() throws Exception {
 		// TODO Auto-generated method stub
@@ -26,13 +34,11 @@ public class BPPacket_RPRTACK extends BPPacket {
 	@Override
 	public boolean assembleVariableHeader() throws Exception {
 		// TODO Auto-generated method stub
-		byte encoded_byte;
 		
-		encoded_byte = (byte)getVrbHead().getLevel();
-		getIoBuffer().put(encoded_byte);
-		encoded_byte = getVrbHead().getFlags();
-		getIoBuffer().put(encoded_byte);
-		encoded_byte = (byte)getVrbHead().getRetCode();
+		int pack_seq = (byte)getVrbHead().getPackSeq();
+		getIoBuffer().putUnsignedShort(pack_seq);	
+		byte ret_code = (byte)getVrbHead().getRetCode();
+		getIoBuffer().put(ret_code);
 		
 		return false;
 	}
@@ -40,18 +46,6 @@ public class BPPacket_RPRTACK extends BPPacket {
 	@Override
 	public boolean assemblePayload() throws Exception {
 		// TODO Auto-generated method stub
-		byte encoded_byte;
-		
-		encoded_byte = (byte)getPld().getClntIdLen();
-		getIoBuffer().put(encoded_byte);
-		
-		int client_id = getPld().getClntId();
-		encoded_byte = (byte)((client_id & 0xff00) >> 8);
-		getIoBuffer().put(encoded_byte);
-		encoded_byte = (byte)((client_id & 0xff));
-		getIoBuffer().put(encoded_byte);
-		encoded_byte = (byte)getPld().getSymSetVer();
-		getIoBuffer().put(encoded_byte);
 		
 		return false;
 	}

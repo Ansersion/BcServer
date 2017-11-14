@@ -4,6 +4,8 @@
 package bc_server;
 
 import org.apache.mina.core.buffer.IoBuffer;
+
+import java.util.Map;
 import java.util.Vector;
 
 /**
@@ -120,5 +122,79 @@ public class BPPacket_REPORT extends BPPacket {
 		}
 
 		return true;
+	}
+	
+	@Override
+	public int parseVariableHeader() throws Exception {
+		// TODO Auto-generated method stub
+
+		try {
+			// flags(1 byte) + client ID(2 byte) + sequence id(2 byte)
+			byte flags = getIoBuffer().get();
+			super.parseVrbHeadFlags(flags);
+
+			int client_id = getIoBuffer().getUnsignedShort();
+			getVrbHead().setClientId(client_id);
+
+			int pack_seq = getIoBuffer().getUnsignedShort();
+			getVrbHead().setPackSeq(pack_seq);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+
+		return 0;
+	}
+
+	/*
+	 * @Override public boolean parseVariableHeader() throws Exception { // TODO
+	 * Auto-generated method stub // return parseVariableHeader(); return false;
+	 * }
+	 */
+
+	@Override
+	public int parsePayload() throws Exception {
+		// TODO Auto-generated method stub
+		try {
+
+			VariableHeader vb = getVrbHead();
+			Payload pld = getPld();
+			
+			if(vb.getDevNameFlag()) {
+				int dev_name_len = getIoBuffer().get();
+				byte[] dev_name = new byte[dev_name_len];
+				getIoBuffer().get(dev_name);
+				pld.setDevName(dev_name);
+			}
+			
+			if(vb.getSysSigFlag()) {
+				byte dist_and_class;
+				int dist;
+				int sys_sig_class;
+				int map_num;
+
+				do {
+					dist_and_class = getIoBuffer().get();
+					dist = (dist_and_class >> 4) & 0x0F;
+					sys_sig_class = (dist_and_class >> 1) & 0x07;
+					if(sys_sig_class >= 0x07) {
+						throw new Exception("Error: System signal class 0x7");
+					}
+					map_num = 0x200 / 8 / (1 << sys_sig_class);
+					Byte[] sys_sig_map = new Byte[map_num];
+					Map<Integer, Byte[]> sys_map = pld.getMapDist2SysSigMap();
+					for(int i = 0; i < map_num; i++) {
+						sys_sig_map[i] = getIoBuffer().get();
+					}
+					sys_map.put(dist, sys_sig_map);
+				}while((dist_and_class & VariableHeader.DIST_END_FLAG_MSK) != VariableHeader.DIST_END_FLAG_MSK);
+			}
+
+		} catch (Exception e) {
+			System.out.println("Error: parsePayload error");
+			e.printStackTrace();
+			throw e;
+		}
+		return 0;
 	}
 }

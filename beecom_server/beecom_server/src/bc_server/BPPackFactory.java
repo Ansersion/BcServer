@@ -40,6 +40,8 @@ public class BPPackFactory {
 			ret = new BPPacket_GETACK();
 		} else if(((first_byte >> 4) & 0x0F) == BPPacketType.POST.getType()) { 
 			ret = new BPPacket_POST();
+		} else if(((first_byte >> 4) & 0x0F) == BPPacketType.REPORT.getType()) { 
+			ret = new BPPacket_REPORT();
 		} else if (((first_byte >> 4) & 0x0F) == BPPacketType.PING.getType()){
 			ret = new BPPacket_PING();
 		} else if(((first_byte >> 4) & 0x0F) == BPPacketType.PINGACK.getType()) {
@@ -83,6 +85,8 @@ public class BPPackFactory {
 			ret = new BPPacket_CONNACK();
 		} else if(BPPacketType.PING == pack_req_type) {
 			ret = new BPPacket_PINGACK();
+		} else if(BPPacketType.REPORT == pack_req_type) {
+			ret = new BPPacket_RPRTACK();
 		} else {
 			ret = null;
 		}

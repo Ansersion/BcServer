@@ -3,6 +3,7 @@
  */
 package bc_server;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,11 +17,13 @@ public class Payload {
 
 	byte[] UserName = null;
 	byte[] Password = null;
+	String DevName = null;
 	int ClntIdLen;
 	int ClntId;
 	int SymSetVer;
 	
 	Map<Integer, List<Integer> > MapDevId2SigIdLst = new HashMap<Integer, List<Integer> >();
+	Map<Integer, Byte[]> MapDist2SysSigMap = new HashMap<Integer, Byte[]>();
 	
 	public void setUserName(byte[] user_name) {
 		UserName = user_name;
@@ -80,6 +83,10 @@ public class Payload {
 		return SymSetVer;
 	}
 	
+	public String getDevName() {
+		return DevName;
+	}
+	
 	public void setClientId(int id) {
 		ClntId = id;
 	}
@@ -92,11 +99,24 @@ public class Payload {
 		ClntIdLen = 2;
 	}
 	
+	public void setDevName(byte[] dev_name) {
+		try {
+		// DevName = new String(dev_name, "UTF-8");
+			DevName= new String(dev_name);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void clrMapDevId2SigIdList() {
 		MapDevId2SigIdLst.clear();
 	}
 	
 	public Map<Integer, List<Integer> > getMapDev2SigLst() {
 		return MapDevId2SigIdLst;
+	}
+	
+	public Map<Integer, Byte[]> getMapDist2SysSigMap() {
+		return MapDist2SysSigMap;
 	}
 }

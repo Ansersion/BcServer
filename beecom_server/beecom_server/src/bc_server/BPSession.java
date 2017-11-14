@@ -3,6 +3,10 @@
  */
 package bc_server;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 /**
  * @author Ansersion
  *
@@ -13,6 +17,8 @@ public class BPSession {
 	byte[] Password = null;
 	boolean IsUserLogin = false;
 	boolean IsDevLogin = false;
+	String DevName;
+	Map<Integer, Byte[]> MapDist2SysSigMap = null;
 	
 	public BPSession(byte[] usr_name, byte[] password, int client_id, boolean usr_login, boolean dev_login) {
 		IsDevLogin = dev_login;
@@ -27,6 +33,25 @@ public class BPSession {
 		Password = new byte[password.length];
 		for(int i = 0; i < password.length; i++) {
 			Password[i] = password[i];
+		}
+	}
+	
+	public void setDevName(String dev_name) {
+		DevName = dev_name;
+	}
+	
+	public void setSysSigMap(Map<Integer, Byte[]> sys_sig_map) {
+		if(null == MapDist2SysSigMap) {
+			MapDist2SysSigMap = sys_sig_map;
+		} else {
+			Iterator entries = sys_sig_map.entrySet().iterator(); 
+			while (entries.hasNext()) {    
+			    Map.Entry entry = (Map.Entry) entries.next();
+			    Integer key = (Integer)entry.getKey();  
+			    Byte[] value = (Byte[])entry.getValue();  
+			    MapDist2SysSigMap.put(key, value);  
+			  
+			}  
 		}
 	}
 	

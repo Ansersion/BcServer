@@ -9,6 +9,8 @@ package bc_server;
  */
 public class VariableHeader {
 	
+	public static final byte DIST_END_FLAG_MSK = 0x01; 
+	
 	int Level = 0;
 	int ClientIDLen = 0;
 	int ClientID = 0;
@@ -182,6 +184,22 @@ public class VariableHeader {
 	
 	public void setClientId(int id) {
 		ClientID = id;
+	}
+	
+	public boolean getDevNameFlag() {
+		return Bit7;
+	}
+	
+	public boolean getSysSigFlag() {
+		return Bit6;
+	}
+	
+	public boolean getCusSigFlag() {
+		return Bit5;
+	}
+	
+	public boolean getSigFlag() {
+		return Bit4;
 	}
 	
 	public void setAliveTime(int time) {
