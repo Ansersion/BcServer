@@ -131,12 +131,12 @@ public class VariableHeader {
 		return ClientID;
 	}
 	
-	public boolean getUserLoginFlag() {
-		return UserLoginFlag;
+	public boolean getUserClntFlag() {
+		return Bit2;
 	}
 	
-	public boolean getDeviceLoginFlag() {
-		return DeviceLoginFlag;
+	public boolean getDevClntFlag() {
+		return Bit1;
 	}
 	
 	public int getLevel() {

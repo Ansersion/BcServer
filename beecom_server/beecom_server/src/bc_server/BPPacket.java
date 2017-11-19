@@ -263,12 +263,20 @@ public class BPPacket implements BPPacketInterface {
 		return Pld.getPassword();
 	}
 	
-	public boolean getUsrLoginFlagVrbHead() {
-		return VrbHeader.getUserLoginFlag();
+	public boolean getUsrClntFlagVrbHead() {
+		return VrbHeader.getUserClntFlag();
 	}
 	
-	public boolean getDevLoginFlagVrbHead() {
-		return VrbHeader.getDeviceLoginFlag();
+	public boolean getDevClntFlagVrbHead() {
+		return VrbHeader.getDevClntFlag();
+	}
+	
+	public boolean getUsrClntFlag() {
+		return VrbHeader.getUserClntFlag();
+	}
+	
+	public boolean getDevClntFlag() {
+		return VrbHeader.getDevClntFlag();
 	}
 	
 	public boolean getChineseFlag() {

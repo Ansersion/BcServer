@@ -7,14 +7,14 @@ package bc_server;
  * @author Ansersion
  *
  */
-public class User_DB_Record {
+public class DB_UserInfoRec {
 	long ID;
 	String Name;
 	String E_Mail;
 	String PhoneNumber;
 	String Password;
 	
-	public User_DB_Record() {
+	public DB_UserInfoRec() {
 		ID = 0;
 		Name = new String("");
 		E_Mail = new String("");
@@ -22,7 +22,7 @@ public class User_DB_Record {
 		Password = new String("");
 	}
 	
-	public User_DB_Record(long id, String name, String e_mail, String phone_number, String password) {
+	public DB_UserInfoRec(long id, String name, String e_mail, String phone_number, String password) {
 		ID = id;
 		Name = name;
 		E_Mail = e_mail;

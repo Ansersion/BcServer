@@ -35,18 +35,27 @@ public class BcServerHandler extends IoHandlerAdapter {
 			int client_id_old = decoded_pack.getClientId();
 			String user_name = new String(decoded_pack.getUserNamePld());
 			byte[] password = decoded_pack.getPasswordPld();
-			boolean user_login_flag = decoded_pack.getUsrLoginFlagVrbHead();
-			boolean dev_login_flag = decoded_pack.getDevLoginFlagVrbHead();
+			boolean user_clnt_flag = decoded_pack.getUsrClntFlag();
+			boolean dev_clnt_flag = decoded_pack.getDevClntFlag();
 
 			BPPacket pack_ack = BPPackFactory.createBPPackAck(decoded_pack);
-			/* check user/pwd valid */
-			if (!User_DB.ChkUserName(user_name)) {
-				System.out.println("Invalid user name:" + user_name);
+			if(false == (user_clnt_flag ^ dev_clnt_flag)) {
+				System.out.println("Invalid client flag:" + user_clnt_flag + "," + dev_clnt_flag);
+				// TODO: set error code
 				return;
 			}
-			if (!User_DB.ChkUserPwd(user_name, password)) {
+			/* check user/pwd valid */
+			// if (!User_DB.ChkUserName(user_name)) {
+			if(!BeecomDB.ChkUserName(user_name)) {
+				System.out.println("Invalid user name:" + user_name);
+				// TODO: set error code
+				return;
+			}
+			// if (!User_DB.ChkUserPwd(user_name, password)) {
+			if(!BeecomDB.ChkUserPwd(user_name, password)) {
 				System.out.println(user_name + ": Incorrect password '"
 						+ password + "'");
+				// TODO: set error code
 				return;
 			}
 
@@ -74,7 +83,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 			pack_ack.getPld().setClientId(client_id);
 			/* update login flags */
 			BPSession newBPSession = new BPSession(user_name.getBytes(),
-					password, client_id, user_login_flag, dev_login_flag);
+					password, client_id, user_clnt_flag, dev_clnt_flag);
 			CliId2SsnMap.put(client_id, newBPSession);
 
 			session.write(pack_ack);
@@ -98,8 +107,8 @@ public class BcServerHandler extends IoHandlerAdapter {
 			int client_id = decoded_pack.getClientId();
 			String user_name = new String(decoded_pack.getUserNamePld());
 			byte[] password = decoded_pack.getPasswordPld();
-			boolean user_login_flag = decoded_pack.getUsrLoginFlagVrbHead();
-			boolean dev_login_flag = decoded_pack.getDevLoginFlagVrbHead();
+			boolean user_login_flag = decoded_pack.getUsrClntFlag();
+			boolean dev_login_flag = decoded_pack.getDevClntFlag();
 
 			BPPacket pack_ack = BPPackFactory.createBPPackAck(decoded_pack);
 

@@ -19,11 +19,11 @@ import java.util.List;
  * @author Ansersion
  * 
  */
-public class User_DB {
+public class BeecomDB {
 
-	static User_DB UDB = null;
+	static BeecomDB BC_DB = null;
 
-	List<User_DB_Record> UserRecordList;
+	List<DB_UserInfoRec> UserRecordList;
 	Map<String, Long> Name2IDMap;
 
 	static Connection con;
@@ -32,12 +32,12 @@ public class User_DB {
 	static String user = "root";
 	static String password = "Ansersion";
 
-	private User_DB() {
+	private BeecomDB() {
 		System.out.println("Info: Create UserDB");
 		// Id2UserRecord = new HashMap<Long, User_DB_Record>();
-		UserRecordList = new ArrayList<User_DB_Record>();
+		UserRecordList = new ArrayList<DB_UserInfoRec>();
 		Name2IDMap = new HashMap<String, Long>();
-		User_DB_Record record_0_blank = new User_DB_Record();
+		DB_UserInfoRec record_0_blank = new DB_UserInfoRec();
 		UserRecordList.add(record_0_blank);
 		
 		try {
@@ -61,7 +61,7 @@ public class User_DB {
 				e_mail = rs.getString("e_mail");
 				phone = rs.getString("phone");
 				password = rs.getString("password");
-				UserRecordList.add(new User_DB_Record(id, name, e_mail, phone, password));
+				UserRecordList.add(new DB_UserInfoRec(id, name, e_mail, phone, password));
 				Name2IDMap.put(name, id);
 			}
 			rs.close();
@@ -83,31 +83,31 @@ public class User_DB {
 		return Name2IDMap;
 	}
 	
-	public List<User_DB_Record> getUserRecordList() {
+	public List<DB_UserInfoRec> getUserRecordList() {
 		return UserRecordList;
 	}
 
-	static User_DB getInstance() {
-		if (null == UDB) {
-			UDB = new User_DB();
+	static BeecomDB getInstance() {
+		if (null == BC_DB) {
+			BC_DB = new BeecomDB();
 		}
-		return UDB;
+		return BC_DB;
 	}
 
 	static public boolean ChkUserName(String name) {
-		User_DB user_db = getInstance();
+		BeecomDB user_db = getInstance();
 		return user_db.getName2IDMap().containsKey(name);
 	}
 
 	static public boolean ChkUserPwd(String name, byte[] password) {
-		User_DB user_db = getInstance();
+		BeecomDB user_db = getInstance();
 		if(!user_db.getName2IDMap().containsKey(name)) {
 			return false;
 		}
 		long id = user_db.getName2IDMap().get(name);
 		
 		// Maybe truncate ID
-		User_DB_Record user_db_record = user_db.getUserRecordList().get((int)id);
+		DB_UserInfoRec user_db_record = user_db.getUserRecordList().get((int)id);
 		String str_p = new String(password);
 		System.out.println("PWD mysql: " + user_db_record.getPassword());
 		return str_p.equals(user_db_record.getPassword());
