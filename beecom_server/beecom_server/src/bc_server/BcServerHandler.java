@@ -15,7 +15,9 @@ import org.apache.mina.core.session.IoSession;
 public class BcServerHandler extends IoHandlerAdapter {
 
 	Map<Integer, BPSession> CliId2SsnMap = new HashMap<Integer, BPSession>();
+	Map<Long, BPSession> DevUniqId2SsnMap = new HashMap<Long, BPSession>();
 	int dev_uniq_id = 0; // TODO: read from file
+	static final String SESS_ATTR_ID = "SESS_ATTR_ID";
 
 	// 捕获异常
 	@Override
@@ -37,26 +39,43 @@ public class BcServerHandler extends IoHandlerAdapter {
 			byte[] password = decoded_pack.getPasswordPld();
 			boolean user_clnt_flag = decoded_pack.getUsrClntFlag();
 			boolean dev_clnt_flag = decoded_pack.getDevClntFlag();
+			long dev_uniq_id = 0;
+			String dev_name = new String("");
+			int id = 0;
 
 			BPPacket pack_ack = BPPackFactory.createBPPackAck(decoded_pack);
-			if(false == (user_clnt_flag ^ dev_clnt_flag)) {
-				System.out.println("Invalid client flag:" + user_clnt_flag + "," + dev_clnt_flag);
+			if (false == (user_clnt_flag ^ dev_clnt_flag)) {
+				System.out.println("Invalid client flag:" + user_clnt_flag
+						+ "," + dev_clnt_flag);
 				// TODO: set error code
 				return;
 			}
 			/* check user/pwd valid */
-			// if (!User_DB.ChkUserName(user_name)) {
-			if(!BeecomDB.ChkUserName(user_name)) {
-				System.out.println("Invalid user name:" + user_name);
-				// TODO: set error code
-				return;
-			}
-			// if (!User_DB.ChkUserPwd(user_name, password)) {
-			if(!BeecomDB.ChkUserPwd(user_name, password)) {
-				System.out.println(user_name + ": Incorrect password '"
-						+ password + "'");
-				// TODO: set error code
-				return;
+			if (user_clnt_flag) {
+				if (!BeecomDB.ChkUserName(user_name)) {
+					System.out.println("Invalid user name:" + user_name);
+					// TODO: set error code
+					return;
+				}
+				if (!BeecomDB.ChkUserPwd(user_name, password)) {
+					System.out.println(user_name + ": Incorrect password '"
+							+ password + "'");
+					// TODO: set error code
+					return;
+				}
+			} else {
+				dev_uniq_id = Integer.parseInt(user_name);
+				if (!BeecomDB.ChkDevUniqId(dev_uniq_id)) {
+					System.out.println("Invalid device unique id:" + user_name);
+					// TODO: set error code
+					return;
+				}
+				if (!BeecomDB.ChkDevPwd(dev_uniq_id, password)) {
+					System.out.println(user_name + ": Incorrect password '"
+							+ password + "'");
+					// TODO: set error code
+					return;
+				}
 			}
 
 			/* check client_id valid */
@@ -85,6 +104,11 @@ public class BcServerHandler extends IoHandlerAdapter {
 			BPSession newBPSession = new BPSession(user_name.getBytes(),
 					password, client_id, user_clnt_flag, dev_clnt_flag);
 			CliId2SsnMap.put(client_id, newBPSession);
+			if (dev_clnt_flag) {
+				DevUniqId2SsnMap.put(dev_uniq_id, newBPSession);
+				id = (int)dev_uniq_id;
+			}
+			session.setAttribute(SESS_ATTR_ID, id);
 
 			session.write(pack_ack);
 
@@ -147,18 +171,21 @@ public class BcServerHandler extends IoHandlerAdapter {
 			if (decoded_pack.getVrbHead().getDevNameFlag()) {
 				bp_sess.setDevName(decoded_pack.getPld().getDevName());
 			}
-			if(decoded_pack.getVrbHead().getSysSigFlag()) {
-				bp_sess.setSysSigMap(decoded_pack.getPld().getMapDist2SysSigMap());
+			if (decoded_pack.getVrbHead().getSysSigFlag()) {
+				bp_sess.setSysSigMap(decoded_pack.getPld()
+						.getMapDist2SysSigMap());
 			}
-			if(decoded_pack.getVrbHead().getSigFlag()) {
+			if (decoded_pack.getVrbHead().getSigFlag()) {
 				// set signal values;
 			}
 
+			BeecomDB db = BeecomDB.getInstance();
+			DB_DevInfoRec dev_rec = db.getDevInfoRec((int)session.getAttribute(SESS_ATTR_ID));
 			BPPacket pack_ack = BPPackFactory.createBPPackAck(decoded_pack);
 
 			pack_ack.getVrbHead().setPackSeq(seq_id);
 			pack_ack.getVrbHead().setRetCode(0x00);
-			
+
 			session.write(pack_ack);
 		} else if (BPPacketType.DISCONN == pack_type) {
 			int client_id = decoded_pack.getClientId();

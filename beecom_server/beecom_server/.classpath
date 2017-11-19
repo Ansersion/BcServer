@@ -6,7 +6,7 @@
 	<classpathentry kind="lib" path="mina/javassist-3.20.0-GA.jar"/>
 	<classpathentry kind="lib" path="mina/jcl-over-slf4j-1.7.21.jar"/>
 	<classpathentry kind="lib" path="mina/jzlib-1.1.3.jar"/>
-	<classpathentry kind="lib" path="mina/mina-core-2.0.16.jar" sourcepath="/home/hubing/src/apache-mina-2.0.16-src.zip"/>
+	<classpathentry kind="lib" path="mina/mina-core-2.0.16.jar" sourcepath="/home/hub/src/apache-mina-2.0.16/src"/>
 	<classpathentry kind="lib" path="mina/mina-example-2.0.16.jar" sourcepath="/home/hubing/src/apache-mina-2.0.16-src.zip"/>
 	<classpathentry kind="lib" path="mina/mina-filter-compression-2.0.16.jar"/>
 	<classpathentry kind="lib" path="mina/mina-http-2.0.16.jar"/>
