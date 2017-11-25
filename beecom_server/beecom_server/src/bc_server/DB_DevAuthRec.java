@@ -3,11 +3,13 @@
  */
 package bc_server;
 
+import java.sql.Connection;
+
 /**
  * @author Ansersion
  * 
  */
-public class DB_DevAuthRec {
+public class DB_DevAuthRec extends DB_BaseRec {
 	long DevUniqId;
 	int AdminUserId;
 	byte AdminUserAuth;
@@ -97,47 +99,58 @@ public class DB_DevAuthRec {
 
 	public void setDevUniqId(long dev_uniq_id) {
 		DevUniqId = dev_uniq_id;
+		setDirty();
 	}
 
 	public void setAdminUserId(int user_id) {
 		AdminUserId = user_id;
+		setDirty();
 	}
 
 	public void setAdminUserAuth(byte auth) {
 		AdminUserAuth = auth;
+		setDirty();
 	}
 
 
 	public void setUserId1(int user_id) {
 		UserId1 = user_id;
+		setDirty();
 	}
 
 	public void setUserAuth1(byte auth) {
 		UserAuth1 = auth;
+		setDirty();
 	}
 
 	public void setUserId2(int user_id) {
 		UserId2 = user_id;
+		setDirty();
 	}
 
 	public void setUserAuth2(byte auth) {
 		UserAuth2 = auth;
+		setDirty();
 	}
 
 	public void setUserId3(int user_id) {
 		UserId3 = user_id;
+		setDirty();
 	}
 
 	public void setUserAuth3(byte auth) {
 		UserAuth3 = auth;
+		setDirty();
 	}
 
 	public void setUserId4(int user_id) {
 		UserId4 = user_id;
+		setDirty();
 	}
 
 	public void setUserAuth4(byte auth) {
 		UserAuth4 = auth;
+		setDirty();
 	}
 
 	public void dumpRec() {
@@ -152,5 +165,11 @@ public class DB_DevAuthRec {
 				", UserAuth3: " + UserAuth3 + 
 				", UserId4: " + UserId4	+ 
 				", UserAuth4: " + UserAuth4);
+	}
+	
+
+	public boolean updateRec(Connection con) {
+		// TODO: overload this function
+		return false;
 	}
 }

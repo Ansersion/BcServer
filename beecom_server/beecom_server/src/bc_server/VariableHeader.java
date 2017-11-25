@@ -190,7 +190,7 @@ public class VariableHeader {
 		return Bit7;
 	}
 	
-	public boolean getSysSigFlag() {
+	public boolean getSysSigMapFlag() {
 		return Bit6;
 	}
 	

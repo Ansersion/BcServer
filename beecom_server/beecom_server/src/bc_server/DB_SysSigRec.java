@@ -5,6 +5,7 @@ package bc_server;
 
 import java.io.InputStream;
 import java.sql.Blob;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
  * @author Ansersion
  * 
  */
-public class DB_SysSigRec {
+public class DB_SysSigRec extends DB_BaseRec {
 
 	int SysSigTabId;
 	List<Blob> SysSigEnableLst;
@@ -46,10 +47,12 @@ public class DB_SysSigRec {
 
 	public void setSysSigTabId(int sys_sig_tab_id) {
 		SysSigTabId = sys_sig_tab_id;
+		setDirty();
 	}
 
 	public void setSysSigEnableLst(List<Blob> sys_sig_enable_lst) {
 		SysSigEnableLst = sys_sig_enable_lst;
+		setDirty();
 	}
 
 	public void dumpRec() {
@@ -70,5 +73,11 @@ public class DB_SysSigRec {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+
+	public boolean updateRec(Connection con) {
+		// TODO: overload this function
+		return false;
 	}
 }

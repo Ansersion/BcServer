@@ -108,7 +108,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 				DevUniqId2SsnMap.put(dev_uniq_id, newBPSession);
 				id = (int)dev_uniq_id;
 			}
-			session.setAttribute(SESS_ATTR_ID, id);
+			session.setAttribute(SESS_ATTR_ID, newBPSession);
 
 			session.write(pack_ack);
 
@@ -159,32 +159,59 @@ public class BcServerHandler extends IoHandlerAdapter {
 			 * if(so) { reply it(for GET/POST) }
 			 */
 		} else if (BPPacketType.REPORT == pack_type) {
+			
+			
 			int client_id = decoded_pack.getClientId();
-			BPSession bp_sess;
+			BPSession bp_sess = (BPSession)session.getAttribute(SESS_ATTR_ID);
+			
+			/*
 			if (CliId2SsnMap.containsKey(client_id)) {
 				bp_sess = CliId2SsnMap.get(client_id);
 			} else {
 				throw new Exception("Error: client ID not existed(REPORT)");
 			}
-
+			*/
+			
+			BeecomDB db = BeecomDB.getInstance();
+			
+			/*
+			System.out.println("test: before handle report");
+			db.dumpDevInfo();
+			*/
+			
 			int seq_id = decoded_pack.getPackSeq();
+			
+			DB_DevInfoRec dev_rec = db.getDevInfoRec(Integer.parseInt(new String(bp_sess.UserName)));
+			
 			if (decoded_pack.getVrbHead().getDevNameFlag()) {
+				// bp_sess.setDevName(decoded_pack.getPld().getDevName());
 				bp_sess.setDevName(decoded_pack.getPld().getDevName());
+				// System.out.println("DevName: " + decoded_pack.getPld().getDevName());
+				dev_rec.setDevName(bp_sess.getDevName());
 			}
-			if (decoded_pack.getVrbHead().getSysSigFlag()) {
+			if (decoded_pack.getVrbHead().getSysSigMapFlag()) {
 				bp_sess.setSysSigMap(decoded_pack.getPld()
 						.getMapDist2SysSigMap());
 			}
 			if (decoded_pack.getVrbHead().getSigFlag()) {
-				// set signal values;
+				// TODO: set signal values;
 			}
-
-			BeecomDB db = BeecomDB.getInstance();
-			DB_DevInfoRec dev_rec = db.getDevInfoRec((int)session.getAttribute(SESS_ATTR_ID));
 			BPPacket pack_ack = BPPackFactory.createBPPackAck(decoded_pack);
+			
+			/*
+			System.out.println("Start dev_info_dump");
+			dev_rec.dumpRec();
+			*/
 
 			pack_ack.getVrbHead().setPackSeq(seq_id);
 			pack_ack.getVrbHead().setRetCode(0x00);
+			
+			dev_rec.updateRec(db.getConn());
+			
+			/*
+			System.out.println("test: after handle report");
+			db.dumpDevInfo();
+			*/
 
 			session.write(pack_ack);
 		} else if (BPPacketType.DISCONN == pack_type) {

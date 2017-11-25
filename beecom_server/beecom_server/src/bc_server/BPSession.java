@@ -36,6 +36,10 @@ public class BPSession {
 		}
 	}
 	
+	public String getDevName() {
+		return DevName;
+	}
+	
 	public void setDevName(String dev_name) {
 		DevName = dev_name;
 	}

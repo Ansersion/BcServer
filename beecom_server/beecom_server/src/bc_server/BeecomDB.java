@@ -31,7 +31,7 @@ public class BeecomDB {
 	Map<String, Long> Name2IDMap;
 	// Map<Long, Long> DevUniqId2IndexMap;
 
-	static Connection con;
+	Connection con;
 	static String driver = "com.mysql.jdbc.Driver";
 	static String url = "jdbc:mysql://localhost:3306/bc_server_db?useSSL=false";
 	static String user = "root";
@@ -186,8 +186,8 @@ public class BeecomDB {
 				}
 
 			}
-
-			con.close();
+			statement.close();
+			// con.close();
 		} catch (SQLException e) {
 			// 数据库连接失败异常处理
 			e.printStackTrace();
@@ -292,8 +292,31 @@ public class BeecomDB {
 		 */
 		return true;
 	}
+	
+	public Connection getConn() {
+		return con;
+	}
+	
+	public boolean updateDevInfoRecLst() {
+		BeecomDB db = getInstance();
+		DB_BaseRec rec;
+		for(int i = 0; i < DevInfoRecLst.size(); i++) {
+			rec = DevInfoRecLst.get(i);
+			
+		}
+		/*
+		 * Statement
+		 * stmt=con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet
+		 * .CONCUR_READ_ONLY);
+		 * stmt.executeUpdate("update dbo.signal set value=2 where id=1");
+		 * //如果后面不跟where条件，则更新所有列的value字段 stmt.close();
+		 */
+		return true;
+	}
 
-	// static public short nextNewClientId() {
-	// return NextClientId++;
-	// }
+	public void dumpDevInfo() {
+		for(int i = 0; i < DevInfoRecLst.size(); i++) {
+			DevInfoRecLst.get(i).dumpRec();
+		}
+	}
 }

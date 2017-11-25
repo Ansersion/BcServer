@@ -167,7 +167,7 @@ public class BPPacket_REPORT extends BPPacket {
 				pld.setDevName(dev_name);
 			}
 			
-			if(vb.getSysSigFlag()) {
+			if(vb.getSysSigMapFlag()) {
 				byte dist_and_class;
 				int dist;
 				int sys_sig_class;

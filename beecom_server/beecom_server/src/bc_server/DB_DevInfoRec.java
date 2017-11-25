@@ -3,11 +3,15 @@
  */
 package bc_server;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
 /**
  * @author Ansersion
  * 
  */
-public class DB_DevInfoRec {
+public class DB_DevInfoRec extends DB_BaseRec {
 	long DevUniqId;
 	int UserId;
 	byte[] DevPwd;
@@ -60,31 +64,62 @@ public class DB_DevInfoRec {
 
 	public void setDevUniqId(long dev_uniq_id) {
 		DevUniqId = dev_uniq_id;
+		setDirty();
 	}
 
 	public void setUserId(int user_id) {
 		UserId = user_id;
+		setDirty();
 	}
 
 	public void setDevPwd(byte[] dev_pwd) {
 		DevPwd = dev_pwd;
+		setDirty();
 	}
 
 	public void setDevId(int dev_id) {
 		DevId = dev_id;
+		setDirty();
 	}
 
 	public void setSysSigTabId(long sys_sig_tab_id) {
 		SysSigTabId = sys_sig_tab_id;
+		setDirty();
 	}
 
 	public void setDevName(String dev_name) {
 		DevName = dev_name;
+		setDirty();
 	}
 
 	public void dumpRec() {
-		System.out.println("DevUniqId: " + DevUniqId + ", sUserId: " + UserId
+		System.out.println("DevUniqId: " + DevUniqId + ", UserId: " + UserId
 				+ ", DevPwd: " + new String(DevPwd) + ", DevId: " + DevId
 				+ ", SysSigTabId: " + SysSigTabId + ", DevName: " + DevName);
+	}
+
+	public boolean updateRec(Connection con) {
+		String sql = new String("");
+		sql += "update dev_info set";
+		// dev_uniq_id | user_id | dev_password | dev_id | dev_name |
+		// sys_sig_tab_id |
+		sql += " dev_uniq_id=" + DevUniqId;
+		sql += ",user_id=" + UserId;
+		sql += ",dev_password=" + "\"" + new String(DevPwd) + "\"";
+		sql += ",dev_id=" + DevId;
+		sql += ",dev_name=" + "\"" + DevName + "\"";
+		sql += ",sys_sig_tab_id=" + SysSigTabId;
+		sql += " where dev_uniq_id=" + DevUniqId;
+		// System.out.println("sql: " + sql);
+		try {
+			Statement st = con.createStatement();
+			st.executeUpdate(sql);
+			st.close();
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return false;
 	}
 }
