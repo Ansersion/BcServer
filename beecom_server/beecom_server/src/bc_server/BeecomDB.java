@@ -5,6 +5,7 @@ package bc_server;
 
 import java.sql.Connection;
 
+import java.sql.Blob;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,6 +26,8 @@ public class BeecomDB {
 
 	List<DB_UserInfoRec> UserInfoRecLst;
 	List<DB_DevInfoRec> DevInfoRecLst;
+	List<DB_DevAuthRec> DevAuthRecLst;
+	List<DB_SysSigRec> SysSigRecLst;
 	Map<String, Long> Name2IDMap;
 	// Map<Long, Long> DevUniqId2IndexMap;
 
@@ -39,6 +42,8 @@ public class BeecomDB {
 		// Id2UserRecord = new HashMap<Long, User_DB_Record>();
 		UserInfoRecLst = new ArrayList<DB_UserInfoRec>();
 		DevInfoRecLst = new ArrayList<DB_DevInfoRec>();
+		DevAuthRecLst = new ArrayList<DB_DevAuthRec>();
+		SysSigRecLst = new ArrayList<DB_SysSigRec>();
 
 		Name2IDMap = new HashMap<String, Long>();
 		// DevUniqId2IndexMap = new HashMap<Long, Long>();
@@ -104,10 +109,82 @@ public class BeecomDB {
 							dev_pwd, dev_id, sys_sig_tab_id, dev_name));
 				}
 				rs.close();
+
+				/*
+				 * for (int i = 0; i < DevInfoRecLst.size(); i++) {
+				 * DevInfoRecLst.get(i).dumpRec(); }
+				 */
 			}
 
-			for (int i = 0; i < DevInfoRecLst.size(); i++) {
-				DevInfoRecLst.get(i).dumpRec();
+			{
+				String sql = "select * from dev_auth";
+				ResultSet rs = statement.executeQuery(sql);
+
+				long dev_uniq_id;
+				int admin_user_id;
+				byte admin_user_auth;
+				int user_id_1;
+				byte user_auth_1;
+				int user_id_2;
+				byte user_auth_2;
+				int user_id_3;
+				byte user_auth_3;
+				int user_id_4;
+				byte user_auth_4;
+
+				while (rs.next()) {
+					dev_uniq_id = rs.getLong("dev_uniq_id");
+					admin_user_id = rs.getInt("admin_user");
+					admin_user_auth = (byte) rs.getShort("admin_auth");
+					user_id_1 = rs.getInt("user_id1");
+					user_auth_1 = (byte) rs.getShort("user_id1_auth");
+					user_id_2 = rs.getInt("user_id2");
+					user_auth_2 = (byte) rs.getShort("user_id2_auth");
+					user_id_3 = rs.getInt("user_id3");
+					user_auth_3 = (byte) rs.getShort("user_id3_auth");
+					user_id_4 = rs.getInt("user_id4");
+					user_auth_4 = (byte) rs.getShort("user_id4_auth");
+					if (dev_uniq_id > Integer.MAX_VALUE) {
+						// System.out.println("Error: dev_uniq_id too big");
+						throw new Exception("Error: dev_uniq_id too big");
+					}
+					DevAuthRecLst.add(new DB_DevAuthRec(dev_uniq_id,
+							admin_user_id, admin_user_auth, user_id_1,
+							user_auth_1, user_id_2, user_auth_2, user_id_3,
+							user_auth_3, user_id_4, user_auth_4));
+				}
+				rs.close();
+
+				/*
+				 * for (int i = 0; i < DevAuthRecLst.size(); i++) {
+				 * DevAuthRecLst.get(i).dumpRec(); }
+				 */
+			}
+
+			{
+				String sql = "select * from sys_sig_tab";
+				ResultSet rs = statement.executeQuery(sql);
+
+				int sys_sig_tab_id;
+				Blob sys_basic;
+				Blob sys_temp;
+				Blob sys_clean;
+
+				while (rs.next()) {
+					sys_sig_tab_id = rs.getInt("sys_sig_tab_id");
+					sys_basic = rs.getBlob("sys_basic");
+					sys_temp = rs.getBlob("sys_temp");
+					sys_clean = rs.getBlob("clean");
+
+					SysSigRecLst.add(new DB_SysSigRec(sys_sig_tab_id,
+							sys_basic, sys_temp, sys_clean));
+				}
+				rs.close();
+
+				for (int i = 0; i < SysSigRecLst.size(); i++) {
+					SysSigRecLst.get(i).dumpRec();
+				}
+
 			}
 
 			con.close();
@@ -142,12 +219,12 @@ public class BeecomDB {
 		}
 		return DevInfoRecLst.get(dev_uniq_id - 1);
 	}
-	
+
 	public boolean setDevInfoRec(long dev_uniq_id, DB_DevInfoRec dev_info_rec) {
 		if (dev_uniq_id <= 0 || dev_uniq_id > DevInfoRecLst.size()) {
 			return false;
 		}
-		DevInfoRecLst.set((int)dev_uniq_id - 1, dev_info_rec);
+		DevInfoRecLst.set((int) dev_uniq_id - 1, dev_info_rec);
 		return true;
 	}
 
@@ -202,13 +279,17 @@ public class BeecomDB {
 	static public boolean updateDevInfoRec(DB_DevInfoRec dev_info_rec) {
 		BeecomDB db = getInstance();
 		long dev_uniq_id = dev_info_rec.getDevUniqId();
-		if(dev_uniq_id <= 0 || dev_uniq_id > db.DevInfoRecLst.size()) {
+		if (dev_uniq_id <= 0 || dev_uniq_id > db.DevInfoRecLst.size()) {
 			return false;
 		}
 		db.setDevInfoRec(dev_uniq_id, dev_info_rec);
-		/*Statement stmt=con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-		stmt.executeUpdate("update dbo.signal set value=2 where id=1"); //如果后面不跟where条件，则更新所有列的value字段
-		stmt.close();*/
+		/*
+		 * Statement
+		 * stmt=con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet
+		 * .CONCUR_READ_ONLY);
+		 * stmt.executeUpdate("update dbo.signal set value=2 where id=1");
+		 * //如果后面不跟where条件，则更新所有列的value字段 stmt.close();
+		 */
 		return true;
 	}
 
