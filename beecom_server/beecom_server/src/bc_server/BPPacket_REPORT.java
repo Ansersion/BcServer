@@ -109,7 +109,8 @@ public class BPPacket_REPORT extends BPPacket {
 				
 				// TODO: add the custom symbol table
 				
-				Partitation.addElement(BPPartitation.createPartitation(part1, part2));
+				Partitation.addElement(new_part);
+				
 				
 			}while(!end_flag);
 
@@ -196,5 +197,9 @@ public class BPPacket_REPORT extends BPPacket {
 			throw e;
 		}
 		return 0;
+	}
+	
+	public Vector<BPPartitation> getPartitation() {
+		return Partitation;
 	}
 }

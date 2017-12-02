@@ -166,25 +166,29 @@ public class BeecomDB {
 				ResultSet rs = statement.executeQuery(sql);
 
 				int sys_sig_tab_id;
-				Blob sys_basic;
-				Blob sys_temp;
-				Blob sys_clean;
 
 				while (rs.next()) {
 					sys_sig_tab_id = rs.getInt("sys_sig_tab_id");
-					sys_basic = rs.getBlob("sys_basic");
-					sys_temp = rs.getBlob("sys_temp");
-					sys_clean = rs.getBlob("clean");
-
-					SysSigRecLst.add(new DB_SysSigRec(sys_sig_tab_id,
-							sys_basic, sys_temp, sys_clean));
+					List<Byte[]> sys_sig_enable_lst = new ArrayList<Byte[]>();
+					for(int i = 0; i < DB_SysSigRec.MAX_DIST_NUM; i++) {
+						byte[] tmp_b = rs.getBytes(i+2);
+						if(null != tmp_b) {
+							Byte[] tmp_B = new Byte[tmp_b.length];
+							for(int j = 0; j < tmp_B.length; j++) {
+								tmp_B[j] = tmp_b[j];
+							}
+							sys_sig_enable_lst.add(tmp_B);
+						} else {
+							sys_sig_enable_lst.add(null);
+						}
+					}					
+					SysSigRecLst.add(new DB_SysSigRec(sys_sig_tab_id, sys_sig_enable_lst));
 				}
 				rs.close();
 
 				for (int i = 0; i < SysSigRecLst.size(); i++) {
 					SysSigRecLst.get(i).dumpRec();
 				}
-
 			}
 			statement.close();
 			// con.close();
@@ -211,6 +215,10 @@ public class BeecomDB {
 
 	public List<DB_DevInfoRec> getDevInfoRecLst() {
 		return DevInfoRecLst;
+	}
+	
+	public List<DB_SysSigRec> getSysSigRecLst() {
+		return SysSigRecLst;
 	}
 
 	public DB_DevInfoRec getDevInfoRec(int dev_uniq_id) {

@@ -5,6 +5,8 @@ package bc_server;
  *
  */
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -182,6 +184,11 @@ public class BcServerHandler extends IoHandlerAdapter {
 			int seq_id = decoded_pack.getPackSeq();
 			
 			DB_DevInfoRec dev_rec = db.getDevInfoRec(Integer.parseInt(new String(bp_sess.UserName)));
+			if(dev_rec.getDevUniqId() == 0) {
+				// TODO: handle the error;
+				System.out.println("TODO: dev_rec.getDevUniqId() == 0");
+				return;
+			}
 			
 			if (decoded_pack.getVrbHead().getDevNameFlag()) {
 				// bp_sess.setDevName(decoded_pack.getPld().getDevName());
@@ -192,6 +199,25 @@ public class BcServerHandler extends IoHandlerAdapter {
 			if (decoded_pack.getVrbHead().getSysSigMapFlag()) {
 				bp_sess.setSysSigMap(decoded_pack.getPld()
 						.getMapDist2SysSigMap());
+				DB_SysSigRec sys_sig_rec;
+				if(dev_rec.getSysSigTabId() == 0) {
+					dev_rec.setSysSigTabId(dev_rec.getDevUniqId());
+					sys_sig_rec = new DB_SysSigRec();
+					sys_sig_rec.setSysSigTabId(dev_rec.getDevUniqId());
+					
+					Map<Integer, Byte[]> sys_sig_map = decoded_pack.getPld().getMapDist2SysSigMap();
+					sys_sig_rec.setSysSigEnableLst(sys_sig_map);
+					sys_sig_rec.insertRec(db.getConn());
+				} else {
+					System.out.println("TODO: get sys_sig_info from database");
+					List<DB_SysSigRec> lst = db.getSysSigRecLst();
+					for(int i = 0; i < lst.size(); i++) {
+						if(lst.get(i).getSysSigTabId() == dev_rec.getSysSigTabId()) {
+							lst.get(i).dumpRec();
+						}
+					}
+				}
+				
 			}
 			if (decoded_pack.getVrbHead().getSigFlag()) {
 				// TODO: set signal values;

@@ -39,7 +39,7 @@ public class BPPartitation {
 		Part1 = part1;
 		Part2 = part2;
 		int part_size = SYS_SIG_TAB_UNIT_SIZE / (0x1 << Part2);
-		PartStartID = SYS_START_SIG_ID + SYS_SIG_TAB_UNIT_SIZE * Part2;
+		PartStartID = SYS_START_SIG_ID + SYS_SIG_TAB_UNIT_SIZE * Part1;
 		SigTable = new byte[part_size / 8]; // 8 bit of 1 byte
 
 		return true;
