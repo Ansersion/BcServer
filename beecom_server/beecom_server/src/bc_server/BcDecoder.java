@@ -54,8 +54,15 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 				// FixedHeader fxHead = (FixedHeader)session.getAttribute(FIXED_HEADER);
 				// byte encoded_byte;
 				// encoded_byte = (byte)io_in.get();
+				byte[] tst = io_in.array();
+				if(tst[0] == 'T' && tst[1] == 'S' && tst[2] == 'T') {
+					io_in.get(new byte[io_in.remaining()]);
+					decoder_out.write(new String("TST"));
+					return true;
+				}
 				BPPacket bp_pack = BPPackFactory.createBPPack(io_in);
 				if(null == bp_pack) {
+					
 					throw new Exception("Error: cannot create BPPacket!");
 				}
 				bp_pack.putFxHead2Buf();

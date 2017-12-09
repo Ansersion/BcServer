@@ -202,6 +202,22 @@ public class VariableHeader {
 		return Bit4;
 	}
 	
+	/*
+	public void clrFlags(byte flags) {
+		byte ret = 0;
+		Bit0 = ((0x01 << 0) & flags) == : 0;
+		ret |= (Bit1 == true) ? (0x01 << 1) : 0;
+		ret |= (Bit2 == true) ? (0x01 << 2) : 0;
+		ret |= (Bit3 == true) ? (0x01 << 3) : 0;
+		ret |= (Bit4 == true) ? (0x01 << 4) : 0;
+		ret |= (Bit5 == true) ? (0x01 << 5) : 0;
+		ret |= (Bit6 == true) ? (0x01 << 6) : 0;
+		ret |= (Bit7 == true) ? (0x01 << 7) : 0;
+		
+		return ret;	
+	}
+	*/
+	
 	public void setAliveTime(int time) {
 		AliveTime = time;
 	}

@@ -5,6 +5,7 @@ package bc_server;
  *
  */
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,25 @@ public class BcServerHandler extends IoHandlerAdapter {
 	@Override
 	public void messageReceived(IoSession session, Object message)
 			throws Exception {
+		if(message instanceof String) {
+			byte first_byte = (byte)(BPPacketType.GET.getType());
+			first_byte = (byte)(first_byte << 4);
+			BPPacket pack_tst = BPPackFactory.createBPPack(first_byte);
+			FixedHeader fxHead = pack_tst.getFxHead();
+			fxHead.setBPType(first_byte);
+			fxHead.setFlags(first_byte);
+			// pack_tst;
+			BPSession sess = (BPSession)session.getAttribute(SESS_ATTR_ID);
+			pack_tst.getVrbHead().setClientId(sess.ClientId);
+			pack_tst.getVrbHead().setPackSeq(0);
+			Map<Integer, List<Integer>> sig_map = pack_tst.getPld().getMapDev2SigLst();
+			List<Integer> sig_lst = new ArrayList<Integer>();
+			sig_lst.add(0xE000);
+			sig_lst.add(0xE001);
+			sig_map.put(sess.ClientId, sig_lst);
+			session.write(pack_tst);
+			return;
+		}
 		BPPacket decoded_pack = (BPPacket) message;
 
 		BPPacketType pack_type = decoded_pack.getPackTypeFxHead();
