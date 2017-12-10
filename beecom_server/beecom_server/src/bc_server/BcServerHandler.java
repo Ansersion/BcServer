@@ -145,6 +145,18 @@ public class BcServerHandler extends IoHandlerAdapter {
 			 * 
 			 * } return current data; }
 			 */
+		} else if(BPPacketType.GETACK == pack_type) {
+			byte flags = decoded_pack.getVrbHead().getFlags();
+			int client_id = decoded_pack.getVrbHead().getClientId();
+			int seq_id = decoded_pack.getVrbHead().getPackSeq();
+			int ret_code = decoded_pack.getVrbHead().getRetCode();
+			if(ret_code != 0) {
+				System.out.println("Error(GETACK): get return code = " + ret_code);
+				return;
+			}
+			BPSession bp_sess = (BPSession)session.getAttribute(SESS_ATTR_ID);
+			DevSigData dev_sig_data = decoded_pack.getPld().getSigData();
+			dev_sig_data.dump();
 
 		} else if (BPPacketType.POST == pack_type) {
 

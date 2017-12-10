@@ -21,6 +21,7 @@ public class Payload {
 	int ClntIdLen;
 	int ClntId;
 	int SymSetVer;
+	DevSigData SigData;
 	
 	Map<Integer, List<Integer> > MapDevId2SigIdLst = new HashMap<Integer, List<Integer> >();
 	Map<Integer, Byte[]> MapDist2SysSigMap = new HashMap<Integer, Byte[]>();
@@ -87,6 +88,10 @@ public class Payload {
 		return DevName;
 	}
 	
+	public DevSigData getSigData() {
+		return SigData;
+	}
+	
 	public void setClientId(int id) {
 		ClntId = id;
 	}
@@ -106,6 +111,10 @@ public class Payload {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void setSigData(DevSigData sig_data) {
+		SigData = sig_data;
 	}
 	
 	public void clrMapDevId2SigIdList() {

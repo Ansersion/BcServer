@@ -36,6 +36,63 @@ public class BPPacket_GETACK extends BPPacket {
 	public void setDevNum(int num) {
 		DeviceNum = num;
 	}
+	
+	@Override
+	public int parseVariableHeader() throws Exception {
+		// TODO Auto-generated method stub
+
+		try {
+			// flags(1 byte) + client ID(2 byte) + sequence ID(2 byte) + return code(1 byte)
+			byte flags = 0;
+
+			flags = getIoBuffer().get();
+			super.parseVrbHeadFlags(flags);
+
+			int client_id = getIoBuffer().getUnsignedShort();
+			getVrbHead().setClientId(client_id);
+
+			int seq_id = getIoBuffer().getUnsignedShort();
+			getVrbHead().setPackSeq(seq_id);
+			
+			byte ret_code = getIoBuffer().get();
+			getVrbHead().setRetCode(ret_code);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+
+		return 0;
+	}
+
+	@Override
+	public int parsePayload() throws Exception {
+		// TODO Auto-generated method stub
+		try {
+			if(getVrbHead().getRetCode() != 0) {
+				// TODO: parse the error return code
+				return -1;
+			}
+			// int user_name_len = getIoBuffer().get();
+			// user_name_len = (user_name_len << 8) + getIoBuffer().get();
+			int sig_tab_num = getIoBuffer().get();
+			DevSigData sig_data = new DevSigData();
+			for(int i = 0; i < sig_tab_num; i++) {
+				boolean ret = sig_data.parseSigDataTab(getIoBuffer());
+				if(false == ret) {
+					System.out.println("Error(GETACK): parsePayload error");
+					return -1;
+				}
+				
+			}
+			getPld().setSigData(sig_data);
+
+		} catch (Exception e) {
+			System.out.println("Error: parsePayload error");
+			e.printStackTrace();
+			throw e;
+		}
+		return 0;
+	}
 
 	@Override
 	public boolean assembleFixedHeader() throws Exception {
