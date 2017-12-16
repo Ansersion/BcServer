@@ -40,6 +40,8 @@ public class BPPackFactory {
 			ret = new BPPacket_GETACK();
 		} else if(((first_byte >> 4) & 0x0F) == BPPacketType.POST.getType()) { 
 			ret = new BPPacket_POST();
+		} else if(((first_byte >> 4) & 0x0F) == BPPacketType.POSTACK.getType()) {
+			ret = new BPPacket_POSTACK();
 		} else if(((first_byte >> 4) & 0x0F) == BPPacketType.REPORT.getType()) { 
 			ret = new BPPacket_REPORT();
 		} else if (((first_byte >> 4) & 0x0F) == BPPacketType.PING.getType()){

@@ -3,6 +3,10 @@
  */
 package bc_server;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.mina.core.buffer.IoBuffer;
 
 /**
@@ -129,5 +133,43 @@ public class BPPacket_POST extends BPPacket {
 		}
 
 		return true;
+	}
+	
+	@Override
+	public boolean assembleFixedHeader() throws Exception {
+		// TODO Auto-generated method stub
+		int pack_type = getPackTypeIntFxHead();
+		byte pack_flags = getPackFlagsByteFxHead();
+		byte encoded_byte = (byte) (((pack_type & 0xf) << 4) | (pack_flags & 0xf));
+		
+		getIoBuffer().put(encoded_byte);
+		
+		// Remaininglength 1 byte reserved
+		getIoBuffer().put((byte)0);
+		
+		return false;
+	}
+
+	@Override
+	public boolean assembleVariableHeader() throws Exception {
+		// TODO Auto-generated method stub
+		byte flags = getVrbHead().getFlags();
+		getIoBuffer().put(flags);
+		int clnt_id = getVrbHead().getClientId();
+		getIoBuffer().putUnsignedShort(clnt_id);
+		int pack_seq = getVrbHead().getPackSeq();
+		getIoBuffer().putUnsignedShort(pack_seq);	
+		
+		return false;
+	}
+
+	@Override
+	public boolean assemblePayload() throws Exception {
+		// TODO Auto-generated method stub
+		DevSigData sig_data = getPld().getSigData();
+
+		sig_data.assembleSigData(getIoBuffer());
+		
+		return false;
 	}
 }

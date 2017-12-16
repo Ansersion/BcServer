@@ -11,6 +11,14 @@ public class BPPacket_POSTACK extends BPPacket {
 	
 	int PackSeq;
 	
+	
+	protected BPPacket_POSTACK() {
+		super();
+		FixedHeader fx_head = getFxHead();
+		fx_head.setPacketType(BPPacketType.POSTACK);
+		fx_head.setCrcType(CrcChecksum.CRC32);
+	}
+	
 	@Override
 	public boolean assembleFixedHeader() throws Exception {
 		// TODO Auto-generated method stub
@@ -38,6 +46,46 @@ public class BPPacket_POSTACK extends BPPacket {
 	public boolean assemblePayload() throws Exception {
 
 		return false;
+	}
+	
+	@Override
+	public int parseVariableHeader() throws Exception {
+		// TODO Auto-generated method stub
+
+		try {
+			// flags(1 byte) + client ID(2 byte) + sequence ID(2 byte) + return code(1 byte)
+			byte flags = 0;
+
+			flags = getIoBuffer().get();
+			super.parseVrbHeadFlags(flags);
+
+			int client_id = getIoBuffer().getUnsignedShort();
+			getVrbHead().setClientId(client_id);
+
+			int seq_id = getIoBuffer().getUnsignedShort();
+			getVrbHead().setPackSeq(seq_id);
+			
+			byte ret_code = getIoBuffer().get();
+			getVrbHead().setRetCode(ret_code);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+
+		return 0;
+	}
+
+	@Override
+	public int parsePayload() throws Exception {
+		// TODO Auto-generated method stub
+		try {
+
+		} catch (Exception e) {
+			System.out.println("Error: parsePayload error");
+			e.printStackTrace();
+			throw e;
+		}
+		return 0;
 	}
 
 }

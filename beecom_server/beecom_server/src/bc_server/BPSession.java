@@ -17,6 +17,8 @@ public class BPSession {
 	byte[] Password = null;
 	boolean IsUserLogin = false;
 	boolean IsDevLogin = false;
+	int SeqIdDevClnt = 0;
+	int SeqIdUsrClnt = 0;
 	String DevName;
 	Map<Integer, Byte[]> MapDist2SysSigMap = null;
 	
@@ -34,6 +36,8 @@ public class BPSession {
 		for(int i = 0; i < password.length; i++) {
 			Password[i] = password[i];
 		}
+		SeqIdDevClnt = 0;
+		SeqIdUsrClnt = 0;
 	}
 	
 	public String getDevName() {

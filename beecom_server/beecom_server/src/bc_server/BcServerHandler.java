@@ -34,13 +34,30 @@ public class BcServerHandler extends IoHandlerAdapter {
 	public void messageReceived(IoSession session, Object message)
 			throws Exception {
 		if(message instanceof String) {
-			byte first_byte = (byte)(BPPacketType.GET.getType());
+			byte first_byte = (byte)(BPPacketType.POST.getType());
 			first_byte = (byte)(first_byte << 4);
 			BPPacket pack_tst = BPPackFactory.createBPPack(first_byte);
 			FixedHeader fxHead = pack_tst.getFxHead();
 			fxHead.setBPType(first_byte);
 			fxHead.setFlags(first_byte);
-			// pack_tst;
+			// pack_tst_POST
+			BPSession sess = (BPSession)session.getAttribute(SESS_ATTR_ID);
+			pack_tst.getVrbHead().setClientId(sess.ClientId);
+			pack_tst.getVrbHead().setPackSeq(sess.SeqIdDevClnt++);
+			DevSigData sig_data = new DevSigData();
+			Map<Integer, Short>  sig_map = sig_data.get2ByteDataMap();
+			Integer sig_id = 0xE000;
+			Short sig_val = 825;
+			sig_map.put(sig_id, sig_val);
+			
+			sig_id = 0xE001;
+			sig_val = 826;
+			sig_map.put(sig_id, sig_val);
+			pack_tst.getPld().setSigData(sig_data);
+			
+			// pack_tst.getPld().get
+			// pack_tst_GET;
+			/*
 			BPSession sess = (BPSession)session.getAttribute(SESS_ATTR_ID);
 			pack_tst.getVrbHead().setClientId(sess.ClientId);
 			pack_tst.getVrbHead().setPackSeq(0);
@@ -49,6 +66,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 			sig_lst.add(0xE000);
 			sig_lst.add(0xE001);
 			sig_map.put(sess.ClientId, sig_lst);
+			*/
 			session.write(pack_tst);
 			return;
 		}
@@ -159,7 +177,16 @@ public class BcServerHandler extends IoHandlerAdapter {
 			dev_sig_data.dump();
 
 		} else if (BPPacketType.POST == pack_type) {
-
+		} else if(BPPacketType.POSTACK == pack_type) {
+			byte flags = decoded_pack.getVrbHead().getFlags();
+			int client_id = decoded_pack.getVrbHead().getClientId();
+			int seq_id = decoded_pack.getVrbHead().getPackSeq();
+			int ret_code = decoded_pack.getVrbHead().getRetCode();
+			if(ret_code != 0) {
+				System.out.println("Error(GETACK): get return code = " + ret_code);
+				return;
+			}
+			System.out.println("POSTACK: flags=" + flags + ",cid=" + client_id + ",sid=" + seq_id + ",rcode=" + ret_code);
 		} else if (BPPacketType.PING == pack_type) {
 			/* update alive-time of the client ID with this socket */
 			int client_id = decoded_pack.getClientId();
