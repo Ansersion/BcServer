@@ -187,16 +187,6 @@ public class BcServerHandler extends IoHandlerAdapter {
 				return;
 			}
 			System.out.println("POSTACK: flags=" + flags + ",cid=" + client_id + ",sid=" + seq_id + ",rcode=" + ret_code);
-		} else if (BPPacketType.PING == pack_type) {
-			/* update alive-time of the client ID with this socket */
-			int client_id = decoded_pack.getClientId();
-			String user_name = new String(decoded_pack.getUserNamePld());
-			byte[] password = decoded_pack.getPasswordPld();
-			boolean user_login_flag = decoded_pack.getUsrClntFlag();
-			boolean dev_login_flag = decoded_pack.getDevClntFlag();
-
-			BPPacket pack_ack = BPPackFactory.createBPPackAck(decoded_pack);
-
 			/*
 			 * CliId2SsnMap.containsKey(client_id) // TODO: if client_id == 0 ->
 			 * error if(pack_ack.isClntIdExpired()) { // TODO: use macro instead
@@ -214,6 +204,18 @@ public class BcServerHandler extends IoHandlerAdapter {
 			 * session.write(pack_ack);
 			 */
 
+		} else if (BPPacketType.PING == pack_type) {
+			byte flags = decoded_pack.getVrbHead().getFlags();
+			int clnt_id = decoded_pack.getVrbHead().getClientId();
+			int seq_id = decoded_pack.getVrbHead().getPackSeq();
+			System.out.println("PING: flags=" + flags + ",cid=" + clnt_id + ",sid=" + seq_id);
+
+			BPPacket pack_ack = BPPackFactory.createBPPackAck(decoded_pack);
+			
+			pack_ack.getVrbHead().setClientId(clnt_id);
+			pack_ack.getVrbHead().setPackSeq(seq_id);
+			
+			session.write(pack_ack);
 		} else if (BPPacketType.PUSHACK == pack_type) {
 			/* check if server get it */
 			/*

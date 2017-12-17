@@ -8,6 +8,15 @@ package bc_server;
  *
  */
 public class BPPacket_PINGACK extends BPPacket {
+	
+	
+	protected BPPacket_PINGACK() {
+		super();
+		FixedHeader fx_head = getFxHead();
+		fx_head.setPacketType(BPPacketType.PINGACK);
+		fx_head.setCrcType(CrcChecksum.CRC32);
+	}
+	
 	@Override
 	public boolean assembleFixedHeader() throws Exception {
 		// TODO Auto-generated method stub
