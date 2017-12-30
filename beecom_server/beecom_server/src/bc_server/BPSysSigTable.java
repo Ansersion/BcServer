@@ -86,7 +86,8 @@ public class BPSysSigTable {
 	public boolean loadTab() throws FileNotFoundException,
 			UnsupportedEncodingException {
 		FileInputStream fis = new FileInputStream(
-				"/mnt/hgfs/share/sys_sig_info.csv");
+				// "/mnt/hgfs/share/sys_sig_info.csv");
+				"sys_sig_info.csv");
 		InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
 		BufferedReader sys_sig_in = new BufferedReader(isr);
 
@@ -212,6 +213,10 @@ public class BPSysSigTable {
 						val_max.setVal(m.group(10));
 						val_def.setVal(m.group(11));
 
+						if(null != map_enm_lang_res) {
+							map_enm_lang_res = null;
+						}
+						
 						if (4 == val_type) {
 							str_tmp = m.group(12);
 							Scanner scanner_enm = new Scanner(str_tmp)
@@ -282,12 +287,16 @@ public class BPSysSigTable {
 						+ SysSigInfo_Lst.get(i).ValMin.getVal() + ","
 						+ SysSigInfo_Lst.get(i).ValMax.getVal() + ","
 						+ SysSigInfo_Lst.get(i).ValDef.getVal() + ",";
-				Iterator<Map.Entry<Integer, Integer>> entries = SysSigInfo_Lst
-						.get(i).MapEnmLangRes.entrySet().iterator();
-				while (entries.hasNext()) {
-					Map.Entry<Integer, Integer> entry = entries.next();
-					s_debug += "" + entry.getKey() + "=>" + entry.getValue()
-							+ ",";
+				if (null != SysSigInfo_Lst.get(i).MapEnmLangRes) {
+					Iterator<Map.Entry<Integer, Integer>> entries = SysSigInfo_Lst
+							.get(i).MapEnmLangRes.entrySet().iterator();
+					while (entries.hasNext()) {
+						Map.Entry<Integer, Integer> entry = entries.next();
+						s_debug += "" + entry.getKey() + "=>"
+								+ entry.getValue() + ",";
+					}
+				} else {
+					s_debug += "NULL,";
 				}
 				s_debug += SysSigInfo_Lst.get(i).EnStatistics + ","
 						+ SysSigInfo_Lst.get(i).AlmClass + ","

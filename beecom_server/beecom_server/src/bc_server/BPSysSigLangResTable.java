@@ -38,7 +38,8 @@ public class BPSysSigLangResTable {
 	public boolean loadTab() throws FileNotFoundException,
 			UnsupportedEncodingException {
 		FileInputStream fis = new FileInputStream(
-				"/mnt/hgfs/share/sys_signal_language_resource.csv");
+				// "/mnt/hgfs/share/sys_signal_language_resource.csv");
+				"sys_signal_language_resource.csv");
 		InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
 		BufferedReader sys_sig_lang_in = new BufferedReader(isr);
 
@@ -89,7 +90,7 @@ public class BPSysSigLangResTable {
 				SysSigLangRes_Lst.add(sig_lang_res_tmp);
 			}
 			
-			/*
+			
 			for(int i = 0; i < SysSigLangRes_Lst.size(); i++) {
 				for(int j = 0; j < SysSigLangRes_Lst.get(i).size(); j++) {
 					for(int k = 0; k < SysSigLangRes_Lst.get(i).get(j).size(); k++) {
@@ -97,7 +98,7 @@ public class BPSysSigLangResTable {
 					}
 				}
 			}
-			*/
+			
 			sys_sig_lang_in.close();
 			ret = true;
 
