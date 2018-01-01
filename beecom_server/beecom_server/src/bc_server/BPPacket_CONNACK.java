@@ -8,6 +8,17 @@ package bc_server;
  *
  */
 public class BPPacket_CONNACK extends BPPacket {
+	
+	public static final int RET_CODE_OK = 0x00;
+	public static final int RET_CODE_LEVEL_ERR = 0x01;
+	public static final int RET_CODE_SERVER_ERR = 0x02;
+	public static final int RET_CODE_USER_INVALID = 0x03;
+	public static final int RET_CODE_PWD_INVALID = 0x04;
+	public static final int RET_CODE_ENCRYPT_ERR = 0x05;
+	public static final int RET_CODE_CRC_UNSUPPORT = 0x06;
+	public static final int RET_CODE_CRC_CHECK_ERR = 0x07;
+	public static final int RET_CODE_CLNT_ID_INVALID = 0x08;
+	public static final int RET_CODE_CLNT_UNKNOWN = 0x09;
 
 	protected BPPacket_CONNACK(FixedHeader fx_header) {
 		super(fx_header);
@@ -81,20 +92,17 @@ public class BPPacket_CONNACK extends BPPacket {
 	public boolean assemblePayload() throws Exception {
 		// TODO Auto-generated method stub
 		byte encoded_byte;
+		if(RET_CODE_OK != getVrbHead().getRetCode()) {
+			return false;
+		}
 		
 		encoded_byte = (byte)getPld().getClntIdLen();
 		getIoBuffer().put(encoded_byte);
 		
 		short client_id = (short)getPld().getClntId();
-		/*
-		encoded_byte = (byte)((client_id & 0xff00) >> 8);
-		getIoBuffer().put(encoded_byte);
-		encoded_byte = (byte)((client_id & 0xff));
-		getIoBuffer().put(encoded_byte);
-		*/
+
 		getIoBuffer().putUnsignedShort(client_id);
-		// encoded_byte = (byte)getPld().getSymSetVer();
-		// getIoBuffer().put(encoded_byte);
+
 		getIoBuffer().putUnsignedShort(BPSysSigTable.BP_SYS_SIG_SET_VERSION);
 		
 		return false;

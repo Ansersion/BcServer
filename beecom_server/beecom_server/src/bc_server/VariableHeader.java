@@ -131,6 +131,10 @@ public class VariableHeader {
 		return ClientID;
 	}
 	
+	public int getAliveTime() {
+		return AliveTime;
+	}
+	
 	public boolean getUserClntFlag() {
 		return Bit2;
 	}

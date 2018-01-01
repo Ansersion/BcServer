@@ -32,6 +32,7 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 		// TODO Auto-generated method stub
 		
 		boolean ret = false;
+	
 		
 		if (!session.containsAttribute(NEW_CONNECTION)) {
 			session.setAttribute(NEW_CONNECTION, true);
@@ -46,6 +47,7 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 
 		DecodeState curr_state = (DecodeState) session
 				.getAttribute(DECODE_STATE);
+		
 
 		switch (curr_state) {
 		case DEC_FX_HEAD:

@@ -9,6 +9,9 @@ package bc_server;
  */
 public class BPPacket_PINGACK extends BPPacket {
 	
+	public static final int RET_CODE_OK = 0x00;
+	public static final int RET_CODE_CLNT_ID_INVALID = 0x02;
+	
 	
 	protected BPPacket_PINGACK() {
 		super();
@@ -43,6 +46,8 @@ public class BPPacket_PINGACK extends BPPacket {
 		getIoBuffer().putUnsignedShort(client_id);
 		int pack_seq = getVrbHead().getPackSeq();
 		getIoBuffer().putUnsignedShort(pack_seq);
+		byte ret_code = (byte)getVrbHead().getRetCode();
+		getIoBuffer().put(ret_code);
 		
 		return false;
 	}
@@ -50,6 +55,9 @@ public class BPPacket_PINGACK extends BPPacket {
 	@Override
 	public boolean assemblePayload() throws Exception {
 		// TODO Auto-generated method stub
+		if(RET_CODE_OK != getVrbHead().getRetCode()) {
+			return false;
+		}
 		
 		return false;
 	}

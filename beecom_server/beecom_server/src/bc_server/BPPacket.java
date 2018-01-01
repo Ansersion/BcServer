@@ -8,7 +8,7 @@ import org.apache.mina.core.buffer.IoBuffer;
  */
 public class BPPacket implements BPPacketInterface {
 
-	static final int BP_LEVEL = 0;
+	public static final int BP_LEVEL = 0;
 	
 	IoBuffer BPPacketData;
 	FixedHeader FxHeader; // = new FixedHeader();
