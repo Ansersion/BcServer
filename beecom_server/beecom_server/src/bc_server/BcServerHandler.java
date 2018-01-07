@@ -49,6 +49,10 @@ public class BcServerHandler extends IoHandlerAdapter {
 			Integer sig_id = 0xE000;
 			Short sig_val = 825;
 			sig_map.put(sig_id, sig_val);
+			
+			/*
+			Map<Integer, Short> sig_map_new = sig_data.
+			*/
 
 			sig_id = 0xE001;
 			sig_val = 826;
@@ -83,8 +87,9 @@ public class BcServerHandler extends IoHandlerAdapter {
 			int id = 0;
 
 			BPPacket pack_ack = BPPackFactory.createBPPackAck(decoded_pack);
-			if(level > BPPacket.BP_LEVEL) {
-				System.out.println("Unsupported level: " + level + ">" + BPPacket.BP_LEVEL);
+			if (level > BPPacket.BP_LEVEL) {
+				System.out.println("Unsupported level: " + level + ">"
+						+ BPPacket.BP_LEVEL);
 				pack_ack.getVrbHead().setRetCode(
 						BPPacket_CONNACK.RET_CODE_LEVEL_ERR);
 				session.write(pack_ack);
@@ -183,8 +188,10 @@ public class BcServerHandler extends IoHandlerAdapter {
 				DevUniqId2SsnMap.put(dev_uniq_id, newBPSession);
 				id = (int) dev_uniq_id;
 			}
-			System.out.println("Alive time=" + decoded_pack.getVrbHead().getAliveTime());
-			session.getConfig().setIdleTime(IdleStatus.READER_IDLE, decoded_pack.getVrbHead().getAliveTime());
+			System.out.println("Alive time="
+					+ decoded_pack.getVrbHead().getAliveTime());
+			session.getConfig().setIdleTime(IdleStatus.READER_IDLE,
+					decoded_pack.getVrbHead().getAliveTime());
 			// session.getConfig().setIdleTime(IdleStatus.READER_IDLE, 5);
 			session.setAttribute(SESS_ATTR_ID, newBPSession);
 
@@ -251,12 +258,12 @@ public class BcServerHandler extends IoHandlerAdapter {
 			int seq_id = decoded_pack.getVrbHead().getPackSeq();
 			System.out.println("PING: flags=" + flags + ",cid=" + clnt_id
 					+ ",sid=" + seq_id);
-			
+
 			BPPacket pack_ack = BPPackFactory.createBPPackAck(decoded_pack);
 
-
-			BPSession bp_sess_para = (BPSession)session.getAttribute(SESS_ATTR_ID);
-			if(clnt_id != bp_sess_para.ClientId) {
+			BPSession bp_sess_para = (BPSession) session
+					.getAttribute(SESS_ATTR_ID);
+			if (clnt_id != bp_sess_para.ClientId) {
 				pack_ack.getVrbHead().setRetCode(
 						BPPacket_PINGACK.RET_CODE_CLNT_ID_INVALID);
 				session.write(pack_ack);
@@ -302,41 +309,50 @@ public class BcServerHandler extends IoHandlerAdapter {
 				return;
 			}
 
-			if (decoded_pack.getVrbHead().getDevNameFlag()) {
-				// bp_sess.setDevName(decoded_pack.getPld().getDevName());
-				bp_sess.setDevName(decoded_pack.getPld().getDevName());
-				// System.out.println("DevName: " +
-				// decoded_pack.getPld().getDevName());
-				dev_rec.setDevName(bp_sess.getDevName());
-			}
-			if (decoded_pack.getVrbHead().getSysSigMapFlag()) {
-				bp_sess.setSysSigMap(decoded_pack.getPld()
-						.getMapDist2SysSigMap());
-				DB_SysSigRec sys_sig_rec;
-				if (dev_rec.getSysSigTabId() == 0) {
-					dev_rec.setSysSigTabId(dev_rec.getDevUniqId());
-					sys_sig_rec = new DB_SysSigRec();
-					sys_sig_rec.setSysSigTabId(dev_rec.getDevUniqId());
+			if (decoded_pack.getVrbHead().getSigFlag()) {
+				System.out.println("REPORT signal values");
+				decoded_pack.getPld().getSigData().dump();
+				bp_sess.setSysSig(decoded_pack.getPld().getSigData());
+			} else {
 
-					Map<Integer, Byte[]> sys_sig_map = decoded_pack.getPld()
-							.getMapDist2SysSigMap();
-					sys_sig_rec.setSysSigEnableLst(sys_sig_map);
-					sys_sig_rec.insertRec(db.getConn());
-				} else {
-					System.out.println("TODO: get sys_sig_info from database");
-					List<DB_SysSigRec> lst = db.getSysSigRecLst();
-					for (int i = 0; i < lst.size(); i++) {
-						if (lst.get(i).getSysSigTabId() == dev_rec
-								.getSysSigTabId()) {
-							lst.get(i).dumpRec();
+				if (decoded_pack.getVrbHead().getDevNameFlag()) {
+					// bp_sess.setDevName(decoded_pack.getPld().getDevName());
+					bp_sess.setDevName(decoded_pack.getPld().getDevName());
+					// System.out.println("DevName: " +
+					// decoded_pack.getPld().getDevName());
+					dev_rec.setDevName(bp_sess.getDevName());
+				}
+				if (decoded_pack.getVrbHead().getSysSigMapFlag()) {
+					bp_sess.setSysSigMap(decoded_pack.getPld()
+							.getMapDist2SysSigMap());
+					bp_sess.initSysSigValDefault();
+
+					DB_SysSigRec sys_sig_rec;
+					if (dev_rec.getSysSigTabId() == 0) {
+						dev_rec.setSysSigTabId(dev_rec.getDevUniqId());
+						sys_sig_rec = new DB_SysSigRec();
+						sys_sig_rec.setSysSigTabId(dev_rec.getDevUniqId());
+
+						Map<Integer, Byte[]> sys_sig_map = decoded_pack
+								.getPld().getMapDist2SysSigMap();
+						sys_sig_rec.setSysSigEnableLst(sys_sig_map);
+						sys_sig_rec.insertRec(db.getConn());
+					} else {
+						System.out
+								.println("TODO: get sys_sig_info from database");
+						List<DB_SysSigRec> lst = db.getSysSigRecLst();
+						for (int i = 0; i < lst.size(); i++) {
+							if (lst.get(i).getSysSigTabId() == dev_rec
+									.getSysSigTabId()) {
+								lst.get(i).dumpRec();
+							}
 						}
 					}
-				}
 
+				}
 			}
-			if (decoded_pack.getVrbHead().getSigFlag()) {
-				// TODO: set signal values;
-			}
+			System.out.println("Start dump(REPORT)");
+			bp_sess.dumpSysSig();
 			BPPacket pack_ack = BPPackFactory.createBPPackAck(decoded_pack);
 
 			/*
@@ -376,6 +392,6 @@ public class BcServerHandler extends IoHandlerAdapter {
 			throws Exception {
 		System.out.println("Over Alive time");
 		session.closeOnFlush();
-		
+
 	}
 }

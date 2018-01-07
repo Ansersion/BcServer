@@ -21,7 +21,7 @@ public class Payload {
 	int ClntIdLen;
 	int ClntId;
 	int SymSetVer;
-	DevSigData SigData;
+	DevSigData SigData = null;
 	
 	Map<Integer, List<Integer> > MapDevId2SigIdLst = new HashMap<Integer, List<Integer> >();
 	Map<Integer, Byte[]> MapDist2SysSigMap = new HashMap<Integer, Byte[]>();

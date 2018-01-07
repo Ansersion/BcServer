@@ -42,8 +42,8 @@ public class BPPacket_PINGACK extends BPPacket {
 		
 		encoded_byte = getVrbHead().getFlags();
 		getIoBuffer().put(encoded_byte);
-		int client_id = getVrbHead().getClientId();
-		getIoBuffer().putUnsignedShort(client_id);
+		// int client_id = getVrbHead().getClientId();
+		// getIoBuffer().putUnsignedShort(client_id);
 		int pack_seq = getVrbHead().getPackSeq();
 		getIoBuffer().putUnsignedShort(pack_seq);
 		byte ret_code = (byte)getVrbHead().getRetCode();

@@ -36,7 +36,7 @@ public class BPSysEnmLangResTable {
 			UnsupportedEncodingException {
 		FileInputStream fis = new FileInputStream(
 				// "/mnt/hgfs/share/sys_enum_language_resource.csv");
-				"sys_enum_language_resource.csv");
+				"config/sys_enum_language_resource.csv");
 		InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
 		BufferedReader sys_enm_lang_in = new BufferedReader(isr);
 

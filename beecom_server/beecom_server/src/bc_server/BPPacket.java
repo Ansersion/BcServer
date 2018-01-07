@@ -10,6 +10,10 @@ public class BPPacket implements BPPacketInterface {
 
 	public static final int BP_LEVEL = 0;
 	
+	public static final int MAX_SYS_SIG_DIST_NUM = 16;
+	public static final int SYS_SIG_START_ID = 0xE000;
+	public static final int SYS_SIG_DIST_STEP = 0x200;
+	
 	IoBuffer BPPacketData;
 	FixedHeader FxHeader; // = new FixedHeader();
 	VariableHeader VrbHeader; // = new VariableHeader();

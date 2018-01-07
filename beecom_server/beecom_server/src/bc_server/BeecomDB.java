@@ -170,7 +170,8 @@ public class BeecomDB {
 				while (rs.next()) {
 					sys_sig_tab_id = rs.getInt("sys_sig_tab_id");
 					List<Byte[]> sys_sig_enable_lst = new ArrayList<Byte[]>();
-					for(int i = 0; i < DB_SysSigRec.MAX_DIST_NUM; i++) {
+					// for(int i = 0; i < DB_SysSigRec.MAX_DIST_NUM; i++) {
+					for(int i = 0; i < BPPacket.MAX_SYS_SIG_DIST_NUM; i++) {
 						byte[] tmp_b = rs.getBytes(i+2);
 						if(null != tmp_b) {
 							Byte[] tmp_B = new Byte[tmp_b.length];

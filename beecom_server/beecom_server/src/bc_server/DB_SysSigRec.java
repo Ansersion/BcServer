@@ -23,7 +23,7 @@ public class DB_SysSigRec extends DB_BaseRec {
 
 	int SysSigTabId;
 	List<Byte[]> SysSigEnableLst;
-	static final int MAX_DIST_NUM = 16;
+	
 
 	public DB_SysSigRec() {
 		SysSigTabId = 0;
@@ -145,7 +145,7 @@ public class DB_SysSigRec extends DB_BaseRec {
 
 		PreparedStatement ps = null;
 		try {
-			if(SysSigEnableLst.size() > MAX_DIST_NUM) {
+			if(SysSigEnableLst.size() > BPPacket.MAX_SYS_SIG_DIST_NUM) {
 				throw new Exception("SysSigEnableLst.size() > MAX_DIST_NUM");
 			}
 			String sql_key = new String("(sys_sig_tab_id");

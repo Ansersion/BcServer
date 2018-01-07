@@ -39,7 +39,7 @@ public class BPSysSigLangResTable {
 			UnsupportedEncodingException {
 		FileInputStream fis = new FileInputStream(
 				// "/mnt/hgfs/share/sys_signal_language_resource.csv");
-				"sys_signal_language_resource.csv");
+				"config/sys_signal_language_resource.csv");
 		InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
 		BufferedReader sys_sig_lang_in = new BufferedReader(isr);
 

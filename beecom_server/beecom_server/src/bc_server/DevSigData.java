@@ -20,16 +20,54 @@ class SigDatas {
 	Map<Integer, Short> Map2ByteDataSig;
 	Map<Integer, Integer> Map4ByteDataSig;
 	Map<Integer, Byte[]> MapxByteDataSig;
+	
+	/*
+	 Map<Integer, Long> MapData2U32;
+	 Map<Integer, Integer> MapData2I32;
+	 Map<Integer, > MapData2U16;
+	 HashMap<Integer, Short> MapData2I16;
+	 Map<Integer, Short> MapData2Enm;
+	 Map<Integer, Float> MapData2Flt;
+	 Map<Integer, String> MapData2Str;
+	*/
+
 
 	SigDatas() {
 		Map1ByteDataSig = new HashMap<Integer, Byte>();
 		Map2ByteDataSig = new HashMap<Integer, Short>();
 		Map4ByteDataSig = new HashMap<Integer, Integer>();
 		MapxByteDataSig = new HashMap<Integer, Byte[]>();
+		
+		/*
+		 MapData2U32 = new HashMap<Integer, Integer>();
+		 MapData2I32 = new HashMap<Integer, Integer>();
+		 MapData2U16 = new HashMap<Integer, Short>();
+		 MapData2I16 = new HashMap<Integer, Short>();
+		 MapData2Enm = new HashMap<Integer, Short>();
+		 MapData2Flt = new HashMap<Integer, Float>();
+		 MapData2Str = new HashMap<Integer, String>();
+		 */
 	}
 
 	public void addNoCusSig(short sig) {
 
+	}
+	
+	public void clear() {
+		Map1ByteDataSig.clear();
+		Map2ByteDataSig.clear();
+		Map4ByteDataSig.clear();
+		MapxByteDataSig.clear();
+		
+		/*
+		MapData2U32.clear();
+		MapData2I32.clear();
+		MapData2U16.clear();
+		MapData2I16.clear();
+		MapData2Enm.clear();
+		MapData2Flt.clear();
+		MapData2Str.clear();
+		*/
 	}
 
 }
@@ -43,6 +81,11 @@ public class DevSigData {
 		DeviceID = 0;
 		SigData = new SigDatas();
 		// SigData = new SigData();
+	}
+	
+	public void clear() {
+		DeviceID = 0;
+		SigData.clear();
 	}
 
 	public void setDevID(int dev_id) {
@@ -68,7 +111,36 @@ public class DevSigData {
 	public Map<Integer, Byte[]> getxByteDataMap() {
 		return SigData.MapxByteDataSig;
 	}
+	
+	/*
+	public Map<Integer, Integer> getU32DataMap() {
+		return SigData.MapData2U32;
+	}
 
+	public Map<Integer, Short> getI32DataMap() {
+		return SigData.Map2ByteDataSig;
+	}
+
+	public Map<Integer, Integer> getU16DataMap() {
+		return SigData.Map4ByteDataSig;
+	}
+
+	public Map<Integer, Byte[]> getI16DataMap() {
+		return SigData.MapxByteDataSig;
+	}
+
+	public Map<Integer, Byte[]> getEnmDataMap() {
+		return SigData.MapxByteDataSig;
+	}
+
+	public Map<Integer, Byte[]> getFltDataMap() {
+		return SigData.MapxByteDataSig;
+	}
+
+	public Map<Integer, Byte[]> getStrDataMap() {
+		return SigData.MapxByteDataSig;
+	}
+*/
 	public void dump() {
 		Map map;
 		Iterator entries;

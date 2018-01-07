@@ -72,7 +72,7 @@ public class BPSysSigTable {
 	static BPSysSigTable SysSigTab = null;
 	public static int BP_SYS_SIG_SET_VERSION = 0;
 
-	public static BPSysSigTable getSysSigTable() {
+	public static BPSysSigTable getSysSigTableInstance() {
 		if (null == SysSigTab) {
 			SysSigTab = new BPSysSigTable();
 		}
@@ -82,12 +82,16 @@ public class BPSysSigTable {
 	protected BPSysSigTable() {
 		SysSigInfo_Lst = new ArrayList<SysSigInfo>();
 	}
+	
+	public List<SysSigInfo> getSysSigInfoLst() {
+		return SysSigInfo_Lst;
+	}
 
 	public boolean loadTab() throws FileNotFoundException,
 			UnsupportedEncodingException {
 		FileInputStream fis = new FileInputStream(
 				// "/mnt/hgfs/share/sys_sig_info.csv");
-				"sys_sig_info.csv");
+				"config/sys_sig_info.csv");
 		InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
 		BufferedReader sys_sig_in = new BufferedReader(isr);
 
@@ -201,17 +205,19 @@ public class BPSysSigTable {
 
 						accuracy = (byte) Integer.parseInt(m.group(8));
 						
-						val_min = new BPValue();
-						val_max = new BPValue();
-						val_def = new BPValue();
+						val_min = new BPValue(val_type);
+						val_max = new BPValue(val_type);
+						val_def = new BPValue(val_type);
 						
+						/*
 						val_min.setValueType(val_type);
 						val_max.setValueType(val_type);
 						val_def.setValueType(val_type);
+						*/
 
-						val_min.setVal(m.group(9));
-						val_max.setVal(m.group(10));
-						val_def.setVal(m.group(11));
+						val_min.setValStr(m.group(9));
+						val_max.setValStr(m.group(10));
+						val_def.setValStr(m.group(11));
 
 						if(null != map_enm_lang_res) {
 							map_enm_lang_res = null;
@@ -284,9 +290,9 @@ public class BPSysSigTable {
 						+ SysSigInfo_Lst.get(i).UnitLangRes + ","
 						+ SysSigInfo_Lst.get(i).Permission + ","
 						+ SysSigInfo_Lst.get(i).Accuracy + ","
-						+ SysSigInfo_Lst.get(i).ValMin.getVal() + ","
-						+ SysSigInfo_Lst.get(i).ValMax.getVal() + ","
-						+ SysSigInfo_Lst.get(i).ValDef.getVal() + ",";
+						+ SysSigInfo_Lst.get(i).ValMin.getValStr() + ","
+						+ SysSigInfo_Lst.get(i).ValMax.getValStr() + ","
+						+ SysSigInfo_Lst.get(i).ValDef.getValStr() + ",";
 				if (null != SysSigInfo_Lst.get(i).MapEnmLangRes) {
 					Iterator<Map.Entry<Integer, Integer>> entries = SysSigInfo_Lst
 							.get(i).MapEnmLangRes.entrySet().iterator();

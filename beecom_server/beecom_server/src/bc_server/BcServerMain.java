@@ -43,7 +43,7 @@ public class BcServerMain {
 			e.printStackTrace();
 		}
 		
-		BPSysSigTable sys_sig_tab = BPSysSigTable.getSysSigTable();
+		BPSysSigTable sys_sig_tab = BPSysSigTable.getSysSigTableInstance();
 		try {
 			sys_sig_tab.loadTab();
 		} catch (Exception e) {
