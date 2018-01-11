@@ -9,6 +9,13 @@ package bc_server;
  */
 public class BPPacket_RPRTACK extends BPPacket {
 	
+	public static final int RET_CODE_OK = 0x00;
+	public static final int RET_CODE_FLAGS_INVALID = 0x01;
+	public static final int RET_CODE_CLNT_ID_INVALID = 0x02;
+	public static final int RET_CODE_SIG_ID_INVALID = 0x03;
+	public static final int RET_CODE_SIG_VAL_INVALID = 0x04;
+	
+	
 	protected BPPacket_RPRTACK() {
 		super();
 		FixedHeader fx_head = getFxHead();
@@ -46,6 +53,12 @@ public class BPPacket_RPRTACK extends BPPacket {
 	@Override
 	public boolean assemblePayload() throws Exception {
 		// TODO Auto-generated method stub
+		if(RET_CODE_OK != getVrbHead().getRetCode()) {
+			if(null != getPld().Error) {
+				getIoBuffer().putUnsignedShort(getPld().Error.getLst().get(0));
+			}
+		}
+
 		
 		return false;
 	}

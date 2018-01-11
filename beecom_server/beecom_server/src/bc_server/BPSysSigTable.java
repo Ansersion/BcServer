@@ -67,7 +67,10 @@ class SysSigInfo {
 }
 
 public class BPSysSigTable {
-	List<SysSigInfo> SysSigInfo_Lst;
+	public static int SID_ID_RESERVED = 0x0000;
+	
+	
+	private List<SysSigInfo> SysSigInfo_Lst;
 
 	static BPSysSigTable SysSigTab = null;
 	public static int BP_SYS_SIG_SET_VERSION = 0;

@@ -256,6 +256,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 			byte flags = decoded_pack.getVrbHead().getFlags();
 			int clnt_id = decoded_pack.getVrbHead().getClientId();
 			int seq_id = decoded_pack.getVrbHead().getPackSeq();
+			int ret_code = BPPacket_RPRTACK.RET_CODE_OK;
 			System.out.println("PING: flags=" + flags + ",cid=" + clnt_id
 					+ ",sid=" + seq_id);
 
@@ -284,90 +285,92 @@ public class BcServerHandler extends IoHandlerAdapter {
 		} else if (BPPacketType.REPORT == pack_type) {
 
 			int client_id = decoded_pack.getClientId();
-			BPSession bp_sess = (BPSession) session.getAttribute(SESS_ATTR_ID);
-
-			/*
-			 * if (CliId2SsnMap.containsKey(client_id)) { bp_sess =
-			 * CliId2SsnMap.get(client_id); } else { throw new
-			 * Exception("Error: client ID not existed(REPORT)"); }
-			 */
-
-			BeecomDB db = BeecomDB.getInstance();
-
-			/*
-			 * System.out.println("test: before handle report");
-			 * db.dumpDevInfo();
-			 */
-
+			int ret_code = BPPacket_RPRTACK.RET_CODE_OK;
 			int seq_id = decoded_pack.getPackSeq();
-
+			BPSession bp_sess = (BPSession) session.getAttribute(SESS_ATTR_ID);
+			BeecomDB db = BeecomDB.getInstance();
 			DB_DevInfoRec dev_rec = db.getDevInfoRec(Integer
 					.parseInt(new String(bp_sess.UserName)));
+			
 			if (dev_rec.getDevUniqId() == 0) {
 				// TODO: handle the error;
 				System.out.println("TODO: dev_rec.getDevUniqId() == 0");
 				return;
 			}
-
-			if (decoded_pack.getVrbHead().getSigFlag()) {
-				System.out.println("REPORT signal values");
-				decoded_pack.getPld().getSigData().dump();
-				bp_sess.setSysSig(decoded_pack.getPld().getSigData());
-			} else {
-
-				if (decoded_pack.getVrbHead().getDevNameFlag()) {
-					// bp_sess.setDevName(decoded_pack.getPld().getDevName());
-					bp_sess.setDevName(decoded_pack.getPld().getDevName());
-					// System.out.println("DevName: " +
-					// decoded_pack.getPld().getDevName());
-					dev_rec.setDevName(bp_sess.getDevName());
+			
+			BPPacket pack_ack = BPPackFactory.createBPPackAck(decoded_pack);
+			
+			VariableHeader vrb = decoded_pack.getVrbHead();
+			
+			do {
+				if(bp_sess.getClntId() != client_id) {
+					System.out.println("Err: client id err");
+					ret_code = BPPacket_RPRTACK.RET_CODE_CLNT_ID_INVALID;
+					break;
 				}
-				if (decoded_pack.getVrbHead().getSysSigMapFlag()) {
-					bp_sess.setSysSigMap(decoded_pack.getPld()
-							.getMapDist2SysSigMap());
-					bp_sess.initSysSigValDefault();
-
-					DB_SysSigRec sys_sig_rec;
-					if (dev_rec.getSysSigTabId() == 0) {
-						dev_rec.setSysSigTabId(dev_rec.getDevUniqId());
-						sys_sig_rec = new DB_SysSigRec();
-						sys_sig_rec.setSysSigTabId(dev_rec.getDevUniqId());
-
-						Map<Integer, Byte[]> sys_sig_map = decoded_pack
-								.getPld().getMapDist2SysSigMap();
-						sys_sig_rec.setSysSigEnableLst(sys_sig_map);
-						sys_sig_rec.insertRec(db.getConn());
-					} else {
-						System.out
-								.println("TODO: get sys_sig_info from database");
-						List<DB_SysSigRec> lst = db.getSysSigRecLst();
-						for (int i = 0; i < lst.size(); i++) {
-							if (lst.get(i).getSysSigTabId() == dev_rec
-									.getSysSigTabId()) {
-								lst.get(i).dumpRec();
-							}
+				if (vrb.getSigFlag()) {
+					if (vrb.getSysSigMapFlag() || vrb.getDevNameFlag()) {
+						// pack_ack.getVrbHead().setRetCode(BPPacket_RPRTACK.RET_CODE_FLAGS_INVALID);
+						ret_code = BPPacket_RPRTACK.RET_CODE_FLAGS_INVALID;
+						break;
+					}
+					System.out.println("REPORT signal values");
+					decoded_pack.getPld().getSigData().dump();
+					if(!bp_sess.setSysSig(decoded_pack.getPld().getSigData())) {
+						ret_code = bp_sess.Error.getErrId();
+						if(BPPacket_RPRTACK.RET_CODE_SIG_ID_INVALID == ret_code) {
+							pack_ack.getPld().Error = bp_sess.Error;
 						}
+						break;
 					}
 
+				} else {
+
+					if (decoded_pack.getVrbHead().getDevNameFlag()) {
+						// bp_sess.setDevName(decoded_pack.getPld().getDevName());
+						bp_sess.setDevName(decoded_pack.getPld().getDevName());
+						// System.out.println("DevName: " +
+						// decoded_pack.getPld().getDevName());
+						dev_rec.setDevName(bp_sess.getDevName());
+					}
+					if (decoded_pack.getVrbHead().getSysSigMapFlag()) {
+						bp_sess.setSysSigMap(decoded_pack.getPld()
+								.getMapDist2SysSigMap());
+						bp_sess.initSysSigValDefault();
+
+						DB_SysSigRec sys_sig_rec;
+						if (dev_rec.getSysSigTabId() == 0) {
+							dev_rec.setSysSigTabId(dev_rec.getDevUniqId());
+							sys_sig_rec = new DB_SysSigRec();
+							sys_sig_rec.setSysSigTabId(dev_rec.getDevUniqId());
+
+							Map<Integer, Byte[]> sys_sig_map = decoded_pack
+									.getPld().getMapDist2SysSigMap();
+							sys_sig_rec.setSysSigEnableLst(sys_sig_map);
+							sys_sig_rec.insertRec(db.getConn());
+						} else {
+							System.out
+									.println("TODO: get sys_sig_info from database");
+							List<DB_SysSigRec> lst = db.getSysSigRecLst();
+							for (int i = 0; i < lst.size(); i++) {
+								if (lst.get(i).getSysSigTabId() == dev_rec
+										.getSysSigTabId()) {
+									lst.get(i).dumpRec();
+								}
+							}
+						}
+
+					}
 				}
-			}
+			} while (false);
+			
 			System.out.println("Start dump(REPORT)");
 			bp_sess.dumpSysSig();
-			BPPacket pack_ack = BPPackFactory.createBPPackAck(decoded_pack);
-
-			/*
-			 * System.out.println("Start dev_info_dump"); dev_rec.dumpRec();
-			 */
-
+			
 			pack_ack.getVrbHead().setPackSeq(seq_id);
-			pack_ack.getVrbHead().setRetCode(0x00);
+			pack_ack.getVrbHead().setRetCode(ret_code);
 
 			dev_rec.updateRec(db.getConn());
-
-			/*
-			 * System.out.println("test: after handle report");
-			 * db.dumpDevInfo();
-			 */
 
 			session.write(pack_ack);
 		} else if (BPPacketType.DISCONN == pack_type) {

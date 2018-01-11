@@ -3,6 +3,7 @@
  */
 package bc_server;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -11,6 +12,15 @@ import java.util.Map;
  * @author Ansersion
  *
  */
+
+class SigIdNonExistException extends Exception {
+	SigIdNonExistException(String msg) {
+		super(msg);
+	}
+	SigIdNonExistException() {
+		super();
+	}
+}
 public class BPSession {
 	int ClientId = 0;
 	byte[] UserName = null;
@@ -22,6 +32,7 @@ public class BPSession {
 	String DevName;
 	Map<Integer, Byte[]> MapDist2SysSigMap = null;
 	Map<Integer, BPValue> SysSigMap;
+	BPError Error;
 	
 	public BPSession(byte[] usr_name, byte[] password, int client_id, boolean usr_login, boolean dev_login) {
 		IsDevLogin = dev_login;
@@ -40,6 +51,12 @@ public class BPSession {
 		SeqIdDevClnt = 0;
 		SeqIdUsrClnt = 0;
 		SysSigMap = new HashMap<Integer, BPValue>();
+		
+		Error = Error = new BPError();;
+	}
+	
+	public int getClntId() {
+		return ClientId;
 	}
 	
 	public Map getSysSigMap() {
@@ -51,50 +68,71 @@ public class BPSession {
 	}
 	
 	public boolean setSysSig(DevSigData dev_sig_data) {
-		boolean ret = false;
+
+		Error = new BPError();
 		Map sig_val;
 		Iterator entries;
-		
+		boolean ret = true;
+		Integer key = null;
+		Short value = null;
+		BPValue tmp = null;
+
 		sig_val = dev_sig_data.get2ByteDataMap();
-		if(null != sig_val) {
-			entries = sig_val.entrySet().iterator();
-			while (entries.hasNext()) {    
-			    Map.Entry entry = (Map.Entry) entries.next();
-			    Integer key = (Integer)entry.getKey();  
-			    Short value = (Short)entry.getValue();
-			    BPValue tmp = SysSigMap.get(key);
-			    if(null != tmp) {
-			    	tmp.setVal(value);
-			    }
-			}  
-		}
-		
-		sig_val = dev_sig_data.get4ByteDataMap();
-		if(null != sig_val) {
-			entries = sig_val.entrySet().iterator();
-			while (entries.hasNext()) {    
-			    Map.Entry entry = (Map.Entry) entries.next();
-			    Integer key = (Integer)entry.getKey();  
-			    Short value = (Short)entry.getValue();
-			    BPValue tmp = SysSigMap.get(key);
-			    if(null != tmp) {
-			    	tmp.setVal(value);
-			    }
-			}  
-		}
-		
-		sig_val = dev_sig_data.getxByteDataMap();
-		if(null != sig_val) {
-			entries = sig_val.entrySet().iterator();
-			while (entries.hasNext()) {    
-			    Map.Entry entry = (Map.Entry) entries.next();
-			    Integer key = (Integer)entry.getKey();  
-			    Short value = (Short)entry.getValue();
-			    BPValue tmp = SysSigMap.get(key);
-			    if(null != tmp) {
-			    	tmp.setVal(value);
-			    }
-			}  
+		try {
+
+			if (null != sig_val) {
+				entries = sig_val.entrySet().iterator();
+				while (entries.hasNext()) {
+					Map.Entry entry = (Map.Entry) entries.next();
+					key = (Integer) entry.getKey();
+					value = (Short) entry.getValue();
+					tmp = SysSigMap.get(key);
+					if (null == tmp) {
+						throw new SigIdNonExistException();
+					}
+					tmp.setVal(value);
+				}
+			}
+
+			sig_val = dev_sig_data.get4ByteDataMap();
+			if (null != sig_val) {
+				entries = sig_val.entrySet().iterator();
+				while (entries.hasNext()) {
+					Map.Entry entry = (Map.Entry) entries.next();
+					key = (Integer) entry.getKey();
+					value = (Short) entry.getValue();
+					tmp = SysSigMap.get(key);
+					if (null == tmp) {
+						throw new SigIdNonExistException();
+					}
+					tmp.setVal(value);
+				}
+			}
+
+			sig_val = dev_sig_data.getxByteDataMap();
+			if (null != sig_val) {
+				entries = sig_val.entrySet().iterator();
+				while (entries.hasNext()) {
+					Map.Entry entry = (Map.Entry) entries.next();
+					key = (Integer) entry.getKey();
+					value = (Short) entry.getValue();
+					tmp = SysSigMap.get(key);
+					if (null == tmp) {
+						throw new SigIdNonExistException();
+					}
+					tmp.setVal(value);
+				}
+			}
+		} catch (SigIdNonExistException e) {
+			e.printStackTrace();
+			
+			Error.setErrId(BPPacket_RPRTACK.RET_CODE_SIG_ID_INVALID);
+			Error.SigIdLst = new ArrayList<Integer>();
+			Error.SigIdLst.add(key);
+			ret = false;
+		} catch (Exception e) {
+			e.printStackTrace();
+			ret = false;
 		}
 		return ret;
 	}

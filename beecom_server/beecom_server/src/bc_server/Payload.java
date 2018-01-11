@@ -23,10 +23,12 @@ public class Payload {
 	int SymSetVer;
 	DevSigData SigData = null;
 	
+	BPError Error;
+	
 	Map<Integer, List<Integer> > MapDevId2SigIdLst = new HashMap<Integer, List<Integer> >();
 	Map<Integer, Byte[]> MapDist2SysSigMap = new HashMap<Integer, Byte[]>();
 	
-	public void setUserName(byte[] user_name) {
+	public void setUserName(byte[] user_name) {	
 		UserName = user_name;
 	}
 	
