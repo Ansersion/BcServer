@@ -83,8 +83,8 @@ public class BcServerHandler extends IoHandlerAdapter {
 			boolean user_clnt_flag = decoded_pack.getUsrClntFlag();
 			boolean dev_clnt_flag = decoded_pack.getDevClntFlag();
 			long dev_uniq_id = 0;
-			String dev_name = new String("");
-			int id = 0;
+			// String dev_name = new String("");
+			// int id = 0;
 
 			BPPacket pack_ack = BPPackFactory.createBPPackAck(decoded_pack);
 			if (level > BPPacket.BP_LEVEL) {
@@ -182,11 +182,11 @@ public class BcServerHandler extends IoHandlerAdapter {
 			pack_ack.getPld().setClientId(client_id);
 			/* update login flags */
 			BPSession newBPSession = new BPSession(user_name.getBytes(),
-					password, client_id, user_clnt_flag, dev_clnt_flag);
+					password, client_id, user_clnt_flag, dev_clnt_flag, dev_uniq_id);
 			CliId2SsnMap.put(client_id, newBPSession);
 			if (dev_clnt_flag) {
 				DevUniqId2SsnMap.put(dev_uniq_id, newBPSession);
-				id = (int) dev_uniq_id;
+				// id = (int) dev_uniq_id;
 			}
 			System.out.println("Alive time="
 					+ decoded_pack.getVrbHead().getAliveTime());

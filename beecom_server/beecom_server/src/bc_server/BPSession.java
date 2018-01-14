@@ -23,6 +23,7 @@ class SigIdNonExistException extends Exception {
 }
 public class BPSession {
 	int ClientId = 0;
+	long UniqDevId = 0;
 	byte[] UserName = null;
 	byte[] Password = null;
 	boolean IsUserLogin = false;
@@ -34,10 +35,11 @@ public class BPSession {
 	Map<Integer, BPValue> SysSigMap;
 	BPError Error;
 	
-	public BPSession(byte[] usr_name, byte[] password, int client_id, boolean usr_login, boolean dev_login) {
+	public BPSession(byte[] usr_name, byte[] password, int client_id, boolean usr_login, boolean dev_login, long uniq_dev_id) {
 		IsDevLogin = dev_login;
 		IsUserLogin = usr_login;
 		ClientId = client_id;
+		UniqDevId = uniq_dev_id;
 		
 		UserName = new byte[usr_name.length];
 		for(int i = 0; i < usr_name.length; i++) {
@@ -55,6 +57,10 @@ public class BPSession {
 		Error = Error = new BPError();;
 	}
 	
+	public long getUniqDevId() {
+		return UniqDevId;
+	}
+	
 	public int getClntId() {
 		return ClientId;
 	}
@@ -65,6 +71,10 @@ public class BPSession {
 	
 	public String getDevName() {
 		return DevName;
+	}
+	
+	public void setUniqDevId(long uniq_dev_id) {
+		UniqDevId = uniq_dev_id;
 	}
 	
 	public boolean setSysSig(DevSigData dev_sig_data) {
