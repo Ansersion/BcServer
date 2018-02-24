@@ -2,7 +2,7 @@
 insert into user_info (name, password) values("张三", "ansersion1");
 insert into user_info (name, password) values("李四", "ansersion2");
 insert into user_info (name, password) values("王五", "ansersion3");
-insert into user_info (name, password) values("Ansersion4", "ansersion4");
+insert into user_info (name, password) values("Ansersion4", "899b26c71f284019d2954b8e823e235b4c7ad2715a9831c47367231ef473e588");
 insert into user_info (name, password) values("Ansersion5", "ansersion5");
 insert into user_info (name, password) values("Ansersion6", "ansersion6");
 insert into user_info (name, password) values("Ansersion7", "ansersion7");
