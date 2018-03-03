@@ -127,11 +127,7 @@ CREATE TABLE `user_info` (
   `name` varchar(128) DEFAULT '',
   `e_mail` varchar(256) DEFAULT '',
   `phone` varchar(128) DEFAULT '',
-<<<<<<< HEAD
   `password` char(64) NOT NULL,
-=======
-  `password` char(32) NOT NULL,
->>>>>>> e688b7baff8f14fcd36b1b992788c86962e1a015
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -142,11 +138,7 @@ CREATE TABLE `user_info` (
 
 LOCK TABLES `user_info` WRITE;
 /*!40000 ALTER TABLE `user_info` DISABLE KEYS */;
-<<<<<<< HEAD
 INSERT INTO `user_info` VALUES (1,'Ansersion','','','a123456'),(2,'张三','','','ansersion1'),(3,'李四','','','ansersion2'),(4,'王五','','','ansersion3'),(5,'Ansersion4','','','899b26c71f284019d2954b8e823e235b4c7ad2715a9831c47367231ef473e588'),(6,'Ansersion5','','','ansersion5'),(7,'Ansersion6','','','ansersion6'),(8,'Ansersion7','','','ansersion7'),(9,'Ansersion8','','','ansersion8'),(10,'Ansersion9','','','ansersion9');
-=======
-INSERT INTO `user_info` VALUES (1,'Ansersion','','','a123456'),(2,'张三','','','ansersion1'),(3,'李四','','','ansersion2'),(4,'王五','','','ansersion3'),(5,'Ansersion4','','','ansersion4'),(6,'Ansersion5','','','ansersion5'),(7,'Ansersion6','','','ansersion6'),(8,'Ansersion7','','','ansersion7'),(9,'Ansersion8','','','ansersion8'),(10,'Ansersion9','','','ansersion9');
->>>>>>> e688b7baff8f14fcd36b1b992788c86962e1a015
 /*!40000 ALTER TABLE `user_info` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
