@@ -95,8 +95,7 @@ public class BPSysSigTable {
 	public boolean loadTab() throws FileNotFoundException,
 			UnsupportedEncodingException {
 		FileInputStream fis = new FileInputStream(
-				// "/mnt/hgfs/share/sys_sig_info.csv");
-				"config/sys_sig_info.csv");
+				"config/sys_sig_info_basic.csv");
 		InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
 		BufferedReader sys_sig_in = new BufferedReader(isr);
 
@@ -223,10 +222,23 @@ public class BPSysSigTable {
 						val_max.setValueType(val_type);
 						val_def.setValueType(val_type);
 						*/
-
-						val_min.setValStr(m.group(9));
-						val_max.setValStr(m.group(10));
-						val_def.setValStr(m.group(11));
+						
+						if(Util.isNull(m.group(9))) {
+							val_min.setLimitValid(false);
+						} else {
+							val_min.setValStr(m.group(9));
+						}
+						
+						if(Util.isNull(m.group(10))) {
+							val_max.setLimitValid(false);
+						} else {
+							val_max.setValStr(m.group(10));
+						}
+						if(Util.isNull(m.group(11))) {
+							val_def.setLimitValid(false);
+						} else {
+							val_def.setValStr(m.group(11));
+						}
 						
 						if(!m.group(12).equals("NULL")) { 
 							// classLangRes = Integer.parseInt(m.group(12));

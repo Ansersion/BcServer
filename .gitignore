@@ -4,5 +4,10 @@ cscope*
 .*swp
 .depend
 a.out
-beecom_server/.metadata
-beecom_server/.metadata/*
+.sonarlint/*
+.sonarlint
+.metadata
+.metadata/*
+.recommenders/*
+.recommenders
+

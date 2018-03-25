@@ -23,5 +23,12 @@ public class Util {
 	public static Short toSigned(int n) {
 		return (short)(n & 0xFFFF);
 	}
+	
+	public static boolean isNull(String val) {
+		if(null == val || val.length() == 0 || val.trim().isEmpty() || val.equals(BPValue.NULL_VAL)) {
+			return true;
+		}
+		return false;
+	}
 
 }

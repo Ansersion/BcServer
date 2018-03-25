@@ -8,6 +8,7 @@ package bc_server;
  * 
  */
 public class BPValue {
+	public static final String NULL_VAL = "NULL";
 	Integer u32Val = null;
 	Short u16Val = null;
 	Integer i32Val = null;
@@ -17,9 +18,11 @@ public class BPValue {
 	String strVal = null;
 
 	int ValType = -1;
+	boolean limitValid;
 
 	public BPValue(int val_type) {
 		ValType = val_type;
+		limitValid = true;
 		switch (ValType) {
 		case 0:
 			u32Val = new Integer(0);
@@ -48,6 +51,10 @@ public class BPValue {
 			break;
 		}
 
+	}
+	
+	public void setLimitValid(boolean valid) {
+		limitValid = valid;
 	}
 	
 	public int getType() {
