@@ -10,6 +10,13 @@ import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 
+import bp_packet.BPPackFactory;
+import bp_packet.BPPacket;
+import bp_packet.FixedHeader;
+import bp_packet.Payload;
+import bp_packet.VariableHeader;
+import other.CrcChecksum;
+
 public class BcDecoder extends CumulativeProtocolDecoder {
 
 	public enum DecodeState {

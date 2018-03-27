@@ -8,6 +8,9 @@ package bc_server;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolEncoderAdapter;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
+
+import bp_packet.BPPacket;
+
 import org.apache.mina.core.buffer.IoBuffer;
 
 public class BcEncoder extends ProtocolEncoderAdapter {

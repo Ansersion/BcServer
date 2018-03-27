@@ -17,6 +17,10 @@ import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 
+import sys_sig_table.BPSysEnmLangResTable;
+import sys_sig_table.BPSysSigLangResTable;
+import sys_sig_table.BPSysSigTable;
+
 public class BcServerMain {
 
 	private static final int BC_SERVER_PORT = 8025;
