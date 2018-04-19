@@ -110,7 +110,6 @@ public class DB_DevInfoRec extends DB_BaseRec {
 		sql += ",dev_name=" + "\"" + DevName + "\"";
 		sql += ",sys_sig_tab_id=" + SysSigTabId;
 		sql += " where dev_uniq_id=" + DevUniqId;
-		// System.out.println("sql: " + sql);
 		try {
 			Statement st = con.createStatement();
 			st.executeUpdate(sql);

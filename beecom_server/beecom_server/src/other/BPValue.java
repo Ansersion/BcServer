@@ -97,6 +97,7 @@ public class BPValue {
 
 	public String getValStr() {
 		String ret = new String("NULL");
+		
 		switch (ValType) {
 		case 0:
 			ret = Util.toUnsigned(u32Val).toString();
@@ -119,12 +120,8 @@ public class BPValue {
 		case 6:
 			ret = strVal.toString();
 			break;
-			/*
 		default:
-			ret = null;
-			
 			break;
-			*/
 		}
 
 		return ret;

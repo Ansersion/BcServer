@@ -9,7 +9,7 @@ import other.CrcChecksum;
  * @author Ansersion
  *
  */
-public class BPPacket_RPRTACK extends BPPacket {
+public class BPPacketRPRTACK extends BPPacket {
 	
 	public static final int RET_CODE_OK = 0x00;
 	public static final int RET_CODE_FLAGS_INVALID = 0x01;
@@ -18,21 +18,20 @@ public class BPPacket_RPRTACK extends BPPacket {
 	public static final int RET_CODE_SIG_VAL_INVALID = 0x04;
 	
 	
-	protected BPPacket_RPRTACK() {
+	protected BPPacketRPRTACK() {
 		super();
-		FixedHeader fx_head = getFxHead();
-		fx_head.setPacketType(BPPacketType.RPRTACK);
-		fx_head.setCrcType(CrcChecksum.CRC32);
+		FixedHeader fxHead = getFxHead();
+		fxHead.setPacketType(BPPacketType.RPRTACK);
+		fxHead.setCrcType(CrcChecksum.CRC32);
 	}
 	
 	@Override
 	public boolean assembleFixedHeader() throws Exception {
-		// TODO Auto-generated method stub
-		int pack_type = getPackTypeIntFxHead();
-		byte pack_flags = getPackFlagsByteFxHead();
-		byte encoded_byte = (byte) (((pack_type & 0xf) << 4) | (pack_flags & 0xf));
+		int packType = getPackTypeIntFxHead();
+		byte packFlags = getPackFlagsByteFxHead();
+		byte encodedByte = (byte) (((packType & 0xf) << 4) | (packFlags & 0xf));
 		
-		getIoBuffer().put(encoded_byte);
+		getIoBuffer().put(encodedByte);
 		
 		// Remaininglength 1 byte reserved
 		getIoBuffer().put((byte)0);
@@ -42,22 +41,19 @@ public class BPPacket_RPRTACK extends BPPacket {
 
 	@Override
 	public boolean assembleVariableHeader() throws Exception {
-		// TODO Auto-generated method stub
-		
-		int pack_seq = (byte)getVrbHead().getPackSeq();
-		getIoBuffer().putUnsignedShort(pack_seq);	
-		byte ret_code = (byte)getVrbHead().getRetCode();
-		getIoBuffer().put(ret_code);
+		int packSeq = (byte)getVrbHead().getPackSeq();
+		getIoBuffer().putUnsignedShort(packSeq);	
+		byte retCode = (byte)getVrbHead().getRetCode();
+		getIoBuffer().put(retCode);
 		
 		return false;
 	}
 
 	@Override
 	public boolean assemblePayload() throws Exception {
-		// TODO Auto-generated method stub
 		if(RET_CODE_OK != getVrbHead().getRetCode()) {
 			if(null != getPld().Error) {
-				getIoBuffer().putUnsignedShort(getPld().Error.getLst().get(0));
+				getIoBuffer().putUnsignedShort(getPld().Error.getSigIdLst().get(0));
 			}
 		}
 

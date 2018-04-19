@@ -16,38 +16,37 @@ public class BPPacket implements BPPacketInterface {
 	public static final int SYS_SIG_START_ID = 0xE000;
 	public static final int SYS_SIG_DIST_STEP = 0x200;
 	
-	IoBuffer BPPacketData;
-	FixedHeader FxHeader; // = new FixedHeader();
-	VariableHeader VrbHeader; // = new VariableHeader();
-	Payload Pld; // = new Payload();
-	CrcChecksum Crc;
-	boolean ClntIdExpired;
+	IoBuffer bpPacketData;
+	FixedHeader fxHeader;
+	VariableHeader vrbHeader;
+	Payload pld;
+	CrcChecksum crc;
+	boolean clntIdExpired;
 
 	protected BPPacket() {
-		// BPPacketData.setAutoExpand(true);
-		BPPacketData = IoBuffer.allocate(256, false);
-		BPPacketData.setAutoExpand(true);
-		FxHeader = new FixedHeader();
-		VrbHeader = new VariableHeader();
-		Pld = new Payload();
-		BPPacketData.clear();
-		ClntIdExpired = false;
+		bpPacketData = IoBuffer.allocate(256, false);
+		bpPacketData.setAutoExpand(true);
+		fxHeader = new FixedHeader();
+		vrbHeader = new VariableHeader();
+		pld = new Payload();
+		bpPacketData.clear();
+		clntIdExpired = false;
 	}
 
-	protected BPPacket(FixedHeader fx_header) {
-		// BPPacketData.setAutoExpand(true);
-		BPPacketData = IoBuffer.allocate(256, false);
-		BPPacketData.setAutoExpand(true);
-		VrbHeader = new VariableHeader();
-		Pld = new Payload();
-		BPPacketData.clear();
-		FxHeader = fx_header;
-		ClntIdExpired = false;
+	protected BPPacket(FixedHeader fxHeader) {
+		/** bpPacketData.setAutoExpand(true); */
+		bpPacketData = IoBuffer.allocate(256, false);
+		bpPacketData.setAutoExpand(true);
+		vrbHeader = new VariableHeader();
+		pld = new Payload();
+		bpPacketData.clear();
+		this.fxHeader = fxHeader;
+		clntIdExpired = false;
 	}
 	
 	protected void setRemainingData(byte[] data) {
-		BPPacketData.clear();
-		BPPacketData.put(data);
+		bpPacketData.clear();
+		bpPacketData.put(data);
 	}
 
 	/**
@@ -61,22 +60,22 @@ public class BPPacket implements BPPacketInterface {
 	 */
 
 	@Override
-	public int Decrypt(EncryptType etEncryptType) throws Exception {
+	public int decrypt(EncryptType etEncryptType) throws Exception {
 		return 0;
 	}
 	
 	public void putFxHead2Buf() {
-		BPPacketData.clear();
-		BPPacketData.put(FxHeader.getFirstByte());
-		int len = FxHeader.getRemainingLen();
-		byte encoded_byte;
+		bpPacketData.clear();
+		bpPacketData.put(fxHeader.getFirstByte());
+		int len = fxHeader.getRemainingLen();
+		byte encodedByte;
 		do {
-			encoded_byte = (byte)(len % 128);
+			encodedByte = (byte)(len % 128);
 			len = len / 128;
 			if(len > 0) {
-				encoded_byte |= 128;
+				encodedByte |= 128;
 			}
-			BPPacketData.put(encoded_byte);
+			bpPacketData.put(encodedByte);
 		} while (len > 0);
 	}
 
@@ -96,32 +95,32 @@ public class BPPacket implements BPPacketInterface {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean parseVariableHeader(IoBuffer io_buf) throws Exception {
+	public boolean parseVariableHeader(IoBuffer ioBuf) throws Exception {
 		return false;
 	}
 
 	public void parseVrbHeadLevel(byte level) {
-		VrbHeader.parseLevel(level);
+		vrbHeader.parseLevel(level);
 	}
 
 	public void parseVrbHeadFlags(byte flags) {
-		VrbHeader.parseFlags(flags);
+		vrbHeader.parseFlags(flags);
 	}
 
 	public int parseVrbClientIdLen(byte len) {
-		return VrbHeader.parseClientIdLen(len);
+		return vrbHeader.parseClientIdLen(len);
 	}
 
 	public int parseVrbClientId(byte[] id, int len) {
-		return VrbHeader.parseClientId(id, len);
+		return vrbHeader.parseClientId(id, len);
 	}
 
-	public int parseVrbAliveTime(byte alive_time_msb, byte alive_time_lsb) {
-		return VrbHeader.parseAliveTime(alive_time_msb, alive_time_lsb);
+	public int parseVrbAliveTime(byte aliveTimeMsb, byte aliveTimeLsb) {
+		return vrbHeader.parseAliveTime(aliveTimeMsb, aliveTimeLsb);
 	}
 
 	public int parseVrbTimeout(byte timeout) {
-		return VrbHeader.parseTimeout(timeout);
+		return vrbHeader.parseTimeout(timeout);
 	}
 
 	@Override
@@ -131,170 +130,149 @@ public class BPPacket implements BPPacketInterface {
 
 	@Override
 	public boolean checkCRC(CrcChecksum ccCrc) throws Exception {
-		// try {
-		byte[] data = new byte[BPPacketData.remaining()];
-		BPPacketData.get(data);
+		byte[] data = new byte[bpPacketData.remaining()];
+		bpPacketData.get(data);
 			if(CrcChecksum.CRC16 == ccCrc) {
-				if(0 != CrcChecksum.calcCrc16(data)) {
-					// throw new Exception("Check CRC16 Error");
-					return false;
-				}
-				return true;
+				return 0 == CrcChecksum.calcCrc16(data);
 			}
 			if(CrcChecksum.CRC32 == ccCrc) {
-				if(0 != CrcChecksum.calcCrc32(data)) {
-					// throw new Exception("Check CRC32 Error");
-					return false;
-				}
-				return true;
+				return 0 == CrcChecksum.calcCrc32(data);
 			}
 			return false;
-		// }catch(Exception e) {
-		// 	e.printStackTrace();
-		// 	throw e;
-		// }
 	}
 
 	@Override
-	public void setFixedHeader(FixedHeader fx_header) throws Exception {
-		// TODO Auto-generated method stub
-		FxHeader = fx_header;
+	public void setFixedHeader(FixedHeader fxHeader) throws Exception {
+		this.fxHeader = fxHeader;
 	}
 
 	@Override
-	public void setVariableHeader(VariableHeader vrb_header) throws Exception {
-		// TODO Auto-generated method stub
-		VrbHeader = vrb_header;
+	public void setVariableHeader(VariableHeader vrbHeader) throws Exception {
+		this.vrbHeader = vrbHeader;
 
 	}
 
 	@Override
 	public void setPayload(Payload pld) throws Exception {
-		// TODO Auto-generated method stub
-		Pld = pld;
+		this.pld= pld;
 
 	}
 
 	@Override
 	public void setCrcChecksum(CrcChecksum ccCrc) throws Exception {
-		// TODO Auto-generated method stub
-		Crc = ccCrc;
+		crc = ccCrc;
 	}
 
 	@Override
 	public int parseVariableHeader() throws Exception {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public boolean parseVariableHeader(byte[] buf) throws Exception {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean parsePayload(IoBuffer io_buf) throws Exception {
-		// TODO Auto-generated method stub
+	public boolean parsePayload(IoBuffer ioBuf) throws Exception {
 		return false;
 	}
 
 	@Override
 	public boolean parsePayload(byte[] buf) throws Exception {
-		// TODO Auto-generated method stub
 		return false;
 	}
 	
 	public IoBuffer getIoBuffer() {
-		return BPPacketData;
+		return bpPacketData;
 	}
 	
 	public BPPacketType getPackTypeFxHead() {
-		return FxHeader.getPacketType();
+		return fxHeader.getPacketType();
 	}
 	
 	public int getPackTypeIntFxHead() {
-		return FxHeader.getPacketType().getType();
+		return fxHeader.getPacketType().getType();
 	}
 	
 	public byte getPackFlagsByteFxHead() {
-		return FxHeader.getFlags();
+		return fxHeader.getFlags();
 	}
 	
 	public boolean getUsrNameFlagVrbHead() {
-		return VrbHeader.getUserNameFlag();
+		return vrbHeader.getUserNameFlag();
 	}
 	
 	public boolean getPwdFlagVrbHead() {
-		return VrbHeader.getPwdFlag();
+		return vrbHeader.getPwdFlag();
 	}
 	
-	public void setPldUserName(byte[] user_name) {
-		Pld.setUserName(user_name);
+	public void setPldUserName(byte[] userName) {
+		pld.setUserName(userName);
 	}
 	
 	public void setPldPassword(byte[] password) {
-		Pld.setPassword(password);
+		pld.setPassword(password);
 	}
 	
-	public void setNewClntIdFlg(boolean b) {
-		VrbHeader.setNewCliIdFlg();
+	public void setNewClntIdFlg() {
+		vrbHeader.setNewCliIdFlg();
 	}
 	
 	public void setClntIdExpired(boolean b) {
-		ClntIdExpired = b;
+		clntIdExpired = b;
 	}
 	
 	public boolean isClntIdExpired() {
-		return ClntIdExpired;
+		return clntIdExpired;
 	}
 	
 	public int getClientId() {
-		return VrbHeader.getClientId();
+		return vrbHeader.getClientId();
 	}
 	
-	public void getUserNamePld(byte[] user_name) {
-		Pld.getUserName(user_name);
+	public void getUserNamePld(byte[] userName) {
+		pld.getUserName(userName);
 	}
 	
 	public byte[] getUserNamePld() {
-		return Pld.getUserName();
+		return pld.getUserName();
 	}
 	
 	public void getPasswordPld(byte[] password) {
-		Pld.getPassword(password);
+		pld.getPassword(password);
 	}
 	
 	public byte[] getPasswordPld() {
-		return Pld.getPassword();
+		return pld.getPassword();
 	}
 	
 	public boolean getUsrClntFlagVrbHead() {
-		return VrbHeader.getUserClntFlag();
+		return vrbHeader.getUserClntFlag();
 	}
 	
 	public boolean getDevClntFlagVrbHead() {
-		return VrbHeader.getDevClntFlag();
+		return vrbHeader.getDevClntFlag();
 	}
 	
 	public boolean getUsrClntFlag() {
-		return VrbHeader.getUserClntFlag();
+		return vrbHeader.getUserClntFlag();
 	}
 	
 	public boolean getDevClntFlag() {
-		return VrbHeader.getDevClntFlag();
+		return vrbHeader.getDevClntFlag();
 	}
 	
 	public boolean getChineseFlag() {
-		return VrbHeader.getChineseFlag();
+		return vrbHeader.getChineseFlag();
 	}
 	
 	public boolean getEnglishFlag() {
-		return VrbHeader.getEnglishFlag();
+		return vrbHeader.getEnglishFlag();
 	}
 	
 	public int getPackSeq() {
-		return VrbHeader.getPackSeq();
+		return vrbHeader.getPackSeq();
 	}
 
 	@Override
@@ -314,117 +292,86 @@ public class BPPacket implements BPPacketInterface {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
-	/*
-	@Override
-	public boolean assembleCrc() throws Exception {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	*/
 	
 	@Override
 	public byte[] getPackByByte() throws Exception {
-		// TODO Auto-generated method stub
-		byte[] data = new byte[BPPacketData.remaining()];
-		return data;
+		return new byte[bpPacketData.remaining()];
 	}
 
 	@Override
 	public boolean assembleStart() throws Exception {
-		// TODO Auto-generated method stub
-		// BPPacketData = IoBuffer.allocate(256, false);
-		BPPacketData.clear();
+		bpPacketData.clear();
 		return false;
 	}
 
 	@Override
 	public boolean assembleEnd() throws Exception {
-		// TODO Auto-generated method stub
-		int CrcLen = (getFxHead().getCrcChk() == CrcChecksum.CRC32 ? 4 : 2);
-		int pack_rmn_len = BPPacketData.position() - 2 + CrcLen;
+		int crcLen = (getFxHead().getCrcChk() == CrcChecksum.CRC32 ? 4 : 2);
+		int packRmnLen = bpPacketData.position() - 2 + crcLen;
 		
-		if(pack_rmn_len > 256) {
-			int data_len_old = BPPacketData.minimumCapacity();
-			byte byte_buf[] = new byte[data_len_old - 1 - 1];
-			BPPacketData.flip();
-			byte encoded_byte = BPPacketData.get();
+		if(packRmnLen > 256) {
+			int dataLenOld = bpPacketData.minimumCapacity();
+			byte[] byteBuf = new byte[dataLenOld - 1 - 1];
+			bpPacketData.flip();
+			byte encodedByte = bpPacketData.get();
 			// skip 1 byte of temporary "RemainingLength"
-			BPPacketData.get();
-			BPPacketData.get(byte_buf);
+			bpPacketData.get();
+			bpPacketData.get(byteBuf);
 			
-			BPPacketData.clear();
+			bpPacketData.clear();
 			
-			BPPacketData.put(encoded_byte);
+			bpPacketData.put(encodedByte);
 			
-			int data_len_new = data_len_old + 1;
+			int dataLenNew = dataLenOld + 1;
 			do {
-				encoded_byte = (byte)(data_len_new % 128);
+				encodedByte = (byte)(dataLenNew % 128);
 				
-				data_len_new = data_len_new / 128;
+				dataLenNew = dataLenNew / 128;
 				// if there are more data to encode, set the top bit of this byte
-				if ( data_len_new > 0 ) {
-					encoded_byte = (byte)(encoded_byte | 0x80);
+				if ( dataLenNew > 0 ) {
+					encodedByte = (byte)(encodedByte | 0x80);
 				}
-				BPPacketData.put(encoded_byte);
-			} while ( data_len_new > 0 );
+				bpPacketData.put(encodedByte);
+			} while ( dataLenNew > 0 );
 
 		} else {
-			//int limit_tmp = BPPacketData.limit();
-			//BPPacketData.rewind();
-			//BPPacketData.get();
-			//BPPacketData.put((byte)pack_data_len);
-			int pos_crc = BPPacketData.position();
-			BPPacketData.rewind();
-			BPPacketData.get();
-			BPPacketData.put((byte)pack_rmn_len);
-			BPPacketData.position(pos_crc);
-			byte[] buf = BPPacketData.array();
-			long crc = CrcChecksum.calcCrc32(buf, 0, pos_crc);
-			BPPacketData.putUnsignedInt(crc);
-			BPPacketData.flip();
-			//BPPacketData.limit(limit_tmp);
+			int posCrc = bpPacketData.position();
+			bpPacketData.rewind();
+			bpPacketData.get();
+			bpPacketData.put((byte)packRmnLen);
+			bpPacketData.position(posCrc);
+			byte[] buf = bpPacketData.array();
+			long crcTmp = CrcChecksum.calcCrc32(buf, 0, posCrc);
+			bpPacketData.putUnsignedInt(crcTmp);
+			bpPacketData.flip();
 			
 		}
 		return false;
 	}
 	
 	public FixedHeader getFxHead() {
-		return FxHeader;
+		return fxHeader;
 	}
 	
 	public VariableHeader getVrbHead() {
-		return VrbHeader;
+		return vrbHeader;
 	}
 	
 	public Payload getPld() {
-		return Pld;
+		return pld;
 	}
 	
 	public static short assemble2ByteBigend(byte msb, byte lsb) {
 		int ret = 0;
-		ret = msb;
-		ret = (ret << 8) | lsb;
+		ret = msb & 0xFF;
+		ret = (ret << 8) | (lsb & 0xFF);
 		return (short)ret;
-	}
-	
-	/*
-	public static short assemble2ByteBigend(byte[] data, Integer offset) {
-		int ret = 0;
-		
-		ret = data[offset.intValue()];
-		offset++;
-		ret = (ret << 8) | data[offset.intValue()];
-		offset++;
-		
-		return (short)ret;
-	}
-	*/                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+	}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
 	
 	public static short assemble2ByteBigend(byte[] data, int offset) {
 		int ret = 0;
-		ret = data[offset++];
-		ret = (ret << 8) | data[offset++];
+		ret = data[offset++] & 0xFF;
+		ret = (ret << 8) | (data[offset] & 0xFF);
 		
 		return (short)ret;
 	}

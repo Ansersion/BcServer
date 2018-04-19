@@ -9,12 +9,12 @@ import other.CrcChecksum;
  * @author Ansersion
  *
  */
-public class BPPacket_POSTACK extends BPPacket {
+public class BPPacketPOSTACK extends BPPacket {
 	
 	int PackSeq;
 	
 	
-	protected BPPacket_POSTACK() {
+	protected BPPacketPOSTACK() {
 		super();
 		FixedHeader fx_head = getFxHead();
 		fx_head.setPacketType(BPPacketType.POSTACK);

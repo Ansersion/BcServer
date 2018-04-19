@@ -7,7 +7,7 @@ package bp_packet;
  * @author hubing
  *
  */
-public class BPPacket_PUSHACK extends BPPacket {
+public class BPPacketPUSHACK extends BPPacket {
 	@Override
 	public boolean assembleFixedHeader() throws Exception {
 		// TODO Auto-generated method stub

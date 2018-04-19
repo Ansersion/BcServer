@@ -77,24 +77,24 @@ public class BPSysSigTable {
 	public static int SID_ID_RESERVED = 0x0000;
 	
 	
-	private List<SysSigInfo> SysSigInfo_Lst;
+	private List<SysSigInfo> sysSigInfoLst;
 
-	static BPSysSigTable SysSigTab = null;
+	static BPSysSigTable sysSigTab = null;
 	public static int BP_SYS_SIG_SET_VERSION = 0;
 
 	public static BPSysSigTable getSysSigTableInstance() {
-		if (null == SysSigTab) {
-			SysSigTab = new BPSysSigTable();
+		if (null == sysSigTab) {
+			sysSigTab = new BPSysSigTable();
 		}
-		return SysSigTab;
+		return sysSigTab;
 	}
 
 	protected BPSysSigTable() {
-		SysSigInfo_Lst = new ArrayList<SysSigInfo>();
+		sysSigInfoLst = new ArrayList<>();
 	}
 	
 	public List<SysSigInfo> getSysSigInfoLst() {
-		return SysSigInfo_Lst;
+		return sysSigInfoLst;
 	}
 
 	public boolean loadTab() throws FileNotFoundException,
@@ -102,9 +102,9 @@ public class BPSysSigTable {
 		FileInputStream fis = new FileInputStream(
 				"config/sys_sig_info_basic.csv");
 		InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
-		BufferedReader sys_sig_in = new BufferedReader(isr);
+		BufferedReader sysSigIn = new BufferedReader(isr);
 
-		SysSigInfo_Lst.clear();
+		sysSigInfoLst.clear();
 		boolean ret = false;
 		String str_tmp = new String("");
 
@@ -131,10 +131,10 @@ public class BPSysSigTable {
 			String pattern = "^(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*)$";
 			Pattern r = Pattern.compile(pattern);
 			int index;
-			sys_sig_in.readLine();
-			sys_sig_in.readLine();
+			sysSigIn.readLine();
+			sysSigIn.readLine();
 
-			while ((s = sys_sig_in.readLine()) != null) {
+			while ((s = sysSigIn.readLine()) != null) {
 				// List<String> lang_res_tmp = new ArrayList<String>();
 				Matcher m = r.matcher(s);
 				index = 0;
@@ -161,7 +161,7 @@ public class BPSysSigTable {
 						} else if (0 == m.group(4).compareToIgnoreCase("NO")) {
 							is_alm = false;
 						} else {
-							sys_sig_in.close();
+							sysSigIn.close();
 							// is_alm = false;
 							throw new Exception(m.group(1) + ": is alarm error");
 						}
@@ -183,7 +183,7 @@ public class BPSysSigTable {
 								.compareToIgnoreCase("STRING")) {
 							val_type = 6;
 						} else {
-							sys_sig_in.close();
+							sysSigIn.close();
 							throw new Exception(m.group(1)
 									+ ": value type error");
 						}
@@ -194,7 +194,7 @@ public class BPSysSigTable {
 						
 						try {
 							if (scanner_unit.hasNext() == false) {
-								sys_sig_in.close();
+								sysSigIn.close();
 								throw new Exception(m.group(1)
 										+ ": unit language resource error");
 							}
@@ -206,7 +206,7 @@ public class BPSysSigTable {
 									.compareToIgnoreCase("RW")) {
 								permission = 1;
 							} else {
-								sys_sig_in.close();
+								sysSigIn.close();
 								throw new Exception(m.group(1)
 										+ ": is alarm error");
 							}
@@ -277,7 +277,7 @@ public class BPSysSigTable {
 										map_enm_lang_res.put(enum_index,
 												enum_lang_res_index);
 									} else {
-										sys_sig_in.close();
+										sysSigIn.close();
 										scanner_enm.close();
 										throw new Exception(
 												"Error: parse enumeration error");
@@ -295,7 +295,7 @@ public class BPSysSigTable {
 						} else if (0 == m.group(14).compareToIgnoreCase("NO")) {
 							en_statistics = false;
 						} else {
-							sys_sig_in.close();
+							sysSigIn.close();
 							throw new Exception(m.group(1) + ": enable statistics error");
 							// en_statistics = false;
 						}
@@ -305,7 +305,7 @@ public class BPSysSigTable {
 							dly_aft_alm = Integer.parseInt(m.group(17));
 						}
 					}
-					SysSigInfo_Lst.add(new SysSigInfo(is_alm, val_type,
+					sysSigInfoLst.add(new SysSigInfo(is_alm, val_type,
 							unit_lang_res, permission, accuracy, val_min,
 							val_max, val_def, classLangRes, map_enm_lang_res, en_statistics,
 							alm_class, dly_bef_alm, dly_aft_alm));
@@ -316,18 +316,18 @@ public class BPSysSigTable {
 			}
 
 			String s_debug = new String("");
-			for (int i = 0; i < SysSigInfo_Lst.size(); i++) {
+			for (int i = 0; i < sysSigInfoLst.size(); i++) {
 
-				s_debug += "" + i + ":" + SysSigInfo_Lst.get(i).IsAlm + ","
-						+ SysSigInfo_Lst.get(i).ValType + ","
-						+ SysSigInfo_Lst.get(i).UnitLangRes + ","
-						+ SysSigInfo_Lst.get(i).Permission + ","
-						+ SysSigInfo_Lst.get(i).Accuracy + ","
-						+ SysSigInfo_Lst.get(i).ValMin.getValStr() + ","
-						+ SysSigInfo_Lst.get(i).ValMax.getValStr() + ","
-						+ SysSigInfo_Lst.get(i).ValDef.getValStr() + ",";
-				if (null != SysSigInfo_Lst.get(i).MapEnmLangRes) {
-					Iterator<Map.Entry<Integer, Integer>> entries = SysSigInfo_Lst
+				s_debug += "" + i + ":" + sysSigInfoLst.get(i).IsAlm + ","
+						+ sysSigInfoLst.get(i).ValType + ","
+						+ sysSigInfoLst.get(i).UnitLangRes + ","
+						+ sysSigInfoLst.get(i).Permission + ","
+						+ sysSigInfoLst.get(i).Accuracy + ","
+						+ sysSigInfoLst.get(i).ValMin.getValStr() + ","
+						+ sysSigInfoLst.get(i).ValMax.getValStr() + ","
+						+ sysSigInfoLst.get(i).ValDef.getValStr() + ",";
+				if (null != sysSigInfoLst.get(i).MapEnmLangRes) {
+					Iterator<Map.Entry<Integer, Integer>> entries = sysSigInfoLst
 							.get(i).MapEnmLangRes.entrySet().iterator();
 					while (entries.hasNext()) {
 						Map.Entry<Integer, Integer> entry = entries.next();
@@ -337,14 +337,14 @@ public class BPSysSigTable {
 				} else {
 					s_debug += "NULL,";
 				}
-				s_debug += SysSigInfo_Lst.get(i).EnStatistics + ","
-						+ SysSigInfo_Lst.get(i).AlmClass + ","
-						+ SysSigInfo_Lst.get(i).DlyBefAlm + ","
-						+ SysSigInfo_Lst.get(i).DlyAftAlm + "\n";
+				s_debug += sysSigInfoLst.get(i).EnStatistics + ","
+						+ sysSigInfoLst.get(i).AlmClass + ","
+						+ sysSigInfoLst.get(i).DlyBefAlm + ","
+						+ sysSigInfoLst.get(i).DlyAftAlm + "\n";
 			}
 			System.out.println(s_debug);
 
-			sys_sig_in.close();
+			sysSigIn.close();
 			ret = true;
 
 		} catch (Exception e) {

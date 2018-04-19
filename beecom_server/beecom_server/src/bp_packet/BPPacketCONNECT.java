@@ -1,6 +1,11 @@
 package bp_packet;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import org.apache.mina.core.buffer.IoBuffer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import other.CrcChecksum;
 
@@ -8,23 +13,25 @@ import other.CrcChecksum;
  * @author Ansersion
  * 
  */
-public class BPPacket_CONNECT extends BPPacket {
+public class BPPacketCONNECT extends BPPacket {
+	
+	private static final Logger logger = LoggerFactory.getLogger(BPPacketCONNECT.class); 
 
 	enum ParseVrbState {
 		PARSE_STATE_1, PARSE_STATE_2;
 	}
 
-	ParseVrbState PrsVrbSt = ParseVrbState.PARSE_STATE_1;
+	ParseVrbState prsVrbSt = ParseVrbState.PARSE_STATE_1;
 
-	protected BPPacket_CONNECT(FixedHeader fx_header) {
+	protected BPPacketCONNECT(FixedHeader fx_header) {
 		super(fx_header);
 	}
 
-	protected BPPacket_CONNECT() {
+	protected BPPacketCONNECT() {
 	}
 
 	@Override
-	public int Decrypt(EncryptType etEncryptType) throws Exception {
+	public int decrypt(EncryptType etEncryptType) throws Exception {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -49,27 +56,28 @@ public class BPPacket_CONNECT extends BPPacket {
 			encoded_byte = io_buf.get();
 			super.parseVrbHeadFlags(encoded_byte);
 
-			// encoded_byte = io_buf.get();
-			// client_id_len = super.parseVrbClientIdLen(encoded_byte);
 			client_id_len = 2;
 
 			// client ID(client_id_len byte) + alive time(2 byte) + timeout(1
 			// byte)
 			byte[] id = new byte[client_id_len];
 			for (int i = 0; i < client_id_len; i++) {
-				id[i] = (byte) io_buf.get();
+				id[i] = io_buf.get();
 			}
 			
 			super.parseVrbClientId(id, client_id_len);
 
-			byte alive_time_msb = io_buf.get();
-			byte alive_time_lsb = io_buf.get();
-			super.parseVrbAliveTime(alive_time_msb, alive_time_lsb);
+			byte aliveTimeMsb = io_buf.get();
+			byte aliveTimeLsb = io_buf.get();
+			super.parseVrbAliveTime(aliveTimeMsb, aliveTimeLsb);
 
 			byte timeout = io_buf.get();
 			super.parseVrbTimeout(timeout);
 		} catch (Exception e) {
-			e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw, true));
+            String str = sw.toString();
+            logger.error(str);
 			throw e;
 		}
 
@@ -109,7 +117,10 @@ public class BPPacket_CONNECT extends BPPacket {
 			byte timeout = buf[counter++];
 			super.parseVrbTimeout(timeout);
 		} catch (Exception e) {
-			e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw, true));
+            String str = sw.toString();
+            logger.error(str);
 			throw e;
 		}
 
@@ -118,85 +129,59 @@ public class BPPacket_CONNECT extends BPPacket {
 	
 	@Override
 	public int parseVariableHeader() throws Exception {
-		// TODO Auto-generated method stub
-		int counter = 0;
-		int client_id_len = 0;
 
 		try {
 			// level(1 byte) + flags(1 byte) + client ID length(1 byte)
-			byte encoded_byte = 0;
-			encoded_byte = getIoBuffer().get();
-			super.parseVrbHeadLevel(encoded_byte);
+			byte encodedByte = 0;
+			encodedByte = getIoBuffer().get();
+			super.parseVrbHeadLevel(encodedByte);
 
-			encoded_byte = getIoBuffer().get();
-			super.parseVrbHeadFlags(encoded_byte);
+			encodedByte = getIoBuffer().get();
+			super.parseVrbHeadFlags(encodedByte);
 
-			// encoded_byte = getIoBuffer().get();
-			// client_id_len = super.parseVrbClientIdLen(encoded_byte);
+			int clientId = getIoBuffer().getUnsignedShort();
+			getVrbHead().setClientId(clientId);
 
-			// client ID(client_id_len byte) + alive time(2 byte) + timeout(1
-			// byte)
-			// byte[] id = new byte[client_id_len];
-			// for (int i = 0; i < client_id_len; i++) {
-			//	id[i] = getIoBuffer().get();
-			// }
-			int client_id = getIoBuffer().getUnsignedShort();
-			getVrbHead().setClientId(client_id);
-			// super.parseVrbClientId(id, client_id_len);
+			int aliveTime = getIoBuffer().getUnsignedShort();
+			getVrbHead().setAliveTime(aliveTime);
 
-			int alive_time = getIoBuffer().getUnsignedShort();
-			getVrbHead().setAliveTime(alive_time);
-
-			int time_out = getIoBuffer().get();
-			getVrbHead().setTimeout(time_out);
+			int timeOut = getIoBuffer().get();
+			getVrbHead().setTimeout(timeOut);
 		} catch (Exception e) {
-			e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw, true));
+            String str = sw.toString();
+            logger.error(str);
 			throw e;
 		}
 
 		return 0;
 	}
 
-	/*
-	 * @Override public boolean parseVariableHeader() throws Exception { // TODO
-	 * Auto-generated method stub // return parseVariableHeader(); return false;
-	 * }
-	 */
-
 	@Override
 	public int parsePayload() throws Exception {
-		// TODO Auto-generated method stub
 		try {
-
 			if (!getUsrNameFlagVrbHead() || !getPwdFlagVrbHead()) {
 				return 0;
 			}
 			
-			// int user_name_len = getIoBuffer().get();
-			// user_name_len = (user_name_len << 8) + getIoBuffer().get();
-			int user_name_len = getIoBuffer().getUnsignedShort();
-			byte[] user_name = new byte[user_name_len];
-			getIoBuffer().get(user_name);
-			/*for (int i = 0; i < user_name_len; i++) {
-				user_name[i] = getIoBuffer().get();
-			}*/
 
-			// int password_len = getIoBuffer().get();
-			// password_len = (password_len << 8) + getIoBuffer().get();
+			int userNameLen = getIoBuffer().getUnsignedShort();
+			byte[] userName = new byte[userNameLen];
+			getIoBuffer().get(userName);
 			
-			int password_len = getIoBuffer().getUnsignedShort();
-			byte[] password = new byte[password_len];
+			int passwordLen = getIoBuffer().getUnsignedShort();
+			byte[] password = new byte[passwordLen];
 			getIoBuffer().get(password);
-			// for (int i = 0; i < password_len; i++) {
-			//	password[i] = getIoBuffer().get();
-			// }
 			
-			setPldUserName(user_name);
+			setPldUserName(userName);
 			setPldPassword(password);
 
 		} catch (Exception e) {
-			System.out.println("Error: parsePayload error");
-			e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw, true));
+            String str = sw.toString();
+            logger.error(str);
 			throw e;
 		}
 		return 0;
@@ -225,16 +210,16 @@ public class BPPacket_CONNECT extends BPPacket {
 			
 			int counter = 0;
 			int user_name_len = buf[counter++];
-			user_name_len = (user_name_len << 8) + buf[counter++];
+			user_name_len = (user_name_len << 8) + (buf[counter++] & 0xFF);
 			byte[] user_name = new byte[user_name_len];
 			for (int i = 0; i < user_name_len; i++) {
 				user_name[i] = buf[counter++];
 			}
 
-			int password_len = buf[counter++];
-			password_len = (password_len << 8) + buf[counter++];
-			byte[] password = new byte[password_len];
-			for (int i = 0; i < password_len; i++) {
+			int passwordLen = buf[counter++];
+			passwordLen = (passwordLen << 8) + (buf[counter++] & 0xFF);
+			byte[] password = new byte[passwordLen];
+			for (int i = 0; i < passwordLen; i++) {
 				password[i] = buf[counter++];
 			}
 			
@@ -242,8 +227,10 @@ public class BPPacket_CONNECT extends BPPacket {
 			setPldPassword(password);
 
 		} catch (Exception e) {
-			System.out.println("Error: parsePayload error");
-			e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw, true));
+            String str = sw.toString();
+            logger.error(str);
 			throw e;
 		}
 

@@ -14,22 +14,22 @@ import java.util.Iterator;
  * @author Ansersion
  * 
  */
-public class BPPacket_GETACK extends BPPacket {
+public class BPPacketGETACK extends BPPacket {
 
 	int DeviceNum;
 	Vector<DevSigData> VctDevSigData;
 
-	protected BPPacket_GETACK(FixedHeader fx_header) {
+	protected BPPacketGETACK(FixedHeader fx_header) {
 		super(fx_header);
 	}
 
-	protected BPPacket_GETACK(FixedHeader fx_header, int dev_num) {
+	protected BPPacketGETACK(FixedHeader fx_header, int dev_num) {
 		super(fx_header);
 		DeviceNum = dev_num;
 	}
 
 	
-	protected BPPacket_GETACK() {
+	protected BPPacketGETACK() {
 		super();
 		FixedHeader fx_head = getFxHead();
 		fx_head.setPacketType(BPPacketType.GETACK);

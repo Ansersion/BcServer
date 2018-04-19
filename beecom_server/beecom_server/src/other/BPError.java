@@ -12,33 +12,38 @@ import java.util.List;
 public class BPError {
 	// 0: error
 	// else: no error
-	public int ErrId;
-	public List<Integer> SigIdLst;
+	private int errId;
+	private List<Integer> sigIdLst;
 	
 	public BPError() {
-		ErrId = 0;
-		SigIdLst = null;
+		errId = 0;
+		sigIdLst = null;
 	}
 	
 	public void setErrId(int id) {
-		ErrId = id;
+		errId = id;
 	}
 	
 	public int getErrId() {
-		return ErrId;
+		return errId;
 	}
 	
 	public boolean isErr() {
-		return 0 != ErrId;
+		return 0 != errId;
 	}
 	
 	public void reset() {
-		ErrId = 0;
-		SigIdLst = null;
-	}
-	
-	public List<Integer> getLst() {
-		return SigIdLst;
+		errId = 0;
+		sigIdLst = null;
 	}
 
+	public List<Integer> getSigIdLst() {
+		return sigIdLst;
+	}
+
+	public void setSigIdLst(List<Integer> sigIdLst) {
+		this.sigIdLst = sigIdLst;
+	}
+
+	
 }

@@ -9,7 +9,7 @@ import org.apache.mina.core.buffer.IoBuffer;
  * @author Ansersion
  *
  */
-public class BPPacket_PUSH extends BPPacket {
+public class BPPacketPUSH extends BPPacket {
 	@Override
 	public boolean parseVariableHeader(IoBuffer io_buf) throws Exception {
 		// TODO Auto-generated method stub

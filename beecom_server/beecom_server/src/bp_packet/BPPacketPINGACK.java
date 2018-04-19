@@ -9,13 +9,13 @@ import other.CrcChecksum;
  * @author hubing
  *
  */
-public class BPPacket_PINGACK extends BPPacket {
+public class BPPacketPINGACK extends BPPacket {
 	
 	public static final int RET_CODE_OK = 0x00;
 	public static final int RET_CODE_CLNT_ID_INVALID = 0x02;
 	
 	
-	protected BPPacket_PINGACK() {
+	protected BPPacketPINGACK() {
 		super();
 		FixedHeader fx_head = getFxHead();
 		fx_head.setPacketType(BPPacketType.PINGACK);

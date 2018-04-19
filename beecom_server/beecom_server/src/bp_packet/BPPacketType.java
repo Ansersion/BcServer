@@ -4,7 +4,7 @@
 package bp_packet;
 
 import java.util.HashMap;
-import java.lang.Integer;
+import java.util.Map;
 
 
 /**
@@ -36,27 +36,27 @@ public class BPPacketType {
 	
 	public static final byte CONNECT_BYTE = 0x10;
     
-    private static HashMap<Integer, BPPacketType> BPMap;
+    private static Map<Integer, BPPacketType> bpMap;
     static {
-    	BPMap = new HashMap<Integer, BPPacketType>();
-    	BPMap.put(0, INVALID);
+    	bpMap = new HashMap<>();
+    	bpMap.put(0, INVALID);
     	
-    	BPMap.put(1, CONNECT);
-    	BPMap.put(2, CONNACK);
-    	BPMap.put(3, GET);
-    	BPMap.put(4, GETACK);
-    	BPMap.put(5, POST);
-    	BPMap.put(6, POSTACK);
-    	BPMap.put(7, REPORT);
-    	BPMap.put(8, RPRTACK);
-    	BPMap.put(9, PING);
-    	BPMap.put(10, PINGACK);
-    	BPMap.put(11, PUSH);
-    	BPMap.put(12, PUSHACK);
-    	BPMap.put(13, DISCONN);
+    	bpMap.put(1, CONNECT);
+    	bpMap.put(2, CONNACK);
+    	bpMap.put(3, GET);
+    	bpMap.put(4, GETACK);
+    	bpMap.put(5, POST);
+    	bpMap.put(6, POSTACK);
+    	bpMap.put(7, REPORT);
+    	bpMap.put(8, RPRTACK);
+    	bpMap.put(9, PING);
+    	bpMap.put(10, PINGACK);
+    	bpMap.put(11, PUSH);
+    	bpMap.put(12, PUSHACK);
+    	bpMap.put(13, DISCONN);
     	
-    	BPMap.put(14, INVALID);
-    	BPMap.put(15, INVALID);
+    	bpMap.put(14, INVALID);
+    	bpMap.put(15, INVALID);
     }
     
     private final String strName;
@@ -92,12 +92,12 @@ public class BPPacketType {
     	return (byte)((iType & BPPACK_TYPE_MASK) << BPPACK_TYPE_BIT_OFFSET);
     }
     
-    public static BPPacketType getType(byte encoded_type) {
-    	int index = (encoded_type >>> BPPACK_TYPE_BIT_OFFSET) & BPPACK_TYPE_MASK;
-    	if(index >= BPMap.size()) {
+    public static BPPacketType getType(byte encodedByte) {
+    	int index = (encodedByte >>> BPPACK_TYPE_BIT_OFFSET) & BPPACK_TYPE_MASK;
+    	if(index >= bpMap.size()) {
     		return INVALID;
     	}
-    	return BPMap.get(index);
+    	return bpMap.get(index);
     	
     }
 

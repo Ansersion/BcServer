@@ -23,5 +23,9 @@
 	<classpathentry kind="lib" path="mina/tomcat-jni-9.0.0.M11.jar"/>
 	<classpathentry kind="lib" path="mina/xbean-spring-4.5.jar"/>
 	<classpathentry kind="lib" path="mysql/mysql-connector-java-5.1.44-bin.jar"/>
+	<classpathentry kind="lib" path="logback/logback-access-1.2.3-sources.jar"/>
+	<classpathentry kind="lib" path="logback/logback-access-1.2.3.jar"/>
+	<classpathentry kind="lib" path="logback/logback-core-1.2.3-sources.jar"/>
+	<classpathentry kind="lib" path="logback/logback-core-1.2.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

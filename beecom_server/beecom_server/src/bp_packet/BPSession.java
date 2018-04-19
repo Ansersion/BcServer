@@ -26,59 +26,59 @@ class SigIdNonExistException extends Exception {
 	}
 }
 public class BPSession {
-	public int ClientId = 0;
-	long UniqDevId = 0;
-	public byte[] UserName = null;
-	byte[] Password = null;
-	boolean IsUserLogin = false;
-	boolean IsDevLogin = false;
-	public int SeqIdDevClnt = 0;
-	int SeqIdUsrClnt = 0;
+	public int clientId = 0;
+	long uniqDevId = 0;
+	public byte[] userName = null;
+	byte[] password = null;
+	boolean isUserLogin = false;
+	boolean isDevLogin = false;
+	public int seqIdDevClnt = 0;
+	int seqIdUsrClnt = 0;
 	String DevName;
 	Map<Integer, Byte[]> MapDist2SysSigMap = null;
-	Map<Integer, BPValue> SysSigMap;
+	Map<Integer, BPValue> sysSigMap;
 	public BPError Error;
 	
-	public BPSession(byte[] usr_name, byte[] password, int client_id, boolean usr_login, boolean dev_login, long uniq_dev_id) {
-		IsDevLogin = dev_login;
-		IsUserLogin = usr_login;
-		ClientId = client_id;
-		UniqDevId = uniq_dev_id;
+	public BPSession(byte[] userName, byte[] password, int clientId, boolean userLogin, boolean devLogin, long uniqDevId) {
+		isDevLogin = devLogin;
+		isUserLogin = userLogin;
+		clientId = clientId;
+		this.uniqDevId = uniqDevId;
 		
-		UserName = new byte[usr_name.length];
-		for(int i = 0; i < usr_name.length; i++) {
-			UserName[i] = usr_name[i];
+		this.userName = new byte[userName.length];
+		for(int i = 0; i < userName.length; i++) {
+			this.userName[i] = userName[i];
 		}
 		
-		Password = new byte[password.length];
+		this.password = new byte[password.length];
 		for(int i = 0; i < password.length; i++) {
-			Password[i] = password[i];
+			this.password[i] = password[i];
 		}
-		SeqIdDevClnt = 0;
-		SeqIdUsrClnt = 0;
-		SysSigMap = new HashMap<Integer, BPValue>();
+		seqIdDevClnt = 0;
+		seqIdUsrClnt = 0;
+		sysSigMap = new HashMap<>();
 		
-		Error = Error = new BPError();;
+		Error = new BPError();;
 	}
 	
 	public long getUniqDevId() {
-		return UniqDevId;
+		return uniqDevId;
 	}
 	
 	public int getClntId() {
-		return ClientId;
+		return clientId;
 	}
 	
 	public Map getSysSigMap() {
-		return SysSigMap;
+		return sysSigMap;
 	}
 	
 	public String getDevName() {
 		return DevName;
 	}
 	
-	public void setUniqDevId(long uniq_dev_id) {
-		UniqDevId = uniq_dev_id;
+	public void setUniqDevId(long uniqDevId) {
+		this.uniqDevId = uniqDevId;
 	}
 	
 	public boolean setSysSig(DevSigData dev_sig_data) {
@@ -100,7 +100,7 @@ public class BPSession {
 					Map.Entry entry = (Map.Entry) entries.next();
 					key = (Integer) entry.getKey();
 					value = (Short) entry.getValue();
-					tmp = SysSigMap.get(key);
+					tmp = sysSigMap.get(key);
 					if (null == tmp) {
 						throw new SigIdNonExistException();
 					}
@@ -115,7 +115,7 @@ public class BPSession {
 					Map.Entry entry = (Map.Entry) entries.next();
 					key = (Integer) entry.getKey();
 					value = (Short) entry.getValue();
-					tmp = SysSigMap.get(key);
+					tmp = sysSigMap.get(key);
 					if (null == tmp) {
 						throw new SigIdNonExistException();
 					}
@@ -130,7 +130,7 @@ public class BPSession {
 					Map.Entry entry = (Map.Entry) entries.next();
 					key = (Integer) entry.getKey();
 					value = (Short) entry.getValue();
-					tmp = SysSigMap.get(key);
+					tmp = sysSigMap.get(key);
 					if (null == tmp) {
 						throw new SigIdNonExistException();
 					}
@@ -140,9 +140,9 @@ public class BPSession {
 		} catch (SigIdNonExistException e) {
 			e.printStackTrace();
 			
-			Error.setErrId(BPPacket_RPRTACK.RET_CODE_SIG_ID_INVALID);
-			Error.SigIdLst = new ArrayList<Integer>();
-			Error.SigIdLst.add(key);
+			Error.setErrId(BPPacketRPRTACK.RET_CODE_SIG_ID_INVALID);
+			Error.setSigIdLst(new ArrayList<Integer>());
+			Error.getSigIdLst().add(key);
 			ret = false;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -153,8 +153,8 @@ public class BPSession {
 	
 	public boolean setSysSig(Integer sig_id, BPValue val) {
 		boolean ret = false;
-		if(SysSigMap.containsKey(sig_id)) {
-			SysSigMap.put(sig_id, val);
+		if(sysSigMap.containsKey(sig_id)) {
+			sysSigMap.put(sig_id, val);
 			ret = true;
 		}
 		return ret;
@@ -162,8 +162,8 @@ public class BPSession {
 	
 	public BPValue getSysSigVal(Integer sig_id) {
 		BPValue val = null;
-		if(SysSigMap.containsKey(sig_id)) {
-			BPValue tmp = SysSigMap.get(sig_id);
+		if(sysSigMap.containsKey(sig_id)) {
+			BPValue tmp = sysSigMap.get(sig_id);
 			val = new BPValue(tmp.getType());
 			val.setValStr(tmp.getValStr());
 		}
@@ -175,7 +175,7 @@ public class BPSession {
 	}
 	
 	public void dumpSysSig() {
-		Iterator entries = SysSigMap.entrySet().iterator(); 
+		Iterator entries = sysSigMap.entrySet().iterator(); 
 		while (entries.hasNext()) {    
 		    Map.Entry entry = (Map.Entry) entries.next();
 		    Integer key = (Integer)entry.getKey();  
@@ -199,7 +199,7 @@ public class BPSession {
 	}
 	
 	public void initSysSigValDefault() {
-		SysSigMap.clear();
+		sysSigMap.clear();
 		Iterator entries = MapDist2SysSigMap.entrySet().iterator();
 		while(entries.hasNext()) {
 			Map.Entry entry = (Map.Entry)entries.next();
@@ -209,28 +209,28 @@ public class BPSession {
 			BPSysSigTable sys_sig_tab = BPSysSigTable.getSysSigTableInstance();
 			for(int i = 0; i < value.length; i++) {
 				if(((1 << 0) & value[i]) == (1 << 0)) {
-					SysSigMap.put(dist_sig_start_id + i * 8 + 7, sys_sig_tab.getSysSigInfoLst().get(i * 8 + 7).ValDef);
+					sysSigMap.put(dist_sig_start_id + i * 8 + 7, sys_sig_tab.getSysSigInfoLst().get(i * 8 + 7).ValDef);
 				}
 				if(((1 << 1) & value[i]) == (1 << 1)) {
-					SysSigMap.put(dist_sig_start_id + i * 8 + 6, sys_sig_tab.getSysSigInfoLst().get(i * 8 + 6).ValDef);
+					sysSigMap.put(dist_sig_start_id + i * 8 + 6, sys_sig_tab.getSysSigInfoLst().get(i * 8 + 6).ValDef);
 				}
 				if(((1 << 2) & value[i]) == (1 << 2)) {
-					SysSigMap.put(dist_sig_start_id + i * 8 + 5, sys_sig_tab.getSysSigInfoLst().get(i * 8 + 5).ValDef);
+					sysSigMap.put(dist_sig_start_id + i * 8 + 5, sys_sig_tab.getSysSigInfoLst().get(i * 8 + 5).ValDef);
 				}
 				if(((1 << 3) & value[i]) == (1 << 3)) {
-					SysSigMap.put(dist_sig_start_id + i * 8 + 4, sys_sig_tab.getSysSigInfoLst().get(i * 8 + 4).ValDef);
+					sysSigMap.put(dist_sig_start_id + i * 8 + 4, sys_sig_tab.getSysSigInfoLst().get(i * 8 + 4).ValDef);
 				}
 				if(((1 << 4) & value[i]) == (1 << 4)) {
-					SysSigMap.put(dist_sig_start_id + i * 8 + 3, sys_sig_tab.getSysSigInfoLst().get(i * 8 + 3).ValDef);
+					sysSigMap.put(dist_sig_start_id + i * 8 + 3, sys_sig_tab.getSysSigInfoLst().get(i * 8 + 3).ValDef);
 				}
 				if(((1 << 5) & value[i]) == (1 << 5)) {
-					SysSigMap.put(dist_sig_start_id + i * 8 + 2, sys_sig_tab.getSysSigInfoLst().get(i * 8 + 2).ValDef);
+					sysSigMap.put(dist_sig_start_id + i * 8 + 2, sys_sig_tab.getSysSigInfoLst().get(i * 8 + 2).ValDef);
 				}
 				if(((1 << 6) & value[i]) == (1 << 6)) {
-					SysSigMap.put(dist_sig_start_id + i * 8 + 1, sys_sig_tab.getSysSigInfoLst().get(i * 8 + 1).ValDef);
+					sysSigMap.put(dist_sig_start_id + i * 8 + 1, sys_sig_tab.getSysSigInfoLst().get(i * 8 + 1).ValDef);
 				}
 				if(((1 << 7) & value[i]) == (1 << 7)) {
-					SysSigMap.put(dist_sig_start_id + i * 8 + 0, sys_sig_tab.getSysSigInfoLst().get(i * 8 + 0).ValDef);
+					sysSigMap.put(dist_sig_start_id + i * 8 + 0, sys_sig_tab.getSysSigInfoLst().get(i * 8 + 0).ValDef);
 				}
 			}
 		}
