@@ -5,9 +5,14 @@ package bp_packet;
 
 import java.util.Vector;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import other.CrcChecksum;
 
 import java.util.Map;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Iterator;
 
 /**
@@ -15,16 +20,17 @@ import java.util.Iterator;
  * 
  */
 public class BPPacketGETACK extends BPPacket {
-
+	private static final Logger logger = LoggerFactory.getLogger(BPPacketGETACK.class); 
+	
 	int DeviceNum;
 	Vector<DevSigData> VctDevSigData;
 
-	protected BPPacketGETACK(FixedHeader fx_header) {
-		super(fx_header);
+	protected BPPacketGETACK(FixedHeader fxHeader) {
+		super(fxHeader);
 	}
 
-	protected BPPacketGETACK(FixedHeader fx_header, int dev_num) {
-		super(fx_header);
+	protected BPPacketGETACK(FixedHeader fxHeader, int dev_num) {
+		super(fxHeader);
 		DeviceNum = dev_num;
 	}
 
@@ -75,14 +81,13 @@ public class BPPacketGETACK extends BPPacket {
 				// TODO: parse the error return code
 				return -1;
 			}
-			// int user_name_len = getIoBuffer().get();
 			// user_name_len = (user_name_len << 8) + getIoBuffer().get();
 			int sig_tab_num = getIoBuffer().get();
 			DevSigData sig_data = new DevSigData();
 			for(int i = 0; i < sig_tab_num; i++) {
 				boolean ret = sig_data.parseSigDataTab(getIoBuffer());
 				if(false == ret) {
-					System.out.println("Error(GETACK): parsePayload error");
+					logger.error("Error(GETACK): parsePayload error");
 					return -1;
 				}
 				
@@ -90,8 +95,10 @@ public class BPPacketGETACK extends BPPacket {
 			getPld().setSigData(sig_data);
 
 		} catch (Exception e) {
-			System.out.println("Error: parsePayload error");
-			e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw, true));
+            String str = sw.toString();
+            logger.error(str);
 			throw e;
 		}
 		return 0;
@@ -102,9 +109,9 @@ public class BPPacketGETACK extends BPPacket {
 		// TODO Auto-generated method stub
 		int pack_type = getPackTypeIntFxHead();
 		byte pack_flags = getPackFlagsByteFxHead();
-		byte encoded_byte = (byte) (((pack_type & 0xf) << 4) | (pack_flags & 0xf));
+		byte encodedByte = (byte) (((pack_type & 0xf) << 4) | (pack_flags & 0xf));
 
-		getIoBuffer().put(encoded_byte);
+		getIoBuffer().put(encodedByte);
 
 		// Remaininglength 1 byte reserved
 		getIoBuffer().put((byte) 0);
@@ -115,7 +122,7 @@ public class BPPacketGETACK extends BPPacket {
 	@Override
 	public boolean assembleVariableHeader() throws Exception {
 		// TODO Auto-generated method stub
-		byte encoded_byte;
+		byte encodedByte;
 		
 		int pack_seq = getVrbHead().getPackSeq();
 		getIoBuffer().putUnsignedShort(pack_seq);
@@ -128,7 +135,7 @@ public class BPPacketGETACK extends BPPacket {
 	@Override
 	public boolean assemblePayload() throws Exception {
 		// TODO Auto-generated method stub
-		byte encoded_byte;
+		byte encodedByte;
 
 		int dev_num = VctDevSigData.size() & 0x0000FFFF;
 		getIoBuffer().putUnsignedShort(dev_num);
@@ -140,14 +147,14 @@ public class BPPacketGETACK extends BPPacket {
 
 			if (sig_num > 0) {
 				if (sig_num > 0x3F) {
-					System.out.println("WARNING: too many signal of 1 byte");
+					logger.error("WARNING: too many signal of 1 byte");
 				} else {
-					encoded_byte = (byte) (sig_num & 0x3F);
+					encodedByte = (byte) (sig_num & 0x3F);
 					// clear bit6, bit7
-					encoded_byte &= ~0xC0;
+					encodedByte &= ~0xC0;
 					// set the value type of bit6, bit7 to '00b'
-					encoded_byte |= 0x00;
-					getIoBuffer().put(encoded_byte);
+					// encodedByte |= 0x00;
+					getIoBuffer().put(encodedByte);
 					Map<Integer, Byte> map = sig_data_ack.get1ByteDataMap();
 
 					Iterator it = map.entrySet().iterator();
@@ -164,14 +171,14 @@ public class BPPacketGETACK extends BPPacket {
 			sig_num = sig_data_ack.get2ByteDataMap().size();
 			if (sig_num > 0) {
 				if (sig_num > 0x3F) {
-					System.out.println("WARNING: too many signal of 2 byte");
+					logger.error("WARNING: too many signal of 2 byte");
 				} else {
-					encoded_byte = (byte) (sig_num & 0x3F);
+					encodedByte = (byte) (sig_num & 0x3F);
 					// clear bit6, bit7
-					encoded_byte &= ~0xC0;
+					encodedByte &= ~0xC0;
 					// set the value type of bit6, bit7 to '00b'
-					encoded_byte |= 0x40;
-					getIoBuffer().put(encoded_byte);
+					encodedByte |= 0x40;
+					getIoBuffer().put(encodedByte);
 					Map<Integer, Short> map = sig_data_ack.get2ByteDataMap();
 					Iterator it = map.entrySet().iterator();
 					while (it.hasNext()) {
@@ -186,14 +193,14 @@ public class BPPacketGETACK extends BPPacket {
 			sig_num = sig_data_ack.get4ByteDataMap().size();
 			if (sig_num > 0) {
 				if (sig_num > 0x3F) {
-					System.out.println("WARNING: too many signal of 4 byte");
+					logger.error("WARNING: too many signal of 4 byte");
 				} else {
-					encoded_byte = (byte) (sig_num & 0x3F);
+					encodedByte = (byte) (sig_num & 0x3F);
 					// clear bit6, bit7
-					encoded_byte &= ~0xC0;
+					encodedByte &= ~0xC0;
 					// set the value type of bit6, bit7 to '00b'
-					encoded_byte |= 0x80;
-					getIoBuffer().put(encoded_byte);
+					encodedByte |= 0x80;
+					getIoBuffer().put(encodedByte);
 					Map<Integer, Integer> map = sig_data_ack.get4ByteDataMap();
 					Iterator it = map.entrySet().iterator();
 					while (it.hasNext()) {

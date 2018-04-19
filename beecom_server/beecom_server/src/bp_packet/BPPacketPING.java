@@ -13,7 +13,7 @@ import other.CrcChecksum;
  */
 public class BPPacketPING extends BPPacket {
 	@Override
-	public boolean parseVariableHeader(IoBuffer io_buf) throws Exception {
+	public boolean parseVariableHeader(IoBuffer ioBuf) throws Exception {
 		// TODO Auto-generated method stub
 
 		try {
@@ -70,41 +70,22 @@ public class BPPacketPING extends BPPacket {
 	
 	@Override
 	public boolean parsePayload(byte[] buf) throws Exception {
-		// TODO Auto-generated method stub
-		try {
-			System.out.println("PING: NO PAYLOAD");
-		} catch (Exception e) {
-			System.out.println("Error: parsePayload error");
-			e.printStackTrace();
-			throw e;
-		}
-
 		return true;
 	}
 
 	@Override
 	public int parsePayload() throws Exception {
-		// TODO Auto-generated method stub
-		try {
-			// No payload for PING
-		} catch (Exception e) {
-			System.out.println("Error(PING): parsePayload error");
-			e.printStackTrace();
-			throw e;
-		}
 		return 0;
 	}
 	
 	@Override
 	public boolean assembleFixedHeader() throws Exception {
-		// TODO Auto-generated method stub
-		int pack_type = getPackTypeIntFxHead();
-		byte pack_flags = getPackFlagsByteFxHead();
-		byte encoded_byte = (byte) (((pack_type & 0xf) << 4) | (pack_flags & 0xf));
+		int packType = getPackTypeIntFxHead();
+		byte packFlags = getPackFlagsByteFxHead();
+		byte encodedByte = (byte) (((packType & 0xf) << 4) | (packFlags & 0xf));
 		
-		getIoBuffer().put(encoded_byte);
+		getIoBuffer().put(encodedByte);
 		
-		// Remaininglength 1 byte reserved
 		getIoBuffer().put((byte)0);
 		
 		return false;

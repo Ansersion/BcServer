@@ -3,6 +3,12 @@
  */
 package bp_packet;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import other.CrcChecksum;
 
 /**
@@ -10,6 +16,7 @@ import other.CrcChecksum;
  *
  */
 public class BPPacketPOSTACK extends BPPacket {
+	private static final Logger logger = LoggerFactory.getLogger(BPPacketPOSTACK.class);
 	
 	int PackSeq;
 	
@@ -26,9 +33,9 @@ public class BPPacketPOSTACK extends BPPacket {
 		// TODO Auto-generated method stub
 		int pack_type = getPackTypeIntFxHead();
 		byte pack_flags = getPackFlagsByteFxHead();
-		byte encoded_byte = (byte) (((pack_type & 0xf) << 4) | (pack_flags & 0xf));
+		byte encodedByte = (byte) (((pack_type & 0xf) << 4) | (pack_flags & 0xf));
 
-		getIoBuffer().put(encoded_byte);
+		getIoBuffer().put(encodedByte);
 
 		// Remaininglength 1 byte reserved
 		getIoBuffer().put((byte) 0);
@@ -83,8 +90,10 @@ public class BPPacketPOSTACK extends BPPacket {
 		try {
 
 		} catch (Exception e) {
-			System.out.println("Error: parsePayload error");
-			e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw, true));
+            String str = sw.toString();
+            logger.error(str);
 			throw e;
 		}
 		return 0;

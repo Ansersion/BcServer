@@ -54,30 +54,19 @@ public class BcServerMain {
 			e.printStackTrace();
 		}
 
-		// TODO Auto-generated method stub
-		// socket鎺ユ敹鍣�
 		NioSocketAcceptor BcAcceptor = new NioSocketAcceptor();
 
-		// 娣诲姞鏃ュ織璁板綍
 		BcAcceptor.getFilterChain().addLast("logger", new LoggingFilter());
-		// 娣诲姞缂栫爜瑙ｇ爜鍣�
 		BcAcceptor.getFilterChain().addLast("codec",
 				new ProtocolCodecFilter(new BcCodecFactory()));
-		// BcAcceptor.getFilterChain().addLast("mycoder", new
-		// ProtocolCodecFilter(new ByteArrayCodecFactory()));
-		// 娣诲姞澶勭悊鍣�(鐢ㄤ簬鎺ユ敹鏁版嵁鍚庡鐞嗗鐞嗘暟鎹�昏緫)
 		BcAcceptor.setHandler(new BcServerHandler());
 
-		// 绔彛澶嶇敤
 		BcAcceptor.setReuseAddress(true);
 
-		// 璁剧疆璇诲彇鏁版嵁缂撳瓨鍗曚綅byte
 		BcAcceptor.getSessionConfig().setReadBufferSize(BC_SOCK_BUFF_SIZE);
-		// 璁剧疆澶氶暱鏃堕棿鍚庢帴鏀跺櫒寮�濮嬬┖闂�
 		BcAcceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE,
 				IDLE_READ_PROC_TIME);
 		try {
-			// 缁戝畾鏌愪釜绔彛锛屼綔涓烘暟鎹叆鍙�
 			BcAcceptor.bind(new InetSocketAddress(BC_SERVER_PORT));
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -3,11 +3,15 @@
  */
 package bp_packet;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.mina.core.buffer.IoBuffer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Ansersion
@@ -15,29 +19,32 @@ import org.apache.mina.core.buffer.IoBuffer;
  */
 public class BPPacketPOST extends BPPacket {
 	
+	private static final Logger logger = LoggerFactory.getLogger(BPPacketPOST.class); 
+	
+	
 	int PackSeq;
 	DevSigData[] SigDatas = null; 
 	int DeviceNum;
 	
 	@Override
-	public boolean parseVariableHeader(IoBuffer io_buf) throws Exception {
+	public boolean parseVariableHeader(IoBuffer ioBuf) throws Exception {
 		// TODO Auto-generated method stub
-		int client_id_len = 0;
+		int clientIdLen = 0;
 
 		try {
-			byte encoded_byte = 0;
-			client_id_len = 2;
+			byte encodedByte = 0;
+			clientIdLen = 2;
 
-			byte[] id = new byte[client_id_len];
-			for (int i = 0; i < client_id_len; i++) {
-				id[i] = (byte) io_buf.get();
+			byte[] id = new byte[clientIdLen];
+			for (int i = 0; i < clientIdLen; i++) {
+				id[i] = (byte) ioBuf.get();
 			}
-			super.parseVrbClientId(id, client_id_len);
+			super.parseVrbClientId(id, clientIdLen);
 			
-			encoded_byte = io_buf.get();
-			super.parseVrbHeadFlags(encoded_byte);
+			encodedByte = ioBuf.get();
+			super.parseVrbHeadFlags(encodedByte);
 			
-			PackSeq = io_buf.getUnsignedShort();
+			PackSeq = ioBuf.getUnsignedShort();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -52,18 +59,18 @@ public class BPPacketPOST extends BPPacket {
 		// TODO Auto-generated method stub
 		try {
 			int counter = 0;
-			int client_id_len = 0;
-			byte encoded_byte = 0;
-			client_id_len = 2;
+			int clientIdLen = 0;
+			byte encodedByte = 0;
+			clientIdLen = 2;
 			
-			byte[] id = new byte[client_id_len];
-			for(int i = 0; i < client_id_len; i++) {
+			byte[] id = new byte[clientIdLen];
+			for(int i = 0; i < clientIdLen; i++) {
 				id[i] = buf[counter++];
 			}
-			super.parseVrbClientId(id, client_id_len);
+			super.parseVrbClientId(id, clientIdLen);
 			
-			encoded_byte = buf[counter++];
-			super.parseVrbHeadFlags(encoded_byte);
+			encodedByte = buf[counter++];
+			super.parseVrbHeadFlags(encodedByte);
 			
 			byte pack_seq_msb = buf[counter++];
 			byte pack_seq_lsb = buf[counter++];
@@ -79,7 +86,6 @@ public class BPPacketPOST extends BPPacket {
 	
 	@Override
 	public int parseVariableHeader() throws Exception {
-		// TODO Auto-generated method stub
 		try {
 
 			byte flags = getIoBuffer().get();
@@ -91,7 +97,10 @@ public class BPPacketPOST extends BPPacket {
 			int pack_seq = getIoBuffer().getUnsignedShort();
 			getVrbHead().setPackSeq(pack_seq);
 		} catch (Exception e) {
-			e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw, true));
+            String str = sw.toString();
+            logger.error(str);
 			throw e;
 		}
 
@@ -100,14 +109,6 @@ public class BPPacketPOST extends BPPacket {
 
 	@Override
 	public int parsePayload() throws Exception {
-		// TODO Auto-generated method stub
-		try {
-			// No payload for PING
-		} catch (Exception e) {
-			System.out.println("Error(PING): parsePayload error");
-			e.printStackTrace();
-			throw e;
-		}
 		return 0;
 	}
 	
@@ -124,11 +125,12 @@ public class BPPacketPOST extends BPPacket {
 			for(int i = 0; i < DeviceNum; i++) {
 				counter += SigDatas[i].parseSigData(buf, counter);
 			}
-			// counter += DevSigs.parseSigMap(buf, counter);
 
 		} catch (Exception e) {
-			System.out.println("Error: parsePayload error");
-			e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw, true));
+            String str = sw.toString();
+            logger.error(str);
 			throw e;
 		}
 
@@ -140,9 +142,9 @@ public class BPPacketPOST extends BPPacket {
 		// TODO Auto-generated method stub
 		int pack_type = getPackTypeIntFxHead();
 		byte pack_flags = getPackFlagsByteFxHead();
-		byte encoded_byte = (byte) (((pack_type & 0xf) << 4) | (pack_flags & 0xf));
+		byte encodedByte = (byte) (((pack_type & 0xf) << 4) | (pack_flags & 0xf));
 		
-		getIoBuffer().put(encoded_byte);
+		getIoBuffer().put(encodedByte);
 		
 		// Remaininglength 1 byte reserved
 		getIoBuffer().put((byte)0);

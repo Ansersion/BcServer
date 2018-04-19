@@ -5,11 +5,18 @@ package db;
 
 import java.sql.Connection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Ansersion
  * 
  */
 public class DB_DevAuthRec extends DB_BaseRec {
+	
+	private static final Logger logger = LoggerFactory.getLogger(DB_DevAuthRec.class);
+	
+	
 	long DevUniqId;
 	int AdminUserId;
 	byte AdminUserAuth;
@@ -154,17 +161,8 @@ public class DB_DevAuthRec extends DB_BaseRec {
 	}
 
 	public void dumpRec() {
-		System.out.println("DevUniqId: " + DevUniqId + 
-				", AdminUserId: " + AdminUserId + 
-				", AdminUserAuth: " + AdminUserAuth + 
-				", UserId1: " + UserId1	+ 
-				", UserAuth1: " + UserAuth1 + 
-				", UserId2: " + UserId2	+ 
-				", UserAuth2: " + UserAuth2 + 
-				", UserId3: " + UserId3	+ 
-				", UserAuth3: " + UserAuth3 + 
-				", UserId4: " + UserId4	+ 
-				", UserAuth4: " + UserAuth4);
+		logger.info("DevUniqId: {}, AdminUserId: {}, AdminUserAuth: {}, UserId1: {}, UserAuth1: {}, UserId2: {}, UserAuth2: {}, UserId3: {}, UserAuth3: {}, UserId4: {}, UserAuth4: {}", 
+				DevUniqId, AdminUserId, AdminUserAuth, UserId1, UserAuth1, UserId2, UserAuth2, UserId3, UserAuth3, UserId4, UserAuth4);
 	}
 	
 

@@ -175,9 +175,14 @@ public class DB_SysSigRec extends DB_BaseRec {
 				} 
 			}
 			ps.executeUpdate();
-			ps.close();
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				ps.close();
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 		return false;

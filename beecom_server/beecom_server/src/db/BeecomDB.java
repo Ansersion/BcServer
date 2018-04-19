@@ -14,7 +14,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import bp_packet.BPPacket;
+import sys_sig_table.BPSysSigTable;
 
 import java.util.List;
 
@@ -23,6 +27,9 @@ import java.util.List;
  * 
  */
 public class BeecomDB {
+	
+	private static final Logger logger = LoggerFactory.getLogger(BeecomDB.class);
+	
 
 	static BeecomDB BC_DB = null;
 
@@ -31,7 +38,6 @@ public class BeecomDB {
 	List<DB_DevAuthRec> DevAuthRecLst;
 	List<DB_SysSigRec> SysSigRecLst;
 	Map<String, Long> Name2IDMap;
-	// Map<Long, Long> DevUniqId2IndexMap;
 
 	Connection con;
 	static String driver = "com.mysql.jdbc.Driver";
@@ -40,31 +46,30 @@ public class BeecomDB {
 	static String password = "Ansersion";
 
 	private BeecomDB() {
-		System.out.println("Info: Create BeecomDB");
-		// Id2UserRecord = new HashMap<Long, User_DB_Record>();
+		logger.info("Info: Create BeecomDB");
 		UserInfoRecLst = new ArrayList<DB_UserInfoRec>();
 		DevInfoRecLst = new ArrayList<DB_DevInfoRec>();
 		DevAuthRecLst = new ArrayList<DB_DevAuthRec>();
 		SysSigRecLst = new ArrayList<DB_SysSigRec>();
 
 		Name2IDMap = new HashMap<String, Long>();
-		// DevUniqId2IndexMap = new HashMap<Long, Long>();
 
 		DB_UserInfoRec record_0_blank = new DB_UserInfoRec();
 		// DB_UserDev
 		UserInfoRecLst.add(record_0_blank);
-
+		Statement statement = null;
+		ResultSet rs = null;
 		try {
 			Class.forName(driver);
 			con = DriverManager.getConnection(url, user, password);
 			if (!con.isClosed()) {
-				System.out.println("Succeeded connecting to the Database!");
+				logger.info("Succeeded connecting to the Database!");
 			}
-			Statement statement = con.createStatement();
+			statement = con.createStatement();
 
-			{
+			try {
 				String sql = "select * from user_info";
-				ResultSet rs = statement.executeQuery(sql);
+				rs = statement.executeQuery(sql);
 
 				long id;
 				String name;
@@ -83,11 +88,16 @@ public class BeecomDB {
 					Name2IDMap.put(name, id);
 				}
 				rs.close();
+			} finally {
+				if(null != rs) {
+					rs.close();
+				}
+				rs = null;
 			}
 
-			{
+			try {
 				String sql = "select * from dev_info";
-				ResultSet rs = statement.executeQuery(sql);
+				rs = statement.executeQuery(sql);
 
 				long dev_uniq_id;
 				int user_id;
@@ -104,7 +114,6 @@ public class BeecomDB {
 					sys_sig_tab_id = rs.getInt("sys_sig_tab_id");
 					dev_name = rs.getString("dev_name");
 					if (dev_uniq_id > Integer.MAX_VALUE) {
-						// System.out.println("Error: dev_uniq_id too big");
 						throw new Exception("Error: dev_uniq_id too big");
 					}
 					DevInfoRecLst.add(new DB_DevInfoRec(dev_uniq_id, user_id,
@@ -112,15 +121,16 @@ public class BeecomDB {
 				}
 				rs.close();
 
-				/*
-				 * for (int i = 0; i < DevInfoRecLst.size(); i++) {
-				 * DevInfoRecLst.get(i).dumpRec(); }
-				 */
+			} finally {
+				if(null != rs) {
+					rs.close();
+				}
+				rs = null;
 			}
 
-			{
+			try {
 				String sql = "select * from dev_auth";
-				ResultSet rs = statement.executeQuery(sql);
+				rs = statement.executeQuery(sql);
 
 				long dev_uniq_id;
 				int admin_user_id;
@@ -147,7 +157,6 @@ public class BeecomDB {
 					user_id_4 = rs.getInt("user_id4");
 					user_auth_4 = (byte) rs.getShort("user_id4_auth");
 					if (dev_uniq_id > Integer.MAX_VALUE) {
-						// System.out.println("Error: dev_uniq_id too big");
 						throw new Exception("Error: dev_uniq_id too big");
 					}
 					DevAuthRecLst.add(new DB_DevAuthRec(dev_uniq_id,
@@ -157,22 +166,22 @@ public class BeecomDB {
 				}
 				rs.close();
 
-				/*
-				 * for (int i = 0; i < DevAuthRecLst.size(); i++) {
-				 * DevAuthRecLst.get(i).dumpRec(); }
-				 */
+			} finally {
+				if(null != rs) {
+					rs.close();
+				}
+				rs = null;
 			}
 
-			{
+			try {
 				String sql = "select * from sys_sig_tab";
-				ResultSet rs = statement.executeQuery(sql);
+				rs = statement.executeQuery(sql);
 
 				int sys_sig_tab_id;
 
 				while (rs.next()) {
 					sys_sig_tab_id = rs.getInt("sys_sig_tab_id");
 					List<Byte[]> sys_sig_enable_lst = new ArrayList<Byte[]>();
-					// for(int i = 0; i < DB_SysSigRec.MAX_DIST_NUM; i++) {
 					for(int i = 0; i < BPPacket.MAX_SYS_SIG_DIST_NUM; i++) {
 						byte[] tmp_b = rs.getBytes(i+2);
 						if(null != tmp_b) {
@@ -192,19 +201,28 @@ public class BeecomDB {
 				for (int i = 0; i < SysSigRecLst.size(); i++) {
 					SysSigRecLst.get(i).dumpRec();
 				}
+			} finally {
+				if(null != rs) {
+					rs.close();
+				}
+				rs = null;
 			}
-			statement.close();
-			// con.close();
+
 		} catch (SQLException e) {
-			// 数据库连接失败异常处理
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
-			// 数据库驱动类异常处理
-			System.out.println("Sorry,can`t find the Driver!");
+			logger.error("Sorry,can`t find the Driver!");
 			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
+		} finally {
+			if(null != statement) {
+				try {
+					statement.close();
+				} catch(Exception ex) {
+					ex.printStackTrace();
+				}
+			}
 		}
 	}
 
@@ -261,7 +279,7 @@ public class BeecomDB {
 		// Maybe truncate ID
 		DB_UserInfoRec user_db_record = db.getUserInfoRecLst().get((int) id);
 		String str_p = new String(password);
-		System.out.println("PWD mysql: " + user_db_record.getPassword());
+		logger.info("PWD mysql: {}", user_db_record.getPassword());
 		return str_p.equals(user_db_record.getPassword());
 	}
 
@@ -283,7 +301,7 @@ public class BeecomDB {
 
 		DB_DevInfoRec rec = db.getDevInfoRecLst().get((int) (dev_uniq_id - 1));
 		String str_p = new String(password);
-		System.out.println("Dev PWD mysql: " + new String(rec.getDevPwd()));
+		logger.info("Dev PWD mysql: {}", new String(rec.getDevPwd()));
 		return str_p.equals(new String(rec.getDevPwd()));
 	}
 
@@ -294,13 +312,6 @@ public class BeecomDB {
 			return false;
 		}
 		db.setDevInfoRec(dev_uniq_id, dev_info_rec);
-		/*
-		 * Statement
-		 * stmt=con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet
-		 * .CONCUR_READ_ONLY);
-		 * stmt.executeUpdate("update dbo.signal set value=2 where id=1");
-		 * //如果后面不跟where条件，则更新所有列的value字段 stmt.close();
-		 */
 		return true;
 	}
 	
@@ -315,13 +326,6 @@ public class BeecomDB {
 			rec = DevInfoRecLst.get(i);
 			
 		}
-		/*
-		 * Statement
-		 * stmt=con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet
-		 * .CONCUR_READ_ONLY);
-		 * stmt.executeUpdate("update dbo.signal set value=2 where id=1");
-		 * //如果后面不跟where条件，则更新所有列的value字段 stmt.close();
-		 */
 		return true;
 	}
 

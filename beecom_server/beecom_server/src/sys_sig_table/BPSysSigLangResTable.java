@@ -15,11 +15,18 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Ansersion
  * 
  */
 public class BPSysSigLangResTable {
+	
+	private static final Logger logger = LoggerFactory.getLogger(BPSysSigLangResTable.class);
+	
+	
 	List<List<List<String>>> SysSigLangRes_Lst;
 	static BPSysSigLangResTable SysSigLangTab = null;
 	static final int SYS_SIG_START_ADDR = 0xE000;
@@ -38,10 +45,9 @@ public class BPSysSigLangResTable {
 	public boolean loadTab() throws FileNotFoundException,
 			UnsupportedEncodingException {
 		FileInputStream fis = new FileInputStream(
-				// "/mnt/hgfs/share/sys_signal_language_resource.csv");
 				"config/sys_signal_language_resource.csv");
 		InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
-		BufferedReader sys_sig_lang_in = new BufferedReader(isr);
+		BufferedReader sysSigLangIn = new BufferedReader(isr);
 
 		SysSigLangRes_Lst.clear();
 		boolean ret = false;
@@ -50,12 +56,12 @@ public class BPSysSigLangResTable {
 			String s;
 			String pattern = "^(.*),(.*),(.*),(.*),(.*),(.*),(.*)$";
 			Pattern r = Pattern.compile(pattern);
-			sys_sig_lang_in.readLine();
+			s = sysSigLangIn.readLine();
 			for (int i = 0; i < 16; i++) {
 
 				List<List<String>> sig_lang_res_tmp = new ArrayList<List<String>>();
 
-				while ((s = sys_sig_lang_in.readLine()) != null) {
+				while ((s = sysSigLangIn.readLine()) != null) {
 					List<String> lang_res_tmp = new ArrayList<String>();
 					Matcher m = r.matcher(s);
 					if (m.find()) {
@@ -78,12 +84,12 @@ public class BPSysSigLangResTable {
 
 						int sig_id = Integer.parseInt(m.group(1), 16);
 						if (SYS_SIG_START_ADDR + i * 0x200 - 1 == sig_id) {
-							System.out.println("Found value lang: " + sig_id);
+							logger.info("Found value lang: {}", sig_id);
 							break;
 						}
 
 					} else {
-						System.out.println("NO MATCH lang");
+						logger.warn("NO MATCH lang");
 						break;
 					}
 				}
@@ -94,17 +100,23 @@ public class BPSysSigLangResTable {
 			for(int i = 0; i < SysSigLangRes_Lst.size(); i++) {
 				for(int j = 0; j < SysSigLangRes_Lst.get(i).size(); j++) {
 					for(int k = 0; k < SysSigLangRes_Lst.get(i).get(j).size(); k++) {
-						System.out.println(""+i+","+j+","+k+":"+SysSigLangRes_Lst.get(i).get(j).get(k));
+						logger.info("{},{},{}: {}", i, j, k, SysSigLangRes_Lst.get(i).get(j).get(k));
 					}
 				}
 			}
 			
-			sys_sig_lang_in.close();
+			
 			ret = true;
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			ret = false;
+		} finally {
+			try {
+				sysSigLangIn.close();
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 		return ret;

@@ -19,9 +19,7 @@ public class BcEncoder extends ProtocolEncoderAdapter {
 	@Override
 	public void encode(IoSession arg0, Object arg1, ProtocolEncoderOutput arg2)
 			throws Exception {
-		// TODO Auto-generated method stub
 		
-		// String tst = (String)arg1;
 		if(arg1 instanceof String) {
 			IoBuffer io_tst_buf = IoBuffer.allocate(16, false);
 			byte b = 'T';

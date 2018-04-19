@@ -20,23 +20,22 @@ import java.util.Vector;
  */
 public class BPPacketREPORT extends BPPacket {
 
-	int PackSeq;
+	int packSeq;
 	int devNameLen;
 	Vector<BPPartitation> partitation;
 	byte[] devName;
-	// DevSigData SigData;
 
 	private static final Logger logger = LoggerFactory.getLogger(BcDecoder.class); 
 	
 	BPPacketREPORT() {
 		super();
-		PackSeq = 0;
+		packSeq = 0;
 		devNameLen = 0;
 		devName = new byte[256];
 	}
 
 	@Override
-	public boolean parseVariableHeader(IoBuffer io_buf) throws Exception {
+	public boolean parseVariableHeader(IoBuffer ioBuf) throws Exception {
 		int clientIdLen = 0;
 
 		try {
@@ -45,14 +44,14 @@ public class BPPacketREPORT extends BPPacket {
 
 			byte[] id = new byte[clientIdLen];
 			for (int i = 0; i < clientIdLen; i++) {
-				id[i] = io_buf.get();
+				id[i] = ioBuf.get();
 			}
 			super.parseVrbClientId(id, clientIdLen);
 
-			encodedByte = io_buf.get();
+			encodedByte = ioBuf.get();
 			super.parseVrbHeadFlags(encodedByte);
 
-			PackSeq = io_buf.getUnsignedShort();
+			packSeq = ioBuf.getUnsignedShort();
 
 		} catch (Exception e) {
             StringWriter sw = new StringWriter();
@@ -83,8 +82,8 @@ public class BPPacketREPORT extends BPPacket {
 			super.parseVrbHeadFlags(encodedByte);
 
 			byte packSeqMsg = buf[counter++];
-			byte packSeqLsb = buf[counter++];
-			PackSeq = BPPacket.assemble2ByteBigend(packSeqMsg, packSeqLsb);
+			byte packSeqLsb = buf[counter];
+			packSeq = BPPacket.assemble2ByteBigend(packSeqMsg, packSeqLsb);
 
 		} catch (Exception e) {
 	        StringWriter sw = new StringWriter();
@@ -108,23 +107,24 @@ public class BPPacketREPORT extends BPPacket {
 				devName[i] = buf[counter + devNameLen - 1 - i];
 			}
 			
-			boolean end_flag;
-			int part1, part2;
+			boolean endFlag;
+			int part1;
+			int part2;
 			do {
 				byte part = buf[counter++];
 				part1 = BPPartitation.parsePart1(part);
 				part2 = BPPartitation.parsePart2(part);
-				end_flag = BPPartitation.parseEndFlag(part);
-				BPPartitation new_part = BPPartitation.createPartitation(part1, part2);
+				endFlag = BPPartitation.parseEndFlag(part);
+				BPPartitation newPart = BPPartitation.createPartitation(part1, part2);
 				
-				counter += new_part.parseSymTable(buf, counter);
+				counter += newPart.parseSymTable(buf, counter);
 				
 				// TODO: add the custom symbol table
 				
-				partitation.addElement(new_part);
+				partitation.addElement(newPart);
 				
 				
-			}while(!end_flag);		
+			}while(!endFlag);		
 
 		} catch (Exception e) {
 	        StringWriter sw = new StringWriter();
@@ -181,10 +181,10 @@ public class BPPacketREPORT extends BPPacket {
 			} else {
 
 				if (vb.getDevNameFlag()) {
-					int devNameLen = getIoBuffer().get();
-					byte[] devName = new byte[devNameLen];
-					getIoBuffer().get(devName);
-					pld.setDevName(devName);
+					int devNameLenTmp = getIoBuffer().get();
+					byte[] devNameTmp = new byte[devNameLenTmp];
+					getIoBuffer().get(devNameTmp);
+					pld.setDevName(devNameTmp);
 				}
 
 				if (vb.getSysSigMapFlag()) {

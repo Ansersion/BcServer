@@ -28,7 +28,6 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 	private static final Logger logger = LoggerFactory.getLogger(BcDecoder.class); 
 
 	public enum DecodeState {
-		// DEC_INVALID, DEC_FX_HEAD, DEC_VRB_HEAD, DEC_PLD, DEC_CRC;
 		DEC_INVALID, DEC_FX_HEAD, DEC_REMAINING_DATA;
 	}
 
@@ -44,7 +43,6 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 	@Override
 	protected boolean doDecode(IoSession session, IoBuffer io_in,
 			ProtocolDecoderOutput decoder_out) throws Exception {
-		// TODO Auto-generated method stub
 		
 		boolean ret = false;
 	
@@ -55,7 +53,6 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 			session.setAttribute(FIXED_HEADER, new FixedHeader());
 			session.setAttribute(VARIABLE_HEADER, new VariableHeader());
 			session.setAttribute(PAYLOAD, new Payload());
-			// session.setAttribute(BP_PACKET, null);
 			// session.setAttribute(BP_PACKET, new FixedHeader());
 			session.setAttribute(DECODE_STATE, DecodeState.DEC_FX_HEAD);
 		}

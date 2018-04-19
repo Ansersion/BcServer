@@ -8,13 +8,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Ansersion
  *
  */
 
 class DevClientIds {
-	// public long DevUniqId;
+	
 	public int AdminUserId;
 	public int AdminDevClntId;
 	public Map<Integer, Integer> ComUser2ClntIdMap;
@@ -39,7 +42,8 @@ class DevClientIds {
 }
 
 public class ClientID_DB {
-
+	private static final Logger logger = LoggerFactory.getLogger(ClientID_DB.class);
+	
 	public static ClientID_DB CID_DB = null;
 	public static short NextClientId = 1;
 	public static final int MAX_DEV_NUM_FOR_USER = 64;
@@ -54,12 +58,6 @@ public class ClientID_DB {
 		// search from DB
 		return 0;
 	}
-
-	/*
-	 * private int allockAdminClntId(String admin) {
-	 * if(!UserClntIdMap.containsKey(admin)) { return CLIENT_ID_INVALID; } return
-	 * UserClntIdMap.get(admin); }
-	 */
 
 	// used for dev-client to get id
 	public int allocClntId(long uniq_id, int clnt_id) {
@@ -124,7 +122,7 @@ public class ClientID_DB {
 	}
 
 	private ClientID_DB() {
-		System.out.println("Info: Link to ClientID DB");
+		logger.info("Info: Link to ClientID DB");
 		// TODO: read from database
 		NextClientId = 1;
 

@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import other.BPError;
 import other.BPValue;
 import sys_sig_table.BPSysSigTable;
@@ -26,19 +29,48 @@ class SigIdNonExistException extends Exception {
 	}
 }
 public class BPSession {
-	public int clientId = 0;
+	
+	private static final Logger logger = LoggerFactory.getLogger(BPSession.class);
+	
+	private int clientId = 0;
 	long uniqDevId = 0;
 	public byte[] userName = null;
 	byte[] password = null;
 	boolean isUserLogin = false;
 	boolean isDevLogin = false;
-	public int seqIdDevClnt = 0;
+	private int seqIdDevClnt = 0;
 	int seqIdUsrClnt = 0;
 	String DevName;
 	Map<Integer, Byte[]> MapDist2SysSigMap = null;
 	Map<Integer, BPValue> sysSigMap;
-	public BPError Error;
+	private BPError error;
 	
+	
+	
+	public int getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(int clientId) {
+		this.clientId = clientId;
+	}
+
+	public int getSeqIdDevClnt() {
+		return seqIdDevClnt;
+	}
+
+	public void setSeqIdDevClnt(int seqIdDevClnt) {
+		this.seqIdDevClnt = seqIdDevClnt;
+	}
+
+	public BPError getError() {
+		return error;
+	}
+
+	public void setError(BPError error) {
+		this.error = error;
+	}
+
 	public BPSession(byte[] userName, byte[] password, int clientId, boolean userLogin, boolean devLogin, long uniqDevId) {
 		isDevLogin = devLogin;
 		isUserLogin = userLogin;
@@ -58,15 +90,11 @@ public class BPSession {
 		seqIdUsrClnt = 0;
 		sysSigMap = new HashMap<>();
 		
-		Error = new BPError();;
+		error = new BPError();;
 	}
 	
 	public long getUniqDevId() {
 		return uniqDevId;
-	}
-	
-	public int getClntId() {
-		return clientId;
 	}
 	
 	public Map getSysSigMap() {
@@ -83,7 +111,7 @@ public class BPSession {
 	
 	public boolean setSysSig(DevSigData dev_sig_data) {
 
-		Error = new BPError();
+		error = new BPError();
 		Map sig_val;
 		Iterator entries;
 		boolean ret = true;
@@ -140,9 +168,9 @@ public class BPSession {
 		} catch (SigIdNonExistException e) {
 			e.printStackTrace();
 			
-			Error.setErrId(BPPacketRPRTACK.RET_CODE_SIG_ID_INVALID);
-			Error.setSigIdLst(new ArrayList<Integer>());
-			Error.getSigIdLst().add(key);
+			error.setErrId(BPPacketRPRTACK.RET_CODE_SIG_ID_INVALID);
+			error.setSigIdLst(new ArrayList<Integer>());
+			error.getSigIdLst().add(key);
 			ret = false;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -180,7 +208,7 @@ public class BPSession {
 		    Map.Entry entry = (Map.Entry) entries.next();
 		    Integer key = (Integer)entry.getKey();  
 		    BPValue value = (BPValue)entry.getValue();  
-		    System.out.println(key + "=>" + value.getValStr()); 
+		    logger.info(key + "=>" + value.getValStr()); 
 		}  
 	}
 	public void setSysSigMap(Map<Integer, Byte[]> sys_sig_map) {

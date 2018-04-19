@@ -27,9 +27,9 @@ public class BPPacketPINGACK extends BPPacket {
 		// TODO Auto-generated method stub
 		int pack_type = getPackTypeIntFxHead();
 		byte pack_flags = getPackFlagsByteFxHead();
-		byte encoded_byte = (byte) (((pack_type & 0xf) << 4) | (pack_flags & 0xf));
+		byte encodedByte = (byte) (((pack_type & 0xf) << 4) | (pack_flags & 0xf));
 		
-		getIoBuffer().put(encoded_byte);
+		getIoBuffer().put(encodedByte);
 		
 		// Remaininglength 1 byte reserved
 		getIoBuffer().put((byte)0);
@@ -39,13 +39,10 @@ public class BPPacketPINGACK extends BPPacket {
 
 	@Override
 	public boolean assembleVariableHeader() throws Exception {
-		// TODO Auto-generated method stub
-		byte encoded_byte;
+		byte encodedByte;
 		
-		encoded_byte = getVrbHead().getFlags();
-		getIoBuffer().put(encoded_byte);
-		// int client_id = getVrbHead().getClientId();
-		// getIoBuffer().putUnsignedShort(client_id);
+		encodedByte = getVrbHead().getFlags();
+		getIoBuffer().put(encodedByte);
 		int pack_seq = getVrbHead().getPackSeq();
 		getIoBuffer().putUnsignedShort(pack_seq);
 		byte ret_code = (byte)getVrbHead().getRetCode();
@@ -56,11 +53,10 @@ public class BPPacketPINGACK extends BPPacket {
 
 	@Override
 	public boolean assemblePayload() throws Exception {
-		// TODO Auto-generated method stub
 		if(RET_CODE_OK != getVrbHead().getRetCode()) {
 			return false;
 		}
 		
-		return false;
+		return true;
 	}
 }

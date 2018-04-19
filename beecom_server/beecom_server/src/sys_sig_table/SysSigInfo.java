@@ -5,7 +5,6 @@ import java.util.Map;
 import other.BPValue;
 
 public class SysSigInfo {
-	// int SigId;
 	// byte[] MacroName;
 	public boolean IsAlm;
 	/* 0-u32, 1-u16, 2-i32, 3-i16, 4-enum, 5-float, 6-string */

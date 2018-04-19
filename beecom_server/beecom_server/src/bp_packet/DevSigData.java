@@ -20,16 +20,6 @@ class SigDatas {
 	Map<Integer, Short> Map2ByteDataSig;
 	Map<Integer, Integer> Map4ByteDataSig;
 	Map<Integer, Byte[]> MapxByteDataSig;
-	
-	/*
-	 Map<Integer, Long> MapData2U32;
-	 Map<Integer, Integer> MapData2I32;
-	 Map<Integer, > MapData2U16;
-	 HashMap<Integer, Short> MapData2I16;
-	 Map<Integer, Short> MapData2Enm;
-	 Map<Integer, Float> MapData2Flt;
-	 Map<Integer, String> MapData2Str;
-	*/
 
 
 	SigDatas() {
@@ -38,19 +28,6 @@ class SigDatas {
 		Map4ByteDataSig = new HashMap<Integer, Integer>();
 		MapxByteDataSig = new HashMap<Integer, Byte[]>();
 		
-		/*
-		 MapData2U32 = new HashMap<Integer, Integer>();
-		 MapData2I32 = new HashMap<Integer, Integer>();
-		 MapData2U16 = new HashMap<Integer, Short>();
-		 MapData2I16 = new HashMap<Integer, Short>();
-		 MapData2Enm = new HashMap<Integer, Short>();
-		 MapData2Flt = new HashMap<Integer, Float>();
-		 MapData2Str = new HashMap<Integer, String>();
-		 */
-	}
-
-	public void addNoCusSig(short sig) {
-
 	}
 	
 	public void clear() {
@@ -59,15 +36,6 @@ class SigDatas {
 		Map4ByteDataSig.clear();
 		MapxByteDataSig.clear();
 		
-		/*
-		MapData2U32.clear();
-		MapData2I32.clear();
-		MapData2U16.clear();
-		MapData2I16.clear();
-		MapData2Enm.clear();
-		MapData2Flt.clear();
-		MapData2Str.clear();
-		*/
 	}
 
 }
@@ -80,7 +48,6 @@ public class DevSigData {
 	public DevSigData() {
 		DeviceID = 0;
 		SigData = new SigDatas();
-		// SigData = new SigData();
 	}
 	
 	public void clear() {
@@ -112,35 +79,6 @@ public class DevSigData {
 		return SigData.MapxByteDataSig;
 	}
 	
-	/*
-	public Map<Integer, Integer> getU32DataMap() {
-		return SigData.MapData2U32;
-	}
-
-	public Map<Integer, Short> getI32DataMap() {
-		return SigData.Map2ByteDataSig;
-	}
-
-	public Map<Integer, Integer> getU16DataMap() {
-		return SigData.Map4ByteDataSig;
-	}
-
-	public Map<Integer, Byte[]> getI16DataMap() {
-		return SigData.MapxByteDataSig;
-	}
-
-	public Map<Integer, Byte[]> getEnmDataMap() {
-		return SigData.MapxByteDataSig;
-	}
-
-	public Map<Integer, Byte[]> getFltDataMap() {
-		return SigData.MapxByteDataSig;
-	}
-
-	public Map<Integer, Byte[]> getStrDataMap() {
-		return SigData.MapxByteDataSig;
-	}
-*/
 	public void dump() {
 		Map map;
 		Iterator entries;
@@ -183,15 +121,15 @@ public class DevSigData {
 
 	public int parseSigData(byte[] buf, int offset) {
 		int offset_old = offset;
-		byte encoded_byte;
+		byte encodedByte;
 
 		byte msb = buf[offset++];
 		byte lsb = buf[offset++];
 		DeviceID = BPPacket.assemble2ByteBigend(msb, lsb);
 
-		encoded_byte = buf[offset++];
-		int value_type = (encoded_byte & 0xC0) >>> 6;
-		int value_num = (encoded_byte & 0x3F);
+		encodedByte = buf[offset++];
+		int value_type = (encodedByte & 0xC0) >>> 6;
+		int value_num = (encodedByte & 0x3F);
 		short sig_id;
 
 		if (0x0 == value_type) {
@@ -232,46 +170,46 @@ public class DevSigData {
 		return offset - offset_old;
 	}
 
-	public boolean parseSigDataTab(IoBuffer io_buf) {
-		byte encoded_byte;
+	public boolean parseSigDataTab(IoBuffer ioBuf) {
+		byte encodedByte;
 
-		encoded_byte = io_buf.get();
-		int value_type = (encoded_byte & 0xC0) >>> 6;
-		int value_num = (encoded_byte & 0x3F);
+		encodedByte = ioBuf.get();
+		int value_type = (encodedByte & 0xC0) >>> 6;
+		int value_num = (encodedByte & 0x3F);
 		Map data_map;
 		switch (value_type) {
 		case 0:
 			data_map = get1ByteDataMap();
 			for (int i = 0; i < value_num; i++) {
-				int sig_id = io_buf.getUnsignedShort();
-				byte val = io_buf.get();
+				int sig_id = ioBuf.getUnsignedShort();
+				byte val = ioBuf.get();
 				data_map.put(sig_id, val);
 			}
 			break;
 		case 1:
 			data_map = get2ByteDataMap();
 			for (int i = 0; i < value_num; i++) {
-				int sig_id = io_buf.getUnsignedShort();
-				short val = io_buf.getShort();
+				int sig_id = ioBuf.getUnsignedShort();
+				short val = ioBuf.getShort();
 				data_map.put(sig_id, val);
 			}
 			break;
 		case 2:
 			data_map = get4ByteDataMap();
 			for (int i = 0; i < value_num; i++) {
-				int sig_id = io_buf.getUnsignedShort();
-				int val = io_buf.getInt();
+				int sig_id = ioBuf.getUnsignedShort();
+				int val = ioBuf.getInt();
 				data_map.put(sig_id, val);
 			}
 			break;
 		case 3:
 			data_map = getxByteDataMap();
 			for (int i = 0; i < value_num; i++) {
-				int sig_id = io_buf.getUnsignedShort();
-				byte len = io_buf.get();
+				int sig_id = ioBuf.getUnsignedShort();
+				byte len = ioBuf.get();
 				Byte[] val = new Byte[len];
 				for (int j = 0; j < len; j++) {
-					val[j] = io_buf.get();
+					val[j] = ioBuf.get();
 				}
 				data_map.put(sig_id, val);
 			}
@@ -285,23 +223,23 @@ public class DevSigData {
 		return true;
 	}
 
-	public boolean assembleSigData(IoBuffer io_buf) {
-		int pos_tab_num = io_buf.position();
+	public boolean assembleSigData(IoBuffer ioBuf) {
+		int pos_tab_num = ioBuf.position();
 		byte tab_num = 0;
-		io_buf.put(tab_num);// skip the tab_num
+		ioBuf.put(tab_num);// skip the tab_num
 		for (int data_type = 0; data_type < 4; data_type++) {
 			switch (data_type) {
 			case 0: {
 				Map<Integer, Byte> sig_map = SigData.Map1ByteDataSig;
 				if (sig_map.size() > 0) {
-					byte type_and_num = (byte) ((sig_map.size() & 0x3F) | 0x00);
-					io_buf.put(type_and_num);
+					byte typeAndNum = (byte) (sig_map.size() & 0x3F);
+					ioBuf.put(typeAndNum);
 					Iterator<Map.Entry<Integer, Byte>> entries = sig_map
 							.entrySet().iterator();
 					while (entries.hasNext()) {
 						Map.Entry<Integer, Byte> entry = entries.next();
-						io_buf.putUnsignedShort(entry.getKey());
-						io_buf.put(entry.getValue());
+						ioBuf.putUnsignedShort(entry.getKey());
+						ioBuf.put(entry.getValue());
 					}
 					tab_num++;
 				}
@@ -311,13 +249,13 @@ public class DevSigData {
 				Map<Integer, Short> sig_map = SigData.Map2ByteDataSig;
 				if (sig_map.size() > 0) {
 					byte type_and_num = (byte) ((sig_map.size() & 0x3F) | 0x40);
-					io_buf.put(type_and_num);
+					ioBuf.put(type_and_num);
 					Iterator<Map.Entry<Integer, Short>> entries = sig_map
 							.entrySet().iterator();
 					while (entries.hasNext()) {
 						Map.Entry<Integer, Short> entry = entries.next();
-						io_buf.putUnsignedShort(entry.getKey());
-						io_buf.putShort(entry.getValue());
+						ioBuf.putUnsignedShort(entry.getKey());
+						ioBuf.putShort(entry.getValue());
 					}
 					tab_num++;
 				}
@@ -327,13 +265,13 @@ public class DevSigData {
 				Map<Integer, Integer> sig_map = SigData.Map4ByteDataSig;
 				if (sig_map.size() > 0) {
 					byte type_and_num = (byte) ((sig_map.size() & 0x3F) | 0x80);
-					io_buf.put(type_and_num);
+					ioBuf.put(type_and_num);
 					Iterator<Map.Entry<Integer, Integer>> entries = sig_map
 							.entrySet().iterator();
 					while (entries.hasNext()) {
 						Map.Entry<Integer, Integer> entry = entries.next();
-						io_buf.putUnsignedShort(entry.getKey());
-						io_buf.putInt(entry.getValue());
+						ioBuf.putUnsignedShort(entry.getKey());
+						ioBuf.putInt(entry.getValue());
 					}
 					tab_num++;
 				}
@@ -343,15 +281,15 @@ public class DevSigData {
 				Map<Integer, Byte[]> sig_map = SigData.MapxByteDataSig;
 				if (sig_map.size() > 0) {
 					byte type_and_num = (byte) ((sig_map.size() & 0x3F) | 0xC0);
-					io_buf.put(type_and_num);
+					ioBuf.put(type_and_num);
 					Iterator<Map.Entry<Integer, Byte[]>> entries = sig_map
 							.entrySet().iterator();
 					while (entries.hasNext()) {
 						Map.Entry<Integer, Byte[]> entry = entries.next();
-						io_buf.putUnsignedShort(entry.getKey());
-						io_buf.put((byte) entry.getValue().length);
+						ioBuf.putUnsignedShort(entry.getKey());
+						ioBuf.put((byte) entry.getValue().length);
 						for (int i = 0; i < entry.getValue().length; i++) {
-							io_buf.put(entry.getValue()[i]);
+							ioBuf.put(entry.getValue()[i]);
 						}
 					}
 					tab_num++;
@@ -365,10 +303,10 @@ public class DevSigData {
 				break;
 			}
 		}
-		int pos_last = io_buf.position();
-		io_buf.position(pos_tab_num);
-		io_buf.put(tab_num);
-		io_buf.position(pos_last);
+		int pos_last = ioBuf.position();
+		ioBuf.position(pos_tab_num);
+		ioBuf.put(tab_num);
+		ioBuf.position(pos_last);
 		return true;
 	}
 }

@@ -17,6 +17,9 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import other.BPValue;
 import other.Util;
 
@@ -25,55 +28,11 @@ import other.Util;
  * 
  */
 
-/*
-class SysSigInfo {
-	// int SigId;
-	// byte[] MacroName;
-	boolean IsAlm;
-
-	byte ValType;
-	int UnitLangRes;
-	
-	byte Permission;
-	byte Accuracy;
-	BPValue ValMin;
-	BPValue ValMax;
-	BPValue ValDef;
-	int classLangRes;
-	Map<Integer, Integer> MapEnmLangRes;
-	boolean EnStatistics;
-	// 0-note, 1-warning, 2-serious, 3-emergency
-	byte AlmClass;
-	int DlyBefAlm;
-	int DlyAftAlm;
-
-	public SysSigInfo(boolean is_alm, byte val_type, int unit_lang_res,
-			byte permission, byte accuracy, BPValue val_min, BPValue val_max,
-			BPValue val_def, int classLangRes, Map<Integer, Integer> map_enm_lang_res,
-			boolean en_statistics, byte alm_class, int dly_bef_alm,
-			int dly_aft_alm) {
-
-		IsAlm = is_alm;
-		ValType = val_type;
-		UnitLangRes = unit_lang_res;
-		Permission = permission;
-		Accuracy = accuracy;
-		ValMin = val_min;
-		ValMax = val_max;
-		ValDef = val_def;
-		this.classLangRes = classLangRes;
-		MapEnmLangRes = map_enm_lang_res;
-		EnStatistics = en_statistics;
-		AlmClass = alm_class;
-		DlyBefAlm = dly_bef_alm;
-		DlyAftAlm = dly_aft_alm;
-	}
-
-	// public static
-}
-*/
-
 public class BPSysSigTable {
+	
+	private static final Logger logger = LoggerFactory.getLogger(BPSysSigTable.class);
+	
+	
 	public static int SID_ID_RESERVED = 0x0000;
 	
 	
@@ -131,11 +90,10 @@ public class BPSysSigTable {
 			String pattern = "^(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*)$";
 			Pattern r = Pattern.compile(pattern);
 			int index;
-			sysSigIn.readLine();
-			sysSigIn.readLine();
+			s = sysSigIn.readLine();
+			s = sysSigIn.readLine();
 
 			while ((s = sysSigIn.readLine()) != null) {
-				// List<String> lang_res_tmp = new ArrayList<String>();
 				Matcher m = r.matcher(s);
 				index = 0;
 				if (m.find()) {
@@ -161,8 +119,6 @@ public class BPSysSigTable {
 						} else if (0 == m.group(4).compareToIgnoreCase("NO")) {
 							is_alm = false;
 						} else {
-							sysSigIn.close();
-							// is_alm = false;
 							throw new Exception(m.group(1) + ": is alarm error");
 						}
 						/* 0-u32, 1-u16, 2-i32, 3-i16, 4-enum, 5-float, 6-string */
@@ -183,7 +139,6 @@ public class BPSysSigTable {
 								.compareToIgnoreCase("STRING")) {
 							val_type = 6;
 						} else {
-							sysSigIn.close();
 							throw new Exception(m.group(1)
 									+ ": value type error");
 						}
@@ -194,7 +149,6 @@ public class BPSysSigTable {
 						
 						try {
 							if (scanner_unit.hasNext() == false) {
-								sysSigIn.close();
 								throw new Exception(m.group(1)
 										+ ": unit language resource error");
 							}
@@ -206,7 +160,6 @@ public class BPSysSigTable {
 									.compareToIgnoreCase("RW")) {
 								permission = 1;
 							} else {
-								sysSigIn.close();
 								throw new Exception(m.group(1)
 										+ ": is alarm error");
 							}
@@ -221,12 +174,6 @@ public class BPSysSigTable {
 						val_min = new BPValue(val_type);
 						val_max = new BPValue(val_type);
 						val_def = new BPValue(val_type);
-						
-						/*
-						val_min.setValueType(val_type);
-						val_max.setValueType(val_type);
-						val_def.setValueType(val_type);
-						*/
 						
 						if(Util.isNull(m.group(9))) {
 							val_min.setLimitValid(false);
@@ -246,7 +193,6 @@ public class BPSysSigTable {
 						}
 						
 						if(!m.group(12).equals("NULL")) { 
-							// classLangRes = Integer.parseInt(m.group(12));
 							classLangRes = 1;
 						} else {
 							classLangRes = 0;
@@ -277,7 +223,6 @@ public class BPSysSigTable {
 										map_enm_lang_res.put(enum_index,
 												enum_lang_res_index);
 									} else {
-										sysSigIn.close();
 										scanner_enm.close();
 										throw new Exception(
 												"Error: parse enumeration error");
@@ -295,9 +240,7 @@ public class BPSysSigTable {
 						} else if (0 == m.group(14).compareToIgnoreCase("NO")) {
 							en_statistics = false;
 						} else {
-							sysSigIn.close();
 							throw new Exception(m.group(1) + ": enable statistics error");
-							// en_statistics = false;
 						}
 						if (is_alm) {
 							alm_class = Byte.parseByte(m.group(15));
@@ -310,7 +253,7 @@ public class BPSysSigTable {
 							val_max, val_def, classLangRes, map_enm_lang_res, en_statistics,
 							alm_class, dly_bef_alm, dly_aft_alm));
 				} else {
-					System.out.println("NO MATCH lang");
+					logger.warn("NO MATCH lang");
 					break;
 				}
 			}
@@ -342,21 +285,21 @@ public class BPSysSigTable {
 						+ sysSigInfoLst.get(i).DlyBefAlm + ","
 						+ sysSigInfoLst.get(i).DlyAftAlm + "\n";
 			}
-			System.out.println(s_debug);
+			logger.debug(s_debug);
 
-			sysSigIn.close();
 			ret = true;
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			ret = false;
+		} finally {
+			try {
+				sysSigIn.close();
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 		return ret;
 	}
-	/*
-	 * public String getSysSigTab(int dist, int offset) { String ret = new
-	 * String(""); try { ret = SysEnmLangRes_Lst.get(offset).get(lang); } catch
-	 * (Exception e) { e.printStackTrace(); ret = "NULL"; } return ret; }
-	 */
 }

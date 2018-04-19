@@ -23,8 +23,8 @@ public class BPPacketCONNECT extends BPPacket {
 
 	ParseVrbState prsVrbSt = ParseVrbState.PARSE_STATE_1;
 
-	protected BPPacketCONNECT(FixedHeader fx_header) {
-		super(fx_header);
+	protected BPPacketCONNECT(FixedHeader fxHeader) {
+		super(fxHeader);
 	}
 
 	protected BPPacketCONNECT() {
@@ -32,46 +32,43 @@ public class BPPacketCONNECT extends BPPacket {
 
 	@Override
 	public int decrypt(EncryptType etEncryptType) throws Exception {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public int parseFixedHeader() throws Exception {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public boolean parseVariableHeader(IoBuffer io_buf) throws Exception {
-		// TODO Auto-generated method stub
-		int client_id_len = 0;
+	public boolean parseVariableHeader(IoBuffer ioBuf) throws Exception {
+		int clientIdLen = 0;
 
 		try {
 			// level(1 byte) + flags(1 byte) + client ID length(1 byte)
-			byte encoded_byte = 0;
-			encoded_byte = io_buf.get();
-			super.parseVrbHeadLevel(encoded_byte);
+			byte encodedByte = 0;
+			encodedByte = ioBuf.get();
+			super.parseVrbHeadLevel(encodedByte);
 
-			encoded_byte = io_buf.get();
-			super.parseVrbHeadFlags(encoded_byte);
+			encodedByte = ioBuf.get();
+			super.parseVrbHeadFlags(encodedByte);
 
-			client_id_len = 2;
+			clientIdLen = 2;
 
-			// client ID(client_id_len byte) + alive time(2 byte) + timeout(1
+			// client ID(clientIdLen byte) + alive time(2 byte) + timeout(1
 			// byte)
-			byte[] id = new byte[client_id_len];
-			for (int i = 0; i < client_id_len; i++) {
-				id[i] = io_buf.get();
+			byte[] id = new byte[clientIdLen];
+			for (int i = 0; i < clientIdLen; i++) {
+				id[i] = ioBuf.get();
 			}
 			
-			super.parseVrbClientId(id, client_id_len);
+			super.parseVrbClientId(id, clientIdLen);
 
-			byte aliveTimeMsb = io_buf.get();
-			byte aliveTimeLsb = io_buf.get();
+			byte aliveTimeMsb = ioBuf.get();
+			byte aliveTimeLsb = ioBuf.get();
 			super.parseVrbAliveTime(aliveTimeMsb, aliveTimeLsb);
 
-			byte timeout = io_buf.get();
+			byte timeout = ioBuf.get();
 			super.parseVrbTimeout(timeout);
 		} catch (Exception e) {
             StringWriter sw = new StringWriter();
@@ -86,35 +83,34 @@ public class BPPacketCONNECT extends BPPacket {
 
 	@Override
 	public boolean parseVariableHeader(byte[] buf) throws Exception {
-		// TODO Auto-generated method stub
 		int counter = 0;
-		int client_id_len = 0;
+		int clientIdLen = 0;
 
 		try {
 			// level(1 byte) + flags(1 byte) + client ID length(1 byte)
-			byte encoded_byte = 0;
-			encoded_byte = buf[counter++];
-			super.parseVrbHeadLevel(encoded_byte);
+			byte encodedByte = 0;
+			encodedByte = buf[counter++];
+			super.parseVrbHeadLevel(encodedByte);
 
-			encoded_byte = buf[counter++];
-			super.parseVrbHeadFlags(encoded_byte);
+			encodedByte = buf[counter++];
+			super.parseVrbHeadFlags(encodedByte);
 
-			encoded_byte = buf[counter++];
-			client_id_len = super.parseVrbClientIdLen(encoded_byte);
+			encodedByte = buf[counter++];
+			clientIdLen = super.parseVrbClientIdLen(encodedByte);
 
-			// client ID(client_id_len byte) + alive time(2 byte) + timeout(1
+			// client ID(clientIdLen byte) + alive time(2 byte) + timeout(1
 			// byte)
-			byte[] id = new byte[client_id_len];
-			for (int i = 0; i < client_id_len; i++) {
+			byte[] id = new byte[clientIdLen];
+			for (int i = 0; i < clientIdLen; i++) {
 				id[i] = buf[counter++];
 			}
-			super.parseVrbClientId(id, client_id_len);
+			super.parseVrbClientId(id, clientIdLen);
 
-			byte alive_time_msb = buf[counter++];
-			byte alive_time_lsb = buf[counter++];
-			super.parseVrbAliveTime(alive_time_msb, alive_time_lsb);
+			byte aliveTimeMsb = buf[counter++];
+			byte aliveTimeLsb = buf[counter++];
+			super.parseVrbAliveTime(aliveTimeMsb, aliveTimeLsb);
 
-			byte timeout = buf[counter++];
+			byte timeout = buf[counter];
 			super.parseVrbTimeout(timeout);
 		} catch (Exception e) {
             StringWriter sw = new StringWriter();
@@ -189,19 +185,16 @@ public class BPPacketCONNECT extends BPPacket {
 
 	@Override
 	public boolean checkCRC(CrcChecksum ctCrc) throws Exception {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean parsePayload(IoBuffer io_buf) throws Exception {
-		// TODO Auto-generated method stub
+	public boolean parsePayload(IoBuffer ioBuf) throws Exception {
 		return false;
 	}
 
 	@Override
 	public boolean parsePayload(byte[] buf) throws Exception {
-		// TODO Auto-generated method stub
 		try {
 
 			if (!getUsrNameFlagVrbHead() || !getPwdFlagVrbHead()) {
@@ -209,11 +202,11 @@ public class BPPacketCONNECT extends BPPacket {
 			}
 			
 			int counter = 0;
-			int user_name_len = buf[counter++];
-			user_name_len = (user_name_len << 8) + (buf[counter++] & 0xFF);
-			byte[] user_name = new byte[user_name_len];
-			for (int i = 0; i < user_name_len; i++) {
-				user_name[i] = buf[counter++];
+			int userNameLen = buf[counter++];
+			userNameLen = (userNameLen << 8) + (buf[counter++] & 0xFF);
+			byte[] userName = new byte[userNameLen];
+			for (int i = 0; i < userNameLen; i++) {
+				userName[i] = buf[counter++];
 			}
 
 			int passwordLen = buf[counter++];
@@ -223,7 +216,7 @@ public class BPPacketCONNECT extends BPPacket {
 				password[i] = buf[counter++];
 			}
 			
-			setPldUserName(user_name);
+			setPldUserName(userName);
 			setPldPassword(password);
 
 		} catch (Exception e) {

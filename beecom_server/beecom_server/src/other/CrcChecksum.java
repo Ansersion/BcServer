@@ -8,10 +8,18 @@ package other;
  */
 import java.util.zip.CRC32;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import db.DB_DevAuthRec;
+
 public class CrcChecksum {
     /**
      * Represents the CRC type
      */
+	
+	private static final Logger logger = LoggerFactory.getLogger(CrcChecksum.class);
+	
     public static final CrcChecksum CRC16 = new CrcChecksum("CRC16");
     public static final CrcChecksum CRC32 = new CrcChecksum("CRC32");
 
@@ -36,21 +44,21 @@ public class CrcChecksum {
         return strValue;
     }
     
-    static final CRC32 Crc32 = new CRC32();
+    static final CRC32 crc32 = new CRC32();
     
     public static long calcCrc32(byte[] data) {
-    	Crc32.reset();
-    	Crc32.update(data);
+    	crc32.reset();
+    	crc32.update(data);
     
-    	long value = Crc32.getValue();
+    	long value = crc32.getValue();
         return value;  
     } 
     
     public static long calcCrc32(byte[] data, int off, int len) {
-    	Crc32.reset();
-    	Crc32.update(data, off, len);
+    	crc32.reset();
+    	crc32.update(data, off, len);
     
-    	long value = Crc32.getValue();
+    	long value = crc32.getValue();
         return value;  
     } 
     
@@ -134,7 +142,7 @@ public class CrcChecksum {
     		return crc == calcCrc32(data);
     	} else {
     		ret = false;
-    		System.out.println("Error: Unknown CrcChecksum type");
+    		logger.warn("Error: Unknown CrcChecksum type");
     	}
     	
     	return ret;

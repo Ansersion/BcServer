@@ -55,7 +55,6 @@ class SigData {
 
 		int type_and_num = data[offset++];
 
-		// boolean = (type_and_num >> 6) & 0x3;
 		int type = 0;
 		int num = type_and_num & 0x3F;
 
@@ -92,35 +91,31 @@ public class DeviceSignals {
 	Short DevId[];
 	HashMap<Short, SigData> SigDataMap;
 
-	// int CusValTypeNum;
-
 	public DeviceSignals(int DevNum) {
 		DevId = new Short[DevNum];
 		SigDataMap = new HashMap<Short, SigData>();
-		// HasCustomSig = false;
-		// CusValTypeNum = 0;
 	}
 
 	public int parseSigMap(byte[] data, int offset) {
 		int offset_old = offset;
-		byte encoded_byte;
+		byte encodedByte;
 		
 		for (int i = 0; i < DevId.length; i++) {
 			DevId[i] = BPPacket.assemble2ByteBigend(data, offset);
 			offset += 2;
-			encoded_byte = data[offset++];
+			encodedByte = data[offset++];
 			
-			SigDataMap.put(DevId[i], new SigData((encoded_byte & 0x80) == 0x80));
+			SigDataMap.put(DevId[i], new SigData((encodedByte & 0x80) == 0x80));
 
-			boolean custom_sig_flag = (encoded_byte & 0x80) == 0x80;
-			int cus_val_type_num = (encoded_byte) & 0x07;
+			boolean custom_sig_flag = (encodedByte & 0x80) == 0x80;
+			int cus_val_type_num = (encodedByte) & 0x07;
 			if(custom_sig_flag) {
 				for(int j = 0; j < cus_val_type_num; j++) {
 					offset += SigDataMap.get(DevId[i]).parseSigData(data, offset);
 				}
 			} else {
-				encoded_byte = data[offset++];
-				int sig_num = encoded_byte & 0x3F;
+				encodedByte = data[offset++];
+				int sig_num = encodedByte & 0x3F;
 				SigDataMap.put(DevId[i],  new SigData(custom_sig_flag));
 				for(int j = 0; j < sig_num; j++) {
 					short sig = BPPacket.assemble2ByteBigend(data, offset);
@@ -129,11 +124,6 @@ public class DeviceSignals {
 			}
 
 		}
-
-		/*
-		 * for(int i = 0; i < ValueTypeNum; i++) { encoded_byte =
-		 * data[offset++]; }
-		 */
 
 		return offset - offset_old;
 	}

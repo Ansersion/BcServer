@@ -10,4 +10,5 @@ a.out
 .metadata/*
 .recommenders/*
 .recommenders
+pom.xml
 

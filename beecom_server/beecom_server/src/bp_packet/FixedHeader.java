@@ -15,7 +15,6 @@ public class FixedHeader {
 	BPPacketType PacketType = BPPacketType.INVALID;
 	BPPacketFlags PacketFlags = new BPPacketFlags();
 	int RemainingLength = 0;
-	// CrcChecksum CrcType = CrcChecksum.CRC32;
 	
 	public FixedHeader(BPPacketType type) {
 		PacketType = type;
@@ -28,7 +27,6 @@ public class FixedHeader {
 		PacketType = BPPacketType.INVALID;
 		PacketFlags.reset();
 		RemainingLength = 0;
-		// CrcType = CrcChecksum.CRC32;
 	}
 	
 	public void setPacketType(BPPacketType type) {
@@ -47,26 +45,26 @@ public class FixedHeader {
 		if(io.remaining() >= 2) {
 			int multiplier = 1;
 			int len = 0;
-			byte encoded_byte;
+			byte encodedByte;
 			do {
-				encoded_byte = (byte)io.get();
-				len += (encoded_byte & 0x7F) * multiplier;
+				encodedByte = (byte)io.get();
+				len += (encodedByte & 0x7F) * multiplier;
 				multiplier *= 128;
 				if (multiplier > 128) {
 					throw new Exception("Remaining length too long");
 				}
-			} while ((encoded_byte & 0x80) != 0);
+			} while ((encodedByte & 0x80) != 0);
 			
 			RemainingLength = len;
 		}
 	}
 	
-	public void setBPType(byte encoded_byte) {
-		PacketType = BPPacketType.getType(encoded_byte);
+	public void setBPType(byte encodedByte) {
+		PacketType = BPPacketType.getType(encodedByte);
 	}
 	
-	public void setFlags(byte encoded_byte) {
-		PacketFlags.reset(encoded_byte);
+	public void setFlags(byte encodedByte) {
+		PacketFlags.reset(encodedByte);
 	}
 	
 	public void setCrcType(CrcChecksum crc) {
@@ -101,11 +99,6 @@ public class FixedHeader {
 		return (byte)(type | flag);
 		
 	}
-	/*
-	public boolean getUsrNameFlag() {
-		return PacketFlags.getUsrNameFlag();
-	}
-	*/
 	
 	public int getRemainingLen() {
 		return RemainingLength;

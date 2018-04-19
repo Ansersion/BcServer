@@ -3,11 +3,19 @@
  */
 package other;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import bp_packet.BPSession;
+
 /**
  * @author Ansersion
  * 
  */
 public class BPValue {
+	private static final Logger logger = LoggerFactory.getLogger(BPValue.class);
+	
+	
 	public static final String NULL_VAL = "NULL";
 	Integer u32Val = null;
 	Short u16Val = null;
@@ -46,7 +54,6 @@ public class BPValue {
 			strVal = new String("");
 			break;
 		default:
-			// System.out.println("Error: unsupported BPValue");
 			// NULL value
 			break;
 		}
@@ -86,7 +93,7 @@ public class BPValue {
 				strVal = val;
 				break;
 			default:
-				System.out.println("Error: setVal(String):" + ValType + ":"
+				logger.error("Error: setVal(String):" + ValType + ":"
 						+ val);
 				break;
 			}
@@ -118,7 +125,7 @@ public class BPValue {
 			ret = fltVal.toString();
 			break;
 		case 6:
-			ret = strVal.toString();
+			ret = strVal;
 			break;
 		default:
 			break;

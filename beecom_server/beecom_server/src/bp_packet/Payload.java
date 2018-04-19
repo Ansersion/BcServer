@@ -110,7 +110,6 @@ public class Payload {
 	
 	public void setDevName(byte[] dev_name) {
 		try {
-		// DevName = new String(dev_name, "UTF-8");
 			DevName= new String(dev_name);
 		} catch(Exception e) {
 			e.printStackTrace();

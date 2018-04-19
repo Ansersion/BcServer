@@ -21,7 +21,6 @@ public class BPPacketDISCONN extends BPPacket {
 
 	@Override
 	public boolean parseVariableHeader(IoBuffer ioBuf) throws Exception {
-		// TODO Auto-generated method stub
 
 		return true;
 	}

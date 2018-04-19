@@ -277,19 +277,16 @@ public class BPPacket implements BPPacketInterface {
 
 	@Override
 	public boolean assembleFixedHeader() throws Exception {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean assembleVariableHeader() throws Exception {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean assemblePayload() throws Exception {
-		// TODO Auto-generated method stub
 		return false;
 	}
 	
