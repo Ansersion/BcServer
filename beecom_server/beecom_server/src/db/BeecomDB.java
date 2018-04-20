@@ -4,8 +4,8 @@
 package db;
 
 import java.sql.Connection;
-
-import java.sql.Blob;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import bp_packet.BPPacket;
-import sys_sig_table.BPSysSigTable;
 
 import java.util.List;
 
@@ -31,13 +30,13 @@ public class BeecomDB {
 	private static final Logger logger = LoggerFactory.getLogger(BeecomDB.class);
 	
 
-	static BeecomDB BC_DB = null;
+	static BeecomDB bcDb = null;
 
-	List<DB_UserInfoRec> UserInfoRecLst;
-	List<DB_DevInfoRec> DevInfoRecLst;
-	List<DB_DevAuthRec> DevAuthRecLst;
-	List<DB_SysSigRec> SysSigRecLst;
-	Map<String, Long> Name2IDMap;
+	List<DBUserInfoRec> userInfoRecLst;
+	List<DBDevInfoRec> devInfoRecLst;
+	List<DBDevAuthRec> devAuthRecLst;
+	List<DBSysSigRec> sysSigRecLst;
+	Map<String, Long> name2IDMap;
 
 	Connection con;
 	static String driver = "com.mysql.jdbc.Driver";
@@ -47,25 +46,24 @@ public class BeecomDB {
 
 	private BeecomDB() {
 		logger.info("Info: Create BeecomDB");
-		UserInfoRecLst = new ArrayList<DB_UserInfoRec>();
-		DevInfoRecLst = new ArrayList<DB_DevInfoRec>();
-		DevAuthRecLst = new ArrayList<DB_DevAuthRec>();
-		SysSigRecLst = new ArrayList<DB_SysSigRec>();
+		userInfoRecLst = new ArrayList<>();
+		devInfoRecLst = new ArrayList<>();
+		devAuthRecLst = new ArrayList<>();
+		sysSigRecLst = new ArrayList<>();
 
-		Name2IDMap = new HashMap<String, Long>();
+		name2IDMap = new HashMap<>();
 
-		DB_UserInfoRec record_0_blank = new DB_UserInfoRec();
+		DBUserInfoRec record0Blank = new DBUserInfoRec();
 		// DB_UserDev
-		UserInfoRecLst.add(record_0_blank);
-		Statement statement = null;
+		userInfoRecLst.add(record0Blank);
 		ResultSet rs = null;
-		try {
+		try (Statement statement = con.createStatement()) {
 			Class.forName(driver);
 			con = DriverManager.getConnection(url, user, password);
 			if (!con.isClosed()) {
 				logger.info("Succeeded connecting to the Database!");
 			}
-			statement = con.createStatement();
+			
 
 			try {
 				String sql = "select * from user_info";
@@ -73,19 +71,19 @@ public class BeecomDB {
 
 				long id;
 				String name;
-				String e_mail;
+				String eMail;
 				String phone;
-				String password;
+				String passwordTmp;
 
 				while (rs.next()) {
 					id = rs.getInt("ID");
 					name = rs.getString("name");
-					e_mail = rs.getString("e_mail");
+					eMail = rs.getString("eMail");
 					phone = rs.getString("phone");
-					password = rs.getString("password");
-					UserInfoRecLst.add(new DB_UserInfoRec(id, name, e_mail,
-							phone, password));
-					Name2IDMap.put(name, id);
+					passwordTmp = rs.getString("password");
+					userInfoRecLst.add(new DBUserInfoRec(id, name, eMail,
+							phone, passwordTmp));
+					name2IDMap.put(name, id);
 				}
 				rs.close();
 			} finally {
@@ -99,25 +97,25 @@ public class BeecomDB {
 				String sql = "select * from dev_info";
 				rs = statement.executeQuery(sql);
 
-				long dev_uniq_id;
-				int user_id;
-				byte[] dev_pwd = new byte[32];
-				int dev_id;
-				long sys_sig_tab_id;
-				String dev_name;
+				long devUniqId;
+				int userId;
+				byte[] devPwd = new byte[32];
+				int devId;
+				long sysSigTabId;
+				String devName;
 
 				while (rs.next()) {
-					dev_uniq_id = rs.getLong("dev_uniq_id");
-					user_id = rs.getInt("user_id");
-					dev_pwd = rs.getBytes("dev_password");
-					dev_id = rs.getInt("dev_id");
-					sys_sig_tab_id = rs.getInt("sys_sig_tab_id");
-					dev_name = rs.getString("dev_name");
-					if (dev_uniq_id > Integer.MAX_VALUE) {
-						throw new Exception("Error: dev_uniq_id too big");
+					devUniqId = rs.getLong("devUniqId");
+					userId = rs.getInt("userId");
+					devPwd = rs.getBytes("dev_password");
+					devId = rs.getInt("devId");
+					sysSigTabId = rs.getInt("sysSigTabId");
+					devName = rs.getString("devName");
+					if (devUniqId > Integer.MAX_VALUE) {
+						throw new Exception("Error: devUniqId too big");
 					}
-					DevInfoRecLst.add(new DB_DevInfoRec(dev_uniq_id, user_id,
-							dev_pwd, dev_id, sys_sig_tab_id, dev_name));
+					devInfoRecLst.add(new DBDevInfoRec(devUniqId, userId,
+							devPwd, devId, sysSigTabId, devName));
 				}
 				rs.close();
 
@@ -132,37 +130,37 @@ public class BeecomDB {
 				String sql = "select * from dev_auth";
 				rs = statement.executeQuery(sql);
 
-				long dev_uniq_id;
-				int admin_user_id;
-				byte admin_user_auth;
-				int user_id_1;
-				byte user_auth_1;
-				int user_id_2;
-				byte user_auth_2;
-				int user_id_3;
-				byte user_auth_3;
-				int user_id_4;
-				byte user_auth_4;
+				long devUniqId;
+				int adminUserId;
+				byte adminUserAuth;
+				int userId1;
+				byte userAuth1;
+				int userId2;
+				byte userAuth2;
+				int userId3;
+				byte userAuth3;
+				int userId4;
+				byte userAuth4;
 
 				while (rs.next()) {
-					dev_uniq_id = rs.getLong("dev_uniq_id");
-					admin_user_id = rs.getInt("admin_user");
-					admin_user_auth = (byte) rs.getShort("admin_auth");
-					user_id_1 = rs.getInt("user_id1");
-					user_auth_1 = (byte) rs.getShort("user_id1_auth");
-					user_id_2 = rs.getInt("user_id2");
-					user_auth_2 = (byte) rs.getShort("user_id2_auth");
-					user_id_3 = rs.getInt("user_id3");
-					user_auth_3 = (byte) rs.getShort("user_id3_auth");
-					user_id_4 = rs.getInt("user_id4");
-					user_auth_4 = (byte) rs.getShort("user_id4_auth");
-					if (dev_uniq_id > Integer.MAX_VALUE) {
-						throw new Exception("Error: dev_uniq_id too big");
+					devUniqId = rs.getLong("devUniqId");
+					adminUserId = rs.getInt("admin_user");
+					adminUserAuth = (byte) rs.getShort("admin_auth");
+					userId1 = rs.getInt("user_id1");
+					userAuth1 = (byte) rs.getShort("user_id1_auth");
+					userId2 = rs.getInt("user_id2");
+					userAuth2 = (byte) rs.getShort("user_id2_auth");
+					userId3 = rs.getInt("user_id3");
+					userAuth3 = (byte) rs.getShort("user_id3_auth");
+					userId4 = rs.getInt("user_id4");
+					userAuth4 = (byte) rs.getShort("user_id4_auth");
+					if (devUniqId > Integer.MAX_VALUE) {
+						throw new Exception("Error: devUniqId too big");
 					}
-					DevAuthRecLst.add(new DB_DevAuthRec(dev_uniq_id,
-							admin_user_id, admin_user_auth, user_id_1,
-							user_auth_1, user_id_2, user_auth_2, user_id_3,
-							user_auth_3, user_id_4, user_auth_4));
+					devAuthRecLst.add(new DBDevAuthRec(devUniqId,
+							adminUserId, adminUserAuth, userId1,
+							userAuth1, userId2, userAuth2, userId3,
+							userAuth3, userId4, userAuth4));
 				}
 				rs.close();
 
@@ -174,32 +172,32 @@ public class BeecomDB {
 			}
 
 			try {
-				String sql = "select * from sys_sig_tab";
+				String sql = "select * from sysSigTab";
 				rs = statement.executeQuery(sql);
 
-				int sys_sig_tab_id;
+				int sysSigTabId;
 
 				while (rs.next()) {
-					sys_sig_tab_id = rs.getInt("sys_sig_tab_id");
-					List<Byte[]> sys_sig_enable_lst = new ArrayList<Byte[]>();
+					sysSigTabId = rs.getInt("sysSigTabId");
+					List<Byte[]> sysSigEnableLst = new ArrayList<>();
 					for(int i = 0; i < BPPacket.MAX_SYS_SIG_DIST_NUM; i++) {
-						byte[] tmp_b = rs.getBytes(i+2);
-						if(null != tmp_b) {
-							Byte[] tmp_B = new Byte[tmp_b.length];
-							for(int j = 0; j < tmp_B.length; j++) {
-								tmp_B[j] = tmp_b[j];
+						byte[] tmpB1 = rs.getBytes(i+2);
+						if(null != tmpB1) {
+							Byte[] tmpB2 = new Byte[tmpB1.length];
+							for(int j = 0; j < tmpB2.length; j++) {
+								tmpB2[j] = tmpB1[j];
 							}
-							sys_sig_enable_lst.add(tmp_B);
+							sysSigEnableLst.add(tmpB2);
 						} else {
-							sys_sig_enable_lst.add(null);
+							sysSigEnableLst.add(null);
 						}
 					}					
-					SysSigRecLst.add(new DB_SysSigRec(sys_sig_tab_id, sys_sig_enable_lst));
+					sysSigRecLst.add(new DBSysSigRec(sysSigTabId, sysSigEnableLst));
 				}
 				rs.close();
 
-				for (int i = 0; i < SysSigRecLst.size(); i++) {
-					SysSigRecLst.get(i).dumpRec();
+				for (int i = 0; i < sysSigRecLst.size(); i++) {
+					sysSigRecLst.get(i).dumpRec();
 				}
 			} finally {
 				if(null != rs) {
@@ -209,67 +207,68 @@ public class BeecomDB {
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw, true));
+            String str = sw.toString();
+            logger.error(str);
 		} catch (ClassNotFoundException e) {
 			logger.error("Sorry,can`t find the Driver!");
-			e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw, true));
+            String str = sw.toString();
+            logger.error(str);
 		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if(null != statement) {
-				try {
-					statement.close();
-				} catch(Exception ex) {
-					ex.printStackTrace();
-				}
-			}
-		}
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw, true));
+            String str = sw.toString();
+            logger.error(str);
+		} 
 	}
 
 	public Map<String, Long> getName2IDMap() {
-		return Name2IDMap;
+		return name2IDMap;
 	}
 
-	public List<DB_UserInfoRec> getUserInfoRecLst() {
-		return UserInfoRecLst;
+	public List<DBUserInfoRec> getUserInfoRecLst() {
+		return userInfoRecLst;
 	}
 
-	public List<DB_DevInfoRec> getDevInfoRecLst() {
-		return DevInfoRecLst;
+	public List<DBDevInfoRec> getDevInfoRecLst() {
+		return devInfoRecLst;
 	}
 	
-	public List<DB_SysSigRec> getSysSigRecLst() {
-		return SysSigRecLst;
+	public List<DBSysSigRec> getSysSigRecLst() {
+		return sysSigRecLst;
 	}
 
-	public DB_DevInfoRec getDevInfoRec(int dev_uniq_id) {
-		if (dev_uniq_id <= 0 || dev_uniq_id > DevInfoRecLst.size()) {
+	public DBDevInfoRec getDevInfoRec(int devUniqId) {
+		if (devUniqId <= 0 || devUniqId > devInfoRecLst.size()) {
 			return null;
 		}
-		return DevInfoRecLst.get(dev_uniq_id - 1);
+		return devInfoRecLst.get(devUniqId - 1);
 	}
 
-	public boolean setDevInfoRec(long dev_uniq_id, DB_DevInfoRec dev_info_rec) {
-		if (dev_uniq_id <= 0 || dev_uniq_id > DevInfoRecLst.size()) {
+	public boolean setDevInfoRec(long devUniqId, DBDevInfoRec devInfoRec) {
+		if (devUniqId <= 0 || devUniqId > devInfoRecLst.size()) {
 			return false;
 		}
-		DevInfoRecLst.set((int) dev_uniq_id - 1, dev_info_rec);
+		devInfoRecLst.set((int) devUniqId - 1, devInfoRec);
 		return true;
 	}
 
-	static public BeecomDB getInstance() {
-		if (null == BC_DB) {
-			BC_DB = new BeecomDB();
+	public static BeecomDB getInstance() {
+		if (null == bcDb) {
+			bcDb = new BeecomDB();
 		}
-		return BC_DB;
+		return bcDb;
 	}
 
-	static public boolean ChkUserName(String name) {
+	public static boolean chkUserName(String name) {
 		BeecomDB db = getInstance();
 		return db.getName2IDMap().containsKey(name);
 	}
 
-	static public boolean ChkUserPwd(String name, byte[] password) {
+	public static boolean chkUserPwd(String name, byte[] password) {
 		BeecomDB db = getInstance();
 		if (!db.getName2IDMap().containsKey(name)) {
 			return false;
@@ -277,41 +276,37 @@ public class BeecomDB {
 		long id = db.getName2IDMap().get(name);
 
 		// Maybe truncate ID
-		DB_UserInfoRec user_db_record = db.getUserInfoRecLst().get((int) id);
-		String str_p = new String(password);
-		logger.info("PWD mysql: {}", user_db_record.getPassword());
-		return str_p.equals(user_db_record.getPassword());
+		DBUserInfoRec userDbRecord = db.getUserInfoRecLst().get((int) id);
+		String strTmp = new String(password);
+		logger.info("PWD mysql: {}", userDbRecord.getPassword());
+		return strTmp.equals(userDbRecord.getPassword());
 	}
 
-	static public boolean ChkDevUniqId(long dev_uniq_id) {
+	public static boolean chkDevUniqId(long devUniqId) {
 		BeecomDB db = getInstance();
-		if (dev_uniq_id > db.getDevInfoRecLst().size() + 1 || dev_uniq_id <= 0) {
-			return false;
-		} else {
-			return true;
-		}
+		return devUniqId <= db.getDevInfoRecLst().size() + 1 && devUniqId > 0;
 	}
 
-	static public boolean ChkDevPwd(long dev_uniq_id, byte[] password) {
+	public static boolean chkDevPwd(long devUniqId, byte[] password) {
 		BeecomDB db = getInstance();
-		if (dev_uniq_id > db.getDevInfoRecLst().size() + 1 || dev_uniq_id <= 0) {
+		if (devUniqId > db.getDevInfoRecLst().size() + 1 || devUniqId <= 0) {
 			return false;
 		}
 		// Maybe truncate ID
 
-		DB_DevInfoRec rec = db.getDevInfoRecLst().get((int) (dev_uniq_id - 1));
-		String str_p = new String(password);
+		DBDevInfoRec rec = db.getDevInfoRecLst().get((int) (devUniqId - 1));
+		String strTmp = new String(password);
 		logger.info("Dev PWD mysql: {}", new String(rec.getDevPwd()));
-		return str_p.equals(new String(rec.getDevPwd()));
+		return strTmp.equals(new String(rec.getDevPwd()));
 	}
 
-	static public boolean updateDevInfoRec(DB_DevInfoRec dev_info_rec) {
+	public static boolean updateDevInfoRec(DBDevInfoRec devInfoRec) {
 		BeecomDB db = getInstance();
-		long dev_uniq_id = dev_info_rec.getDevUniqId();
-		if (dev_uniq_id <= 0 || dev_uniq_id > db.DevInfoRecLst.size()) {
+		long devUniqId = devInfoRec.getDevUniqId();
+		if (devUniqId <= 0 || devUniqId > db.devInfoRecLst.size()) {
 			return false;
 		}
-		db.setDevInfoRec(dev_uniq_id, dev_info_rec);
+		db.setDevInfoRec(devUniqId, devInfoRec);
 		return true;
 	}
 	
@@ -320,18 +315,14 @@ public class BeecomDB {
 	}
 	
 	public boolean updateDevInfoRecLst() {
-		BeecomDB db = getInstance();
-		DB_BaseRec rec;
-		for(int i = 0; i < DevInfoRecLst.size(); i++) {
-			rec = DevInfoRecLst.get(i);
-			
+		for(int i = 0; i < devInfoRecLst.size(); i++) {
 		}
 		return true;
 	}
 
 	public void dumpDevInfo() {
-		for(int i = 0; i < DevInfoRecLst.size(); i++) {
-			DevInfoRecLst.get(i).dumpRec();
+		for(int i = 0; i < devInfoRecLst.size(); i++) {
+			devInfoRecLst.get(i).dumpRec();
 		}
 	}
 }

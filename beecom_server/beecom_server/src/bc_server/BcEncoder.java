@@ -21,27 +21,27 @@ public class BcEncoder extends ProtocolEncoderAdapter {
 			throws Exception {
 		
 		if(arg1 instanceof String) {
-			IoBuffer io_tst_buf = IoBuffer.allocate(16, false);
+			IoBuffer ioTstBuf = IoBuffer.allocate(16, false);
 			byte b = 'T';
-			io_tst_buf.put(b);
+			ioTstBuf.put(b);
 			b = 'S';
-			io_tst_buf.put(b);
+			ioTstBuf.put(b);
 			b = 'T';
-			io_tst_buf.put(b);
-			io_tst_buf.flip();
-			arg2.write(io_tst_buf);
+			ioTstBuf.put(b);
+			ioTstBuf.flip();
+			arg2.write(ioTstBuf);
 			return;
 		}
 		
-		BPPacket pack_to_encode = (BPPacket)arg1;
+		BPPacket packToEncode = (BPPacket)arg1;
 		
-		pack_to_encode.assembleStart();
-		pack_to_encode.assembleFixedHeader();
-		pack_to_encode.assembleVariableHeader();
-		pack_to_encode.assemblePayload();
-		pack_to_encode.assembleEnd();
+		packToEncode.assembleStart();
+		packToEncode.assembleFixedHeader();
+		packToEncode.assembleVariableHeader();
+		packToEncode.assemblePayload();
+		packToEncode.assembleEnd();
 
-		IoBuffer buf = pack_to_encode.getIoBuffer();
+		IoBuffer buf = packToEncode.getIoBuffer();
 		
 		arg2.write(buf);
 

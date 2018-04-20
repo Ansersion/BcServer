@@ -17,17 +17,16 @@ public class BPPacketPINGACK extends BPPacket {
 	
 	protected BPPacketPINGACK() {
 		super();
-		FixedHeader fx_head = getFxHead();
-		fx_head.setPacketType(BPPacketType.PINGACK);
-		fx_head.setCrcType(CrcChecksum.CRC32);
+		FixedHeader fxHead = getFxHead();
+		fxHead.setPacketType(BPPacketType.PINGACK);
+		fxHead.setCrcType(CrcChecksum.CRC32);
 	}
 	
 	@Override
-	public boolean assembleFixedHeader() throws Exception {
-		// TODO Auto-generated method stub
-		int pack_type = getPackTypeIntFxHead();
-		byte pack_flags = getPackFlagsByteFxHead();
-		byte encodedByte = (byte) (((pack_type & 0xf) << 4) | (pack_flags & 0xf));
+	public boolean assembleFixedHeader() {
+		int packType = getPackTypeIntFxHead();
+		byte packFlags = getPackFlagsByteFxHead();
+		byte encodedByte = (byte) (((packType & 0xf) << 4) | (packFlags & 0xf));
 		
 		getIoBuffer().put(encodedByte);
 		
@@ -38,25 +37,21 @@ public class BPPacketPINGACK extends BPPacket {
 	}
 
 	@Override
-	public boolean assembleVariableHeader() throws Exception {
+	public boolean assembleVariableHeader() {
 		byte encodedByte;
 		
 		encodedByte = getVrbHead().getFlags();
 		getIoBuffer().put(encodedByte);
-		int pack_seq = getVrbHead().getPackSeq();
-		getIoBuffer().putUnsignedShort(pack_seq);
-		byte ret_code = (byte)getVrbHead().getRetCode();
-		getIoBuffer().put(ret_code);
+		int packSeq = getVrbHead().getPackSeq();
+		getIoBuffer().putUnsignedShort(packSeq);
+		byte retCode = (byte)getVrbHead().getRetCode();
+		getIoBuffer().put(retCode);
 		
 		return false;
 	}
 
 	@Override
-	public boolean assemblePayload() throws Exception {
-		if(RET_CODE_OK != getVrbHead().getRetCode()) {
-			return false;
-		}
-		
-		return true;
+	public boolean assemblePayload() {		
+		return RET_CODE_OK == getVrbHead().getRetCode();
 	}
 }

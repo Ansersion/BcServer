@@ -26,7 +26,7 @@ public class BPPacketRPRTACK extends BPPacket {
 	}
 	
 	@Override
-	public boolean assembleFixedHeader() throws Exception {
+	public boolean assembleFixedHeader() {
 		int packType = getPackTypeIntFxHead();
 		byte packFlags = getPackFlagsByteFxHead();
 		byte encodedByte = (byte) (((packType & 0xf) << 4) | (packFlags & 0xf));
@@ -40,7 +40,7 @@ public class BPPacketRPRTACK extends BPPacket {
 	}
 
 	@Override
-	public boolean assembleVariableHeader() throws Exception {
+	public boolean assembleVariableHeader() {
 		int packSeq = (byte)getVrbHead().getPackSeq();
 		getIoBuffer().putUnsignedShort(packSeq);	
 		byte retCode = (byte)getVrbHead().getRetCode();
@@ -50,10 +50,10 @@ public class BPPacketRPRTACK extends BPPacket {
 	}
 
 	@Override
-	public boolean assemblePayload() throws Exception {
+	public boolean assemblePayload() {
 		if(RET_CODE_OK != getVrbHead().getRetCode()) {
-			if(null != getPld().Error) {
-				getIoBuffer().putUnsignedShort(getPld().Error.getSigIdLst().get(0));
+			if(null != getPld().getError()) {
+				getIoBuffer().putUnsignedShort(getPld().getError().getSigIdLst().get(0));
 			}
 		}
 

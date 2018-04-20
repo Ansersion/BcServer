@@ -42,20 +42,18 @@ public class BPPacketCONNACK extends BPPacket {
 		VariableHeader vrbHead = getVrbHead();
 		if(packConnnect.getVrbHead().getLevel() > BPPacket.BP_LEVEL) {
 			vrbHead.setLevel(BPPacket.BP_LEVEL);
-			// TODO: use macro instead of constant number
 			vrbHead.setRetCode(0x01);
 		} else {
 			vrbHead.setLevel(packConnnect.getVrbHead().getLevel());
 			if(0 == packConnnect.getVrbHead().getClientId()) {
 				vrbHead.setNewCliIdFlg();
 			}
-			// TODO: use macro instead of constant number
 			vrbHead.setRetCode(0x00);
 		}
 	}
 	
 	@Override
-	public boolean assembleFixedHeader() throws Exception {
+	public boolean assembleFixedHeader() {
 		int packType = getPackTypeIntFxHead();
 		byte packFlags = getPackFlagsByteFxHead();
 		byte encodedByte = (byte) (((packType & 0xf) << 4) | (packFlags & 0xf));
@@ -69,7 +67,7 @@ public class BPPacketCONNACK extends BPPacket {
 	}
 
 	@Override
-	public boolean assembleVariableHeader() throws Exception {
+	public boolean assembleVariableHeader() {
 		byte encodedByte;
 		
 		encodedByte = (byte)getVrbHead().getLevel();
@@ -83,7 +81,7 @@ public class BPPacketCONNACK extends BPPacket {
 	}
 
 	@Override
-	public boolean assemblePayload() throws Exception {
+	public boolean assemblePayload() {
 		byte encodedByte;
 		if(RET_CODE_OK != getVrbHead().getRetCode()) {
 			return false;

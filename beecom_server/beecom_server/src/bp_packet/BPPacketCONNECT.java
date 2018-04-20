@@ -31,17 +31,17 @@ public class BPPacketCONNECT extends BPPacket {
 	}
 
 	@Override
-	public int decrypt(EncryptType etEncryptType) throws Exception {
+	public int decrypt(EncryptType etEncryptType) throws BPException {
 		return 0;
 	}
 
 	@Override
-	public int parseFixedHeader() throws Exception {
+	public int parseFixedHeader() {
 		return 0;
 	}
 
 	@Override
-	public boolean parseVariableHeader(IoBuffer ioBuf) throws Exception {
+	public boolean parseVariableHeader(IoBuffer ioBuf) {
 		int clientIdLen = 0;
 
 		try {
@@ -82,7 +82,7 @@ public class BPPacketCONNECT extends BPPacket {
 	}
 
 	@Override
-	public boolean parseVariableHeader(byte[] buf) throws Exception {
+	public boolean parseVariableHeader(byte[] buf) {
 		int counter = 0;
 		int clientIdLen = 0;
 
@@ -124,7 +124,7 @@ public class BPPacketCONNECT extends BPPacket {
 	}
 	
 	@Override
-	public int parseVariableHeader() throws Exception {
+	public int parseVariableHeader() {
 
 		try {
 			// level(1 byte) + flags(1 byte) + client ID length(1 byte)
@@ -155,7 +155,7 @@ public class BPPacketCONNECT extends BPPacket {
 	}
 
 	@Override
-	public int parsePayload() throws Exception {
+	public int parsePayload() {
 		try {
 			if (!getUsrNameFlagVrbHead() || !getPwdFlagVrbHead()) {
 				return 0;
@@ -184,17 +184,17 @@ public class BPPacketCONNECT extends BPPacket {
 	}
 
 	@Override
-	public boolean checkCRC(CrcChecksum ctCrc) throws Exception {
+	public boolean checkCRC(CrcChecksum ctCrc) throws BPCrcException {
 		return false;
 	}
 
 	@Override
-	public boolean parsePayload(IoBuffer ioBuf) throws Exception {
+	public boolean parsePayload(IoBuffer ioBuf) {
 		return false;
 	}
 
 	@Override
-	public boolean parsePayload(byte[] buf) throws Exception {
+	public boolean parsePayload(byte[] buf) {
 		try {
 
 			if (!getUsrNameFlagVrbHead() || !getPwdFlagVrbHead()) {

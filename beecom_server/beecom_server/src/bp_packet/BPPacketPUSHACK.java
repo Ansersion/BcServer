@@ -9,11 +9,10 @@ package bp_packet;
  */
 public class BPPacketPUSHACK extends BPPacket {
 	@Override
-	public boolean assembleFixedHeader() throws Exception {
-		// TODO Auto-generated method stub
-		int pack_type = getPackTypeIntFxHead();
-		byte pack_flags = getPackFlagsByteFxHead();
-		byte encodedByte = (byte) (((pack_type & 0xf) << 4) | (pack_flags & 0xf));
+	public boolean assembleFixedHeader() {
+		int packType = getPackTypeIntFxHead();
+		byte packFlags = getPackFlagsByteFxHead();
+		byte encodedByte = (byte) (((packType & 0xf) << 4) | (packFlags & 0xf));
 		
 		getIoBuffer().put(encodedByte);
 		
@@ -24,8 +23,7 @@ public class BPPacketPUSHACK extends BPPacket {
 	}
 
 	@Override
-	public boolean assembleVariableHeader() throws Exception {
-		// TODO Auto-generated method stub
+	public boolean assembleVariableHeader() {
 		byte encodedByte;
 		
 		encodedByte = (byte)getVrbHead().getLevel();
@@ -39,17 +37,16 @@ public class BPPacketPUSHACK extends BPPacket {
 	}
 
 	@Override
-	public boolean assemblePayload() throws Exception {
-		// TODO Auto-generated method stub
+	public boolean assemblePayload() {
 		byte encodedByte;
 		
 		encodedByte = (byte)getPld().getClntIdLen();
 		getIoBuffer().put(encodedByte);
 		
-		int client_id = getPld().getClntId();
-		encodedByte = (byte)((client_id & 0xff00) >> 8);
+		int clientId = getPld().getClntId();
+		encodedByte = (byte)((clientId & 0xff00) >> 8);
 		getIoBuffer().put(encodedByte);
-		encodedByte = (byte)(client_id & 0xff);
+		encodedByte = (byte)(clientId & 0xff);
 		getIoBuffer().put(encodedByte);
 		encodedByte = (byte)getPld().getSymSetVer();
 		getIoBuffer().put(encodedByte);

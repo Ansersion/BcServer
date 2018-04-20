@@ -9,31 +9,31 @@ import other.CrcChecksum;
  *
  */
 public interface BPPacketInterface {
-	public int decrypt(EncryptType etEncryptType) throws Exception;
+	public int decrypt(EncryptType etEncryptType) throws BPException;
 	
     /**
      * Parse the fixed header.
      * @return The number of bytes of the cryptograph 
      * @throws Exception If an error occurred while decrypting
      */
-	public int parseFixedHeader() throws Exception;
-	public int parseVariableHeader() throws Exception;
-	public boolean parseVariableHeader(IoBuffer ioBuf) throws Exception;
-	public boolean parseVariableHeader(byte[] buf) throws Exception;
-	public int parsePayload() throws Exception;
-	public boolean parsePayload(IoBuffer ioBuf) throws Exception;
-	public boolean parsePayload(byte[] buf) throws Exception;
-	public boolean assembleStart() throws Exception;
-	public boolean assembleFixedHeader() throws Exception;
-	public boolean assembleVariableHeader() throws Exception;
-	public boolean assemblePayload() throws Exception;
-	public boolean assembleEnd() throws Exception;
-	public boolean checkCRC(CrcChecksum ctCrc) throws Exception;
-	public void setFixedHeader(FixedHeader fxHeader) throws Exception;
-	public void setVariableHeader(VariableHeader vrbHeader) throws Exception;
-	public void setPayload(Payload pld) throws Exception;
-	public void setCrcChecksum(CrcChecksum ctCrc) throws Exception;
+	public int parseFixedHeader() throws BPParseFxHeaderException;
+	public int parseVariableHeader() throws BPParseVrbHeaderException;
+	public boolean parseVariableHeader(IoBuffer ioBuf) throws BPParseVrbHeaderException;
+	public boolean parseVariableHeader(byte[] buf) throws BPParseVrbHeaderException;
+	public int parsePayload() throws BPParsePldException;
+	public boolean parsePayload(IoBuffer ioBuf) throws BPParsePldException;
+	public boolean parsePayload(byte[] buf) throws BPParsePldException;
+	public boolean assembleStart() throws BPAssembleException;
+	public boolean assembleFixedHeader() throws BPAssembleFxHeaderException;
+	public boolean assembleVariableHeader() throws BPAssembleVrbHeaderException;
+	public boolean assemblePayload() throws BPAssemblePldException;
+	public boolean assembleEnd() throws BPAssembleException;
+	public boolean checkCRC(CrcChecksum ctCrc) throws BPCrcException;
+	public void setFixedHeader(FixedHeader fxHeader);
+	public void setVariableHeader(VariableHeader vrbHeader);
+	public void setPayload(Payload pld);
+	public void setCrcChecksum(CrcChecksum ctCrc) throws BPCrcException;
 	
-	public byte[] getPackByByte() throws Exception;
+	public byte[] getPackByByte() throws BPException;
 
 }

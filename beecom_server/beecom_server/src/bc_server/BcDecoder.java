@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import bp_packet.BPPackFactory;
 import bp_packet.BPPacket;
-import bp_packet.BPPacketCONNECT;
 import bp_packet.FixedHeader;
 import bp_packet.Payload;
 import bp_packet.VariableHeader;
@@ -31,18 +30,18 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 		DEC_INVALID, DEC_FX_HEAD, DEC_REMAINING_DATA;
 	}
 
-	final String NEW_CONNECTION = new String("NEW CONNECTION");
-	final String BAD_CONNECTION = new String("BAD CONNECTION");
-	final String FIXED_HEADER = new String("FIXED HEADER");
-	final String VARIABLE_HEADER = new String("VARIABLE HEADER");
-	final String PAYLOAD = new String("PAYLOAD");
-	final String CRC_CHECKSUM = new String("CRC CHECKSUM");
-	final String DECODE_STATE = new String("DECODE STATE");
-	final String BP_PACKET = new String("BP PACKET");
+	public static final String NEW_CONNECTION = "NEW CONNECTION";
+	public static final String BAD_CONNECTION = "BAD CONNECTION";
+	public static final String FIXED_HEADER = "FIXED HEADER";
+	public static final String VARIABLE_HEADER = "VARIABLE HEADER";
+	public static final String PAYLOAD = "PAYLOAD";
+	public static final String CRC_CHECKSUM = "CRC CHECKSUM";
+	public static final String DECODE_STATE = "DECODE STATE";
+	public static final String BP_PACKET = "BP PACKET";
 
 	@Override
-	protected boolean doDecode(IoSession session, IoBuffer io_in,
-			ProtocolDecoderOutput decoder_out) throws Exception {
+	protected boolean doDecode(IoSession session, IoBuffer ioIn,
+			ProtocolDecoderOutput decoderOut) throws Exception {
 		
 		boolean ret = false;
 	
@@ -53,25 +52,24 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 			session.setAttribute(FIXED_HEADER, new FixedHeader());
 			session.setAttribute(VARIABLE_HEADER, new VariableHeader());
 			session.setAttribute(PAYLOAD, new Payload());
-			// session.setAttribute(BP_PACKET, new FixedHeader());
 			session.setAttribute(DECODE_STATE, DecodeState.DEC_FX_HEAD);
 		}
 
-		DecodeState curr_state = (DecodeState) session
+		DecodeState currState = (DecodeState) session
 				.getAttribute(DECODE_STATE);
 		
 
-		switch (curr_state) {
+		switch (currState) {
 		case DEC_FX_HEAD:
 			// The length of fixed-header is 3 at most 
-			if (io_in.remaining() >= 3) { 
-				byte[] tst = io_in.array();
+			if (ioIn.remaining() >= 3) { 
+				byte[] tst = ioIn.array();
 				if(tst[0] == 'T' && tst[1] == 'S' && tst[2] == 'T') {
-					io_in.get(new byte[io_in.remaining()]);
-					decoder_out.write(new String("TST"));
+					ioIn.get(new byte[ioIn.remaining()]);
+					decoderOut.write("TST");
 					return true;
 				}
-				BPPacket bpPack = BPPackFactory.createBPPack(io_in);
+				BPPacket bpPack = BPPackFactory.createBPPack(ioIn);
 				if(null == bpPack) {
 					throw new Exception("Error: cannot create BPPacket!");
 				}
@@ -87,11 +85,11 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 			BPPacket bpPack = (BPPacket)session.getAttribute(BP_PACKET);
 			FixedHeader fxHead = bpPack.getFxHead();
 			IoBuffer packIoBuf = bpPack.getIoBuffer();
-			if(io_in.remaining() >= fxHead.getRemainingLen()) {
-				byte[] remaining_data = new byte[fxHead.getRemainingLen()];
-				io_in.get(remaining_data);
+			if(ioIn.remaining() >= fxHead.getRemainingLen()) {
+				byte[] remainingData = new byte[fxHead.getRemainingLen()];
+				ioIn.get(remainingData);
 				int vrbPos = packIoBuf.position();
-				packIoBuf.put(remaining_data);
+				packIoBuf.put(remainingData);
 				bpPack.getIoBuffer().flip();
 				bpPack.getIoBuffer().limit();
 				byte[] data = new byte[bpPack.getIoBuffer().limit() - 4];
@@ -119,7 +117,7 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 					throw e;
 				}
 				session.setAttribute(DECODE_STATE, DecodeState.DEC_FX_HEAD);
-				decoder_out.write(bpPack);
+				decoderOut.write(bpPack);
 				ret = true;
 			} else {
 				ret = false;

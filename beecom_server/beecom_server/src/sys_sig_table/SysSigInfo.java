@@ -5,46 +5,159 @@ import java.util.Map;
 import other.BPValue;
 
 public class SysSigInfo {
-	// byte[] MacroName;
-	public boolean IsAlm;
+	private boolean alm;
 	/* 0-u32, 1-u16, 2-i32, 3-i16, 4-enum, 5-float, 6-string */
-	public byte ValType;
-	public int UnitLangRes;
+	private byte valType;
+	private int unitLangRes;
 	/* 0-ro, 1-rw */
-	public byte Permission;
-	public byte Accuracy;
-	public BPValue ValMin;
-	public BPValue ValMax;
-	public BPValue ValDef;
-	public int classLangRes;
-	public Map<Integer, Integer> MapEnmLangRes;
-	public boolean EnStatistics;
+	private byte permission;
+	private byte accuracy;
+	private BPValue valMin;
+	private BPValue valMax;
+	private BPValue valDef;
+	private int classLangRes;
+	private Map<Integer, Integer> mapEnmLangRes;
+	private boolean enStatistics;
 	// 0-note, 1-warning, 2-serious, 3-emergency
-	public byte AlmClass;
-	public int DlyBefAlm;
-	public int DlyAftAlm;
+	private byte almClass;
+	private int dlyBefAlm;
+	private int dlyAftAlm;
 
-	public SysSigInfo(boolean is_alm, byte val_type, int unit_lang_res,
-			byte permission, byte accuracy, BPValue val_min, BPValue val_max,
-			BPValue val_def, int classLangRes, Map<Integer, Integer> map_enm_lang_res,
-			boolean en_statistics, byte alm_class, int dly_bef_alm,
-			int dly_aft_alm) {
+	public SysSigInfo(boolean alm, byte valType, int unitLangRes,
+			byte permission, byte accuracy, BPValue valMin, BPValue valMax,
+			BPValue valDef, int classLangRes, Map<Integer, Integer> mapEnumLangRes,
+			boolean enStatistics, byte almClass, int dlyBefAlm,
+			int dlyAftAlm) {
 
-		IsAlm = is_alm;
-		ValType = val_type;
-		UnitLangRes = unit_lang_res;
-		Permission = permission;
-		Accuracy = accuracy;
-		ValMin = val_min;
-		ValMax = val_max;
-		ValDef = val_def;
+		this.alm = alm;
+		this.valType = valType;
+		this.unitLangRes = unitLangRes;
+		this.permission = permission;
+		this.accuracy = accuracy;
+		this.valMin = valMin;
+		this.valMax = valMax;
+		this.valDef = valDef;
 		this.classLangRes = classLangRes;
-		MapEnmLangRes = map_enm_lang_res;
-		EnStatistics = en_statistics;
-		AlmClass = alm_class;
-		DlyBefAlm = dly_bef_alm;
-		DlyAftAlm = dly_aft_alm;
+		this.mapEnmLangRes = mapEnumLangRes;
+		this.enStatistics = enStatistics;
+		this.almClass = almClass;
+		this.dlyBefAlm = dlyBefAlm;
+		this.dlyAftAlm = dlyAftAlm;
 	}
+
+	public boolean isAlm() {
+		return alm;
+	}
+
+	public void setAlm(boolean alm) {
+		this.alm = alm;
+	}
+
+	public byte getValType() {
+		return valType;
+	}
+
+	public void setValType(byte valType) {
+		this.valType = valType;
+	}
+
+	public int getUnitLangRes() {
+		return unitLangRes;
+	}
+
+	public void setUnitLangRes(int unitLangRes) {
+		this.unitLangRes = unitLangRes;
+	}
+
+	public byte getPermission() {
+		return permission;
+	}
+
+	public void setPermission(byte permission) {
+		this.permission = permission;
+	}
+
+	public byte getAccuracy() {
+		return accuracy;
+	}
+
+	public void setAccuracy(byte accuracy) {
+		this.accuracy = accuracy;
+	}
+
+	public BPValue getValMin() {
+		return valMin;
+	}
+
+	public void setValMin(BPValue valMin) {
+		this.valMin = valMin;
+	}
+
+	public BPValue getValMax() {
+		return valMax;
+	}
+
+	public void setValMax(BPValue valMax) {
+		this.valMax = valMax;
+	}
+
+	public BPValue getValDef() {
+		return valDef;
+	}
+
+	public void setValDef(BPValue valDef) {
+		this.valDef = valDef;
+	}
+
+	public int getClassLangRes() {
+		return classLangRes;
+	}
+
+	public void setClassLangRes(int classLangRes) {
+		this.classLangRes = classLangRes;
+	}
+
+	public Map<Integer, Integer> getMapEnmLangRes() {
+		return mapEnmLangRes;
+	}
+
+	public void setMapEnmLangRes(Map<Integer, Integer> mapEnmLangRes) {
+		this.mapEnmLangRes = mapEnmLangRes;
+	}
+
+	public boolean isEnStatistics() {
+		return enStatistics;
+	}
+
+	public void setEnStatistics(boolean enStatistics) {
+		this.enStatistics = enStatistics;
+	}
+
+	public byte getAlmClass() {
+		return almClass;
+	}
+
+	public void setAlmClass(byte almClass) {
+		this.almClass = almClass;
+	}
+
+	public int getDlyBefAlm() {
+		return dlyBefAlm;
+	}
+
+	public void setDlyBefAlm(int dlyBefAlm) {
+		this.dlyBefAlm = dlyBefAlm;
+	}
+
+	public int getDlyAftAlm() {
+		return dlyAftAlm;
+	}
+
+	public void setDlyAftAlm(int dlyAftAlm) {
+		this.dlyAftAlm = dlyAftAlm;
+	}
+	
+	
 
 	// public static
 }

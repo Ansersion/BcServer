@@ -9,24 +9,23 @@ import java.sql.Connection;
  * @author Ansersion
  *
  */
-public class DB_BaseRec {
+public class DBBaseRec {
 	
-	boolean IsDirty;
+	boolean isDirty;
 	
-	public DB_BaseRec() {
-		IsDirty = false;
+	public DBBaseRec() {
+		isDirty = false;
 	}
 	
 	public void setDirty() {
-		IsDirty = true;
+		isDirty = true;
 	}
 	
 	public void clrDirty() {
-		IsDirty = false;
+		isDirty = false;
 	}
 
 	public boolean updateRec(Connection con) {
-		// TODO: overload this function
 		return false;
 	}
 }

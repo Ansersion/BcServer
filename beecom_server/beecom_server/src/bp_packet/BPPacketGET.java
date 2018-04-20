@@ -3,6 +3,8 @@
  */
 package bp_packet;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
@@ -17,22 +19,16 @@ import org.slf4j.LoggerFactory;
  * 
  */
 
-class dataDevSigGET {
-	int DevId;
-	boolean CustomSig;
-
-}
-
 public class BPPacketGET extends BPPacket {
 	
 	private static final Logger logger = LoggerFactory.getLogger(BPPacketGET.class); 
 
-	int PackSeq;
-	DeviceSignals DevSigData = null;
-	int DeviceNum;
+	int packSeq;
+	DeviceSignals devSigData = null;
+	int deviceNum;
 
 	@Override
-	public boolean parseVariableHeader(IoBuffer ioBuf) throws Exception {
+	public boolean parseVariableHeader(IoBuffer ioBuf) {
 		int clientIdLen = 0;
 
 		try {
@@ -48,10 +44,13 @@ public class BPPacketGET extends BPPacket {
 			encodedByte = ioBuf.get();
 			super.parseVrbHeadFlags(encodedByte);
 
-			PackSeq = ioBuf.getUnsignedShort();
+			packSeq = ioBuf.getUnsignedShort();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw, true));
+            String str = sw.toString();
+            logger.error(str);
 			throw e;
 		}
 
@@ -59,7 +58,7 @@ public class BPPacketGET extends BPPacket {
 	}
 
 	@Override
-	public boolean parseVariableHeader(byte[] buf) throws Exception {
+	public boolean parseVariableHeader(byte[] buf) {
 		try {
 			int counter = 0;
 			int clientIdLen = 0;
@@ -75,12 +74,15 @@ public class BPPacketGET extends BPPacket {
 			encodedByte = buf[counter++];
 			super.parseVrbHeadFlags(encodedByte);
 
-			byte pack_seq_msb = buf[counter++];
-			byte pack_seq_lsb = buf[counter++];
-			PackSeq = BPPacket.assemble2ByteBigend(pack_seq_msb, pack_seq_lsb);
+			byte packSeqMsb = buf[counter++];
+			byte packSeqLsb = buf[counter];
+			packSeq = BPPacket.assemble2ByteBigend(packSeqMsb, packSeqLsb);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw, true));
+            String str = sw.toString();
+            logger.error(str);
 			throw e;
 		}
 
@@ -88,18 +90,21 @@ public class BPPacketGET extends BPPacket {
 	}
 
 	@Override
-	public int parseVariableHeader() throws Exception {
+	public int parseVariableHeader() {
 		try {
 			byte flags = getIoBuffer().get();
 			super.parseVrbHeadFlags(flags);
 
-			int client_id = getIoBuffer().getUnsignedShort();
-			getVrbHead().setClientId(client_id);
+			int clientId = getIoBuffer().getUnsignedShort();
+			getVrbHead().setClientId(clientId);
 
-			int pack_seq = getIoBuffer().getUnsignedShort();
-			getVrbHead().setPackSeq(pack_seq);
+			int packSeqTmp = getIoBuffer().getUnsignedShort();
+			getVrbHead().setPackSeq(packSeqTmp);
 		} catch (Exception e) {
-			e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw, true));
+            String str = sw.toString();
+            logger.error(str);
 			throw e;
 		}
 
@@ -107,46 +112,52 @@ public class BPPacketGET extends BPPacket {
 	}
 
 	@Override
-	public int parsePayload() throws Exception {
+	public int parsePayload() {
 		try {
-			short dev_num = getIoBuffer().get();
-			Map<Integer, List<Integer> > map_dev2siglst = getPld().getMapDev2SigLst();
+			short devNum = getIoBuffer().get();
+			Map<Integer, List<Integer> > mapDev2siglst = getPld().getMapDev2SigLst();
 			
-			for (short i = 0; i < dev_num; i++) {
-				int dev_id = getIoBuffer().getUnsignedShort();
-				byte cus_flags = getIoBuffer().get();
-				List<Integer> lst_sig = new ArrayList<Integer>();
-				if ((cus_flags & 0x80) == 0x80) {
+			for (short i = 0; i < devNum; i++) {
+				int devId = getIoBuffer().getUnsignedShort();
+				byte cusFlags = getIoBuffer().get();
+				List<Integer> lstSig = new ArrayList<>();
+				if ((cusFlags & 0x80) == 0x80) {
 					logger.error("Error: Not supported GET payload custom signals");
 				} else {
-					short sig_num = getIoBuffer().get();
-					for(short j = 0; j < sig_num; j++) {
-						int sig_id = getIoBuffer().getUnsignedShort();
-						lst_sig.add(sig_id);
+					short sigNum = getIoBuffer().get();
+					for(short j = 0; j < sigNum; j++) {
+						int sigId = getIoBuffer().getUnsignedShort();
+						lstSig.add(sigId);
 					}
 				}
-				map_dev2siglst.put(dev_id, lst_sig);
+				mapDev2siglst.put(devId, lstSig);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw, true));
+            String str = sw.toString();
+            logger.error(str);
 			throw e;
 		}
 		return 0;
 	}
 
 	@Override
-	public boolean parsePayload(byte[] buf) throws Exception {
+	public boolean parsePayload(byte[] buf) {
 
 		try {
 			int counter = 0;
 
-			DeviceNum = buf[counter++];
-			DevSigData = new DeviceSignals(DeviceNum);
+			deviceNum = buf[counter++];
+			devSigData = new DeviceSignals(deviceNum);
 
-			counter += DevSigData.parseSigMap(buf, counter);
+			counter += devSigData.parseSigMap(buf, counter);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw, true));
+            String str = sw.toString();
+            logger.error(str);
 			throw e;
 		}
 
@@ -154,10 +165,10 @@ public class BPPacketGET extends BPPacket {
 	}
 	
 	@Override
-	public boolean assembleFixedHeader() throws Exception {
-		int pack_type = getPackTypeIntFxHead();
-		byte pack_flags = getPackFlagsByteFxHead();
-		byte encodedByte = (byte) (((pack_type & 0xf) << 4) | (pack_flags & 0xf));
+	public boolean assembleFixedHeader() {
+		int packType = getPackTypeIntFxHead();
+		byte packFlags = getPackFlagsByteFxHead();
+		byte encodedByte = (byte) (((packType & 0xf) << 4) | (packFlags & 0xf));
 		
 		getIoBuffer().put(encodedByte);
 		
@@ -168,27 +179,27 @@ public class BPPacketGET extends BPPacket {
 	}
 
 	@Override
-	public boolean assembleVariableHeader() throws Exception {
+	public boolean assembleVariableHeader() {
 		byte flags = getVrbHead().getFlags();
 		getIoBuffer().put(flags);
 		int clntId = getVrbHead().getClientId();
 		getIoBuffer().putUnsignedShort(clntId);
-		int packSeq = getVrbHead().getPackSeq();
-		getIoBuffer().putUnsignedShort(packSeq);	
+		int packSeqTmp = getVrbHead().getPackSeq();
+		getIoBuffer().putUnsignedShort(packSeqTmp);	
 		
 		return false;
 	}
 
 	@Override
-	public boolean assemblePayload() throws Exception {
-		Map<Integer, List<Integer>> sig_map = getPld().getMapDev2SigLst();
-		if(sig_map.size() == 1) {
-			Iterator<Map.Entry<Integer, List<Integer>>> entries = sig_map.entrySet().iterator();
+	public boolean assemblePayload() {
+		Map<Integer, List<Integer>> sigMap = getPld().getMapDev2SigLst();
+		if(sigMap.size() == 1) {
+			Iterator<Map.Entry<Integer, List<Integer>>> entries = sigMap.entrySet().iterator();
 			Map.Entry<Integer, List<Integer>> entry = entries.next();  
-			List<Integer> sig_lst = entry.getValue();
-			getIoBuffer().put((byte)sig_lst.size());
-			for(int i = 0; i < sig_lst.size(); i++) {
-				getIoBuffer().putUnsignedShort(sig_lst.get(i));
+			List<Integer> sigLst = entry.getValue();
+			getIoBuffer().put((byte)sigLst.size());
+			for(int i = 0; i < sigLst.size(); i++) {
+				getIoBuffer().putUnsignedShort(sigLst.get(i));
 			}
 		}
 		

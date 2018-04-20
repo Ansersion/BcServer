@@ -20,13 +20,13 @@ public class BPPacketDISCONN extends BPPacket {
 	private static final Logger logger = LoggerFactory.getLogger(BPPacketCONNECT.class); 
 
 	@Override
-	public boolean parseVariableHeader(IoBuffer ioBuf) throws Exception {
+	public boolean parseVariableHeader(IoBuffer ioBuf) {
 
 		return true;
 	}
 	
 	@Override
-	public boolean parseVariableHeader(byte[] buf) throws Exception {
+	public boolean parseVariableHeader(byte[] buf) {
 		try {
 			int counter = 0;
 
@@ -46,7 +46,7 @@ public class BPPacketDISCONN extends BPPacket {
 	}
 	
 	@Override
-	public int parseVariableHeader() throws Exception {
+	public int parseVariableHeader() {
 		try {
 			int clientId = getIoBuffer().getUnsignedShort();
 			getVrbHead().setClientId(clientId);
@@ -62,12 +62,12 @@ public class BPPacketDISCONN extends BPPacket {
 	}
 	
 	@Override
-	public boolean parsePayload(byte[] buf) throws Exception {
+	public boolean parsePayload(byte[] buf) {
 		return true;
 	}
 	
 	@Override
-	public int parsePayload() throws Exception {
+	public int parsePayload() {
 		// No payload
 		return 0;
 	}

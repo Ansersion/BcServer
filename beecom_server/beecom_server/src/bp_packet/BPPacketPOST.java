@@ -5,9 +5,6 @@ package bp_packet;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.mina.core.buffer.IoBuffer;
 import org.slf4j.Logger;
@@ -22,13 +19,12 @@ public class BPPacketPOST extends BPPacket {
 	private static final Logger logger = LoggerFactory.getLogger(BPPacketPOST.class); 
 	
 	
-	int PackSeq;
-	DevSigData[] SigDatas = null; 
-	int DeviceNum;
+	int packSeq;
+	DevSigData[] sigDatas = null; 
+	int deviceNum;
 	
 	@Override
-	public boolean parseVariableHeader(IoBuffer ioBuf) throws Exception {
-		// TODO Auto-generated method stub
+	public boolean parseVariableHeader(IoBuffer ioBuf) {
 		int clientIdLen = 0;
 
 		try {
@@ -37,17 +33,20 @@ public class BPPacketPOST extends BPPacket {
 
 			byte[] id = new byte[clientIdLen];
 			for (int i = 0; i < clientIdLen; i++) {
-				id[i] = (byte) ioBuf.get();
+				id[i] = ioBuf.get();
 			}
 			super.parseVrbClientId(id, clientIdLen);
 			
 			encodedByte = ioBuf.get();
 			super.parseVrbHeadFlags(encodedByte);
 			
-			PackSeq = ioBuf.getUnsignedShort();
+			packSeq = ioBuf.getUnsignedShort();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw, true));
+            String str = sw.toString();
+            logger.error(str);
 			throw e;
 		}
 
@@ -55,8 +54,7 @@ public class BPPacketPOST extends BPPacket {
 	}
 	
 	@Override
-	public boolean parseVariableHeader(byte[] buf) throws Exception {
-		// TODO Auto-generated method stub
+	public boolean parseVariableHeader(byte[] buf) {
 		try {
 			int counter = 0;
 			int clientIdLen = 0;
@@ -72,12 +70,15 @@ public class BPPacketPOST extends BPPacket {
 			encodedByte = buf[counter++];
 			super.parseVrbHeadFlags(encodedByte);
 			
-			byte pack_seq_msb = buf[counter++];
-			byte pack_seq_lsb = buf[counter++];
-			PackSeq = BPPacket.assemble2ByteBigend(pack_seq_msb, pack_seq_lsb);
+			byte packSeqMsb = buf[counter++];
+			byte packSeqLsb = buf[counter];
+			packSeq = BPPacket.assemble2ByteBigend(packSeqMsb, packSeqLsb);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw, true));
+            String str = sw.toString();
+            logger.error(str);
 			throw e;
 		}
 
@@ -85,17 +86,17 @@ public class BPPacketPOST extends BPPacket {
 	}
 	
 	@Override
-	public int parseVariableHeader() throws Exception {
+	public int parseVariableHeader() {
 		try {
 
 			byte flags = getIoBuffer().get();
 			super.parseVrbHeadFlags(flags);
 			
-			int client_id = getIoBuffer().getUnsignedShort();
-			getVrbHead().setClientId(client_id);
+			int clientId = getIoBuffer().getUnsignedShort();
+			getVrbHead().setClientId(clientId);
 
-			int pack_seq = getIoBuffer().getUnsignedShort();
-			getVrbHead().setPackSeq(pack_seq);
+			int packSeqTmp = getIoBuffer().getUnsignedShort();
+			getVrbHead().setPackSeq(packSeqTmp);
 		} catch (Exception e) {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw, true));
@@ -108,22 +109,21 @@ public class BPPacketPOST extends BPPacket {
 	}
 
 	@Override
-	public int parsePayload() throws Exception {
+	public int parsePayload() {
 		return 0;
 	}
 	
 	@Override
-	public boolean parsePayload(byte[] buf) throws Exception {
-		// TODO Auto-generated method stub
+	public boolean parsePayload(byte[] buf) {
 		
 		try {
 			int counter = 0;
 			
-			DeviceNum = buf[counter++];
-			SigDatas = new DevSigData[DeviceNum];
+			deviceNum = buf[counter++];
+			sigDatas = new DevSigData[deviceNum];
 			
-			for(int i = 0; i < DeviceNum; i++) {
-				counter += SigDatas[i].parseSigData(buf, counter);
+			for(int i = 0; i < deviceNum; i++) {
+				counter += sigDatas[i].parseSigData(buf, counter);
 			}
 
 		} catch (Exception e) {
@@ -138,11 +138,10 @@ public class BPPacketPOST extends BPPacket {
 	}
 	
 	@Override
-	public boolean assembleFixedHeader() throws Exception {
-		// TODO Auto-generated method stub
-		int pack_type = getPackTypeIntFxHead();
-		byte pack_flags = getPackFlagsByteFxHead();
-		byte encodedByte = (byte) (((pack_type & 0xf) << 4) | (pack_flags & 0xf));
+	public boolean assembleFixedHeader() {
+		int packType = getPackTypeIntFxHead();
+		byte packFlags = getPackFlagsByteFxHead();
+		byte encodedByte = (byte) (((packType & 0xf) << 4) | (packFlags & 0xf));
 		
 		getIoBuffer().put(encodedByte);
 		
@@ -153,24 +152,22 @@ public class BPPacketPOST extends BPPacket {
 	}
 
 	@Override
-	public boolean assembleVariableHeader() throws Exception {
-		// TODO Auto-generated method stub
+	public boolean assembleVariableHeader() {
 		byte flags = getVrbHead().getFlags();
 		getIoBuffer().put(flags);
-		int clnt_id = getVrbHead().getClientId();
-		getIoBuffer().putUnsignedShort(clnt_id);
-		int pack_seq = getVrbHead().getPackSeq();
-		getIoBuffer().putUnsignedShort(pack_seq);	
+		int clntId = getVrbHead().getClientId();
+		getIoBuffer().putUnsignedShort(clntId);
+		int packSeqTmp = getVrbHead().getPackSeq();
+		getIoBuffer().putUnsignedShort(packSeqTmp);	
 		
 		return false;
 	}
 
 	@Override
-	public boolean assemblePayload() throws Exception {
-		// TODO Auto-generated method stub
-		DevSigData sig_data = getPld().getSigData();
+	public boolean assemblePayload() {
+		DevSigData sigData = getPld().getSigData();
 
-		sig_data.assembleSigData(getIoBuffer());
+		sigData.assembleSigData(getIoBuffer());
 		
 		return false;
 	}

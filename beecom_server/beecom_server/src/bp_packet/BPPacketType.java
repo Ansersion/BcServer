@@ -93,7 +93,7 @@ public class BPPacketType {
     }
     
     public static BPPacketType getType(byte encodedByte) {
-    	int index = (encodedByte >>> BPPACK_TYPE_BIT_OFFSET) & BPPACK_TYPE_MASK;
+    	int index = (encodedByte >>> BPPACK_TYPE_BIT_OFFSET) & (BPPACK_TYPE_MASK & 0xFF);
     	if(index >= bpMap.size()) {
     		return INVALID;
     	}

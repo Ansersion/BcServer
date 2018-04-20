@@ -4,6 +4,8 @@
 package bp_packet;
 
 import org.apache.mina.core.buffer.IoBuffer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import other.CrcChecksum;
 
@@ -12,95 +14,97 @@ import other.CrcChecksum;
  *
  */
 public class FixedHeader {
-	BPPacketType PacketType = BPPacketType.INVALID;
-	BPPacketFlags PacketFlags = new BPPacketFlags();
-	int RemainingLength = 0;
+	private static final Logger logger = LoggerFactory.getLogger(FixedHeader.class);
+	
+	BPPacketType packetType = BPPacketType.INVALID;
+	BPPacketFlags packetFlags = new BPPacketFlags();
+	int remainingLength = 0;
 	
 	public FixedHeader(BPPacketType type) {
-		PacketType = type;
+		packetType = type;
 	}
 	
 	public FixedHeader() {
 	}
 	
 	public void reset() {
-		PacketType = BPPacketType.INVALID;
-		PacketFlags.reset();
-		RemainingLength = 0;
+		packetType = BPPacketType.INVALID;
+		packetFlags.reset();
+		remainingLength = 0;
 	}
 	
 	public void setPacketType(BPPacketType type) {
-		PacketType = type;
+		packetType = type;
 	}
 	
 	public void setPacketFlags(BPPacketFlags flags) {
-		PacketFlags = flags;
+		packetFlags = flags;
 	}
 	
 	public void setRemainLen(int len) {
-		RemainingLength = len;
+		remainingLength = len;
 	}
 	
-	public void setRemainLen(IoBuffer io) throws Exception{
+	public void setRemainLen(IoBuffer io) throws BPParseFxHeaderException{
 		if(io.remaining() >= 2) {
 			int multiplier = 1;
 			int len = 0;
 			byte encodedByte;
 			do {
-				encodedByte = (byte)io.get();
+				encodedByte = io.get();
 				len += (encodedByte & 0x7F) * multiplier;
 				multiplier *= 128;
 				if (multiplier > 128) {
-					throw new Exception("Remaining length too long");
+					throw new BPParseFxHeaderException("Remaining length too long");
 				}
 			} while ((encodedByte & 0x80) != 0);
 			
-			RemainingLength = len;
+			remainingLength = len;
 		}
 	}
 	
 	public void setBPType(byte encodedByte) {
-		PacketType = BPPacketType.getType(encodedByte);
+		packetType = BPPacketType.getType(encodedByte);
 	}
 	
 	public void setFlags(byte encodedByte) {
-		PacketFlags.reset(encodedByte);
+		packetFlags.reset(encodedByte);
 	}
 	
 	public void setCrcType(CrcChecksum crc) {
 		if(crc == CrcChecksum.CRC32) {
-			PacketFlags.setCrc32();
+			packetFlags.setCrc32();
 		} else if(crc == CrcChecksum.CRC16) {
-			PacketFlags.setCrc16();
+			packetFlags.setCrc16();
 		} else {
-			System.out.println("Error(FixedHeader): unknown CRC type");
+			logger.warn("Error(FixedHeader): unknown CRC type");
 		}
 	}
 	
 	public byte getFlags() {
-		return PacketFlags.getFlags();
+		return packetFlags.getFlags();
 	}
 	
 	public CrcChecksum getCrcChk() {
-		return PacketFlags.getCrcChk();
+		return packetFlags.getCrcChk();
 	}
 	
 	public EncryptType getEncryptType() {
-		return PacketFlags.getEncryptType();
+		return packetFlags.getEncryptType();
 	}
 
 	public BPPacketType getPacketType() {
-		return PacketType;
+		return packetType;
 	}
 	
 	public byte getFirstByte() {
-		byte type = PacketType.getTypeByte();
-		byte flag = PacketFlags.getFlags();
+		byte type = packetType.getTypeByte();
+		byte flag = packetFlags.getFlags();
 		return (byte)(type | flag);
 		
 	}
 	
 	public int getRemainingLen() {
-		return RemainingLength;
+		return remainingLength;
 	}
 }

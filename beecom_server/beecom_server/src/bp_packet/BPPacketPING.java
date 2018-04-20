@@ -3,7 +3,12 @@
  */
 package bp_packet;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import org.apache.mina.core.buffer.IoBuffer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import other.CrcChecksum;
 
@@ -12,16 +17,11 @@ import other.CrcChecksum;
  *
  */
 public class BPPacketPING extends BPPacket {
+	
+	private static final Logger logger = LoggerFactory.getLogger(BPPacketPING.class);
+	
 	@Override
-	public boolean parseVariableHeader(IoBuffer ioBuf) throws Exception {
-		// TODO Auto-generated method stub
-
-		try {
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
-		}
-
+	public boolean parseVariableHeader(IoBuffer ioBuf) {
 		return true;
 	}
 	
@@ -29,38 +29,34 @@ public class BPPacketPING extends BPPacket {
 	
 	protected BPPacketPING() {
 		super();
-		FixedHeader fx_head = getFxHead();
-		fx_head.setPacketType(BPPacketType.PING);
-		fx_head.setCrcType(CrcChecksum.CRC32);
+		FixedHeader fxHead = getFxHead();
+		fxHead.setPacketType(BPPacketType.PING);
+		fxHead.setCrcType(CrcChecksum.CRC32);
 	}
 
 	@Override
-	public boolean parseVariableHeader(byte[] buf) throws Exception {
-		// TODO Auto-generated method stub
-		try {
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
-		}
+	public boolean parseVariableHeader(byte[] buf) {
 
 		return true;
 	}
 	
 	@Override
-	public int parseVariableHeader() throws Exception {
-		// TODO Auto-generated method stub
+	public int parseVariableHeader() {
 		try {
 
 			byte flags = getIoBuffer().get();
 			super.parseVrbHeadFlags(flags);
 			
-			int client_id = getIoBuffer().getUnsignedShort();
-			getVrbHead().setClientId(client_id);
+			int clientId = getIoBuffer().getUnsignedShort();
+			getVrbHead().setClientId(clientId);
 
-			int pack_seq = getIoBuffer().getUnsignedShort();
-			getVrbHead().setPackSeq(pack_seq);
+			int packSeq = getIoBuffer().getUnsignedShort();
+			getVrbHead().setPackSeq(packSeq);
 		} catch (Exception e) {
-			e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw, true));
+            String str = sw.toString();
+            logger.error(str);
 			throw e;
 		}
 
@@ -69,17 +65,17 @@ public class BPPacketPING extends BPPacket {
 
 	
 	@Override
-	public boolean parsePayload(byte[] buf) throws Exception {
+	public boolean parsePayload(byte[] buf) {
 		return true;
 	}
 
 	@Override
-	public int parsePayload() throws Exception {
+	public int parsePayload() {
 		return 0;
 	}
 	
 	@Override
-	public boolean assembleFixedHeader() throws Exception {
+	public boolean assembleFixedHeader() {
 		int packType = getPackTypeIntFxHead();
 		byte packFlags = getPackFlagsByteFxHead();
 		byte encodedByte = (byte) (((packType & 0xf) << 4) | (packFlags & 0xf));
@@ -92,21 +88,19 @@ public class BPPacketPING extends BPPacket {
 	}
 
 	@Override
-	public boolean assembleVariableHeader() throws Exception {
-		// TODO Auto-generated method stub
+	public boolean assembleVariableHeader() {
 		byte flags = getVrbHead().getFlags();
 		getIoBuffer().put(flags);
-		int clnt_id = getVrbHead().getClientId();
-		getIoBuffer().putUnsignedShort(clnt_id);
-		int pack_seq = getVrbHead().getPackSeq();
-		getIoBuffer().putUnsignedShort(pack_seq);	
+		int clntId = getVrbHead().getClientId();
+		getIoBuffer().putUnsignedShort(clntId);
+		int packSeq = getVrbHead().getPackSeq();
+		getIoBuffer().putUnsignedShort(packSeq);	
 		
 		return false;
 	}
 
 	@Override
-	public boolean assemblePayload() throws Exception {
-		// TODO Auto-generated method stub
+	public boolean assemblePayload() {
 		
 		return false;
 	}

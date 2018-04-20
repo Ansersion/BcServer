@@ -5,10 +5,10 @@ package bc_server;
  *
  */
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 
 import org.apache.mina.core.service.IoHandlerAdapter;
@@ -28,26 +28,28 @@ import bp_packet.DevSigData;
 import bp_packet.FixedHeader;
 import bp_packet.VariableHeader;
 import db.BeecomDB;
-import db.ClientID_DB;
-import db.DB_DevInfoRec;
-import db.DB_SysSigRec;
-import other.BPValue;
+import db.ClientIDDB;
+import db.DBDevInfoRec;
+import db.DBSysSigRec;
 
 public class BcServerHandler extends IoHandlerAdapter {
 	
 	private static final Logger logger = LoggerFactory.getLogger(BcServerHandler.class);
 	
 
-	Map<Integer, BPSession> CliId2SsnMap = new HashMap<Integer, BPSession>();
-	Map<Long, BPSession> DevUniqId2SsnMap = new HashMap<Long, BPSession>();
-	int dev_uniq_id = 0; // TODO: read from file
+	Map<Integer, BPSession> cliId2SsnMap = new HashMap<>();
+	Map<Long, BPSession> devUniqId2SsnMap = new HashMap<>();
+	long devUniqId = 0;
 	static final String SESS_ATTR_ID = "SESS_ATTR_ID";
 
 	// 捕获异常
 	@Override
 	public void exceptionCaught(IoSession session, Throwable cause)
 			throws Exception {
-		cause.printStackTrace();
+        StringWriter sw = new StringWriter();
+        cause.printStackTrace(new PrintWriter(sw, true));
+        String str = sw.toString();
+        logger.error(str);
 	}
 
 	// 消息接收
@@ -73,7 +75,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 			sigMap.put(sigId, sigVal);
 			
 			/*
-			Map<Integer, Short> sig_map_new = sig_data.
+			Map<Integer, Short> sig_map_new = sigData.
 			*/
 
 			sigId = 0xE001;
@@ -86,222 +88,200 @@ public class BcServerHandler extends IoHandlerAdapter {
 		}
 		BPPacket decodedPack = (BPPacket) message;
 
-		BPPacketType pack_type = decodedPack.getPackTypeFxHead();
-		if (BPPacketType.CONNECT == pack_type) {
-			int client_id_old = decodedPack.getClientId();
-			String user_name = new String(decodedPack.getUserNamePld());
+		BPPacketType packType = decodedPack.getPackTypeFxHead();
+		if (BPPacketType.CONNECT == packType) {
+			int clientIdOld = decodedPack.getClientId();
+			String userName = new String(decodedPack.getUserNamePld());
 			int level = decodedPack.getVrbHead().getLevel();
 			byte[] password = decodedPack.getPasswordPld();
-			boolean user_clnt_flag = decodedPack.getUsrClntFlag();
-			boolean dev_clnt_flag = decodedPack.getDevClntFlag();
-			long dev_uniq_id = 0;
-			// int id = 0;
+			boolean userClntFlag = decodedPack.getUsrClntFlag();
+			boolean devClntFlag = decodedPack.getDevClntFlag();
 
-			BPPacket pack_ack = BPPackFactory.createBPPackAck(decodedPack);
+			BPPacket packAck = BPPackFactory.createBPPackAck(decodedPack);
 			if (level > BPPacket.BP_LEVEL) {
 				logger.warn("Unsupported level: {} > {}", level, BPPacket.BP_LEVEL);
-				pack_ack.getVrbHead().setRetCode(
+				packAck.getVrbHead().setRetCode(
 						BPPacketCONNACK.RET_CODE_LEVEL_ERR);
-				session.write(pack_ack);
+				session.write(packAck);
 				session.closeOnFlush();
 				return;
 			}
-			if (false == (user_clnt_flag ^ dev_clnt_flag)) {
-				logger.info("Invalid client flag:{}, {}", user_clnt_flag, dev_clnt_flag);
-				pack_ack.getVrbHead().setRetCode(
+			if (!(userClntFlag ^ devClntFlag)) {
+				logger.info("Invalid client flag:{}, {}", userClntFlag, devClntFlag);
+				packAck.getVrbHead().setRetCode(
 						BPPacketCONNACK.RET_CODE_CLNT_UNKNOWN);
-				session.write(pack_ack);
+				session.write(packAck);
 				session.closeOnFlush();
 				return;
 			}
 			/* check user/pwd valid */
-			if (user_clnt_flag) {
-				if (!BeecomDB.ChkUserName(user_name)) {
-					logger.warn("Invalid user name:{}" + user_name);
-					pack_ack.getVrbHead().setRetCode(
+			if (userClntFlag) {
+				if (!BeecomDB.chkUserName(userName)) {
+					logger.warn("Invalid user name:{}", userName);
+					packAck.getVrbHead().setRetCode(
 							BPPacketCONNACK.RET_CODE_USER_INVALID);
-					session.write(pack_ack);
+					session.write(packAck);
 					session.closeOnFlush();
 					return;
 				}
-				if (!BeecomDB.ChkUserPwd(user_name, password)) {
-					logger.info("{}: Incorrect password '{}'", user_name, password);
-					pack_ack.getVrbHead().setRetCode(
+				if (!BeecomDB.chkUserPwd(userName, password)) {
+					logger.info("{}: Incorrect password '{}'", userName, password);
+					packAck.getVrbHead().setRetCode(
 							BPPacketCONNACK.RET_CODE_PWD_INVALID);
-					session.write(pack_ack);
+					session.write(packAck);
 					session.closeOnFlush();
 					return;
 				}
 			} else {
 				try {
-					dev_uniq_id = Integer.parseInt(user_name);
-					if (!BeecomDB.ChkDevUniqId(dev_uniq_id)) {
-						logger.warn("Invalid device unique id:", user_name);
-						pack_ack.getVrbHead().setRetCode(
+					devUniqId = Integer.parseInt(userName);
+					if (!BeecomDB.chkDevUniqId(devUniqId)) {
+						logger.warn("Invalid device unique id:{}", userName);
+						packAck.getVrbHead().setRetCode(
 								BPPacketCONNACK.RET_CODE_USER_INVALID);
-						session.write(pack_ack);
+						session.write(packAck);
 						session.closeOnFlush();
 						return;
 					}
 				} catch (NumberFormatException e) {
-					pack_ack.getVrbHead().setRetCode(
+					packAck.getVrbHead().setRetCode(
 							BPPacketCONNACK.RET_CODE_USER_INVALID);
-					session.write(pack_ack);
+					session.write(packAck);
 					session.closeOnFlush();
 					return;
 				}
-				if (!BeecomDB.ChkDevPwd(dev_uniq_id, password)) {
-					logger.info("{}: Incorrect password '{}'", user_name, password);
-					pack_ack.getVrbHead().setRetCode(
+				if (!BeecomDB.chkDevPwd(devUniqId, password)) {
+					logger.info("{}: Incorrect password '{}'", userName, password);
+					packAck.getVrbHead().setRetCode(
 							BPPacketCONNACK.RET_CODE_PWD_INVALID);
-					session.write(pack_ack);
+					session.write(packAck);
 					session.closeOnFlush();
 					return;
 				}
 			}
 
 			/* check client_id valid */
-			int client_id;
-			if (0 == client_id_old) {
-				client_id = ClientID_DB.distributeID(client_id_old);
-			} else if (CliId2SsnMap.containsKey(client_id_old)) {
+			int clientId;
+			if (0 == clientIdOld) {
+				clientId = ClientIDDB.distributeID(clientIdOld);
+			} else if (cliId2SsnMap.containsKey(clientIdOld)) {
 				// TODL: check if the id expired
-				client_id = client_id_old;
+				clientId = clientIdOld;
 			} else {
-				// maybe the client_id_old is expired
-				client_id = client_id_old;
-				pack_ack.setClntIdExpired(true);
+				// maybe the clientIdOld is expired
+				clientId = clientIdOld;
+				packAck.setClntIdExpired(true);
 			}
-			// TODO: if client_id == 0 -> error
-			if (pack_ack.isClntIdExpired()) {
-				logger.warn("Err: Expired client id({})", client_id);
-				pack_ack.getVrbHead().setRetCode(
+			if (packAck.isClntIdExpired()) {
+				logger.warn("Err: Expired client id({})", clientId);
+				packAck.getVrbHead().setRetCode(
 						BPPacketCONNACK.RET_CODE_CLNT_ID_INVALID);
-				session.write(pack_ack);
+				session.write(packAck);
 				session.closeOnFlush();
 				return;
 			}
-			if (client_id != client_id_old) {
-				pack_ack.setNewClntIdFlg();
+			if (clientId != clientIdOld) {
+				packAck.setNewClntIdFlg();
 			}
-			pack_ack.getPld().setClientIdLen();
-			pack_ack.getPld().setClientId(client_id);
+			packAck.getPld().setClientIdLen();
+			packAck.getPld().setClientId(clientId);
 			/* update login flags */
-			BPSession newBPSession = new BPSession(user_name.getBytes(),
-					password, client_id, user_clnt_flag, dev_clnt_flag, dev_uniq_id);
-			CliId2SsnMap.put(client_id, newBPSession);
-			if (dev_clnt_flag) {
-				DevUniqId2SsnMap.put(dev_uniq_id, newBPSession);
+			BPSession newBPSession = new BPSession(userName.getBytes(),
+					password, clientId, userClntFlag, devClntFlag, devUniqId);
+			cliId2SsnMap.put(clientId, newBPSession);
+			if (devClntFlag) {
+				devUniqId2SsnMap.put(devUniqId, newBPSession);
 			}
 			logger.info("Alive time={}", decodedPack.getVrbHead().getAliveTime());
 			session.getConfig().setIdleTime(IdleStatus.READER_IDLE,
 					decodedPack.getVrbHead().getAliveTime());
 			session.setAttribute(SESS_ATTR_ID, newBPSession);
 
-			session.write(pack_ack);
+			session.write(packAck);
 
-		} else if (BPPacketType.GET == pack_type) {
-			int client_id = decodedPack.getClientId();
-			boolean chinese_flag = decodedPack.getChineseFlag();
-			boolean english_flag = decodedPack.getEnglishFlag();
-			int pack_seq = decodedPack.getPackSeq();
-			/* check if there is device update report */
-			/*
-			 * if (so) { push command to get the latest data
-			 * 
-			 * } return current data; }
-			 */
-		} else if (BPPacketType.GETACK == pack_type) {
-			byte flags = decodedPack.getVrbHead().getFlags();
-			int client_id = decodedPack.getVrbHead().getClientId();
-			int seq_id = decodedPack.getVrbHead().getPackSeq();
-			int ret_code = decodedPack.getVrbHead().getRetCode();
-			if (ret_code != 0) {
-				logger.warn("Error(GETACK): get return code={}", ret_code);
+		} else if (BPPacketType.GET == packType) {
+		} else if (BPPacketType.GETACK == packType) {
+			int retCode = decodedPack.getVrbHead().getRetCode();
+			if (retCode != 0) {
+				logger.warn("Error(GETACK): get return code={}", retCode);
 				return;
 			}
-			BPSession bp_sess = (BPSession) session.getAttribute(SESS_ATTR_ID);
-			DevSigData dev_sig_data = decodedPack.getPld().getSigData();
-			dev_sig_data.dump();
+			DevSigData devSigData = decodedPack.getPld().getSigData();
+			devSigData.dump();
 
-		} else if (BPPacketType.POST == pack_type) {
-		} else if (BPPacketType.POSTACK == pack_type) {
+		} else if (BPPacketType.POST == packType) {
+		} else if (BPPacketType.POSTACK == packType) {
 			byte flags = decodedPack.getVrbHead().getFlags();
-			int client_id = decodedPack.getVrbHead().getClientId();
-			int seq_id = decodedPack.getVrbHead().getPackSeq();
-			int ret_code = decodedPack.getVrbHead().getRetCode();
-			if (ret_code != 0) {
-				logger.info("Error(GETACK): get return code = {}", ret_code);
+			int clientId = decodedPack.getVrbHead().getClientId();
+			int seqId = decodedPack.getVrbHead().getPackSeq();
+			int retCode = decodedPack.getVrbHead().getRetCode();
+			if (retCode != 0) {
+				logger.info("Error(GETACK): get return code = {}", retCode);
 				return;
 			}
-			logger.info("POSTACK: flags={}, cid={}, sid={}, rcode={}", flags, client_id
-					, seq_id, ret_code);
+			logger.info("POSTACK: flags={}, cid={}, sid={}, rcode={}", flags, clientId
+					, seqId, retCode);
 
-		} else if (BPPacketType.PING == pack_type) {
+		} else if (BPPacketType.PING == packType) {
 			byte flags = decodedPack.getVrbHead().getFlags();
 			int clntId = decodedPack.getVrbHead().getClientId();
-			int seq_id = decodedPack.getVrbHead().getPackSeq();
-			int ret_code = BPPacketRPRTACK.RET_CODE_OK;
-			logger.info("PING: flags={}, cid={}, sid={}", flags, clntId, seq_id);
+			int seqId = decodedPack.getVrbHead().getPackSeq();
+			logger.info("PING: flags={}, cid={}, sid={}", flags, clntId, seqId);
 
-			BPPacket pack_ack = BPPackFactory.createBPPackAck(decodedPack);
+			BPPacket packAck = BPPackFactory.createBPPackAck(decodedPack);
 
-			BPSession bp_sess_para = (BPSession) session
+			BPSession bpSessPara = (BPSession) session
 					.getAttribute(SESS_ATTR_ID);
-			if (clntId != bp_sess_para.getClientId()) {
-				pack_ack.getVrbHead().setRetCode(
+			if (clntId != bpSessPara.getClientId()) {
+				packAck.getVrbHead().setRetCode(
 						BPPacketPINGACK.RET_CODE_CLNT_ID_INVALID);
-				session.write(pack_ack);
+				session.write(packAck);
 				session.closeOnFlush();
 				return;
 			}
 
-			pack_ack.getVrbHead().setClientId(clntId);
-			pack_ack.getVrbHead().setPackSeq(seq_id);
-			pack_ack.getVrbHead().setRetCode(BPPacketPINGACK.RET_CODE_OK);
+			packAck.getVrbHead().setClientId(clntId);
+			packAck.getVrbHead().setPackSeq(seqId);
+			packAck.getVrbHead().setRetCode(BPPacketPINGACK.RET_CODE_OK);
 
-			session.write(pack_ack);
-		} else if (BPPacketType.PUSHACK == pack_type) {
-			/* check if server get it */
-			/*
-			 * if(so) { reply it(for GET/POST) }
-			 */
-		} else if (BPPacketType.REPORT == pack_type) {
+			session.write(packAck);
+		} else if (BPPacketType.PUSHACK == packType) {
+		} else if (BPPacketType.REPORT == packType) {
 
-			int client_id = decodedPack.getClientId();
-			int ret_code = BPPacketRPRTACK.RET_CODE_OK;
-			int seq_id = decodedPack.getPackSeq();
-			BPSession bp_sess = (BPSession) session.getAttribute(SESS_ATTR_ID);
+			int clientId = decodedPack.getClientId();
+			int retCode = BPPacketRPRTACK.RET_CODE_OK;
+			int seqId = decodedPack.getPackSeq();
+			BPSession bpSess = (BPSession) session.getAttribute(SESS_ATTR_ID);
 			BeecomDB db = BeecomDB.getInstance();
-			DB_DevInfoRec dev_rec = db.getDevInfoRec(Integer
-					.parseInt(new String(bp_sess.userName)));
+			DBDevInfoRec devRec = db.getDevInfoRec(Integer
+					.parseInt(new String(bpSess.getUserName())));
 			
-			if (dev_rec.getDevUniqId() == 0) {
+			if (devRec.getDevUniqId() == 0) {
 				logger.debug("TODO: dev_rec.getDevUniqId() == 0");
 				return;
 			}
 			
-			BPPacket pack_ack = BPPackFactory.createBPPackAck(decodedPack);
+			BPPacket packAck = BPPackFactory.createBPPackAck(decodedPack);
 			
 			VariableHeader vrb = decodedPack.getVrbHead();
 			
 			do {
-				if(bp_sess.getClientId() != client_id) {
+				if(bpSess.getClientId() != clientId) {
 					logger.error("Err: client id err");
-					ret_code = BPPacketRPRTACK.RET_CODE_CLNT_ID_INVALID;
+					retCode = BPPacketRPRTACK.RET_CODE_CLNT_ID_INVALID;
 					break;
 				}
 				if (vrb.getSigFlag()) {
 					if (vrb.getSysSigMapFlag() || vrb.getDevNameFlag()) {
-						ret_code = BPPacketRPRTACK.RET_CODE_FLAGS_INVALID;
+						retCode = BPPacketRPRTACK.RET_CODE_FLAGS_INVALID;
 						break;
 					}
 					logger.debug("REPORT signal values");
 					decodedPack.getPld().getSigData().dump();
-					if(!bp_sess.setSysSig(decodedPack.getPld().getSigData())) {
-						ret_code = bp_sess.getError().getErrId();
-						if(BPPacketRPRTACK.RET_CODE_SIG_ID_INVALID == ret_code) {
-							pack_ack.getPld().Error = bp_sess.getError();
+					if(!bpSess.setSysSig(decodedPack.getPld().getSigData())) {
+						retCode = bpSess.getError().getErrId();
+						if(BPPacketRPRTACK.RET_CODE_SIG_ID_INVALID == retCode) {
+							packAck.getPld().setError(bpSess.getError());
 						}
 						break;
 					}
@@ -309,30 +289,30 @@ public class BcServerHandler extends IoHandlerAdapter {
 				} else {
 
 					if (decodedPack.getVrbHead().getDevNameFlag()) {
-						bp_sess.setDevName(decodedPack.getPld().getDevName());
+						bpSess.setDevName(decodedPack.getPld().getDevName());
 						// System.out.println("DevName: " +
-						dev_rec.setDevName(bp_sess.getDevName());
+						devRec.setDevName(bpSess.getDevName());
 					}
 					if (decodedPack.getVrbHead().getSysSigMapFlag()) {
-						bp_sess.setSysSigMap(decodedPack.getPld()
+						bpSess.setSysSigMap(decodedPack.getPld()
 								.getMapDist2SysSigMap());
-						bp_sess.initSysSigValDefault();
+						bpSess.initSysSigValDefault();
 
-						DB_SysSigRec sys_sig_rec;
-						if (dev_rec.getSysSigTabId() == 0) {
-							dev_rec.setSysSigTabId(dev_rec.getDevUniqId());
-							sys_sig_rec = new DB_SysSigRec();
-							sys_sig_rec.setSysSigTabId(dev_rec.getDevUniqId());
+						DBSysSigRec sysSigRec;
+						if (devRec.getSysSigTabId() == 0) {
+							devRec.setSysSigTabId(devRec.getDevUniqId());
+							sysSigRec = new DBSysSigRec();
+							sysSigRec.setSysSigTabId(devRec.getDevUniqId());
 
-							Map<Integer, Byte[]> sys_sig_map = decodedPack
+							Map<Integer, Byte[]> sysSigMap = decodedPack
 									.getPld().getMapDist2SysSigMap();
-							sys_sig_rec.setSysSigEnableLst(sys_sig_map);
-							sys_sig_rec.insertRec(db.getConn());
+							sysSigRec.setSysSigEnableLst(sysSigMap);
+							sysSigRec.insertRec(db.getConn());
 						} else {
 							logger.debug("TODO: get sys_sig_info from database");
-							List<DB_SysSigRec> lst = db.getSysSigRecLst();
+							List<DBSysSigRec> lst = db.getSysSigRecLst();
 							for (int i = 0; i < lst.size(); i++) {
-								if (lst.get(i).getSysSigTabId() == dev_rec
+								if (lst.get(i).getSysSigTabId() == devRec
 										.getSysSigTabId()) {
 									lst.get(i).dumpRec();
 								}
@@ -344,23 +324,19 @@ public class BcServerHandler extends IoHandlerAdapter {
 			} while (false);
 			
 			logger.debug("Start dump(REPORT)");
-			bp_sess.dumpSysSig();
+			bpSess.dumpSysSig();
 			
-			pack_ack.getVrbHead().setPackSeq(seq_id);
-			pack_ack.getVrbHead().setRetCode(ret_code);
+			packAck.getVrbHead().setPackSeq(seqId);
+			packAck.getVrbHead().setRetCode(retCode);
 
-			dev_rec.updateRec(db.getConn());
+			devRec.updateRec(db.getConn());
 
-			session.write(pack_ack);
-		} else if (BPPacketType.DISCONN == pack_type) {
-			int client_id = decodedPack.getClientId();
-			logger.info("Disconn " + client_id);
-			CliId2SsnMap.remove(client_id);
+			session.write(packAck);
+		} else if (BPPacketType.DISCONN == packType) {
+			int clientId = decodedPack.getClientId();
+			logger.info("Disconn {}", clientId);
+			cliId2SsnMap.remove(clientId);
 			session.closeOnFlush();
-			/* check if client ID is valid */
-			/*
-			 * if(so) { update the client ID database } close the socket
-			 */
 		} else {
 			throw new Exception(
 					"Error: messageRecevied: Not supported packet type");

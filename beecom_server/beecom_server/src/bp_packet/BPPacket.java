@@ -60,7 +60,7 @@ public class BPPacket implements BPPacketInterface {
 	 */
 
 	@Override
-	public int decrypt(EncryptType etEncryptType) throws Exception {
+	public int decrypt(EncryptType etEncryptType) throws BPException {
 		return 0;
 	}
 	
@@ -87,7 +87,7 @@ public class BPPacket implements BPPacketInterface {
 	 *             If an error occurred while decrypting
 	 */
 	@Override
-	public int parseFixedHeader() throws Exception {
+	public int parseFixedHeader() throws BPParseFxHeaderException {
 		return 0;
 	}
 
@@ -95,7 +95,7 @@ public class BPPacket implements BPPacketInterface {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean parseVariableHeader(IoBuffer ioBuf) throws Exception {
+	public boolean parseVariableHeader(IoBuffer ioBuf) throws BPParseVrbHeaderException {
 		return false;
 	}
 
@@ -124,12 +124,12 @@ public class BPPacket implements BPPacketInterface {
 	}
 
 	@Override
-	public int parsePayload() throws Exception {
+	public int parsePayload() throws BPParsePldException {
 		return 0;
 	}
 
 	@Override
-	public boolean checkCRC(CrcChecksum ccCrc) throws Exception {
+	public boolean checkCRC(CrcChecksum ccCrc) throws BPCrcException {
 		byte[] data = new byte[bpPacketData.remaining()];
 		bpPacketData.get(data);
 			if(CrcChecksum.CRC16 == ccCrc) {
@@ -142,44 +142,44 @@ public class BPPacket implements BPPacketInterface {
 	}
 
 	@Override
-	public void setFixedHeader(FixedHeader fxHeader) throws Exception {
+	public void setFixedHeader(FixedHeader fxHeader) {
 		this.fxHeader = fxHeader;
 	}
 
 	@Override
-	public void setVariableHeader(VariableHeader vrbHeader) throws Exception {
+	public void setVariableHeader(VariableHeader vrbHeader) {
 		this.vrbHeader = vrbHeader;
 
 	}
 
 	@Override
-	public void setPayload(Payload pld) throws Exception {
+	public void setPayload(Payload pld) {
 		this.pld= pld;
 
 	}
 
 	@Override
-	public void setCrcChecksum(CrcChecksum ccCrc) throws Exception {
+	public void setCrcChecksum(CrcChecksum ccCrc) {
 		crc = ccCrc;
 	}
 
 	@Override
-	public int parseVariableHeader() throws Exception {
+	public int parseVariableHeader() throws BPParseVrbHeaderException {
 		return 0;
 	}
 
 	@Override
-	public boolean parseVariableHeader(byte[] buf) throws Exception {
+	public boolean parseVariableHeader(byte[] buf) throws BPParseVrbHeaderException {
 		return false;
 	}
 
 	@Override
-	public boolean parsePayload(IoBuffer ioBuf) throws Exception {
+	public boolean parsePayload(IoBuffer ioBuf) throws BPParsePldException {
 		return false;
 	}
 
 	@Override
-	public boolean parsePayload(byte[] buf) throws Exception {
+	public boolean parsePayload(byte[] buf) throws BPParsePldException {
 		return false;
 	}
 	
@@ -276,33 +276,33 @@ public class BPPacket implements BPPacketInterface {
 	}
 
 	@Override
-	public boolean assembleFixedHeader() throws Exception {
+	public boolean assembleFixedHeader() throws BPAssembleFxHeaderException {
 		return false;
 	}
 
 	@Override
-	public boolean assembleVariableHeader() throws Exception {
+	public boolean assembleVariableHeader() throws BPAssembleVrbHeaderException {
 		return false;
 	}
 
 	@Override
-	public boolean assemblePayload() throws Exception {
+	public boolean assemblePayload() throws BPAssemblePldException {
 		return false;
 	}
 	
 	@Override
-	public byte[] getPackByByte() throws Exception {
+	public byte[] getPackByByte() throws BPException {
 		return new byte[bpPacketData.remaining()];
 	}
 
 	@Override
-	public boolean assembleStart() throws Exception {
+	public boolean assembleStart() throws BPAssembleException {
 		bpPacketData.clear();
 		return false;
 	}
 
 	@Override
-	public boolean assembleEnd() throws Exception {
+	public boolean assembleEnd() throws BPAssembleException {
 		int crcLen = (getFxHead().getCrcChk() == CrcChecksum.CRC32 ? 4 : 2);
 		int packRmnLen = bpPacketData.position() - 2 + crcLen;
 		

@@ -11,215 +11,215 @@ public class VariableHeader {
 	
 	public static final byte DIST_END_FLAG_MSK = 0x01; 
 	
-	int Level = 0;
-	int ClientIDLen = 0;
-	int ClientID = 0;
-	int AliveTime = 0;
-	int Timeout = 0;
-	int RetCode = 0;
-	int PackSeq = 0;
+	int level = 0;
+	int clientIDLen = 0;
+	int clientID = 0;
+	int aliveTime = 0;
+	int timeout = 0;
+	int retCode = 0;
+	int packSeq = 0;
 	
-	Boolean Bit0 = new Boolean(false);
-	Boolean Bit1 = new Boolean(false);
-	Boolean Bit2 = new Boolean(false);
-	Boolean Bit3 = new Boolean(false);
-	Boolean Bit4 = new Boolean(false);
-	Boolean Bit5 = new Boolean(false);
-	Boolean Bit6 = new Boolean(false);
-	Boolean Bit7 = new Boolean(false);
+	Boolean bit0 = false;
+	Boolean bit1 = false;
+	Boolean bit2 = false;
+	Boolean bit3 = false;
+	Boolean bit4 = false;
+	Boolean bit5 = false;
+	Boolean bit6 = false;
+	Boolean bit7 = false;
 	
-	Boolean UserFlag;
-	Boolean PwdFlag;
-	Boolean UserLoginFlag;
-	Boolean DeviceLoginFlag;
-	Boolean LanChinese;
-	Boolean LanEnglish;
-	Boolean LanFrench;
-	Boolean LanRussian;
-	Boolean LanArabic;
-	Boolean LanSpanish;
-	Boolean OtherLanguageFlag;
+	Boolean userFlag;
+	Boolean pwdFlag;
+	Boolean userLoginFlag;
+	Boolean deviceLoginFlag;
+	Boolean lanChinese;
+	Boolean lanEnglish;
+	Boolean lanFrench;
+	Boolean lanRussian;
+	Boolean lanArabic;
+	Boolean lanSpanish;
+	Boolean otherLanguageFlag;
 	
 	public VariableHeader() {
-		UserFlag = Bit7;
-		PwdFlag = Bit6;
-		UserLoginFlag = Bit2;
-		DeviceLoginFlag = Bit1;
-		LanChinese = Bit7;
-		LanEnglish = Bit6;
-		LanFrench = Bit5;
-		LanRussian = Bit4;
-		LanArabic = Bit3;
-		LanSpanish = Bit2;
-		OtherLanguageFlag = Bit1;
+		userFlag = bit7;
+		pwdFlag = bit6;
+		userLoginFlag = bit2;
+		deviceLoginFlag = bit1;
+		lanChinese = bit7;
+		lanEnglish = bit6;
+		lanFrench = bit5;
+		lanRussian = bit4;
+		lanArabic = bit3;
+		lanSpanish = bit2;
+		otherLanguageFlag = bit1;
 	}
 
 	
 	public void parseLevel(byte encodedByte) {
-		Level = encodedByte;
+		level = encodedByte;
 	}
 	
 	public void parseFlags(byte flags) {
-		Bit0 = (0x01 & flags) == 0x01;
-		Bit1 = (0x02 & flags) == 0x02;
-		Bit2 = (0x04 & flags) == 0x04;
-		Bit3 = (0x08 & flags) == 0x08;
-		Bit4 = (0x10 & flags) == 0x10;
-		Bit5 = (0x20 & flags) == 0x20;
-		Bit6 = (0x40 & flags) == 0x40;
-		Bit7 = (0x80 & flags) == 0x80;
+		bit0 = (0x01 & flags) == 0x01;
+		bit1 = (0x02 & flags) == 0x02;
+		bit2 = (0x04 & flags) == 0x04;
+		bit3 = (0x08 & flags) == 0x08;
+		bit4 = (0x10 & flags) == 0x10;
+		bit5 = (0x20 & flags) == 0x20;
+		bit6 = (0x40 & flags) == 0x40;
+		bit7 = (0x80 & flags) == 0x80;
 	}
 	
-	public void parseClientId(byte id_msb, byte id_lsb) {
-		ClientID = id_msb;
-		ClientID = (ClientID << 8) | id_lsb;
+	public void parseClientId(byte idMsb, byte idLsb) {
+		clientID = idMsb;
+		clientID = (clientID << 8) | (idLsb & 0xFF);
 	}
 	
 	public int parseClientIdLen(byte len) {
-		ClientIDLen = len;
+		clientIDLen = len;
 		
-		return ClientIDLen;
+		return clientIDLen;
 	}
 	
 	public int parseClientId(byte[] id, int len) {
-		ClientIDLen = len;
-		ClientID = 0;
+		clientIDLen = len;
+		clientID = 0;
 
 		if(id.length != len) {
-			return ClientID;
+			return clientID;
 		}
 		// the same as "len < sizeof(int)" 
 		if(len > 4) {
-			return ClientID;
+			return clientID;
 		}
 
 		for(int i = 0; i < len; i++) {
-			ClientID = (ClientID << 8) | id[i];
+			clientID = (clientID << 8) | (id[i] & 0xFF);
 		}
 		
-		return ClientID;
+		return clientID;
 	}
 	
 	
-	public int parseAliveTime(byte alive_time_msb, byte alive_time_lsb) {
-		AliveTime = alive_time_msb;
-		AliveTime = (AliveTime << 8) + alive_time_lsb;
-		return AliveTime;
+	public int parseAliveTime(byte aliveTimeMsb, byte aliveTimeLsb) {
+		aliveTime = aliveTimeMsb;
+		aliveTime = (aliveTime << 8) + (aliveTimeLsb & 0xFF);
+		return aliveTime;
 	}
 	
 	public int parseTimeout(byte timeout) {
-		Timeout = timeout;
-		return Timeout;
+		this.timeout = timeout;
+		return timeout;
 	}
 	
 	public boolean getUserNameFlag() {
-		return Bit7;
+		return bit7;
 	}
 	
 	public boolean getPwdFlag() {
-		return Bit6;
+		return bit6;
 	}
 	
 	public int getClientId() {
-		return ClientID;
+		return clientID;
 	}
 	
 	public int getAliveTime() {
-		return AliveTime;
+		return aliveTime;
 	}
 	
 	public boolean getUserClntFlag() {
-		return Bit2;
+		return bit2;
 	}
 	
 	public boolean getDevClntFlag() {
-		return Bit1;
+		return bit1;
 	}
 	
 	public int getLevel() {
-		return Level;
+		return level;
 	}
 	
 	
 	public byte getFlags() {
 		byte ret = 0;
-		ret |= (Bit0 == true) ? (0x01 << 0) : 0;
-		ret |= (Bit1 == true) ? (0x01 << 1) : 0;
-		ret |= (Bit2 == true) ? (0x01 << 2) : 0;
-		ret |= (Bit3 == true) ? (0x01 << 3) : 0;
-		ret |= (Bit4 == true) ? (0x01 << 4) : 0;
-		ret |= (Bit5 == true) ? (0x01 << 5) : 0;
-		ret |= (Bit6 == true) ? (0x01 << 6) : 0;
-		ret |= (Bit7 == true) ? (0x01 << 7) : 0;
+		ret |= bit0 ? (0x01 << 0) : 0;
+		ret |= bit1 ? (0x01 << 1) : 0;
+		ret |= bit2 ? (0x01 << 2) : 0;
+		ret |= bit3 ? (0x01 << 3) : 0;
+		ret |= bit4 ? (0x01 << 4) : 0;
+		ret |= bit5 ? (0x01 << 5) : 0;
+		ret |= bit6 ? (0x01 << 6) : 0;
+		ret |= bit7 ? (0x01 << 7) : 0;
 		
 		return ret;
 	}
 	
 	public int getRetCode() {
-		return RetCode;
+		return retCode;
 	}
 	
 	public boolean getChineseFlag() {
-		return LanChinese;
+		return lanChinese;
 	}
 
 	public boolean getEnglishFlag() {
-		return LanEnglish;
+		return lanEnglish;
 	}
 	
 	public int getPackSeq() {
-		return PackSeq;
+		return packSeq;
 	}
 	
 	public boolean getReportToken() {
-		return Bit3;
+		return bit3;
 	}
 	
 	public boolean getPushToken() {
-		return Bit3;
+		return bit3;
 	}
 	
 	public void setClientId(int id) {
-		ClientID = id;
+		clientID = id;
 	}
 	
 	public boolean getDevNameFlag() {
-		return Bit7;
+		return bit7;
 	}
 	
 	public boolean getSysSigMapFlag() {
-		return Bit6;
+		return bit6;
 	}
 	
 	public boolean getCusSigFlag() {
-		return Bit5;
+		return bit5;
 	}
 	
 	public boolean getSigFlag() {
-		return Bit4;
+		return bit4;
 	}
 	
 	public void setAliveTime(int time) {
-		AliveTime = time;
+		aliveTime = time;
 	}
 	
 	public void setTimeout(int timeout) {
-		Timeout = timeout;
+		this.timeout = timeout;
 	}
 	
 	public void setLevel(int level) {
-		Level = level;
+		this.level = level;
 	}
 	
 	public void setRetCode(int code) {
-		RetCode = code;
+		retCode = code;
 	}
 	
 	public void setNewCliIdFlg() {
-		Bit7 = true;
+		bit7 = true;
 	}
 	
-	public void setPackSeq(int pack_seq) {
-		PackSeq = pack_seq;
+	public void setPackSeq(int packSeq) {
+		this.packSeq = packSeq;
 	}
 }

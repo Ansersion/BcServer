@@ -77,10 +77,12 @@ public class BPPackFactory {
 		try {
 			byte b = io.get();
 			ret = createBPPack(b);
-			FixedHeader fxHead = ret.getFxHead();
-			fxHead.setBPType(b);
-			fxHead.setFlags(b);
-			fxHead.setRemainLen(io);
+			if(null != ret) {
+				FixedHeader fxHead = ret.getFxHead();
+				fxHead.setBPType(b);
+				fxHead.setFlags(b);
+				fxHead.setRemainLen(io);
+			}
 		} catch(Exception e) {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw, true));

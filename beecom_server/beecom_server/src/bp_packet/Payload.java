@@ -3,10 +3,14 @@
  */
 package bp_packet;
 
-import java.util.ArrayList;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import other.BPError;
 
@@ -16,119 +20,133 @@ import other.BPError;
  *
  */
 public class Payload {
+	
+	private static final Logger logger = LoggerFactory.getLogger(Payload.class);
 
-	byte[] UserName = null;
-	byte[] Password = null;
-	String DevName = null;
-	int ClntIdLen;
-	int ClntId;
-	int SymSetVer;
-	DevSigData SigData = null;
+	byte[] userName = null;
+	byte[] password = null;
+	String devName = null;
+	int clntIdLen;
+	int clntId;
+	int symSetVer;
+	DevSigData sigData = null;
 	
-	public BPError Error;
+	private BPError error;
 	
-	Map<Integer, List<Integer> > MapDevId2SigIdLst = new HashMap<Integer, List<Integer> >();
-	Map<Integer, Byte[]> MapDist2SysSigMap = new HashMap<Integer, Byte[]>();
+	Map<Integer, List<Integer> > mapDevId2SigIdLst = new HashMap<>();
+	Map<Integer, Byte[]> mapDist2SysSigMap = new HashMap<>();
 	
-	public void setUserName(byte[] user_name) {	
-		UserName = user_name;
+	
+	public BPError getError() {
+		return error;
+	}
+
+	public void setError(BPError error) {
+		this.error = error;
+	}
+
+	public void setUserName(byte[] userName) {	
+		this.userName = userName;
 	}
 	
 	public void setPassword(byte[] password) {
-		Password = password;
+		this.password = password;
 	}
 	
-	public void getUserName(byte[] user_name) {
-		if(user_name.length < UserName.length) {
+	public void getUserName(byte[] userName) {
+		if(userName.length < this.userName.length) {
 			return;
 		}
-		for(int i = 0; i < UserName.length; i++) {
-			user_name[i] = UserName[i];
+		for(int i = 0; i < this.userName.length; i++) {
+			userName[i] = this.userName[i];
 		}
 	}
 	
 	public byte[] getUserName() {
-		byte[] user_name = new byte[UserName.length];
-		for(int i = 0; i < UserName.length; i++) {
-			user_name[i] = UserName[i];
+		byte[] userNameTmp = new byte[userName.length];
+		for(int i = 0; i < userName.length; i++) {
+			userNameTmp[i] = userName[i];
 		}
-		return user_name;
+		return userNameTmp;
 	}
 	
 	public void getPassword(byte[] password) {
-		if(password.length < Password.length) {
+		if(password.length < this.password.length) {
 			return;
 		}
-		for(int i = 0; i < Password.length; i++) {
-			password[i] = Password[i];
+		for(int i = 0; i < this.password.length; i++) {
+			password[i] = this.password[i];
 		}
 	}
 	public byte[] getPassword() {
-		byte[] password = new byte[Password.length];
-		for(int i = 0; i < Password.length; i++) {
-			password[i] = Password[i];
+		byte[] passwordTmp = new byte[password.length];
+		for(int i = 0; i < password.length; i++) {
+			passwordTmp[i] = password[i];
 		}
-		return password;
+		return passwordTmp;
 	}
 	
 	public void reset() {
-		UserName = null;
-		Password = null;
+		userName = null;
+		password = null;
 	}
 	
 	public int getClntIdLen() {
-		return ClntIdLen;
+		return clntIdLen;
 	}
 	
 	public int getClntId() {
-		return ClntId;
+		return clntId;
 	}
 	
 	public int getSymSetVer() {
-		return SymSetVer;
+		return symSetVer;
 	}
 	
 	public String getDevName() {
-		return DevName;
+		return devName;
 	}
 	
 	public DevSigData getSigData() {
-		return SigData;
+		return sigData;
 	}
 	
 	public void setClientId(int id) {
-		ClntId = id;
+		clntId = id;
 	}
 	
 	public void setClientIdLen(int len) {
-		ClntIdLen = len;
+		clntIdLen = len;
 	}
 	
 	public void setClientIdLen() {
-		ClntIdLen = 2;
+		clntIdLen = 2;
 	}
 	
-	public void setDevName(byte[] dev_name) {
+	public void setDevName(byte[] devName) {
 		try {
-			DevName= new String(dev_name);
+			this.devName= new String(devName);
 		} catch(Exception e) {
-			e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw, true));
+            String str = sw.toString();
+            logger.error(str);
 		}
 	}
 	
-	public void setSigData(DevSigData sig_data) {
-		SigData = sig_data;
+	public void setSigData(DevSigData sigData) {
+		this.sigData = sigData;
 	}
 	
 	public void clrMapDevId2SigIdList() {
-		MapDevId2SigIdLst.clear();
+		mapDevId2SigIdLst.clear();
 	}
 	
 	public Map<Integer, List<Integer> > getMapDev2SigLst() {
-		return MapDevId2SigIdLst;
+		return mapDevId2SigIdLst;
 	}
 	
 	public Map<Integer, Byte[]> getMapDist2SysSigMap() {
-		return MapDist2SysSigMap;
+		return mapDist2SysSigMap;
 	}
 }

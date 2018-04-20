@@ -8,6 +8,11 @@ package other;
  *
  */
 public class Util {
+	
+	private Util() {
+		
+	}
+	
 	public static Integer toUnsigned(short n) {
 		return n & 0xFFFF;
 	}
@@ -25,10 +30,7 @@ public class Util {
 	}
 	
 	public static boolean isNull(String val) {
-		if(null == val || val.length() == 0 || val.trim().isEmpty() || val.equals(BPValue.NULL_VAL)) {
-			return true;
-		}
-		return false;
+		return null == val || val.length() == 0 || val.trim().isEmpty() || val.equals(BPValue.NULL_VAL);
 	}
 
 }

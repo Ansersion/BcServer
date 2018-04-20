@@ -8,6 +8,9 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.mina.core.buffer.IoBuffer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * @author Ansersion
@@ -16,67 +19,69 @@ import org.apache.mina.core.buffer.IoBuffer;
 
 class SigDatas {
 
-	Map<Integer, Byte> Map1ByteDataSig;
-	Map<Integer, Short> Map2ByteDataSig;
-	Map<Integer, Integer> Map4ByteDataSig;
-	Map<Integer, Byte[]> MapxByteDataSig;
+	Map<Integer, Byte> map1ByteDataSig;
+	Map<Integer, Short> map2ByteDataSig;
+	Map<Integer, Integer> map4ByteDataSig;
+	Map<Integer, Byte[]> mapxByteDataSig;
 
 
 	SigDatas() {
-		Map1ByteDataSig = new HashMap<Integer, Byte>();
-		Map2ByteDataSig = new HashMap<Integer, Short>();
-		Map4ByteDataSig = new HashMap<Integer, Integer>();
-		MapxByteDataSig = new HashMap<Integer, Byte[]>();
+		map1ByteDataSig = new HashMap<>();
+		map2ByteDataSig = new HashMap<>();
+		map4ByteDataSig = new HashMap<>();
+		mapxByteDataSig = new HashMap<>();
 		
 	}
 	
 	public void clear() {
-		Map1ByteDataSig.clear();
-		Map2ByteDataSig.clear();
-		Map4ByteDataSig.clear();
-		MapxByteDataSig.clear();
+		map1ByteDataSig.clear();
+		map2ByteDataSig.clear();
+		map4ByteDataSig.clear();
+		mapxByteDataSig.clear();
 		
 	}
 
 }
 
 public class DevSigData {
+	
+	private static final Logger logger = LoggerFactory.getLogger(DevSigData.class);
 
-	int DeviceID;
-	SigDatas SigData;
+	int deviceID;
+	SigDatas sigData;
 
 	public DevSigData() {
-		DeviceID = 0;
-		SigData = new SigDatas();
+		deviceID = 0;
+		sigData = new SigDatas();
 	}
 	
 	public void clear() {
-		DeviceID = 0;
-		SigData.clear();
+		deviceID = 0;
+		sigData.clear();
 	}
 
-	public void setDevID(int dev_id) {
-		DeviceID = dev_id;
+	public void setDevID(int devId) {
+		deviceID = devId;
 	}
 
 	public int getDevID() {
-		return DeviceID;
+		return deviceID;
 	}
 
 	public Map<Integer, Byte> get1ByteDataMap() {
-		return SigData.Map1ByteDataSig;
+		return sigData.map1ByteDataSig;
 	}
 
 	public Map<Integer, Short> get2ByteDataMap() {
-		return SigData.Map2ByteDataSig;
+		return sigData.map2ByteDataSig;
 	}
 
 	public Map<Integer, Integer> get4ByteDataMap() {
-		return SigData.Map4ByteDataSig;
+		return sigData.map4ByteDataSig;
 	}
 
 	public Map<Integer, Byte[]> getxByteDataMap() {
-		return SigData.MapxByteDataSig;
+		return sigData.mapxByteDataSig;
 	}
 	
 	public void dump() {
@@ -85,11 +90,11 @@ public class DevSigData {
 
 		map = get1ByteDataMap();
 		entries = map.entrySet().iterator();
+		String printFormat = "{}=>{}";
 		while (entries.hasNext()) {
 			Map.Entry<Integer, Byte> entry = (Map.Entry<Integer, Byte>) entries
 					.next();
-			System.out.println(entry.getKey() + "=>"
-					+ Integer.toHexString(entry.getValue()));
+			logger.debug(printFormat, entry.getKey(), Integer.toHexString(entry.getValue()));
 		}
 
 		map = get2ByteDataMap();
@@ -97,8 +102,7 @@ public class DevSigData {
 		while (entries.hasNext()) {
 			Map.Entry<Integer, Short> entry = (Map.Entry<Integer, Short>) entries
 					.next();
-			System.out.println(entry.getKey() + "=>"
-					+ Integer.toHexString(entry.getValue()));
+			logger.debug(printFormat, entry.getKey(), Integer.toHexString(entry.getValue()));
 		}
 
 		map = get4ByteDataMap();
@@ -106,8 +110,7 @@ public class DevSigData {
 		while (entries.hasNext()) {
 			Map.Entry<Integer, Integer> entry = (Map.Entry<Integer, Integer>) entries
 					.next();
-			System.out.println(entry.getKey() + "=>"
-					+ Integer.toHexString(entry.getValue()));
+			logger.debug(printFormat, entry.getKey(), Integer.toHexString(entry.getValue()));
 		}
 
 		map = getxByteDataMap();
@@ -115,174 +118,172 @@ public class DevSigData {
 		while (entries.hasNext()) {
 			Map.Entry<Integer, Byte[]> entry = (Map.Entry<Integer, Byte[]>) entries
 					.next();
-			System.out.println(entry.getKey() + "=>" + entry.getValue());
+			logger.debug(printFormat, entry.getKey(), entry.getValue());
 		}
 	}
 
 	public int parseSigData(byte[] buf, int offset) {
-		int offset_old = offset;
+		int offsetOld = offset;
 		byte encodedByte;
 
 		byte msb = buf[offset++];
 		byte lsb = buf[offset++];
-		DeviceID = BPPacket.assemble2ByteBigend(msb, lsb);
+		deviceID = BPPacket.assemble2ByteBigend(msb, lsb);
 
 		encodedByte = buf[offset++];
-		int value_type = (encodedByte & 0xC0) >>> 6;
-		int value_num = (encodedByte & 0x3F);
-		short sig_id;
+		int valueType = (encodedByte & 0xC0) >>> 6;
+		int valueNum = (encodedByte & 0x3F);
+		short sigId;
 
-		if (0x0 == value_type) {
-			Map data_map = get1ByteDataMap();
-			for (int i = 0; i < value_num; i++) {
+		if (0x0 == valueType) {
+			Map dataMap = get1ByteDataMap();
+			for (int i = 0; i < valueNum; i++) {
 				msb = buf[offset++];
 				lsb = buf[offset++];
-				sig_id = BPPacket.assemble2ByteBigend(msb, lsb);
+				sigId = BPPacket.assemble2ByteBigend(msb, lsb);
 				byte data = buf[offset++];
-				data_map.put(sig_id, data);
+				dataMap.put(sigId, data);
 			}
-		} else if (0x01 == value_type) {
-			Map data_map = get1ByteDataMap();
-			for (int i = 0; i < value_num; i++) {
+		} else if (0x01 == valueType) {
+			Map dataMap = get1ByteDataMap();
+			for (int i = 0; i < valueNum; i++) {
 				msb = buf[offset++];
 				lsb = buf[offset++];
-				sig_id = BPPacket.assemble2ByteBigend(msb, lsb);
+				sigId = BPPacket.assemble2ByteBigend(msb, lsb);
 				int data = buf[offset++];
-				data = (data << 8) + buf[offset++];
-				data_map.put(sig_id, (short) data);
+				data = (data << 8) + (buf[offset++] & 0xFF);
+				dataMap.put(sigId, (short) data);
 			}
-		} else if (0x10 == value_type) {
-			Map data_map = get1ByteDataMap();
-			for (int i = 0; i < value_num; i++) {
+		} else if (0x10 == valueType) {
+			Map dataMap = get1ByteDataMap();
+			for (int i = 0; i < valueNum; i++) {
 				msb = buf[offset++];
 				lsb = buf[offset++];
-				sig_id = BPPacket.assemble2ByteBigend(msb, lsb);
+				sigId = BPPacket.assemble2ByteBigend(msb, lsb);
 				long data = buf[offset++];
-				data = (data << 8) + buf[offset++];
-				data = (data << 8) + buf[offset++];
-				data = (data << 8) + buf[offset++];
-				data_map.put(sig_id, (int) data);
+				data = (data << 8) + (buf[offset++] & 0xFF);
+				data = (data << 8) + (buf[offset++] & 0xFF);
+				data = (data << 8) + (buf[offset++] & 0xFF);
+				dataMap.put(sigId, (int) data);
 			}
 		} else {
-			System.out.println("Error: DevSigData: Unsupported value type");
+			logger.warn("Error: DevSigData: Unsupported value type");
 		}
 
-		return offset - offset_old;
+		return offset - offsetOld;
 	}
 
 	public boolean parseSigDataTab(IoBuffer ioBuf) {
 		byte encodedByte;
 
 		encodedByte = ioBuf.get();
-		int value_type = (encodedByte & 0xC0) >>> 6;
-		int value_num = (encodedByte & 0x3F);
-		Map data_map;
-		switch (value_type) {
+		int valueType = (encodedByte & 0xC0) >>> 6;
+		int valueNum = (encodedByte & 0x3F);
+		Map dataMap;
+		switch (valueType) {
 		case 0:
-			data_map = get1ByteDataMap();
-			for (int i = 0; i < value_num; i++) {
-				int sig_id = ioBuf.getUnsignedShort();
+			dataMap = get1ByteDataMap();
+			for (int i = 0; i < valueNum; i++) {
+				int sigId = ioBuf.getUnsignedShort();
 				byte val = ioBuf.get();
-				data_map.put(sig_id, val);
+				dataMap.put(sigId, val);
 			}
 			break;
 		case 1:
-			data_map = get2ByteDataMap();
-			for (int i = 0; i < value_num; i++) {
-				int sig_id = ioBuf.getUnsignedShort();
+			dataMap = get2ByteDataMap();
+			for (int i = 0; i < valueNum; i++) {
+				int sigId = ioBuf.getUnsignedShort();
 				short val = ioBuf.getShort();
-				data_map.put(sig_id, val);
+				dataMap.put(sigId, val);
 			}
 			break;
 		case 2:
-			data_map = get4ByteDataMap();
-			for (int i = 0; i < value_num; i++) {
-				int sig_id = ioBuf.getUnsignedShort();
+			dataMap = get4ByteDataMap();
+			for (int i = 0; i < valueNum; i++) {
+				int sigId = ioBuf.getUnsignedShort();
 				int val = ioBuf.getInt();
-				data_map.put(sig_id, val);
+				dataMap.put(sigId, val);
 			}
 			break;
 		case 3:
-			data_map = getxByteDataMap();
-			for (int i = 0; i < value_num; i++) {
-				int sig_id = ioBuf.getUnsignedShort();
+			dataMap = getxByteDataMap();
+			for (int i = 0; i < valueNum; i++) {
+				int sigId = ioBuf.getUnsignedShort();
 				byte len = ioBuf.get();
 				Byte[] val = new Byte[len];
 				for (int j = 0; j < len; j++) {
 					val[j] = ioBuf.get();
 				}
-				data_map.put(sig_id, val);
+				dataMap.put(sigId, val);
 			}
 			break;
 		default:
-			System.out
-					.println("Error: DevSigData: Unsupported value type(parseSigData):"
-							+ value_type);
+			logger.warn("Error: DevSigData: Unsupported value type(parseSigData): {}", valueType);
 			return false;
 		}
 		return true;
 	}
 
 	public boolean assembleSigData(IoBuffer ioBuf) {
-		int pos_tab_num = ioBuf.position();
-		byte tab_num = 0;
-		ioBuf.put(tab_num);// skip the tab_num
+		int posTabNum = ioBuf.position();
+		byte tabNum = 0;
+		ioBuf.put(tabNum);// skip the tab_num
 		for (int data_type = 0; data_type < 4; data_type++) {
 			switch (data_type) {
 			case 0: {
-				Map<Integer, Byte> sig_map = SigData.Map1ByteDataSig;
-				if (sig_map.size() > 0) {
-					byte typeAndNum = (byte) (sig_map.size() & 0x3F);
+				Map<Integer, Byte> sigMap = sigData.map1ByteDataSig;
+				if (sigMap.size() > 0) {
+					byte typeAndNum = (byte) (sigMap.size() & 0x3F);
 					ioBuf.put(typeAndNum);
-					Iterator<Map.Entry<Integer, Byte>> entries = sig_map
+					Iterator<Map.Entry<Integer, Byte>> entries = sigMap
 							.entrySet().iterator();
 					while (entries.hasNext()) {
 						Map.Entry<Integer, Byte> entry = entries.next();
 						ioBuf.putUnsignedShort(entry.getKey());
 						ioBuf.put(entry.getValue());
 					}
-					tab_num++;
+					tabNum++;
 				}
 				break;
 			}
 			case 1: {
-				Map<Integer, Short> sig_map = SigData.Map2ByteDataSig;
-				if (sig_map.size() > 0) {
-					byte type_and_num = (byte) ((sig_map.size() & 0x3F) | 0x40);
-					ioBuf.put(type_and_num);
-					Iterator<Map.Entry<Integer, Short>> entries = sig_map
+				Map<Integer, Short> sigMap = sigData.map2ByteDataSig;
+				if (sigMap.size() > 0) {
+					byte typeAndNum = (byte) ((sigMap.size() & 0x3F) | 0x40);
+					ioBuf.put(typeAndNum);
+					Iterator<Map.Entry<Integer, Short>> entries = sigMap
 							.entrySet().iterator();
 					while (entries.hasNext()) {
 						Map.Entry<Integer, Short> entry = entries.next();
 						ioBuf.putUnsignedShort(entry.getKey());
 						ioBuf.putShort(entry.getValue());
 					}
-					tab_num++;
+					tabNum++;
 				}
 				break;
 			}
 			case 2: {
-				Map<Integer, Integer> sig_map = SigData.Map4ByteDataSig;
-				if (sig_map.size() > 0) {
-					byte type_and_num = (byte) ((sig_map.size() & 0x3F) | 0x80);
-					ioBuf.put(type_and_num);
-					Iterator<Map.Entry<Integer, Integer>> entries = sig_map
+				Map<Integer, Integer> sigMap = sigData.map4ByteDataSig;
+				if (sigMap.size() > 0) {
+					byte typeAndNum = (byte) ((sigMap.size() & 0x3F) | 0x80);
+					ioBuf.put(typeAndNum);
+					Iterator<Map.Entry<Integer, Integer>> entries = sigMap
 							.entrySet().iterator();
 					while (entries.hasNext()) {
 						Map.Entry<Integer, Integer> entry = entries.next();
 						ioBuf.putUnsignedShort(entry.getKey());
 						ioBuf.putInt(entry.getValue());
 					}
-					tab_num++;
+					tabNum++;
 				}
 				break;
 			}
 			case 3: {
-				Map<Integer, Byte[]> sig_map = SigData.MapxByteDataSig;
-				if (sig_map.size() > 0) {
-					byte type_and_num = (byte) ((sig_map.size() & 0x3F) | 0xC0);
-					ioBuf.put(type_and_num);
-					Iterator<Map.Entry<Integer, Byte[]>> entries = sig_map
+				Map<Integer, Byte[]> sigMap = sigData.mapxByteDataSig;
+				if (sigMap.size() > 0) {
+					byte typeAndNum = (byte) ((sigMap.size() & 0x3F) | 0xC0);
+					ioBuf.put(typeAndNum);
+					Iterator<Map.Entry<Integer, Byte[]>> entries = sigMap
 							.entrySet().iterator();
 					while (entries.hasNext()) {
 						Map.Entry<Integer, Byte[]> entry = entries.next();
@@ -292,21 +293,19 @@ public class DevSigData {
 							ioBuf.put(entry.getValue()[i]);
 						}
 					}
-					tab_num++;
+					tabNum++;
 				}
 				break;
 			}
 			default:
-				System.out
-						.println("Error: DevSigData: Unsupported value type(assembleSigData): "
-								+ data_type);
+				logger.warn("Error: DevSigData: Unsupported value type(assembleSigData): {}", data_type);
 				break;
 			}
 		}
-		int pos_last = ioBuf.position();
-		ioBuf.position(pos_tab_num);
-		ioBuf.put(tab_num);
-		ioBuf.position(pos_last);
+		int posLast = ioBuf.position();
+		ioBuf.position(posTabNum);
+		ioBuf.put(tabNum);
+		ioBuf.position(posLast);
 		return true;
 	}
 }

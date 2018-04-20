@@ -35,7 +35,7 @@ public class BPPacketREPORT extends BPPacket {
 	}
 
 	@Override
-	public boolean parseVariableHeader(IoBuffer ioBuf) throws Exception {
+	public boolean parseVariableHeader(IoBuffer ioBuf) {
 		int clientIdLen = 0;
 
 		try {
@@ -65,7 +65,7 @@ public class BPPacketREPORT extends BPPacket {
 	}
 
 	@Override
-	public boolean parseVariableHeader(byte[] buf) throws Exception {
+	public boolean parseVariableHeader(byte[] buf) {
 		try {
 			int counter = 0;
 			int clientIdLen = 0;
@@ -97,7 +97,7 @@ public class BPPacketREPORT extends BPPacket {
 	}
 
 	@Override
-	public boolean parsePayload(byte[] buf) throws Exception {
+	public boolean parsePayload(byte[] buf) {
 		
 		try {
 			int counter = 0;
@@ -119,7 +119,6 @@ public class BPPacketREPORT extends BPPacket {
 				
 				counter += newPart.parseSymTable(buf, counter);
 				
-				// TODO: add the custom symbol table
 				
 				partitation.addElement(newPart);
 				
@@ -138,7 +137,7 @@ public class BPPacketREPORT extends BPPacket {
 	}
 	
 	@Override
-	public int parseVariableHeader() throws Exception {
+	public int parseVariableHeader() {
 
 		try {
 			// flags(1 byte) + client ID(2 byte) + sequence id(2 byte)
@@ -148,8 +147,8 @@ public class BPPacketREPORT extends BPPacket {
 			int clientId = getIoBuffer().getUnsignedShort();
 			getVrbHead().setClientId(clientId);
 
-			int packSeq = getIoBuffer().getUnsignedShort();
-			getVrbHead().setPackSeq(packSeq);
+			int packSeqTmp = getIoBuffer().getUnsignedShort();
+			getVrbHead().setPackSeq(packSeqTmp);
 		} catch (Exception e) {
 	        StringWriter sw = new StringWriter();
 	        e.printStackTrace(new PrintWriter(sw, true));
@@ -162,7 +161,7 @@ public class BPPacketREPORT extends BPPacket {
 	}
 
 	@Override
-	public int parsePayload() throws Exception {
+	public int parsePayload() {
 		try {
 
 			VariableHeader vb = getVrbHead();
@@ -198,8 +197,7 @@ public class BPPacketREPORT extends BPPacket {
 						dist = (distAndClass >> 4) & 0x0F;
 						sysSigClass = (distAndClass >> 1) & 0x07;
 						if (sysSigClass >= 0x07) {
-							throw new Exception(
-									"Error: System signal class 0x7");
+							throw new BPParsePldException("Error: System signal class 0x7");
 						}
 						mapNum = 0x200 / 8 / (1 << sysSigClass);
 						Byte[] sysSigMap = new Byte[mapNum];
@@ -218,7 +216,6 @@ public class BPPacketREPORT extends BPPacket {
 	        e.printStackTrace(new PrintWriter(sw, true));
 	        String str = sw.toString();
 	        logger.error(str);
-			throw e;
 		}
 		return 0;
 	}

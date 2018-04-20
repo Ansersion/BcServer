@@ -33,7 +33,7 @@ public class EncryptType {
         return strValue;
     }
     
-    public int GetType() {
+    public int getType() {
     	return iType;
     }
 }
