@@ -2,6 +2,12 @@ package bp_packet;
 
 public class BPCrcException extends Exception {
 
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -459266033869700L;
+
 	public BPCrcException() {
 		super();
 	}

@@ -29,7 +29,6 @@ public class BcServerMain {
 	/**
 	 * @param args
 	 */
-	@SuppressWarnings("deprecation")
 	public static void main(String[] args) {
 
 		BPSysSigLangResTable sigLangResTab = BPSysSigLangResTable.getSysSigLangResTable();

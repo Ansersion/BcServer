@@ -127,7 +127,8 @@ public class BPSysSigTable {
 
 					strTmp = m.group(6);
 
-					try (Scanner scannerUnit = new Scanner(strTmp).useDelimiter("ULR")) {
+					try (Scanner scannerUnit = new Scanner(strTmp)) {
+						scannerUnit.useDelimiter("ULR");
 						if (!scannerUnit.hasNext()) {
 							throw new Exception(m.group(1) + ": unit language resource error");
 						}

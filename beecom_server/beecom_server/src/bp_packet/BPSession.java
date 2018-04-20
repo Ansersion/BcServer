@@ -23,6 +23,10 @@ import sys_sig_table.BPSysSigTable;
  */
 
 class SigIdNonExistException extends Exception {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1342721670055052282L;
 	SigIdNonExistException(String msg) {
 		super(msg);
 	}
