@@ -4,8 +4,6 @@
 package db;
 
 import java.sql.Connection;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import bp_packet.BPPacket;
+import other.Util;
 
 import java.util.List;
 
@@ -45,7 +44,8 @@ public class BeecomDB {
 	static String password = "Ansersion";
 
 	private BeecomDB() {
-		logger.info("Info: Create BeecomDB");
+		String s = "Info: Create BeecomDB";
+		logger.info(s);
 		userInfoRecLst = new ArrayList<>();
 		devInfoRecLst = new ArrayList<>();
 		devAuthRecLst = new ArrayList<>();
@@ -54,21 +54,15 @@ public class BeecomDB {
 		name2IDMap = new HashMap<>();
 
 		DBUserInfoRec record0Blank = new DBUserInfoRec();
-		// DB_UserDev
 		userInfoRecLst.add(record0Blank);
-		ResultSet rs = null;
+		String sql;
+
 		try (Statement statement = con.createStatement()) {
 			Class.forName(driver);
 			con = DriverManager.getConnection(url, user, password);
-			if (!con.isClosed()) {
-				logger.info("Succeeded connecting to the Database!");
-			}
 			
-
-			try {
-				String sql = "select * from user_info";
-				rs = statement.executeQuery(sql);
-
+			sql = "select * from user_info";
+			try (ResultSet rs = statement.executeQuery(sql)){
 				long id;
 				String name;
 				String eMail;
@@ -81,22 +75,13 @@ public class BeecomDB {
 					eMail = rs.getString("eMail");
 					phone = rs.getString("phone");
 					passwordTmp = rs.getString("password");
-					userInfoRecLst.add(new DBUserInfoRec(id, name, eMail,
-							phone, passwordTmp));
+					userInfoRecLst.add(new DBUserInfoRec(id, name, eMail, phone, passwordTmp));
 					name2IDMap.put(name, id);
 				}
-				rs.close();
-			} finally {
-				if(null != rs) {
-					rs.close();
-				}
-				rs = null;
 			}
 
-			try {
-				String sql = "select * from dev_info";
-				rs = statement.executeQuery(sql);
-
+			sql = "select * from dev_info";
+			try (ResultSet rs = statement.executeQuery(sql)){
 				long devUniqId;
 				int userId;
 				byte[] devPwd = new byte[32];
@@ -111,25 +96,13 @@ public class BeecomDB {
 					devId = rs.getInt("devId");
 					sysSigTabId = rs.getInt("sysSigTabId");
 					devName = rs.getString("devName");
-					if (devUniqId > Integer.MAX_VALUE) {
-						throw new Exception("Error: devUniqId too big");
-					}
-					devInfoRecLst.add(new DBDevInfoRec(devUniqId, userId,
-							devPwd, devId, sysSigTabId, devName));
+					devInfoRecLst.add(new DBDevInfoRec(devUniqId, userId, devPwd, devId, sysSigTabId, devName));
 				}
-				rs.close();
-
-			} finally {
-				if(null != rs) {
-					rs.close();
-				}
-				rs = null;
 			}
 
-			try {
-				String sql = "select * from dev_auth";
-				rs = statement.executeQuery(sql);
-
+			sql = "select * from dev_auth";
+			
+			try  (ResultSet rs = statement.executeQuery(sql)){
 				long devUniqId;
 				int adminUserId;
 				byte adminUserAuth;
@@ -154,27 +127,15 @@ public class BeecomDB {
 					userAuth3 = (byte) rs.getShort("user_id3_auth");
 					userId4 = rs.getInt("user_id4");
 					userAuth4 = (byte) rs.getShort("user_id4_auth");
-					if (devUniqId > Integer.MAX_VALUE) {
-						throw new Exception("Error: devUniqId too big");
-					}
 					devAuthRecLst.add(new DBDevAuthRec(devUniqId,
 							adminUserId, adminUserAuth, userId1,
 							userAuth1, userId2, userAuth2, userId3,
 							userAuth3, userId4, userAuth4));
 				}
-				rs.close();
-
-			} finally {
-				if(null != rs) {
-					rs.close();
-				}
-				rs = null;
 			}
 
-			try {
-				String sql = "select * from sysSigTab";
-				rs = statement.executeQuery(sql);
-
+			sql = "select * from sysSigTab";
+			try  (ResultSet rs = statement.executeQuery(sql)){
 				int sysSigTabId;
 
 				while (rs.next()) {
@@ -194,34 +155,14 @@ public class BeecomDB {
 					}					
 					sysSigRecLst.add(new DBSysSigRec(sysSigTabId, sysSigEnableLst));
 				}
-				rs.close();
 
 				for (int i = 0; i < sysSigRecLst.size(); i++) {
 					sysSigRecLst.get(i).dumpRec();
 				}
-			} finally {
-				if(null != rs) {
-					rs.close();
-				}
-				rs = null;
 			}
 
-		} catch (SQLException e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
-		} catch (ClassNotFoundException e) {
-			logger.error("Sorry,can`t find the Driver!");
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
-		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+		} catch (SQLException|ClassNotFoundException e) {
+			Util.bcLog(e, logger);
 		} 
 	}
 

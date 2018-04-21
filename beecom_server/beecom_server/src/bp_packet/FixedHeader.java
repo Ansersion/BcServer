@@ -72,12 +72,14 @@ public class FixedHeader {
 	}
 	
 	public void setCrcType(CrcChecksum crc) {
+		String s;
 		if(crc == CrcChecksum.CRC32) {
 			packetFlags.setCrc32();
 		} else if(crc == CrcChecksum.CRC16) {
 			packetFlags.setCrc16();
 		} else {
-			logger.warn("Error(FixedHeader): unknown CRC type");
+			s = "Error(FixedHeader): unknown CRC type";
+			logger.warn(s);
 		}
 	}
 	

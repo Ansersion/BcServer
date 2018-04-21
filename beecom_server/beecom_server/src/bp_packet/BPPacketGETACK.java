@@ -78,6 +78,7 @@ public class BPPacketGETACK extends BPPacket {
 	@Override
 	public int parsePayload() {
 		try {
+			String s;
 			if(getVrbHead().getRetCode() != 0) {
 				return -1;
 			}
@@ -86,7 +87,8 @@ public class BPPacketGETACK extends BPPacket {
 			for(int i = 0; i < sigTabNum; i++) {
 				boolean ret = sigData.parseSigDataTab(getIoBuffer());
 				if(!ret) {
-					logger.error("Error(GETACK): parsePayload error");
+					s = "Error(GETACK): parsePayload error";
+					logger.error(s);
 					return -1;
 				}
 				
@@ -134,6 +136,7 @@ public class BPPacketGETACK extends BPPacket {
 
 		int devNum = vctDevSigData.size() & 0x0000FFFF;
 		getIoBuffer().putUnsignedShort(devNum);
+		String s;
 
 		for (int i = 0; i < devNum; i++) {
 			DevSigData sigDataAck = vctDevSigData.get(i);
@@ -142,7 +145,8 @@ public class BPPacketGETACK extends BPPacket {
 
 			if (sigNum > 0) {
 				if (sigNum > 0x3F) {
-					logger.error("WARNING: too many signal of 1 byte");
+					s = "WARNING: too many signal of 1 byte";
+					logger.error(s);
 				} else {
 					encodedByte = (byte) (sigNum & 0x3F);
 					// clear bit6, bit7
@@ -151,10 +155,10 @@ public class BPPacketGETACK extends BPPacket {
 					getIoBuffer().put(encodedByte);
 					Map<Integer, Byte> map = sigDataAck.get1ByteDataMap();
 
-					Iterator it = map.entrySet().iterator();
+					Iterator<Map.Entry<Integer, Byte>> it = map.entrySet().iterator();
 					while (it.hasNext()) {
 
-						Map.Entry entry = (Map.Entry) it.next();
+						Map.Entry<Integer, Byte> entry = it.next();
 						getIoBuffer().putUnsignedShort((Integer) entry.getKey());
 						getIoBuffer().put((Byte) entry.getValue());
 					}
@@ -165,7 +169,8 @@ public class BPPacketGETACK extends BPPacket {
 			sigNum = sigDataAck.get2ByteDataMap().size();
 			if (sigNum > 0) {
 				if (sigNum > 0x3F) {
-					logger.error("WARNING: too many signal of 2 byte");
+					s = "WARNING: too many signal of 2 byte";
+					logger.error(s);
 				} else {
 					encodedByte = (byte) (sigNum & 0x3F);
 					// clear bit6, bit7
@@ -174,10 +179,10 @@ public class BPPacketGETACK extends BPPacket {
 					encodedByte |= 0x40;
 					getIoBuffer().put(encodedByte);
 					Map<Integer, Short> map = sigDataAck.get2ByteDataMap();
-					Iterator it = map.entrySet().iterator();
+					Iterator<Map.Entry<Integer, Short>> it = map.entrySet().iterator();
 					while (it.hasNext()) {
-						Map.Entry entry = (Map.Entry) it.next();
-						getIoBuffer().putShort((Short) entry.getKey());
+						Map.Entry<Integer, Short> entry = it.next();
+						getIoBuffer().putUnsignedShort(entry.getKey());
 						getIoBuffer().putShort((Short) entry.getValue());
 					}
 
@@ -187,7 +192,8 @@ public class BPPacketGETACK extends BPPacket {
 			sigNum = sigDataAck.get4ByteDataMap().size();
 			if (sigNum > 0) {
 				if (sigNum > 0x3F) {
-					logger.error("WARNING: too many signal of 4 byte");
+					s = "WARNING: too many signal of 4 byte";
+					logger.error(s);
 				} else {
 					encodedByte = (byte) (sigNum & 0x3F);
 					// clear bit6, bit7
@@ -196,10 +202,10 @@ public class BPPacketGETACK extends BPPacket {
 					encodedByte |= 0x80;
 					getIoBuffer().put(encodedByte);
 					Map<Integer, Integer> map = sigDataAck.get4ByteDataMap();
-					Iterator it = map.entrySet().iterator();
+					Iterator<Map.Entry<Integer, Integer>> it = map.entrySet().iterator();
 					while (it.hasNext()) {
-						Map.Entry entry = (Map.Entry) it.next();
-						getIoBuffer().putShort((Short) entry.getKey());
+						Map.Entry<Integer, Integer> entry = it.next();
+						getIoBuffer().putUnsignedShort(entry.getKey());
 						getIoBuffer().putInt((Integer) entry.getValue());
 					}
 

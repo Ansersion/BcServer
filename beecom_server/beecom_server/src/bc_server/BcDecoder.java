@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 
 import bp_packet.BPPackFactory;
 import bp_packet.BPPacket;
+import bp_packet.BPParseException;
+import bp_packet.BPParseFxHeaderException;
 import bp_packet.FixedHeader;
 import bp_packet.Payload;
 import bp_packet.VariableHeader;
@@ -71,7 +73,7 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 				}
 				BPPacket bpPack = BPPackFactory.createBPPack(ioIn);
 				if(null == bpPack) {
-					throw new Exception("Error: cannot create BPPacket!");
+					throw new BPParseFxHeaderException("Error: cannot create BPPacket!");
 				}
 				bpPack.putFxHead2Buf();
 				session.setAttribute(BP_PACKET, bpPack);
@@ -125,7 +127,7 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 			break;
 		default:
 			session.setAttribute(DECODE_STATE, DecodeState.DEC_FX_HEAD);
-			throw new Exception("Error: Bad decode state!");
+			throw new BPParseException("Error: Bad decode state!");
 		}
 
 		return ret;

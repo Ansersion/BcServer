@@ -114,6 +114,7 @@ public class BPPacketGET extends BPPacket {
 	@Override
 	public int parsePayload() {
 		try {
+			String s;
 			short devNum = getIoBuffer().get();
 			Map<Integer, List<Integer> > mapDev2siglst = getPld().getMapDev2SigLst();
 			
@@ -122,7 +123,8 @@ public class BPPacketGET extends BPPacket {
 				byte cusFlags = getIoBuffer().get();
 				List<Integer> lstSig = new ArrayList<>();
 				if ((cusFlags & 0x80) == 0x80) {
-					logger.error("Error: Not supported GET payload custom signals");
+					s = "Error: Not supported GET payload custom signals";
+					logger.error(s);
 				} else {
 					short sigNum = getIoBuffer().get();
 					for(short j = 0; j < sigNum; j++) {

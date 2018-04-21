@@ -18,6 +18,9 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import bp_packet.BPPacket;
+import other.Util;
+
 /**
  * @author Ansersion
  * 
@@ -44,23 +47,22 @@ public class BPSysSigLangResTable {
 
 	public boolean loadTab() throws FileNotFoundException,
 			UnsupportedEncodingException {
-		FileInputStream fis = new FileInputStream(
-				"config/sys_signal_language_resource.csv");
+		FileInputStream fis = new FileInputStream("config/sys_signal_language_resource.csv");
 		InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
-		
 		sysSigLangResLst.clear();
 		boolean ret = false;
+		String pattern = "^(.*),(.*),(.*),(.*),(.*),(.*),(.*)$";
+		Pattern r = Pattern.compile(pattern);
 
 		try (BufferedReader sysSigLangIn = new BufferedReader(isr)){
 			String s;
-			String pattern = "^(.*),(.*),(.*),(.*),(.*),(.*),(.*)$";
-			Pattern r = Pattern.compile(pattern);
 			s = sysSigLangIn.readLine();
 			for (int i = 0; i < 16; i++) {
 
 				List<List<String>> sigLangResTmp = new ArrayList<>();
+				boolean foundDistLastSig = false;
 
-				while ((s = sysSigLangIn.readLine()) != null) {
+				while (!foundDistLastSig && (s = sysSigLangIn.readLine()) != null) {
 					List<String> langResTmp = new ArrayList<>();
 					Matcher m = r.matcher(s);
 					if(!m.find()) {
@@ -77,31 +79,18 @@ public class BPSysSigLangResTable {
 
 					int sigId = Integer.parseInt(m.group(1), 16);
 
-					if (SYS_SIG_START_ADDR + i * 0x200 - 1 == sigId) {
-						logger.info("Found value lang: {}", sigId);
-						break;
+					if (SYS_SIG_START_ADDR + i * BPPacket.SYS_SIG_DIST_STEP - 1 == sigId) {
+						foundDistLastSig = true;
 					}
 				}
 				sysSigLangResLst.add(sigLangResTmp);
 			}
 			
-			
-			for(int i = 0; i < sysSigLangResLst.size(); i++) {
-				for(int j = 0; j < sysSigLangResLst.get(i).size(); j++) {
-					for(int k = 0; k < sysSigLangResLst.get(i).get(j).size(); k++) {
-						logger.info("{},{},{}: {}", i, j, k, sysSigLangResLst.get(i).get(j).get(k));
-					}
-				}
-			}
-			
-			
+			Util.bcDump3DepthList(sysSigLangResLst);
 			ret = true;
 
 		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+            Util.bcLog(e, logger);
 			ret = false;
 		} 
 

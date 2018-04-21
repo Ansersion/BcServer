@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import bp_packet.BPPackFactory;
 import bp_packet.BPPacket;
 import bp_packet.BPPacketType;
+import bp_packet.BPParseException;
 import bp_packet.BPPacketCONNACK;
 import bp_packet.BPPacketPINGACK;
 import bp_packet.BPPacketRPRTACK;
@@ -86,6 +87,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 			session.write(packTst);
 			return;
 		}
+		String s;
 		BPPacket decodedPack = (BPPacket) message;
 
 		BPPacketType packType = decodedPack.getPackTypeFxHead();
@@ -257,7 +259,8 @@ public class BcServerHandler extends IoHandlerAdapter {
 					.parseInt(new String(bpSess.getUserName())));
 			
 			if (devRec.getDevUniqId() == 0) {
-				logger.debug("TODO: dev_rec.getDevUniqId() == 0");
+				s = "TODO: dev_rec.getDevUniqId() == 0";
+				logger.debug(s);
 				return;
 			}
 			
@@ -267,7 +270,8 @@ public class BcServerHandler extends IoHandlerAdapter {
 			
 			do {
 				if(bpSess.getClientId() != clientId) {
-					logger.error("Err: client id err");
+					s = "Err: client id err";
+					logger.error(s);
 					retCode = BPPacketRPRTACK.RET_CODE_CLNT_ID_INVALID;
 					break;
 				}
@@ -276,7 +280,8 @@ public class BcServerHandler extends IoHandlerAdapter {
 						retCode = BPPacketRPRTACK.RET_CODE_FLAGS_INVALID;
 						break;
 					}
-					logger.debug("REPORT signal values");
+					s = "REPORT signal values";
+					logger.debug(s);
 					decodedPack.getPld().getSigData().dump();
 					if(!bpSess.setSysSig(decodedPack.getPld().getSigData())) {
 						retCode = bpSess.getError().getErrId();
@@ -309,7 +314,8 @@ public class BcServerHandler extends IoHandlerAdapter {
 							sysSigRec.setSysSigEnableLst(sysSigMap);
 							sysSigRec.insertRec(db.getConn());
 						} else {
-							logger.debug("TODO: get sys_sig_info from database");
+							s = "TODO: get sys_sig_info from database";
+							logger.debug(s);
 							List<DBSysSigRec> lst = db.getSysSigRecLst();
 							for (int i = 0; i < lst.size(); i++) {
 								if (lst.get(i).getSysSigTabId() == devRec
@@ -323,7 +329,8 @@ public class BcServerHandler extends IoHandlerAdapter {
 				}
 			} while (false);
 			
-			logger.debug("Start dump(REPORT)");
+			s = "Start dump(REPORT)";
+			logger.debug(s);
 			bpSess.dumpSysSig();
 			
 			packAck.getVrbHead().setPackSeq(seqId);
@@ -338,8 +345,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 			cliId2SsnMap.remove(clientId);
 			session.closeOnFlush();
 		} else {
-			throw new Exception(
-					"Error: messageRecevied: Not supported packet type");
+			throw new BPParseException("Error: messageRecevied: Not supported packet type");
 		}
 
 	}
@@ -348,7 +354,8 @@ public class BcServerHandler extends IoHandlerAdapter {
 	@Override
 	public void sessionIdle(IoSession session, IdleStatus status)
 			throws Exception {
-		logger.info("Over Alive time");
+		String s = "Over Alive time";
+		logger.info(s);
 		session.closeOnFlush();
 
 	}

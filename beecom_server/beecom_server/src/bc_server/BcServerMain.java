@@ -11,6 +11,10 @@ import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,6 +77,22 @@ public class BcServerMain {
 		bcAcceptor.getSessionConfig().setReadBufferSize(BC_SOCK_BUFF_SIZE);
 		bcAcceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE,
 				IDLE_READ_PROC_TIME);
+		
+		SessionFactory sessionFactory = buildSessionFactory(); 
+		Session session = sessionFactory.openSession();
+		Transaction tx = null;
+		try {
+			   tx = session.beginTransaction();
+			   // do some work
+			   tx.commit();
+			}
+			catch (Exception e) {
+			   if (tx!=null) tx.rollback();
+			   e.printStackTrace(); 
+			}finally {
+			   session.close();
+			}
+		
 		try {
 			bcAcceptor.bind(new InetSocketAddress(BC_SERVER_PORT));
 		} catch (IOException e) {
@@ -83,5 +103,17 @@ public class BcServerMain {
 		}
 
 	}
+	
+    private static SessionFactory buildSessionFactory() {  
+        try {  
+            // Create the SessionFactory from hibernate.cfg.xml  
+            return new Configuration().configure().buildSessionFactory();  
+        }  
+        catch (Throwable ex) {  
+            // Make sure you log the exception, as it might be swallowed  
+            System.err.println("Initial SessionFactory creation failed." + ex);  
+            throw new ExceptionInInitializerError(ex);  
+        }  
+    }  
 
 }

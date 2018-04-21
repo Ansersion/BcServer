@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE hibernate-configuration SYSTEM 
+"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+   <session-factory>
+   
+   <property name="hbm2ddl.auto">create</property>
+   
+   <property name="hibernate.connection.driver_class">
+   com.mysql.jdbc.Driver
+   </property>
+
+   <property name="hibernate.connection.url">
+      jdbc:mysql://localhost/bc_server_db?useSSL=false
+   </property>
+   <property name="hibernate.connection.username">
+      root
+   </property>
+   <property name="hibernate.connection.password">
+      Ansersion
+   </property>
+
+   <!-- List of XML mapping files -->
+   <mapping resource="bc_server/system_signal.hbm.xml"/>
+
+</session-factory>
+</hibernate-configuration> 

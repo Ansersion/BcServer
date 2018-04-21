@@ -14,7 +14,7 @@
 
     <logger name="cn.justfly.training.logging" level="info" />
 
-    <root level="error">
+    <root level="trace">
         <appender-ref ref="FILE" ></appender-ref>
     </root>
 </configuration>

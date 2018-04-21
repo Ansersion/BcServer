@@ -13,6 +13,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import bp_packet.BPParseException;
+
 /**
  * @author Ansersion
  *
@@ -72,8 +74,8 @@ class DevClientIds {
 public class ClientIDDB {
 	private static final Logger logger = LoggerFactory.getLogger(ClientIDDB.class);
 	
-	public static ClientIDDB cidDb = null;
-	public static short netxClientId = 1;
+	private static ClientIDDB cidDb = null;
+	private static short netxClientId = 1;
 	public static final int MAX_DEV_NUM_FOR_USER = 64;
 	public static final int CLIENT_ID_INVALID = 0xFFFFFFFF;
 	public static final int CLIENT_ID_INIT = 0x1;
@@ -91,7 +93,7 @@ public class ClientIDDB {
 		try {
 			int adminUserId = getAdminUser(uniqId);
 			if(0 == adminUserId) {
-				throw new Exception("no admin user");
+				throw new BPParseException("no admin user");
 			}
 			DevClientIds devClntIds;
 			List<Integer> userDevClntIdLst;
@@ -110,7 +112,7 @@ public class ClientIDDB {
 			}
 			
 			if(userDevClntIdLst.size() > MAX_DEV_NUM_FOR_USER) {
-				throw new Exception("Err: MAX_DEV_NUM_FOR_USER");
+				throw new BPParseException("Err: MAX_DEV_NUM_FOR_USER");
 			}
 			
 			newClntId = allocClntId(userDevClntIdLst, devClntIds);
@@ -151,7 +153,8 @@ public class ClientIDDB {
 	}
 
 	private ClientIDDB() {
-		logger.info("Info: Link to ClientID DB");
+		String s = "Info: Link to ClientID DB";
+		logger.info(s);
 		netxClientId = 1;
 
 	}

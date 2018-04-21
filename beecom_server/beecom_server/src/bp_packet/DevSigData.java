@@ -85,44 +85,47 @@ public class DevSigData {
 	}
 	
 	public void dump() {
-		Map map;
-		Iterator entries;
-
-		map = get1ByteDataMap();
-		entries = map.entrySet().iterator();
 		String printFormat = "{}=>{}";
-		while (entries.hasNext()) {
-			Map.Entry<Integer, Byte> entry = (Map.Entry<Integer, Byte>) entries
-					.next();
-			logger.debug(printFormat, entry.getKey(), Integer.toHexString(entry.getValue()));
+		{
+			Map<Integer, Byte> map = get1ByteDataMap();
+			Iterator<Map.Entry<Integer, Byte>> entries = map.entrySet().iterator();
+			while (entries.hasNext()) {
+				Map.Entry<Integer, Byte> entry = entries.next();
+				logger.debug(printFormat, entry.getKey(), Integer.toHexString(entry.getValue()));
+			}
 		}
 
-		map = get2ByteDataMap();
-		entries = map.entrySet().iterator();
-		while (entries.hasNext()) {
-			Map.Entry<Integer, Short> entry = (Map.Entry<Integer, Short>) entries
-					.next();
-			logger.debug(printFormat, entry.getKey(), Integer.toHexString(entry.getValue()));
+		{
+			Map<Integer, Short> map = get2ByteDataMap();
+			Iterator<Map.Entry<Integer, Short>>entries = map.entrySet().iterator();
+			while (entries.hasNext()) {
+				Map.Entry<Integer, Short> entry = entries.next();
+				logger.debug(printFormat, entry.getKey(), Integer.toHexString(entry.getValue()));
+			}
+		}
+	
+
+		{
+			Map<Integer, Integer> map = get4ByteDataMap();
+			Iterator<Map.Entry<Integer, Integer>> entries = map.entrySet().iterator();
+			while (entries.hasNext()) {
+				Map.Entry<Integer, Integer> entry = entries.next();
+				logger.debug(printFormat, entry.getKey(), Integer.toHexString(entry.getValue()));
+			}
 		}
 
-		map = get4ByteDataMap();
-		entries = map.entrySet().iterator();
-		while (entries.hasNext()) {
-			Map.Entry<Integer, Integer> entry = (Map.Entry<Integer, Integer>) entries
-					.next();
-			logger.debug(printFormat, entry.getKey(), Integer.toHexString(entry.getValue()));
-		}
-
-		map = getxByteDataMap();
-		entries = map.entrySet().iterator();
-		while (entries.hasNext()) {
-			Map.Entry<Integer, Byte[]> entry = (Map.Entry<Integer, Byte[]>) entries
-					.next();
-			logger.debug(printFormat, entry.getKey(), entry.getValue());
+		{
+			Map<Integer, Byte[]> map = getxByteDataMap();
+			Iterator<Map.Entry<Integer, Byte[]>> entries = map.entrySet().iterator();
+			while (entries.hasNext()) {
+				Map.Entry<Integer, Byte[]> entry = entries.next();
+				logger.debug(printFormat, entry.getKey(), entry.getValue());
+			}
 		}
 	}
 
 	public int parseSigData(byte[] buf, int offset) {
+		String s;
 		int offsetOld = offset;
 		byte encodedByte;
 
@@ -136,26 +139,26 @@ public class DevSigData {
 		short sigId;
 
 		if (0x0 == valueType) {
-			Map dataMap = get1ByteDataMap();
+			Map<Integer, Byte> dataMap = get1ByteDataMap();
 			for (int i = 0; i < valueNum; i++) {
 				msb = buf[offset++];
 				lsb = buf[offset++];
 				sigId = BPPacket.assemble2ByteBigend(msb, lsb);
 				byte data = buf[offset++];
-				dataMap.put(sigId, data);
+				dataMap.put((int)sigId, data);
 			}
 		} else if (0x01 == valueType) {
-			Map dataMap = get1ByteDataMap();
+			Map<Integer, Short> dataMap = get2ByteDataMap();
 			for (int i = 0; i < valueNum; i++) {
 				msb = buf[offset++];
 				lsb = buf[offset++];
 				sigId = BPPacket.assemble2ByteBigend(msb, lsb);
 				int data = buf[offset++];
 				data = (data << 8) + (buf[offset++] & 0xFF);
-				dataMap.put(sigId, (short) data);
+				dataMap.put((int)sigId, (short) data);
 			}
 		} else if (0x10 == valueType) {
-			Map dataMap = get1ByteDataMap();
+			Map<Integer, Integer> dataMap = get4ByteDataMap();
 			for (int i = 0; i < valueNum; i++) {
 				msb = buf[offset++];
 				lsb = buf[offset++];
@@ -164,10 +167,11 @@ public class DevSigData {
 				data = (data << 8) + (buf[offset++] & 0xFF);
 				data = (data << 8) + (buf[offset++] & 0xFF);
 				data = (data << 8) + (buf[offset++] & 0xFF);
-				dataMap.put(sigId, (int) data);
+				dataMap.put((int)sigId, (int) data);
 			}
 		} else {
-			logger.warn("Error: DevSigData: Unsupported value type");
+			s = "Error: DevSigData: Unsupported value type";
+			logger.warn(s);
 		}
 
 		return offset - offsetOld;
@@ -179,34 +183,36 @@ public class DevSigData {
 		encodedByte = ioBuf.get();
 		int valueType = (encodedByte & 0xC0) >>> 6;
 		int valueNum = (encodedByte & 0x3F);
-		Map dataMap;
 		switch (valueType) {
-		case 0:
-			dataMap = get1ByteDataMap();
+		case 0: {
+			Map<Integer, Byte>dataMap = get1ByteDataMap();
 			for (int i = 0; i < valueNum; i++) {
 				int sigId = ioBuf.getUnsignedShort();
 				byte val = ioBuf.get();
 				dataMap.put(sigId, val);
 			}
 			break;
-		case 1:
-			dataMap = get2ByteDataMap();
+		}
+		case 1: {
+			Map<Integer, Short> dataMap = get2ByteDataMap();
 			for (int i = 0; i < valueNum; i++) {
 				int sigId = ioBuf.getUnsignedShort();
 				short val = ioBuf.getShort();
 				dataMap.put(sigId, val);
 			}
 			break;
-		case 2:
-			dataMap = get4ByteDataMap();
+		}
+		case 2: {
+			Map<Integer, Integer> dataMap = get4ByteDataMap();
 			for (int i = 0; i < valueNum; i++) {
 				int sigId = ioBuf.getUnsignedShort();
 				int val = ioBuf.getInt();
 				dataMap.put(sigId, val);
 			}
 			break;
-		case 3:
-			dataMap = getxByteDataMap();
+		}
+		case 3: {
+			Map<Integer, Byte[]> dataMap = getxByteDataMap();
 			for (int i = 0; i < valueNum; i++) {
 				int sigId = ioBuf.getUnsignedShort();
 				byte len = ioBuf.get();
@@ -217,6 +223,7 @@ public class DevSigData {
 				dataMap.put(sigId, val);
 			}
 			break;
+		}
 		default:
 			logger.warn("Error: DevSigData: Unsupported value type(parseSigData): {}", valueType);
 			return false;

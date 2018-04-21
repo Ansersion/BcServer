@@ -135,13 +135,15 @@ public class CrcChecksum {
     
     public static boolean crcCheck(byte[] data, CrcChecksum ccCrc, long crc) {
     	boolean ret = false;
+    	String s;
     	if(CrcChecksum.CRC16 == ccCrc) {
     		ret = (0 == calcCrc16(data) ? true : false);
     	} else if(CrcChecksum.CRC32 == ccCrc) {
     		return crc == calcCrc32(data);
     	} else {
     		ret = false;
-    		logger.warn("Error: Unknown CrcChecksum type");
+    		s = "Error: Unknown CrcChecksum type";
+    		logger.warn(s);
     	}
     	
     	return ret;

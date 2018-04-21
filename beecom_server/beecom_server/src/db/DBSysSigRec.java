@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import bp_packet.BPPacket;
+import bp_packet.BPParseCsvFileException;
 
 /**
  * @author Ansersion
@@ -168,7 +169,7 @@ public class DBSysSigRec extends DBBaseRec {
 		
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
 			if(sysSigEnableLst.size() > BPPacket.MAX_SYS_SIG_DIST_NUM) {
-				throw new Exception("SysSigEnableLst.size() > MAX_DIST_NUM");
+				throw new BPParseCsvFileException("SysSigEnableLst.size() > MAX_DIST_NUM");
 			}
 			
 			for (int i = 0; i < sysSigEnableLst.size(); i++) {

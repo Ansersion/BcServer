@@ -5,7 +5,6 @@ package bp_packet;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -111,7 +110,7 @@ public class BPSession {
 		return uniqDevId;
 	}
 	
-	public Map getSysSigMap() {
+	public Map<Integer, BPValue> getSysSigMap() {
 		return sysSigMap;
 	}
 	
@@ -124,24 +123,20 @@ public class BPSession {
 	}
 	
 	public boolean setSysSig(DevSigData devSigData) {
-
 		error = new BPError();
-		Map sigVal;
-		Iterator entries;
 		boolean ret = true;
 		Integer key = null;
 		Short value = null;
 		BPValue tmp = null;
-
-		sigVal = devSigData.get2ByteDataMap();
+		
 		try {
-
+			Map<Integer, Short> sigVal = devSigData.get2ByteDataMap();
 			if (null != sigVal) {
-				entries = sigVal.entrySet().iterator();
+				Iterator<Map.Entry<Integer, Short>> entries = sigVal.entrySet().iterator();
 				while (entries.hasNext()) {
-					Map.Entry entry = (Map.Entry) entries.next();
-					key = (Integer) entry.getKey();
-					value = (Short) entry.getValue();
+					Map.Entry<Integer, Short> entry = entries.next();
+					key = entry.getKey();
+					value = entry.getValue();
 					tmp = sysSigMap.get(key);
 					if (null == tmp) {
 						throw new SigIdNonExistException();
@@ -149,46 +144,49 @@ public class BPSession {
 					tmp.setVal(value);
 				}
 			}
-
-			sigVal = devSigData.get4ByteDataMap();
-			if (null != sigVal) {
-				entries = sigVal.entrySet().iterator();
-				while (entries.hasNext()) {
-					Map.Entry entry = (Map.Entry) entries.next();
-					key = (Integer) entry.getKey();
-					value = (Short) entry.getValue();
-					tmp = sysSigMap.get(key);
-					if (null == tmp) {
-						throw new SigIdNonExistException();
-					}
-					tmp.setVal(value);
-				}
-			}
-
-			sigVal = devSigData.getxByteDataMap();
-			if (null != sigVal) {
-				entries = sigVal.entrySet().iterator();
-				while (entries.hasNext()) {
-					Map.Entry entry = (Map.Entry) entries.next();
-					key = (Integer) entry.getKey();
-					value = (Short) entry.getValue();
-					tmp = sysSigMap.get(key);
-					if (null == tmp) {
-						throw new SigIdNonExistException();
-					}
-					tmp.setVal(value);
-				}
-			}
-		} catch (SigIdNonExistException e) {
+		} catch(SigIdNonExistException e) {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw, true));
             String str = sw.toString();
             logger.error(str);
-			
-			error.setErrId(BPPacketRPRTACK.RET_CODE_SIG_ID_INVALID);
-			error.setSigIdLst(new ArrayList<Integer>());
-			error.getSigIdLst().add(key);
 			ret = false;
+		}
+
+		try {
+			Map<Integer, Integer> sigVal = devSigData.get4ByteDataMap();
+			if (null != sigVal) {
+				Iterator<Map.Entry<Integer, Integer>> entries = sigVal.entrySet().iterator();
+				while (entries.hasNext()) {
+					Map.Entry<Integer, Integer> entry = entries.next();
+					key = entry.getKey();
+					tmp = sysSigMap.get(key);
+					if (null == tmp) {
+						throw new SigIdNonExistException();
+					}
+					tmp.setVal(entry.getValue());
+				}
+			}
+		} catch(Exception e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw, true));
+            String str = sw.toString();
+            logger.error(str);
+			ret = false;
+		}
+
+		try {
+			Map<Integer, Byte[]> sigVal = devSigData.getxByteDataMap();
+			if (null != sigVal) {
+				Iterator<Map.Entry<Integer, Byte[]>> entries = sigVal.entrySet().iterator();
+				while (entries.hasNext()) {
+					Map.Entry<Integer, Byte[]> entry = entries.next();
+					key = entry.getKey();
+					tmp = sysSigMap.get(key);
+					if (null == tmp) {
+						throw new SigIdNonExistException();
+					}
+				}
+			}
 		} catch (Exception e) {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw, true));
@@ -223,11 +221,11 @@ public class BPSession {
 	}
 	
 	public void dumpSysSig() {
-		Iterator entries = sysSigMap.entrySet().iterator(); 
+		Iterator<Map.Entry<Integer, BPValue>> entries = sysSigMap.entrySet().iterator(); 
 		while (entries.hasNext()) {    
-		    Map.Entry entry = (Map.Entry) entries.next();
-		    Integer key = (Integer)entry.getKey();  
-		    BPValue value = (BPValue)entry.getValue();  
+		    Map.Entry<Integer, BPValue> entry = entries.next();
+		    Integer key = entry.getKey();  
+		    BPValue value = entry.getValue();  
 		    logger.info("{}=>{}", key, value.getValStr()); 
 		}  
 	}
@@ -235,11 +233,11 @@ public class BPSession {
 		if(null == mapDist2SysSigMap) {
 			mapDist2SysSigMap = sysSigMap;
 		} else {
-			Iterator entries = sysSigMap.entrySet().iterator(); 
+			Iterator<Map.Entry<Integer, Byte[]>> entries = sysSigMap.entrySet().iterator(); 
 			while (entries.hasNext()) {    
-			    Map.Entry entry = (Map.Entry) entries.next();
-			    Integer key = (Integer)entry.getKey();  
-			    Byte[] value = (Byte[])entry.getValue();  
+			    Map.Entry<Integer, Byte[]> entry = entries.next();
+			    Integer key = entry.getKey();  
+			    Byte[] value = entry.getValue();  
 			    mapDist2SysSigMap.put(key, value);  
 			  
 			}  
@@ -248,11 +246,11 @@ public class BPSession {
 	
 	public void initSysSigValDefault() {
 		sysSigMap.clear();
-		Iterator entries = mapDist2SysSigMap.entrySet().iterator();
+		Iterator<Map.Entry<Integer, Byte[]>> entries = mapDist2SysSigMap.entrySet().iterator();
 		while(entries.hasNext()) {
-			Map.Entry entry = (Map.Entry)entries.next();
-			Integer key = (Integer)entry.getKey();
-			Byte[] value = (Byte[])entry.getValue();
+			Map.Entry<Integer, Byte[]> entry = entries.next();
+			Integer key = entry.getKey();
+			Byte[] value = entry.getValue();
 			int distSigStartId = BPPacket.SYS_SIG_START_ID + key * BPPacket.SYS_SIG_DIST_STEP;
 			BPSysSigTable sysSigTab = BPSysSigTable.getSysSigTableInstance();
 			for(int i = 0; i < value.length; i++) {
