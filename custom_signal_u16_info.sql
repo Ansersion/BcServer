@@ -7,7 +7,6 @@ create table custom_signal_u16_info
 	mtime timestamp default CURRENT_TIMESTAMP on UPDATE CURRENT_TIMESTAMP,
 	cus_sig_name_lang_id bigint unsigned not null,  
 	permission tinyint unsigned not null default 0,
-	accuracy tinyint unsigned not null default 0,
 	min_val int unsigned not null default 0,
 	max_val int unsigned not null default 0xFFFFFFFE,
 	def_val int unsigned not null default 0,

@@ -1,6 +1,6 @@
 use bc_server_db;
 
-create table custom_signal_alm_info
+create table system_signal_alm_info
 (
 	id bigint unsigned not null auto_increment primary key,
 	ctime timestamp default CURRENT_TIMESTAMP,
@@ -8,5 +8,9 @@ create table custom_signal_alm_info
 	alm_class tinyint not null default 4,
 	dly_before_alm tinyint not null default 10,
 	dly_after_alm tinyint not null default 10,
-	custom_signal_id bigint not null unique, 
+	
+	/* ID in system_signal_info table */
+	system_signal_id bigint not null, 
+	
+	UNIQUE INDEX i_system_signal_id(system_signal_id)
 );

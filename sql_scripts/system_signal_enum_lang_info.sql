@@ -7,5 +7,9 @@ create table custom_signal_enum_lang_info
 	mtime timestamp default CURRENT_TIMESTAMP on UPDATE CURRENT_TIMESTAMP,
 	enum_key smallint unsigned not null,  
 	enum_val varchar(128) not null default ""
-	cus_sig_enm_id bigint not null,
+	
+	/* ID in system_signal_enum_info table */
+	sys_sig_enm_id bigint not null,
+	
+	UNIQUE INDEX i_sys_sig_enm_id(sys_sig_enm_id)
 );
