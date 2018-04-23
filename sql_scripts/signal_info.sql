@@ -8,10 +8,13 @@ CREATE TABLE signal_info
 	
 	/* Signal ID 0x0000-0xFFFF */
 	/* 0x0000-0xDFFF: customized signal; 0xE000-0xFFFF: system signal*/
-	signal_id SMALLINT NOT NULL,
+	signal_id SMALLINT UNSIGNED NOT NULL,
 	
 	/* ID in dev_info table */
 	dev_id BIGINT UNSIGNED NOT NULL, 
 	
-	UNIQUE INDEX i_dev_id(dev_id)
+	/* Attributes which users can change*/
+	notifying BOOLEAN NOT NULL DEFAULT false,
+	
+	INDEX i_dev_id(dev_id)
 );

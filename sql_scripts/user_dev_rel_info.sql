@@ -7,14 +7,14 @@ CREATE TABLE user_dev_rel_info
 	mtime TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	
 	/* The ID of user_info  */
-	user_id BIGINT NOT NULL, 
+	user_id BIGINT UNSIGNED NOT NULL, 
 	/* The ID of dev_info  */
-	dev_id BIGINT NOT NULL,
+	dev_id BIGINT UNSIGNED NOT NULL,
 	/* The auth of the relationship  */
-	auth TINYINT UNSIGNED NOT NULL DEFAULT '6',
+	auth TINYINT UNSIGNED NOT NULL DEFAULT 6,
 	
-	UNIQUE INDEX i_user_id(user_id),
-	UNIQUE INDEX i_dev_id(dev_id)
+	INDEX i_user_id(user_id),
+	INDEX i_dev_id(dev_id)
 	
 	
 );

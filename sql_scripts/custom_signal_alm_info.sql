@@ -1,16 +1,20 @@
 USE bc_server_db;
 
-CREATE TABLE system_signal_alm_info
+CREATE TABLE custom_signal_alm_info
 (
 	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	ctime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	mtime TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	
+	/* Customized signal name */
+	/* ID in custom_signal_name_lang_info table */
+	cus_sig_name_lang_id BIGINT UNSIGNED NOT NULL,  
+	
 	alm_class TINYINT NOT NULL DEFAULT 4,
 	dly_before_alm TINYINT UNSIGNED NOT NULL DEFAULT 10,
 	dly_after_alm TINYINT UNSIGNED NOT NULL DEFAULT 10,
 	
-	/* ID in system_signal_info table */
-	system_signal_id BIGINT UNSIGNED NOT NULL, 
+	custom_signal_id BIGINT UNSIGNED NOT NULL, 
 	
-	UNIQUE INDEX i_system_signal_id(system_signal_id)
+	UNIQUE INDEX i_custom_signal_id(custom_signal_id)
 );

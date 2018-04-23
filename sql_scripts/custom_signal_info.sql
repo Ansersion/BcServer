@@ -10,7 +10,7 @@ CREATE TABLE custom_signal_info
 	is_alarm BOOLEAN NOT NULL DEFAULT FALSE,
 	
 	/* Value type 0-6:u32,u16,i32,i16,enum,float,string */
-	val_type TINYINT NOT NULL,
+	val_type TINYINT UNSIGNED NOT NULL,
 	
 	/* ID in signal_info table */
 	signal_id BIGINT UNSIGNED NOT NULL, 

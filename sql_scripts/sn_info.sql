@@ -1,16 +1,16 @@
-use bc_server_db;
+USE bc_server_db;
 
-create table dev_info
+CREATE TABLE sn_info
 (
-	id bigint unsigned not null auto_increment primary key,
-	ctime timestamp default CURRENT_TIMESTAMP,
-	mtime timestamp default CURRENT_TIMESTAMP on UPDATE CURRENT_TIMESTAMP,
-	sn char(64) not null unique,
-	develop_user_id bigint unsigned not null,
+	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	ctime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	mtime TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	sn CHAR(64) NOT NULL,
+	develop_user_id BIGINT UNSIGNED NOT NULL,
 	
-	activite_date date unsigned not null default 0,
-	expired_date date unsigned not null default 0,
+	activite_date DATE NOT NULL DEFAULT 0,
+	expired_date DATE NOT NULL DEFAULT 0,
 	
 	UNIQUE INDEX i_sn(sn), 
-	INDEX i_sn(develop_user_id)
+	INDEX i_develop_user_id(develop_user_id)
 );
