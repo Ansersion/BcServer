@@ -1,0 +1,2 @@
+INSERT INTO custom_signal_enum_info (permission, cus_sig_name_lang_id, custom_signal_id) VALUES(0, 1, 1);
+INSERT INTO custom_signal_enum_info (permission, cus_sig_name_lang_id, custom_signal_id) VALUES(1, 2, 2);

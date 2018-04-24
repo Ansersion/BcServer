@@ -28,7 +28,7 @@ CREATE TABLE `custom_group_lang_info` (
   `mtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `group_lang` varchar(128) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `i_unit_lang` (`group_lang`)
+  UNIQUE KEY `i_group_lang` (`group_lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -69,6 +69,38 @@ CREATE TABLE `custom_signal_alm_info` (
 LOCK TABLES `custom_signal_alm_info` WRITE;
 /*!40000 ALTER TABLE `custom_signal_alm_info` DISABLE KEYS */;
 /*!40000 ALTER TABLE `custom_signal_alm_info` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `custom_signal_boolean_info`
+--
+
+DROP TABLE IF EXISTS `custom_signal_boolean_info`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `custom_signal_boolean_info` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `mtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `cus_sig_name_lang_id` int(10) unsigned NOT NULL,
+  `permission` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `def_val` tinyint(1) NOT NULL DEFAULT '0',
+  `group_lang_id` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `cus_group_lang_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `en_statistics` tinyint(1) NOT NULL DEFAULT '1',
+  `custom_signal_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `i_custom_signal_id` (`custom_signal_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `custom_signal_boolean_info`
+--
+
+LOCK TABLES `custom_signal_boolean_info` WRITE;
+/*!40000 ALTER TABLE `custom_signal_boolean_info` DISABLE KEYS */;
+/*!40000 ALTER TABLE `custom_signal_boolean_info` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -118,7 +150,7 @@ CREATE TABLE `custom_signal_enum_lang_info` (
   `enum_val` varchar(128) NOT NULL,
   `cus_sig_enm_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `i_cus_sig_enm_id` (`cus_sig_enm_id`)
+  KEY `i_cus_sig_enm_id` (`cus_sig_enm_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -537,6 +569,36 @@ LOCK TABLES `system_signal_alm_info` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `system_signal_boolean_info`
+--
+
+DROP TABLE IF EXISTS `system_signal_boolean_info`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `system_signal_boolean_info` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `mtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `permission` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `def_val` tinyint(1) NOT NULL DEFAULT '0',
+  `group_lang_id` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `en_statistics` tinyint(1) NOT NULL DEFAULT '1',
+  `system_signal_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `i_system_signal_id` (`system_signal_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `system_signal_boolean_info`
+--
+
+LOCK TABLES `system_signal_boolean_info` WRITE;
+/*!40000 ALTER TABLE `system_signal_boolean_info` DISABLE KEYS */;
+/*!40000 ALTER TABLE `system_signal_boolean_info` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `system_signal_enum_info`
 --
 
@@ -882,4 +944,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-04-24 11:20:55
+-- Dump completed on 2018-04-24 18:38:07

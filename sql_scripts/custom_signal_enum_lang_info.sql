@@ -9,5 +9,5 @@ CREATE TABLE custom_signal_enum_lang_info
 	enum_val VARCHAR(128) NOT NULL, 
 	cus_sig_enm_id INT UNSIGNED NOT NULL,
 	
-	UNIQUE INDEX i_cus_sig_enm_id(cus_sig_enm_id)
+	INDEX i_cus_sig_enm_id(cus_sig_enm_id)
 );

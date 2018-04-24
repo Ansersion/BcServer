@@ -1,0 +1,12 @@
+
+source create_test_custom_signal_enum_info.sql
+source create_test_custom_signal_enum_lang_info.sql
+source create_test_custom_signal_info.sql
+source create_test_custom_signal_lang_info.sql
+source create_test_dev_info.sql
+source create_test_device_signal_info.sql
+source create_test_sn_info.sql
+source create_test_system_info.sql
+source create_test_system_string_info.sql
+source create_test_user_dev_rel_info.sql
+source create_test_user_info.sql

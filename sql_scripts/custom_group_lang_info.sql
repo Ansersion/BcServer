@@ -7,5 +7,5 @@ CREATE TABLE custom_group_lang_info
 	mtime TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	group_lang VARCHAR(128) NOT NULL default "",
 	
-	UNIQUE INDEX i_unit_lang(group_lang)
+	UNIQUE INDEX i_group_lang(group_lang)
 );
