@@ -2,7 +2,7 @@ USE bc_server_db;
 
 CREATE TABLE system_signal_alm_info
 (
-	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	ctime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	mtime TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	alm_class TINYINT NOT NULL DEFAULT 4,
@@ -10,7 +10,7 @@ CREATE TABLE system_signal_alm_info
 	dly_after_alm TINYINT UNSIGNED NOT NULL DEFAULT 10,
 	
 	/* ID in system_signal_info table */
-	system_signal_id BIGINT UNSIGNED NOT NULL, 
+	system_signal_id INT UNSIGNED NOT NULL, 
 	
 	UNIQUE INDEX i_system_signal_id(system_signal_id)
 );
