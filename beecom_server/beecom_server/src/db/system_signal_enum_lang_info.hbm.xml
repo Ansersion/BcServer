@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC  
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"  
+        "http://www.hibernate.org/dtd/hibernate-mapping">  
+ 
+<hibernate-mapping package="db">    
+    <class name="SystemSignalEnumInfoHbn" table="system_signal_enum_info">  
+        <id name="id" column="id">  
+            <generator class="native" />
+        </id>  
+        <property name="enumKey" column="enum_key" />  
+        <property name="enumVal" column="enum_val" />  
+        <property name="sysSigEnmId" column="sys_sig_enm_id" />  
+    </class>    
+</hibernate-mapping>

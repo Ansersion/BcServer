@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC  
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"  
+        "http://www.hibernate.org/dtd/hibernate-mapping">  
+ 
+<hibernate-mapping package="db">    
+    <class name="SystemSignalInfoHbn" table="system_signal_info">  
+        <id name="id" column="id">  
+            <generator class="native" />
+        </id>  
+        <property name="configDev" column="config_def" />  
+        <property name="signalId" column="signal_id" />  
+    </class>    
+</hibernate-mapping>

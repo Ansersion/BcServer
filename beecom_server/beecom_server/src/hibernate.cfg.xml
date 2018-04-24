@@ -6,8 +6,6 @@
 <hibernate-configuration>
    <session-factory>
    
-   <property name="hbm2ddl.auto">create</property>
-   
    <property name="hibernate.connection.driver_class">
    com.mysql.jdbc.Driver
    </property>
@@ -21,9 +19,12 @@
    <property name="hibernate.connection.password">
       Ansersion
    </property>
+   
+   <!-- Output sql of hibernate -->
+	<property name="hibernate.show_sql">true</property>
 
    <!-- List of XML mapping files -->
-   <mapping resource="bc_server/system_signal.hbm.xml"/>
+   <mapping resource="db/user_info.hbm.xml"/>
 
 </session-factory>
 </hibernate-configuration> 

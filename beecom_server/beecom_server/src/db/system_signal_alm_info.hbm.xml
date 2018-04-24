@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC  
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"  
+        "http://www.hibernate.org/dtd/hibernate-mapping">  
+ 
+<hibernate-mapping package="db">    
+    <class name="SystemSignalAlmInfoHbn" table="system_signal_alm_info">  
+        <id name="id" column="id">  
+            <generator class="native" />
+        </id>  
+        <property name="almClass" column="alm_class" />  
+        <property name="dlyBeforeAlm" column="dly_before_alm" />  
+        <property name="dlyAfterAlm" column="dly_after_alm" />  
+        <property name="systemSignalId" column="system_signal_id" />  
+    </class>    
+</hibernate-mapping>

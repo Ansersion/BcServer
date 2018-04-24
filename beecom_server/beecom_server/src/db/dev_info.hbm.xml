@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC  
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"  
+        "http://www.hibernate.org/dtd/hibernate-mapping">  
+ 
+<hibernate-mapping package="db">    
+    <class name="DevInfoHbn" table="dev_info">  
+        <id name="id" column="id">  
+            <generator class="native" />
+        </id>  
+        <property name="snId" column="sn_id" />  
+        <property name="adminId" column="admin_id" />  
+        <property name="password" column="password" />  
+        <property name="dailySigTabChangeTimes" column="daily_sig_tab_change_times" />  
+    </class>    
+</hibernate-mapping>

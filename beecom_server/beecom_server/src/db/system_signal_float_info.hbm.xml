@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC  
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"  
+        "http://www.hibernate.org/dtd/hibernate-mapping">  
+ 
+<hibernate-mapping package="db">    
+    <class name="SystemSignalFloatInfoHbn" table="system_signal_float_info">  
+        <id name="id" column="id">  
+            <generator class="native" />
+        </id>  
+        <property name="permission" column="permission" />  
+        <property name="accuracy" column="accuracy" />  
+        <property name="minVal" column="min_val" />  
+        <property name="maxVal" column="max_val" />  
+        <property name="defVal" column="def_val" />  
+        <property name="groupLangId" column="group_lang_id" />  
+        <property name="enStatistics" column="en_statistics" />  
+        <property name="systemSignalId" column="system_signal_id" /> 
+    </class>    
+</hibernate-mapping>

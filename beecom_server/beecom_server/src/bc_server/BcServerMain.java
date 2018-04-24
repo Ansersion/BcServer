@@ -18,6 +18,7 @@ import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import db.UserInfoHbn;
 import sys_sig_table.BPSysEnmLangResTable;
 import sys_sig_table.BPSysSigLangResTable;
 import sys_sig_table.BPSysSigTable;
@@ -84,11 +85,16 @@ public class BcServerMain {
 		try {
 			   tx = session.beginTransaction();
 			   // do some work
+			   UserInfoHbn userInfoHbn = session.load(UserInfoHbn.class, 1L);
+			   logger.info(userInfoHbn.toString());
 			   tx.commit();
 			}
 			catch (Exception e) {
 			   if (tx!=null) tx.rollback();
-			   e.printStackTrace(); 
+	            StringWriter sw = new StringWriter();
+	            e.printStackTrace(new PrintWriter(sw, true));
+	            String str = sw.toString();
+	            logger.error(str);
 			}finally {
 			   session.close();
 			}
