@@ -1,29 +1,19 @@
-USE bc_server_db;
-
-CREATE TABLE custom_signal_boolean_info
-(
-	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	ctime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	mtime TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-	
-	/* Customized signal name */
-	/* ID in custom_signal_name_lang_info table */
-	cus_sig_name_lang_id INT UNSIGNED NOT NULL,  
-	
-	permission TINYINT UNSIGNED NOT NULL DEFAULT 0,
-	def_val BOOLEAN NOT NULL DEFAULT FALSE,
-	
-	/* Group language resource is from the sys_group_language_resource.csv */
-	/* 0: no group language ID; */
-	/* 0xFFFFFFFF: search for custom signal group language ID*/
-	group_lang_id SMALLINT UNSIGNED NOT NULL DEFAULT 0, 
-	
-	/* ID in custom_signal_group_lang_info table */
-	/* Valid when "group_lang_id == 0xFFFFFFFF" */
-	cus_group_lang_id INT UNSIGNED NOT NULL DEFAULT 0, 
-	
-	en_statistics BOOLEAN NOT NULL DEFAULT TRUE,
-	custom_signal_id INT UNSIGNED NOT NULL, 
-	
-	UNIQUE INDEX i_custom_signal_id(custom_signal_id)
-);
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC  
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"  
+        "http://www.hibernate.org/dtd/hibernate-mapping">  
+ 
+<hibernate-mapping package="db">    
+    <class name="CustomSignalBooleanInfoHbn" table="custom_signal_boolean_info">  
+        <id name="id" column="id">  
+            <generator class="native" />
+        </id>  
+        <property name="cusSigNameLangId" column="cus_sig_name_lang_id" />  
+        <property name="permission" column="permission" />  
+        <property name="defVal" column="def_val" />  
+        <property name="groupLangId" column="group_lang_id" /> 
+        <property name="cusGroupLangId" column="cus_group_lang_id" />   
+        <property name="enStatistics" column="en_statistics" />  
+        <property name="customSignalId" column="custom_signal_id" /> 
+    </class>    
+</hibernate-mapping>

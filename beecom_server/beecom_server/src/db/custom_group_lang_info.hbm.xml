@@ -3,12 +3,11 @@
         "-//Hibernate/Hibernate Mapping DTD 3.0//EN"  
         "http://www.hibernate.org/dtd/hibernate-mapping">  
  
-<hibernate-mapping package="bc_server">    
-    <class name="Student" table="students">  
+<hibernate-mapping package="db">    
+    <class name="CustomGroupLangInfoHbn" table="custom_group_lang_info">  
         <id name="id" column="id">  
-            <generator class="increment" />
+            <generator class="native" />
         </id>  
-        <property name="name" type="string" column="name" />  
-        <property name="age" type="int" column="age" />  
+        <property name="groupLang" column="group_lang" />  
     </class>    
 </hibernate-mapping>

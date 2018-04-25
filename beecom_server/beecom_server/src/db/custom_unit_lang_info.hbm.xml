@@ -1,11 +1,13 @@
-USE bc_server_db;
-
-CREATE TABLE custom_unit_lang_info
-(
-	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	ctime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	mtime TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-	unit_lang CHAR(32) NOT NULL,
-	
-	UNIQUE INDEX i_unit_lang(unit_lang)
-);
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC  
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"  
+        "http://www.hibernate.org/dtd/hibernate-mapping">  
+ 
+<hibernate-mapping package="db">    
+    <class name="CustomUnitLangInfoHbn" table="custom_unit_lang_info">  
+        <id name="id" column="id">  
+            <generator class="native" />
+        </id>  
+        <property name="unitLang" column="unit_lang" />  
+    </class>    
+</hibernate-mapping>

@@ -1,6 +1,5 @@
 package db;
 
-import javax.persistence.Column;
 
 public class UserInfoHbn {
     private Long id;
