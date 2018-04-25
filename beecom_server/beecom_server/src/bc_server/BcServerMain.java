@@ -18,6 +18,16 @@ import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import db.CustomSignalEnumInfoHbn;
+import db.CustomSignalEnumLangInfoHbn;
+import db.CustomSignalInfoHbn;
+import db.CustomSignalNameLangInfoHbn;
+import db.DevInfoHbn;
+import db.SignalInfoHbn;
+import db.SnInfoHbn;
+import db.SystemSignalInfoHbn;
+import db.SystemSignalStringInfoHbn;
+import db.UserDevRelInfoHbn;
 import db.UserInfoHbn;
 import sys_sig_table.BPSysEnmLangResTable;
 import sys_sig_table.BPSysSigLangResTable;
@@ -87,10 +97,32 @@ public class BcServerMain {
 			   // do some work
 			   UserInfoHbn userInfoHbn = session.load(UserInfoHbn.class, 1L);
 			   logger.info(userInfoHbn.toString());
+			   DevInfoHbn devInfoHbn = session.load(DevInfoHbn.class, 1L);
+			   logger.info(devInfoHbn.toString());
+			   SnInfoHbn snInfoHbn = session.load(SnInfoHbn.class, 1L);
+			   logger.info(snInfoHbn.toString());
+			   UserDevRelInfoHbn userDevRelInfoHbn = session.load(UserDevRelInfoHbn.class, 1L);
+			   logger.info(userDevRelInfoHbn.toString());
+			   SignalInfoHbn signalInfoHbn = session.load(SignalInfoHbn.class, 1L);
+			   logger.info(signalInfoHbn.toString());
+			   CustomSignalInfoHbn customSignalInfoHbn = session.load(CustomSignalInfoHbn.class, 1L);
+			   logger.info(customSignalInfoHbn.toString());
+			   SystemSignalInfoHbn systemSignalInfoHbn = session.load(SystemSignalInfoHbn.class, 1L);
+			   logger.info(systemSignalInfoHbn.toString());
+			   CustomSignalEnumInfoHbn customSignalEnumInfoHbn = session.load(CustomSignalEnumInfoHbn.class, 1L);
+			   logger.info(customSignalEnumInfoHbn.toString());
+			   CustomSignalNameLangInfoHbn customSignalNameLangInfoHbn = session.load(CustomSignalNameLangInfoHbn.class, 1L);
+			   logger.info(customSignalNameLangInfoHbn.toString());
+			   CustomSignalEnumLangInfoHbn customSignalEnumLangInfoHbn = session.load(CustomSignalEnumLangInfoHbn.class, 1L);
+			   logger.info(customSignalEnumLangInfoHbn.toString());
+			   SystemSignalStringInfoHbn systemSignalStringInfoHbn = session.load(SystemSignalStringInfoHbn.class, 1L);
+			   logger.info(systemSignalStringInfoHbn.toString());
 			   tx.commit();
 			}
 			catch (Exception e) {
-			   if (tx!=null) tx.rollback();
+			   if (tx!=null) {
+				   tx.rollback();
+			   }
 	            StringWriter sw = new StringWriter();
 	            e.printStackTrace(new PrintWriter(sw, true));
 	            String str = sw.toString();

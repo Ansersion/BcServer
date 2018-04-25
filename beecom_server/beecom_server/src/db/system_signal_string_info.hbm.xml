@@ -4,7 +4,7 @@
         "http://www.hibernate.org/dtd/hibernate-mapping">  
  
 <hibernate-mapping package="db">    
-    <class name="SystemSignalEnumInfoHbn" table="system_signal_enum_info">  
+    <class name="SystemSignalStringInfoHbn" table="system_signal_string_info">  
         <id name="id" column="id">  
             <generator class="native" />
         </id>  

@@ -1,0 +1,54 @@
+package db;
+
+public class CustomSignalAlmInfoHbn {
+    private Long id;
+    private Long cusSigNameLangId;
+    private Byte almClass;
+    private Short dlyBeforeAlm;
+    private Short dlyAfterAlm;
+    private Long customSignalId;
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
+	public Long getCusSigNameLangId() {
+		return cusSigNameLangId;
+	}
+	public void setCusSigNameLangId(Long cusSigNameLangId) {
+		this.cusSigNameLangId = cusSigNameLangId;
+	}
+	public Byte getAlmClass() {
+		return almClass;
+	}
+	public void setAlmClass(Byte almClass) {
+		this.almClass = almClass;
+	}
+	public Short getDlyBeforeAlm() {
+		return dlyBeforeAlm;
+	}
+	public void setDlyBeforeAlm(Short dlyBeforeAlm) {
+		this.dlyBeforeAlm = dlyBeforeAlm;
+	}
+	public Short getDlyAfterAlm() {
+		return dlyAfterAlm;
+	}
+	public void setDlyAfterAlm(Short dlyAfterAlm) {
+		this.dlyAfterAlm = dlyAfterAlm;
+	}
+	public Long getCustomSignalId() {
+		return customSignalId;
+	}
+	public void setCustomSignalId(Long customSignalId) {
+		this.customSignalId = customSignalId;
+	}
+	@Override
+	public String toString() {
+		return "CustomSignalAlmInfoHbn [id=" + id + ", cusSigNameLangId=" + cusSigNameLangId + ", almClass=" + almClass
+				+ ", dlyBeforeAlm=" + dlyBeforeAlm + ", dlyAfterAlm=" + dlyAfterAlm + ", customSignalId="
+				+ customSignalId + "]";
+	}
+    
+    
+}
