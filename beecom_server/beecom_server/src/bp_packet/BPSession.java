@@ -33,97 +33,97 @@ class SigIdNonExistException extends Exception {
 		super();
 	}
 }
-public class BPSession {
+public abstract class BPSession {
 	
 	private static final Logger logger = LoggerFactory.getLogger(BPSession.class);
 	
-	private int clientId = 0;
-	long uniqDevId = 0;
-	private byte[] userName = null;
-	byte[] password = null;
-	boolean isUserLogin = false;
-	boolean isDevLogin = false;
+	// private int clientId = 0;
+	// long uniqDevId = 0;
+	// private byte[] userName = null;
+	// byte[] password = null;
+	// boolean isUserLogin = false;
+	// boolean isDevLogin = false;
 	private int seqIdDevClnt = 0;
 	int seqIdUsrClnt = 0;
-	String devName;
+	// String devName;
 	Map<Integer, Byte[]> mapDist2SysSigMap = null;
 	Map<Integer, BPValue> sysSigMap;
-	private BPError error;
+	// private BPError error;
 	
 	
+
+	public String getUserName() {
+		return null;
+	}
+
+	public void setUserName(String userName) {
+	}
+
+	public String getEmail() {
+		return null;
+	}
+
+	public void setEmail(String email) {
+	}
+
+	public String getPhone() {
+		return null;
+	}
+
+	public void setPhone(String phone) {
+	}
+
+	public String getPassword() {
+		return null;
+	}
+
+	public void setPassword(String password) {
+	}
+
+	public Long getUniqDeviceId() {
+		return null;
+	}
+
+	public void setUniqDeviceId(Long uniqDeviceId) {
+	}
+
+	public String getSn() {
+		return null;
+	}
+
+	public void setSn(String sn) {
+	}
 	
-	public byte[] getUserName() {
-		return userName;
-	}
-
-	public void setUserName(byte[] userName) {
-		this.userName = userName;
-	}
-
-	public int getClientId() {
-		return clientId;
-	}
-
-	public void setClientId(int clientId) {
-		this.clientId = clientId;
-	}
-
-	public int getSeqIdDevClnt() {
-		return seqIdDevClnt;
-	}
-
-	public void setSeqIdDevClnt(int seqIdDevClnt) {
-		this.seqIdDevClnt = seqIdDevClnt;
-	}
-
-	public BPError getError() {
-		return error;
-	}
-
-	public void setError(BPError error) {
-		this.error = error;
+	public BPSession() {
+		
 	}
 
 	public BPSession(byte[] userName, byte[] password, int clientId, boolean userLogin, boolean devLogin, long uniqDevId) {
-		isDevLogin = devLogin;
-		isUserLogin = userLogin;
-		this.clientId = clientId;
-		this.uniqDevId = uniqDevId;
-		
-		this.userName = new byte[userName.length];
-		for(int i = 0; i < userName.length; i++) {
-			this.userName[i] = userName[i];
-		}
-		
-		this.password = new byte[password.length];
-		for(int i = 0; i < password.length; i++) {
-			this.password[i] = password[i];
-		}
+		// isDevLogin = devLogin;
+		// isUserLogin = userLogin;
 		seqIdDevClnt = 0;
 		seqIdUsrClnt = 0;
 		sysSigMap = new HashMap<>();
-		
-		error = new BPError();
 	}
 	
 	public long getUniqDevId() {
-		return uniqDevId;
+		return 0;
+	}
+	
+	public void setUniqDevId(long uniqDevId) {
 	}
 	
 	public Map<Integer, BPValue> getSysSigMap() {
 		return sysSigMap;
 	}
 	
-	public String getDevName() {
-		return devName;
-	}
-	
-	public void setUniqDevId(long uniqDevId) {
-		this.uniqDevId = uniqDevId;
-	}
+	// public String getDevName() {
+	//	return devName;
+	// }
+
 	
 	public boolean setSysSig(DevSigData devSigData) {
-		error = new BPError();
+		// error = new BPError();
 		boolean ret = true;
 		Integer key = null;
 		Short value = null;
@@ -216,9 +216,9 @@ public class BPSession {
 		return val;
 	}
 	
-	public void setDevName(String devName) {
-		this.devName = devName;
-	}
+	// public void setDevName(String devName) {
+	//	this.devName = devName;
+	// }
 	
 	public void dumpSysSig() {
 		Iterator<Map.Entry<Integer, BPValue>> entries = sysSigMap.entrySet().iterator(); 
