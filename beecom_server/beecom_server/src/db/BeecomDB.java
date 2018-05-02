@@ -42,6 +42,12 @@ public class BeecomDB {
 	static String url = "jdbc:mysql://localhost:3306/bc_server_db?useSSL=false";
 	static String user = "root";
 	static String password = "Ansersion";
+	
+	public static enum LoginErrorEnum {
+		LOGIN_OK,
+		USER_INVALID,
+		PASSWORD_INVALID,
+	}
 
 	private BeecomDB() {
 		String s = "Info: Create BeecomDB";
@@ -221,6 +227,14 @@ public class BeecomDB {
 		String strTmp = new String(password);
 		logger.info("PWD mysql: {}", userDbRecord.getPassword());
 		return strTmp.equals(userDbRecord.getPassword());
+	}
+	
+	public static LoginErrorEnum checkUserPassword(String name, String password) {
+		return LoginErrorEnum.LOGIN_OK;
+	}
+	
+	public static LoginErrorEnum checkDeviceUniqId(long devUniqId) {
+		return LoginErrorEnum.LOGIN_OK;
 	}
 
 	public static boolean chkDevUniqId(long devUniqId) {

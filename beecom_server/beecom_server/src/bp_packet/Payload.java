@@ -23,8 +23,10 @@ public class Payload {
 	
 	private static final Logger logger = LoggerFactory.getLogger(Payload.class);
 
-	byte[] userName = null;
-	byte[] password = null;
+	// byte[] userName = null;
+	// byte[] password = null;
+	String userName;
+	String password;
 	String devName = null;
 	int clntIdLen;
 	int clntId;
@@ -45,6 +47,7 @@ public class Payload {
 		this.error = error;
 	}
 
+	/*
 	public void setUserName(byte[] userName) {	
 		this.userName = userName;
 	}
@@ -85,12 +88,31 @@ public class Payload {
 		}
 		return passwordTmp;
 	}
+	*/
+	
+	
 	
 	public void reset() {
 		userName = null;
 		password = null;
 	}
 	
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
 	public int getClntIdLen() {
 		return clntIdLen;
 	}

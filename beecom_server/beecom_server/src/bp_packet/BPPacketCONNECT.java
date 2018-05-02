@@ -170,8 +170,8 @@ public class BPPacketCONNECT extends BPPacket {
 			byte[] password = new byte[passwordLen];
 			getIoBuffer().get(password);
 			
-			setPldUserName(userName);
-			setPldPassword(password);
+			// setPldUserName(userName);
+			// setPldPassword(password);
 
 		} catch (Exception e) {
             StringWriter sw = new StringWriter();
@@ -216,8 +216,8 @@ public class BPPacketCONNECT extends BPPacket {
 				password[i] = buf[counter++];
 			}
 			
-			setPldUserName(userName);
-			setPldPassword(password);
+			// setPldUserName(userName);
+			// setPldPassword(password);
 
 		} catch (Exception e) {
             StringWriter sw = new StringWriter();

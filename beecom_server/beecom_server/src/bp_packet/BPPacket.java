@@ -207,11 +207,11 @@ public class BPPacket implements BPPacketInterface {
 		return vrbHeader.getPwdFlag();
 	}
 	
-	public void setPldUserName(byte[] userName) {
+	public void setPldUserName(String userName) {
 		pld.setUserName(userName);
 	}
 	
-	public void setPldPassword(byte[] password) {
+	public void setPldPassword(String password) {
 		pld.setPassword(password);
 	}
 	
@@ -231,21 +231,14 @@ public class BPPacket implements BPPacketInterface {
 		return vrbHeader.getClientId();
 	}
 	
-	public void getUserNamePld(byte[] userName) {
-		pld.getUserName(userName);
-	}
-	
-	public byte[] getUserNamePld() {
+	public String getUserNamePld() {
 		return pld.getUserName();
 	}
 	
-	public void getPasswordPld(byte[] password) {
-		pld.getPassword(password);
-	}
-	
-	public byte[] getPasswordPld() {
+	public String getPasswordPld() {
 		return pld.getPassword();
 	}
+	
 	
 	public boolean getUsrClntFlagVrbHead() {
 		return vrbHeader.getUserClntFlag();

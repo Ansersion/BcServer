@@ -12,7 +12,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import other.BPError;
 import other.BPValue;
 import sys_sig_table.BPSysSigTable;
 
@@ -43,7 +42,7 @@ public abstract class BPSession {
 	// byte[] password = null;
 	// boolean isUserLogin = false;
 	// boolean isDevLogin = false;
-	private int seqIdDevClnt = 0;
+	// private int seqIdDevClnt = 0;
 	int seqIdUsrClnt = 0;
 	// String devName;
 	Map<Integer, Byte[]> mapDist2SysSigMap = null;
@@ -101,7 +100,7 @@ public abstract class BPSession {
 	public BPSession(byte[] userName, byte[] password, int clientId, boolean userLogin, boolean devLogin, long uniqDevId) {
 		// isDevLogin = devLogin;
 		// isUserLogin = userLogin;
-		seqIdDevClnt = 0;
+		// seqIdDevClnt = 0;
 		seqIdUsrClnt = 0;
 		sysSigMap = new HashMap<>();
 	}

@@ -68,48 +68,57 @@ public class BcServerHandler extends IoHandlerAdapter {
 		if (BPPacketType.CONNECT == packType) {
 			vrb = decodedPack.getVrbHead();
 			pld = decodedPack.getPld();
-			String userName = new String(decodedPack.getUserNamePld());
 			int level = decodedPack.getVrbHead().getLevel();
-			byte[] password = decodedPack.getPasswordPld();
 			boolean userClntFlag = decodedPack.getUsrClntFlag();
 			boolean devClntFlag = decodedPack.getDevClntFlag();
 
 			BPPacket packAck = BPPackFactory.createBPPackAck(decodedPack);
 			if (level > BPPacket.BP_LEVEL) {
 				logger.warn("Unsupported level: {} > {}", level, BPPacket.BP_LEVEL);
-				packAck.getVrbHead().setRetCode(
-						BPPacketCONNACK.RET_CODE_LEVEL_ERR);
+				packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_LEVEL_ERR);
 				session.write(packAck);
 				session.closeOnFlush();
 				return;
 			}
 			if (!(userClntFlag ^ devClntFlag)) {
 				logger.info("Invalid client flag:{}, {}", userClntFlag, devClntFlag);
-				packAck.getVrbHead().setRetCode(
-						BPPacketCONNACK.RET_CODE_CLNT_UNKNOWN);
+				packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_CLNT_UNKNOWN);
 				session.write(packAck);
 				session.closeOnFlush();
 				return;
 			}
+			String userName = decodedPack.getUserNamePld();
+			String password = decodedPack.getPasswordPld();
 			/* check user/pwd valid */
 			if (userClntFlag) {
-				if (!BeecomDB.chkUserName(userName)) {
-					logger.warn("Invalid user name:{}", userName);
-					packAck.getVrbHead().setRetCode(
-							BPPacketCONNACK.RET_CODE_USER_INVALID);
-					session.write(packAck);
-					session.closeOnFlush();
+				BeecomDB.LoginErrorEnum loginErrorEnum = BeecomDB.checkUserPassword(userName, password);
+				
+				switch(loginErrorEnum) {
+					case USER_INVALID:
+						logger.warn("Invalid user name:{}", userName);
+						packAck.getVrbHead().setRetCode(
+								BPPacketCONNACK.RET_CODE_USER_INVALID);
+						session.write(packAck);
+						session.closeOnFlush();
+						break;
+					case PASSWORD_INVALID:
+						logger.info("{}: Incorrect password '{}'", userName, password);
+						packAck.getVrbHead().setRetCode(
+								BPPacketCONNACK.RET_CODE_PWD_INVALID);
+						session.write(packAck);
+						session.closeOnFlush();
+						break;
+					default:
+						/* LOGIN_OK */
+						break;
+				}
+				
+				if (loginErrorEnum != BeecomDB.LoginErrorEnum.LOGIN_OK) {
 					return;
 				}
-				if (!BeecomDB.chkUserPwd(userName, password)) {
-					logger.info("{}: Incorrect password '{}'", userName, password);
-					packAck.getVrbHead().setRetCode(
-							BPPacketCONNACK.RET_CODE_PWD_INVALID);
-					session.write(packAck);
-					session.closeOnFlush();
-					return;
-				}
-			} else {
+				
+			} 
+			if(devClntFlag) {
 				try {
 					devUniqId = Integer.parseInt(userName);
 					if (!BeecomDB.chkDevUniqId(devUniqId)) {
@@ -127,6 +136,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 					session.closeOnFlush();
 					return;
 				}
+				/*
 				if (!BeecomDB.chkDevPwd(devUniqId, password)) {
 					logger.info("{}: Incorrect password '{}'", userName, password);
 					packAck.getVrbHead().setRetCode(
@@ -135,6 +145,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 					session.closeOnFlush();
 					return;
 				}
+				*/
 			}
 
 			/* update login flags */
@@ -191,8 +202,6 @@ public class BcServerHandler extends IoHandlerAdapter {
 			session.write(packAck);
 		} else if (BPPacketType.PUSHACK == packType) {
 		} else if (BPPacketType.REPORT == packType) {
-
-			int clientId = decodedPack.getClientId();
 			int retCode = BPPacketRPRTACK.RET_CODE_OK;
 			int seqId = decodedPack.getPackSeq();
 			BPSession bpSess = (BPSession) session.getAttribute(SESS_ATTR_ID);
