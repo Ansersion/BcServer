@@ -8,6 +8,23 @@ public class BPUserSession extends BPSession {
 	
 	public BPUserSession() {
 		super();
+		this.userName = "";
+		this.password = "";
+		this.email = "";
+		this.phone = "";
+				
+	}
+	
+	public BPUserSession(String userName, String password) {
+		this.userName = userName;
+		this.password = password;
+		this.email = "";
+		this.phone = "";
+	}
+	
+	@Override
+	public boolean ifUserSession() {
+		return true;
 	}
 
 	@Override
@@ -48,6 +65,11 @@ public class BPUserSession extends BPSession {
 	@Override
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	@Override
+	public String toString() {
+		return userName;
 	}
 	
 	

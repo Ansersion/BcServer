@@ -15,7 +15,7 @@ public class VariableHeader {
 	int clientIDLen = 0;
 	int clientID = 0;
 	int aliveTime = 0;
-	int timeout = 0;
+	short timeout = 0;
 	int retCode = 0;
 	int packSeq = 0;
 	
@@ -28,6 +28,7 @@ public class VariableHeader {
 	Boolean bit6 = false;
 	Boolean bit7 = false;
 	
+	/*
 	Boolean userFlag;
 	Boolean pwdFlag;
 	Boolean userLoginFlag;
@@ -39,8 +40,10 @@ public class VariableHeader {
 	Boolean lanArabic;
 	Boolean lanSpanish;
 	Boolean otherLanguageFlag;
+	*/
 	
 	public VariableHeader() {
+		/*
 		userFlag = bit7;
 		pwdFlag = bit6;
 		userLoginFlag = bit2;
@@ -52,6 +55,7 @@ public class VariableHeader {
 		lanArabic = bit3;
 		lanSpanish = bit2;
 		otherLanguageFlag = bit1;
+		*/
 	}
 
 	
@@ -140,6 +144,9 @@ public class VariableHeader {
 		return level;
 	}
 	
+	public short getTimeout() {
+		return timeout;
+	}
 	
 	public byte getFlags() {
 		byte ret = 0;
@@ -160,11 +167,11 @@ public class VariableHeader {
 	}
 	
 	public boolean getChineseFlag() {
-		return lanChinese;
+		return false;
 	}
 
 	public boolean getEnglishFlag() {
-		return lanEnglish;
+		return false;
 	}
 	
 	public int getPackSeq() {
@@ -203,7 +210,7 @@ public class VariableHeader {
 		aliveTime = time;
 	}
 	
-	public void setTimeout(int timeout) {
+	public void setTimeout(short timeout) {
 		this.timeout = timeout;
 	}
 	
@@ -221,5 +228,17 @@ public class VariableHeader {
 	
 	public void setPackSeq(int packSeq) {
 		this.packSeq = packSeq;
+	}
+	
+	public boolean getDebugMode() {
+		return bit0;
+	}
+	
+	public byte getPerformanceClass() {
+		return 0;
+	}
+	
+	public boolean getUserOnLine() {
+		return bit3;
 	}
 }

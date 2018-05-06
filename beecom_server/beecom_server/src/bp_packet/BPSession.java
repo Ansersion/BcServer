@@ -36,6 +36,8 @@ public abstract class BPSession {
 	
 	private static final Logger logger = LoggerFactory.getLogger(BPSession.class);
 	
+	private static final int MIN_ALIVE_TIME = 5;
+	
 	// private int clientId = 0;
 	// long uniqDevId = 0;
 	// private byte[] userName = null;
@@ -49,8 +51,33 @@ public abstract class BPSession {
 	Map<Integer, BPValue> sysSigMap;
 	// private BPError error;
 	
+	private int procLevel;
+	private int aliveTime;
+	private short timeout;
+	private boolean debugMode;
+	private byte performanceClass;
 	
-
+	
+	public BPSession() {
+		this.procLevel = 0;
+		this.aliveTime = 3600;
+		this.timeout = 120;
+	}
+	
+	public BPSession(String userName, String password) {
+		this.procLevel = 0;
+		this.aliveTime = 3600;
+		this.timeout = 120;
+	}
+	
+	public BPSession(Long uniqDeviceId, String password) {
+		this.procLevel = 0;
+		this.aliveTime = 3600;
+		this.timeout = 120;
+	}
+	
+	public abstract boolean ifUserSession(); 
+	
 	public String getUserName() {
 		return null;
 	}
@@ -80,10 +107,37 @@ public abstract class BPSession {
 	}
 
 	public Long getUniqDeviceId() {
-		return null;
+		return 0L;
 	}
 
 	public void setUniqDeviceId(Long uniqDeviceId) {
+	}
+
+	public int getProcLevel() {
+		return procLevel;
+	}
+
+	public void setProcLevel(int procLevel) {
+		this.procLevel = procLevel;
+	}
+
+	public int getAliveTime() {
+		return aliveTime;
+	}
+
+	public void setAliveTime(int aliveTime) {
+		if(aliveTime < MIN_ALIVE_TIME) {
+			aliveTime = MIN_ALIVE_TIME;
+		}
+		this.aliveTime = aliveTime;
+	}
+
+	public short getTimeout() {
+		return timeout;
+	}
+
+	public void setTimeout(short timeout) {
+		this.timeout = timeout;
 	}
 
 	public String getSn() {
@@ -91,10 +145,6 @@ public abstract class BPSession {
 	}
 
 	public void setSn(String sn) {
-	}
-	
-	public BPSession() {
-		
 	}
 
 	public BPSession(byte[] userName, byte[] password, int clientId, boolean userLogin, boolean devLogin, long uniqDevId) {
@@ -280,5 +330,23 @@ public abstract class BPSession {
 			}
 		}
 	}
+
+	public boolean isDebugMode() {
+		return debugMode;
+	}
+
+	public void setDebugMode(boolean debugMode) {
+		this.debugMode = debugMode;
+	}
+
+	public byte getPerformanceClass() {
+		return performanceClass;
+	}
+
+	public void setPerformanceClass(byte performanceClass) {
+		this.performanceClass = performanceClass;
+	}
+	
+	
 	
 }

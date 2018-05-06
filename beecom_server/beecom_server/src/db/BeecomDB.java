@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import bp_packet.BPPacket;
+import bp_packet.BPSession;
 import other.Util;
 
 import java.util.List;
@@ -43,6 +44,9 @@ public class BeecomDB {
 	static String user = "root";
 	static String password = "Ansersion";
 	
+	private Map<Long, BPSession> devUniqId2SessionMap;
+	private Map<String, BPSession> userName2SessionMap;
+	
 	public static enum LoginErrorEnum {
 		LOGIN_OK,
 		USER_INVALID,
@@ -62,6 +66,9 @@ public class BeecomDB {
 		DBUserInfoRec record0Blank = new DBUserInfoRec();
 		userInfoRecLst.add(record0Blank);
 		String sql;
+		
+		devUniqId2SessionMap = new HashMap<Long, BPSession>();
+		userName2SessionMap = new HashMap<String, BPSession>();
 
 		try (Statement statement = con.createStatement()) {
 			Class.forName(driver);
@@ -280,4 +287,14 @@ public class BeecomDB {
 			devInfoRecLst.get(i).dumpRec();
 		}
 	}
+
+	public Map<Long, BPSession> getDevUniqId2SessionMap() {
+		return devUniqId2SessionMap;
+	}
+
+	public Map<String, BPSession> getUserName2SessionMap() {
+		return userName2SessionMap;
+	}
+
+	
 }

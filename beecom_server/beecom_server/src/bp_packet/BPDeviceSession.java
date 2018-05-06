@@ -1,12 +1,23 @@
 package bp_packet;
 
-public class BPDeviceSesssion extends BPSession {
+public class BPDeviceSession extends BPSession {
 	private Long uniqDeviceId;
-	private String sn;
 	private String password;
 	
-	public BPDeviceSesssion() {
+	public BPDeviceSession() {
 		super();
+		uniqDeviceId = 0L;
+		password = "";
+	}
+	
+	public BPDeviceSession(Long uniqDeviceId, String password) {
+		this.uniqDeviceId = uniqDeviceId;
+		this.password = password;
+	}
+	
+	@Override
+	public boolean ifUserSession() {
+		return false;
 	}
 
 	@Override
@@ -20,16 +31,6 @@ public class BPDeviceSesssion extends BPSession {
 	}
 
 	@Override
-	public String getSn() {
-		return sn;
-	}
-
-	@Override
-	public void setSn(String sn) {
-		this.sn = sn;
-	}
-
-	@Override
 	public String getPassword() {
 		return password;
 	}
@@ -38,5 +39,9 @@ public class BPDeviceSesssion extends BPSession {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-
+	
+	@Override
+	public String toString() {
+		return uniqDeviceId.toString();
+	}
 }

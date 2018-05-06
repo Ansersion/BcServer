@@ -141,7 +141,7 @@ public class BPPacketCONNECT extends BPPacket {
 			int aliveTime = getIoBuffer().getUnsignedShort();
 			getVrbHead().setAliveTime(aliveTime);
 
-			int timeOut = getIoBuffer().get();
+			short timeOut = getIoBuffer().get();
 			getVrbHead().setTimeout(timeOut);
 		} catch (Exception e) {
             StringWriter sw = new StringWriter();
