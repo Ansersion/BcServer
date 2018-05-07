@@ -171,4 +171,13 @@ public class Payload {
 	public Map<Integer, Byte[]> getMapDist2SysSigMap() {
 		return mapDist2SysSigMap;
 	}
+	
+	public String getDeviceSn() {
+		// TODO
+		return "";
+	}
+	
+	public void setDevUniqId(long devUniqId) {
+		
+	}
 }

@@ -195,15 +195,35 @@ public class VariableHeader {
 	}
 	
 	public boolean getSysSigMapFlag() {
-		return bit6;
+		return bit7;
+	}
+	
+	public boolean getSysSigFlag() {
+		return bit7;
 	}
 	
 	public boolean getCusSigFlag() {
 		return bit5;
 	}
 	
+	public boolean getCusSigMapFlag() {
+		return bit6;
+	}
+	
+	public boolean getDevIdFlag() {
+		return bit5;
+	}
+	
 	public boolean getSigFlag() {
 		return bit4;
+	}
+	
+	public boolean getSysCusFlag() {
+		return bit2;
+	}
+	
+	public boolean getInfoLeftFlag() {
+		return bit1;
 	}
 	
 	public void setAliveTime(int time) {
@@ -240,5 +260,9 @@ public class VariableHeader {
 	
 	public boolean getUserOnLine() {
 		return bit3;
+	}
+	
+	public void setDevIdFlag(boolean b) {
+		bit5 = b;
 	}
 }

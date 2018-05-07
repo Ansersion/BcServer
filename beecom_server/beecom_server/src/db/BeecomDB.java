@@ -296,5 +296,9 @@ public class BeecomDB {
 		return userName2SessionMap;
 	}
 
+	public long getDeviceUniqId(String sn) {
+		// TODO
+		return 0;
+	}
 	
 }

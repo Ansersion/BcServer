@@ -22,6 +22,9 @@ import org.slf4j.LoggerFactory;
 public class BPPacketGET extends BPPacket {
 	
 	private static final Logger logger = LoggerFactory.getLogger(BPPacketGET.class); 
+	
+	public static final int RET_CODE_OK = 0x00;
+	public static final int RET_CODE_VRB_HEADER_FLAG_ERR = 0x01;
 
 	int packSeq;
 	DeviceSignals devSigData = null;

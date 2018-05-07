@@ -23,6 +23,7 @@ import bp_packet.BPPacket;
 import bp_packet.BPPacketType;
 import bp_packet.BPParseException;
 import bp_packet.BPPacketCONNACK;
+import bp_packet.BPPacketGET;
 import bp_packet.BPPacketPINGACK;
 import bp_packet.BPPacketPUSH;
 import bp_packet.BPPacketRPRTACK;
@@ -179,6 +180,30 @@ public class BcServerHandler extends IoHandlerAdapter {
 			session.write(packAck);
 
 		} else if (BPPacketType.GET == packType) {
+			vrb = decodedPack.getVrbHead();
+			pld = decodedPack.getPld();
+			boolean sysSigMapFlag = vrb.getSysSigMapFlag();
+			boolean cusSigMapFlag = vrb.getCusSigFlag();
+			boolean devIdFlag = vrb.getDevIdFlag();
+			boolean sysSigFlag = vrb.getSysSigFlag();
+			boolean cusSigFlag = vrb.getCusSigFlag();
+			boolean sysSigCusInfoFlag = vrb.getSysCusFlag();
+			boolean infoLeft = vrb.getInfoLeftFlag();
+			
+			BPPacket packAck = BPPackFactory.createBPPackAck(decodedPack);
+			
+			if(devIdFlag) {
+				if(sysSigMapFlag || cusSigMapFlag || sysSigFlag || cusSigFlag || sysSigCusInfoFlag || infoLeft) {
+					packAck.getVrbHead().setRetCode(BPPacketGET.RET_CODE_VRB_HEADER_FLAG_ERR);
+					session.write(packAck);
+				} else {
+					String sn = pld.getDeviceSn();
+					long devUniqIdTmp = BeecomDB.getInstance().getDeviceUniqId(sn);
+					packAck.getVrbHead().setDevIdFlag(true);
+					packAck.getPld().setDevUniqId(devUniqIdTmp);
+					session.write(packAck);
+				}
+			} 
 		} else if (BPPacketType.GETACK == packType) {
 			int retCode = decodedPack.getVrbHead().getRetCode();
 			if (retCode != 0) {
