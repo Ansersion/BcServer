@@ -180,4 +180,44 @@ public class Payload {
 	public void setDevUniqId(long devUniqId) {
 		
 	}
+	
+	public long getUniqDevId() {
+		return 0;
+	}
+	
+	public boolean packSysSigMap(long uniqDevId) {
+		return true;
+	}
+	
+	public boolean packCusSigMap(long uniqDevId) {
+		return true;
+	}
+	
+	public boolean packSysSigCusInfo(long uniqDevId) {
+		return true;
+	}
+	
+	public List<Integer> getSysSig() {
+		return null;
+	}
+	
+	public List<Integer> getCusSig() {
+		return null;
+	}
+	
+	public boolean packSysSignal(long uniqDevId, List<Integer> sysSigLst) {
+		return true;
+	}
+	
+	public boolean packCusSignal(long uniqDevId, List<Integer> sysSigLst, byte langFlags) {
+		return true;
+	}
+	
+	public Map<Integer, SignalAttrInfo> getSysSigAttrMap() {
+		return null;
+	}
+	
+	public Map<Integer, SignalAttrInfo> getCusSigAttrMap() {
+		return null;
+	}
 }

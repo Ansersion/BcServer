@@ -63,6 +63,10 @@ public class VariableHeader {
 		level = encodedByte;
 	}
 	
+	public void setSysSigMapFlag(boolean flag) {
+		bit7 = true;
+	}
+	
 	public void parseFlags(byte flags) {
 		bit0 = (0x01 & flags) == 0x01;
 		bit1 = (0x02 & flags) == 0x02;
@@ -264,5 +268,17 @@ public class VariableHeader {
 	
 	public void setDevIdFlag(boolean b) {
 		bit5 = b;
+	}
+	
+	public byte getLangFlags() {
+		return 0;
+	}
+	
+	public boolean getSysSigAttrFlag() {
+		return bit1;
+	}
+	
+	public boolean getCusSigAttrFlag() {
+		return bit0;
 	}
 }

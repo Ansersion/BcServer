@@ -32,6 +32,7 @@ import bp_packet.BPUserSession;
 import bp_packet.DevSigData;
 import bp_packet.FixedHeader;
 import bp_packet.Payload;
+import bp_packet.SignalAttrInfo;
 import bp_packet.VariableHeader;
 import db.BeecomDB;
 import db.ClientIDDB;
@@ -66,8 +67,8 @@ public class BcServerHandler extends IoHandlerAdapter {
 		
 		String s;
 		BPPacket decodedPack = (BPPacket) message;
-		VariableHeader vrb;
-		Payload pld;
+		VariableHeader vrb, vrbAck;
+		Payload pld, pldAck;
 		long devUniqId = 0;
 		BPSession bpSession = null;
 
@@ -196,25 +197,62 @@ public class BcServerHandler extends IoHandlerAdapter {
 				if(sysSigMapFlag || cusSigMapFlag || sysSigFlag || cusSigFlag || sysSigCusInfoFlag || infoLeft) {
 					packAck.getVrbHead().setRetCode(BPPacketGET.RET_CODE_VRB_HEADER_FLAG_ERR);
 					session.write(packAck);
-				} else {
-					String sn = pld.getDeviceSn();
-					long devUniqIdTmp = BeecomDB.getInstance().getDeviceUniqId(sn);
-					packAck.getVrbHead().setDevIdFlag(true);
-					packAck.getPld().setDevUniqId(devUniqIdTmp);
-					session.write(packAck);
+					return;
 				}
-			} 
-		} else if (BPPacketType.GETACK == packType) {
-			int retCode = decodedPack.getVrbHead().getRetCode();
-			if (retCode != 0) {
-				logger.warn("Error(GETACK): get return code={}", retCode);
+				String sn = pld.getDeviceSn();
+				long devUniqIdTmp = BeecomDB.getInstance().getDeviceUniqId(sn);
+				packAck.getVrbHead().setDevIdFlag(true);
+				packAck.getPld().setDevUniqId(devUniqIdTmp);
+				session.write(packAck);
 				return;
+			} 
+			long uniqDevId = pld.getUniqDevId();
+			pldAck = packAck.getPld();
+			// TODO: check if the user has permission to access this device
+			if(sysSigMapFlag) {			
+				pldAck.packSysSigMap(uniqDevId);
 			}
-			DevSigData devSigData = decodedPack.getPld().getSigData();
-			devSigData.dump();
+			if(cusSigMapFlag) {
+				pldAck.packCusSigMap(uniqDevId);
+			}
+			if(sysSigFlag) {
+				List<Integer> sysSigLst = pld.getSysSig();
+				pldAck.packSysSignal(uniqDevId, sysSigLst);
+			}
+			if(cusSigFlag) {
+				List<Integer> cusSigLst = pld.getCusSig();
+				byte langFlags = vrb.getLangFlags();
+				pldAck.packCusSignal(uniqDevId, cusSigLst, langFlags);
+			}
+			if(sysSigCusInfoFlag) {
+				pldAck.packSysSigCusInfo(uniqDevId);
+			}
+			
+			session.write(packAck);
+		} else if (BPPacketType.GETACK == packType) {
+			/* NOT SUPPORTED */
 
 		} else if (BPPacketType.POST == packType) {
+			BPPacket packAck = BPPackFactory.createBPPackAck(decodedPack);
+			vrb = decodedPack.getVrbHead();
+			pld = decodedPack.getPld();
+			long uniqDevId = pld.getUniqDevId();
+			if(vrb.getSysSigAttrFlag()) {
+				Map<Integer, SignalAttrInfo> sysSigAttrMap = pld.getSysSigAttrMap();
+				/* change the system signal attributes */
+			}
+			if(vrb.getCusSigAttrFlag()) {
+				Map<Integer, SignalAttrInfo> sysCusAttrMap = pld.getCusSigAttrMap();
+				/* change the custom signal attributes */
+			}
+			if(vrb.getSysSigFlag() || vrb.getCusSigFlag()) {
+				/* forward the packet to the device
+				 * and put a callback when get the response */
+			}
+			
 		} else if (BPPacketType.POSTACK == packType) {
+			/* POSTACK forward */
+			/*
 			byte flags = decodedPack.getVrbHead().getFlags();
 			int clientId = decodedPack.getVrbHead().getClientId();
 			int seqId = decodedPack.getVrbHead().getPackSeq();
@@ -225,6 +263,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 			}
 			logger.info("POSTACK: flags={}, cid={}, sid={}, rcode={}", flags, clientId
 					, seqId, retCode);
+			*/
 
 		} else if (BPPacketType.PING == packType) {
 			vrb = decodedPack.getVrbHead();
@@ -246,6 +285,10 @@ public class BcServerHandler extends IoHandlerAdapter {
 			if(userOnLine) {
 				pushMessage(bpSession);
 			}
+		} else if(BPPacketType.PINGACK == packType) {
+			/* NOT SUPPORTED */
+		} else if(BPPacketType.PUSH == packType) {
+			/* NOT SUPPORTED */
 		} else if (BPPacketType.PUSHACK == packType) {
 			vrb = decodedPack.getVrbHead();
 			int retCode = vrb.getRetCode();
