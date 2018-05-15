@@ -266,6 +266,10 @@ public class VariableHeader {
 		return bit3;
 	}
 	
+	public boolean getSigMapChecksumFlag() {
+		return bit1;
+	}
+	
 	public void setDevIdFlag(boolean b) {
 		bit5 = b;
 	}

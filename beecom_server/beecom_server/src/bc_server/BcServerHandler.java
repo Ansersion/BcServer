@@ -309,6 +309,44 @@ public class BcServerHandler extends IoHandlerAdapter {
 			}
 			
 		} else if (BPPacketType.REPORT == packType) {
+			vrb = decodedPack.getVrbHead();
+			pld = decodedPack.getPld();
+			boolean sysSigMapFlag = vrb.getSysSigMapFlag();
+			boolean cusSigMapFlag = vrb.getCusSigFlag();
+			boolean sysSigFlag = vrb.getSysSigFlag();
+			boolean cusSigFlag = vrb.getCusSigFlag();
+			boolean sysSigCusInfoFlag = vrb.getSysCusFlag();
+			boolean sigMapChecksumFlag = vrb.getSigMapChecksumFlag();
+			
+			BPPacket packAck = BPPackFactory.createBPPackAck(decodedPack);
+			
+			long uniqDevId = pld.getUniqDevId();
+			pldAck = packAck.getPld();
+			// TODO: check if the user has permission to access this device
+			
+			if(sigMapChecksumFlag) {
+				long sigMapChecksum = pld.getSigMapChecksum();
+				/* check the sigMapChecksum */
+			} 
+			if(sysSigMapFlag) {			
+				/* save the system signal map */
+			}
+			if(cusSigMapFlag) {
+				/* save the custom signal map */
+			}
+			if(sysSigFlag) {
+				/* save the system signal values */
+			}
+			if(cusSigFlag) {
+				/* save the custom signal values */
+			}
+			if(sysSigCusInfoFlag) {
+				/* save the system signal customized info */
+			}
+			
+			session.write(packAck);
+			/*
+			
 			int retCode = BPPacketRPRTACK.RET_CODE_OK;
 			int seqId = decodedPack.getPackSeq();
 			BPSession bpSess = (BPSession) session.getAttribute(SESS_ATTR_ID);
@@ -391,6 +429,9 @@ public class BcServerHandler extends IoHandlerAdapter {
 			devRec.updateRec(db.getConn());
 
 			session.write(packAck);
+			*/
+		} else if(BPPacketType.RPRTACK == packType) {
+			/* NOT SUPPORTED */
 		} else if (BPPacketType.DISCONN == packType) {
 			bpSession = (BPSession)session.getAttribute(SESS_ATTR_BP_SESSION);
 			logger.info("Disconn, {}", bpSession.toString());

@@ -220,4 +220,8 @@ public class Payload {
 	public Map<Integer, SignalAttrInfo> getCusSigAttrMap() {
 		return null;
 	}
+	
+	public long getSigMapChecksum() {
+		return 0;
+	}
 }
