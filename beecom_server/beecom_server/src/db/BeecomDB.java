@@ -3,6 +3,8 @@
  */
 package db;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -12,6 +14,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +52,7 @@ public class BeecomDB {
 	
 	private Map<Long, BPSession> devUniqId2SessionMap;
 	private Map<String, BPSession> userName2SessionMap;
+	private SessionFactory sessionFactory;
 	
 	public static enum LoginErrorEnum {
 		LOGIN_OK,
@@ -54,6 +61,7 @@ public class BeecomDB {
 	}
 
 	private BeecomDB() {
+		sessionFactory = buildSessionFactory(); 
 		String s = "Info: Create BeecomDB";
 		logger.info(s);
 		userInfoRecLst = new ArrayList<>();
@@ -70,6 +78,7 @@ public class BeecomDB {
 		devUniqId2SessionMap = new HashMap<Long, BPSession>();
 		userName2SessionMap = new HashMap<String, BPSession>();
 
+		/*
 		try (Statement statement = con.createStatement()) {
 			Class.forName(driver);
 			con = DriverManager.getConnection(url, user, password);
@@ -177,6 +186,7 @@ public class BeecomDB {
 		} catch (SQLException|ClassNotFoundException e) {
 			Util.bcLog(e, logger);
 		} 
+		*/
 	}
 
 	public Map<String, Long> getName2IDMap() {
@@ -297,8 +307,68 @@ public class BeecomDB {
 	}
 
 	public long getDeviceUniqId(String sn) {
-		// TODO
-		return 0;
+		if(!ifSnFormal(sn)) {
+			return 0;
+		}
+		long deviceUniqId = 0;
+		Transaction tx = null;
+		try (Session session = sessionFactory.openSession()) {
+			tx = session.beginTransaction();
+		    SnInfoHbn snInfoHbn = (SnInfoHbn)session  
+		            .createQuery(" from SnInfoHbn where sn = ? ")
+		            .setParameter(0, sn)
+		            .uniqueResult();  
+		    if(snInfoHbn != null) {
+		    	deviceUniqId = snInfoHbn.getId();
+		    }
+		    
+			tx.commit();
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+		}
+		return deviceUniqId;
 	}
+	
+	public List<Integer> getSysSigMapLst(long uniqDeviceId) {
+		if(uniqDeviceId < 0) {
+			return null;
+		}
+
+		Transaction tx = null;
+		List<Integer> sysSigLst = null;
+		try (Session session = sessionFactory.openSession()) {
+			tx = session.beginTransaction();
+		    sysSigLst = session  
+		            .createQuery("select signalId from SignalInfoHbn where devId = ? and signalId > 57344")
+		            .setParameter(0, uniqDeviceId).list();
+		    
+			tx.commit();
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+		}
+		return sysSigLst;
+	}
+	
+    private static SessionFactory buildSessionFactory() {  
+        try {  
+            // Create the SessionFactory from hibernate.cfg.xml  
+            return new Configuration().configure().buildSessionFactory();  
+        }  
+        catch (Throwable ex) {  
+            // Make sure you log the exception, as it might be swallowed  
+            System.err.println("Initial SessionFactory creation failed." + ex);  
+            throw new ExceptionInInitializerError(ex);  
+        }  
+    }  
+    
+    private boolean ifSnFormal(String sn) {
+    	return sn != null && sn.length() > 0 && sn.length() <=64;
+    }
 	
 }

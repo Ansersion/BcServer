@@ -201,6 +201,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 				}
 				String sn = pld.getDeviceSn();
 				long devUniqIdTmp = BeecomDB.getInstance().getDeviceUniqId(sn);
+				// TODO: check if the user has permission to access this device
 				packAck.getVrbHead().setDevIdFlag(true);
 				packAck.getPld().setDevUniqId(devUniqIdTmp);
 				session.write(packAck);

@@ -7,6 +7,8 @@ package bc_server;
 import java.io.*;
 
 import java.net.InetSocketAddress;
+import java.util.List;
+
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.logging.LoggingFilter;
@@ -18,6 +20,7 @@ import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import db.BeecomDB;
 import db.CustomSignalEnumInfoHbn;
 import db.CustomSignalEnumLangInfoHbn;
 import db.CustomSignalInfoHbn;
@@ -89,6 +92,18 @@ public class BcServerMain {
 		bcAcceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE,
 				IDLE_READ_PROC_TIME);
 		
+		/*
+		BeecomDB beecomDB = BeecomDB.getInstance();
+		long n = beecomDB.getDeviceUniqId("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2");
+		System.out.println("n: " + n);
+		*/
+		BeecomDB beecomDB = BeecomDB.getInstance();
+		List<Integer> sysSigMap = beecomDB.getSysSigMapLst(3L);
+		for(int i = 0; i < sysSigMap.size(); i++) {
+			System.out.println("sysSig: " + sysSigMap.get(i));
+		}
+		
+		/*
 		SessionFactory sessionFactory = buildSessionFactory(); 
 		Session session = sessionFactory.openSession();
 		Transaction tx = null;
@@ -117,7 +132,7 @@ public class BcServerMain {
 			   logger.info(customSignalEnumLangInfoHbn.toString());
 			   SystemSignalStringInfoHbn systemSignalStringInfoHbn = session.load(SystemSignalStringInfoHbn.class, 1L);
 			   logger.info(systemSignalStringInfoHbn.toString());
-			   tx.commit();
+			   // tx.commit();
 			}
 			catch (Exception e) {
 			   if (tx!=null) {
@@ -139,19 +154,7 @@ public class BcServerMain {
             String str = sw.toString();
             logger.error(str);
 		}
-
+		*/
 	}
 	
-    private static SessionFactory buildSessionFactory() {  
-        try {  
-            // Create the SessionFactory from hibernate.cfg.xml  
-            return new Configuration().configure().buildSessionFactory();  
-        }  
-        catch (Throwable ex) {  
-            // Make sure you log the exception, as it might be swallowed  
-            System.err.println("Initial SessionFactory creation failed." + ex);  
-            throw new ExceptionInInitializerError(ex);  
-        }  
-    }  
-
 }

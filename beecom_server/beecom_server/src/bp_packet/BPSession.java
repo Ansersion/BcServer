@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -77,6 +78,10 @@ public abstract class BPSession {
 	}
 	
 	public abstract boolean ifUserSession(); 
+	
+	public Map<Integer, List<Object> > getSignalValueMap() {
+		return null;
+	}
 	
 	public String getUserName() {
 		return null;
