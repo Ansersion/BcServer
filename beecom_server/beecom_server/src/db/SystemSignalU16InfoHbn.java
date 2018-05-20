@@ -1,6 +1,6 @@
 package db;
 
-public class SystemSignalU16InfoHbn {
+public class SystemSignalU16InfoHbn extends SystemSignalInterface {
     private Long id;
     private Short permission;
     private Integer minVal;
@@ -57,6 +57,10 @@ public class SystemSignalU16InfoHbn {
 	public void setSystemSignalId(Long systemSignalId) {
 		this.systemSignalId = systemSignalId;
 	}
-    
+	
+	@Override
+	public int getValType() {
+		return SystemSignalInterface.VAL_TYPE_UINT16;
+	}
     
 }

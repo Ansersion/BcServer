@@ -7,6 +7,7 @@ package bc_server;
 import java.io.*;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.mina.core.session.IdleStatus;
@@ -29,6 +30,7 @@ import db.DevInfoHbn;
 import db.SignalInfoHbn;
 import db.SnInfoHbn;
 import db.SystemSignalInfoHbn;
+import db.SystemSignalInfoUnit;
 import db.SystemSignalStringInfoHbn;
 import db.UserDevRelInfoHbn;
 import db.UserInfoHbn;
@@ -98,9 +100,27 @@ public class BcServerMain {
 		System.out.println("n: " + n);
 		*/
 		BeecomDB beecomDB = BeecomDB.getInstance();
-		List<Integer> sysSigMap = beecomDB.getSysSigMapLst(3L);
+		/*
+		List<SignalInfoHbn> sysSigMap = beecomDB.getSysSigMapLst(3L);
 		for(int i = 0; i < sysSigMap.size(); i++) {
-			System.out.println("sysSig: " + sysSigMap.get(i));
+			System.out.println("Sig: " + sysSigMap.get(i).getSignalId());
+		}
+		
+		List<SystemSignalInfoHbn> systemSignalLst = beecomDB.getSysSigInfoHbnLst(sysSigMap);
+		for(int i = 0; i < systemSignalLst.size(); i++) {
+			System.out.println("sysSig: " + systemSignalLst.get(i).getId() + ", configDef: " + systemSignalLst.get(i).getIfConfigDef());
+		}
+		*/
+		
+		List<SignalInfoHbn> cusSigMap = beecomDB.getCusSigMapLst(3L);
+		for(int i = 0; i < cusSigMap.size(); i++) {
+			System.out.println("cusSig: " + cusSigMap.get(i).getSignalId());
+		}
+		
+		List<SystemSignalInfoUnit> systemSignalInfoUnitLst = new ArrayList<SystemSignalInfoUnit>();
+		systemSignalInfoUnitLst = beecomDB.getSystemSignalUnitLst(3L, systemSignalInfoUnitLst);
+		for(int i = 0; i < systemSignalInfoUnitLst.size(); i++) {
+			System.out.println("sysSig: " + systemSignalInfoUnitLst.get(i).toString());
 		}
 		
 		/*

@@ -1,6 +1,6 @@
 package db;
 
-public class SystemSignalU32InfoHbn {
+public class SystemSignalU32InfoHbn extends SystemSignalInterface {
     private Long id;
     private Short permission;
     private Long minVal;
@@ -64,5 +64,8 @@ public class SystemSignalU32InfoHbn {
 				+ ", systemSignalId=" + systemSignalId + "]";
 	}
     
-    
+	@Override
+	public int getValType() {
+		return SystemSignalInterface.VAL_TYPE_UINT32;
+	}
 }

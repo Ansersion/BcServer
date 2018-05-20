@@ -9,6 +9,6 @@
             <generator class="native" />
         </id>  
         <property name="ifConfigDef" column="config_def" />  
-        <property name="signalId" column="signal_id" />  
+        <property name="signalId" column="signal_id"/>
     </class>    
 </hibernate-mapping>

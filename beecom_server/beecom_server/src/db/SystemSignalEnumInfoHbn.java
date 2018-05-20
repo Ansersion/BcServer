@@ -1,6 +1,6 @@
 package db;
 
-public class SystemSignalEnumInfoHbn {
+public class SystemSignalEnumInfoHbn extends SystemSignalInterface {
     private Long id;
     private Short permission;
     private Integer defVal;
@@ -50,5 +50,8 @@ public class SystemSignalEnumInfoHbn {
 				+ systemSignalId + "]";
 	}
     
-    
+	@Override
+	public int getValType() {
+		return SystemSignalInterface.VAL_TYPE_ENUM;
+	}
 }

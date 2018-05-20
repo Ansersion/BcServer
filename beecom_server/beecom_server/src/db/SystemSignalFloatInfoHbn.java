@@ -1,6 +1,6 @@
 package db;
 
-public class SystemSignalFloatInfoHbn {
+public class SystemSignalFloatInfoHbn extends SystemSignalInterface {
     private Long id;
     private Short permission;
     private Short accuracy;
@@ -71,5 +71,9 @@ public class SystemSignalFloatInfoHbn {
 				+ ", enStatistics=" + enStatistics + ", systemSignalId=" + systemSignalId + "]";
 	}
     
+	@Override
+	public int getValType() {
+		return SystemSignalInterface.VAL_TYPE_FLOAT;
+	}
     
 }

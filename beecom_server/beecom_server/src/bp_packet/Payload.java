@@ -5,6 +5,7 @@ package bp_packet;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import db.BeecomDB;
+import db.SignalInfoHbn;
+import db.SystemSignalInfoUnit;
 import other.BPError;
 
 
@@ -38,7 +41,7 @@ public class Payload {
 	
 	Map<Integer, List<Integer> > mapDevId2SigIdLst = new HashMap<>();
 	Map<Integer, Byte[]> mapDist2SysSigMap = new HashMap<>();
-	private List<Integer> sysSigMapLst;
+	private List<SystemSignalInfoUnit> systemSignalInfoUnitLst;
 	
 	
 	public BPError getError() {
@@ -189,11 +192,14 @@ public class Payload {
 	
 	public boolean packSysSigMap(long uniqDevId) {
 		BeecomDB beecomDB = BeecomDB.getInstance();
-		sysSigMapLst = beecomDB.getSysSigMapLst(uniqDevId);
+		systemSignalInfoUnitLst = new ArrayList<SystemSignalInfoUnit>();
+		systemSignalInfoUnitLst = beecomDB.getSystemSignalUnitLst(uniqDevId, systemSignalInfoUnitLst);
 		return true;
 	}
 	
 	public boolean packCusSigMap(long uniqDevId) {
+		BeecomDB beecomDB = BeecomDB.getInstance();
+		// sysSigMapLst = beecomDB.getSysSigMapLst(uniqDevId);
 		return true;
 	}
 	

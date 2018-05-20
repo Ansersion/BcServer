@@ -1,6 +1,6 @@
 package db;
 
-public class SystemSignalStringInfoHbn {
+public class SystemSignalStringInfoHbn extends SystemSignalInterface {
     private Long id;
     private Short permission;
     private String defVal;
@@ -50,5 +50,8 @@ public class SystemSignalStringInfoHbn {
 				+ systemSignalId + "]";
 	}
     
-    
+	@Override
+	public int getValType() {
+		return SystemSignalInterface.VAL_TYPE_STRING;
+	}
 }
