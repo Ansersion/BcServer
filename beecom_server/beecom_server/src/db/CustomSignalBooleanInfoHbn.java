@@ -1,6 +1,8 @@
 package db;
 
-public class CustomSignalBooleanInfoHbn {
+import bp_packet.BPPacket;
+
+public class CustomSignalBooleanInfoHbn extends SignalInterface {
     private Long id;
     private Long cusSigNameLangId;
     private Short permission;
@@ -62,6 +64,10 @@ public class CustomSignalBooleanInfoHbn {
 		return "CustomSignalBooleanInfoHbn [id=" + id + ", cusSigNameLangId=" + cusSigNameLangId + ", permission="
 				+ permission + ", defVal=" + defVal + ", groupLangId=" + groupLangId + ", cusGroupLangId="
 				+ cusGroupLangId + ", enStatistics=" + enStatistics + ", customSignalId=" + customSignalId + "]";
+	}
+	@Override
+	public int getValType() {
+		return BPPacket.VAL_TYPE_BOOLEAN;
 	}
     
     

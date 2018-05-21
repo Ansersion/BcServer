@@ -25,6 +25,7 @@ import db.BeecomDB;
 import db.CustomSignalEnumInfoHbn;
 import db.CustomSignalEnumLangInfoHbn;
 import db.CustomSignalInfoHbn;
+import db.CustomSignalInfoUnit;
 import db.CustomSignalNameLangInfoHbn;
 import db.DevInfoHbn;
 import db.SignalInfoHbn;
@@ -121,6 +122,12 @@ public class BcServerMain {
 		systemSignalInfoUnitLst = beecomDB.getSystemSignalUnitLst(3L, systemSignalInfoUnitLst);
 		for(int i = 0; i < systemSignalInfoUnitLst.size(); i++) {
 			System.out.println("sysSig: " + systemSignalInfoUnitLst.get(i).toString());
+		}
+		
+		List<CustomSignalInfoUnit> customSignalInfoUnitLst = new ArrayList<CustomSignalInfoUnit>();
+		customSignalInfoUnitLst = beecomDB.getCustomSignalUnitLst(3L, customSignalInfoUnitLst);
+		for(int i = 0; i < customSignalInfoUnitLst.size(); i++) {
+			System.out.println("cusSigUnit: " + customSignalInfoUnitLst.get(i).toString());
 		}
 		
 		/*

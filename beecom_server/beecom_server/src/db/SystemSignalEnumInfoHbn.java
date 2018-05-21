@@ -1,6 +1,8 @@
 package db;
 
-public class SystemSignalEnumInfoHbn extends SystemSignalInterface {
+import bp_packet.BPPacket;
+
+public class SystemSignalEnumInfoHbn extends SignalInterface {
     private Long id;
     private Short permission;
     private Integer defVal;
@@ -52,6 +54,6 @@ public class SystemSignalEnumInfoHbn extends SystemSignalInterface {
     
 	@Override
 	public int getValType() {
-		return SystemSignalInterface.VAL_TYPE_ENUM;
+		return BPPacket.VAL_TYPE_ENUM;
 	}
 }

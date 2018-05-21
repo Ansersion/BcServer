@@ -1,6 +1,8 @@
 package db;
 
-public class CustomSignalU32InfoHbn {
+import bp_packet.BPPacket;
+
+public class CustomSignalU32InfoHbn extends SignalInterface {
     private Long id;
     private Long cusSigNameLangId;
     private Long cusSigUnitLangId;
@@ -84,6 +86,10 @@ public class CustomSignalU32InfoHbn {
 				+ cusSigUnitLangId + ", permission=" + permission + ", minVal=" + minVal + ", maxVal=" + maxVal
 				+ ", defVal=" + defVal + ", groupLangId=" + groupLangId + ", cusGroupLangId=" + cusGroupLangId
 				+ ", enStatistics=" + enStatistics + ", customSignalId=" + customSignalId + "]";
+	}
+	@Override
+	public int getValType() {
+		return BPPacket.VAL_TYPE_UINT32;
 	}
     
     

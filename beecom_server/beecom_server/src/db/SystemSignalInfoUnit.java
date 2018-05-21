@@ -5,10 +5,10 @@ public class SystemSignalInfoUnit {
 	private int sysSigId;
 	private boolean ifNotifing;
 	private boolean ifConfigDef;
-	private SystemSignalInterface systemSignalInterface;
+	private SignalInterface systemSignalInterface;
 
 	public SystemSignalInfoUnit(int sysSigId, boolean ifNotifing, boolean ifConfigDef,
-			SystemSignalInterface systemSignalInterface) {
+			SignalInterface systemSignalInterface) {
 		super();
 		this.sysSigId = sysSigId;
 		this.ifNotifing = ifNotifing;
@@ -28,7 +28,7 @@ public class SystemSignalInfoUnit {
 		return ifConfigDef;
 	}
 
-	public SystemSignalInterface getSystemSignalInterface() {
+	public SignalInterface getSystemSignalInterface() {
 		return systemSignalInterface;
 	}
 

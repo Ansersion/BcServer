@@ -1,6 +1,8 @@
 package db;
 
-public class SystemSignalI32InfoHbn extends SystemSignalInterface {
+import bp_packet.BPPacket;
+
+public class SystemSignalI32InfoHbn extends SignalInterface {
     private Long id;
     private Short permission;
     private Integer minVal;
@@ -66,7 +68,7 @@ public class SystemSignalI32InfoHbn extends SystemSignalInterface {
     
 	@Override
 	public int getValType() {
-		return SystemSignalInterface.VAL_TYPE_IINT32;
+		return BPPacket.VAL_TYPE_IINT32;
 	}
     
 }

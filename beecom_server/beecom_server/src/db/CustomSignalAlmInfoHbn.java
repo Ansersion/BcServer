@@ -1,6 +1,6 @@
 package db;
 
-public class CustomSignalAlmInfoHbn {
+public class CustomSignalAlmInfoHbn extends SignalInterface {
     private Long id;
     private Long cusSigNameLangId;
     private Byte almClass;
@@ -48,6 +48,11 @@ public class CustomSignalAlmInfoHbn {
 		return "CustomSignalAlmInfoHbn [id=" + id + ", cusSigNameLangId=" + cusSigNameLangId + ", almClass=" + almClass
 				+ ", dlyBeforeAlm=" + dlyBeforeAlm + ", dlyAfterAlm=" + dlyAfterAlm + ", customSignalId="
 				+ customSignalId + "]";
+	}
+	@Override
+	public int getValType() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
     
     

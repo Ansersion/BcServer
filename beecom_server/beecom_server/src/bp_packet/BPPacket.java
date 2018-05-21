@@ -14,8 +14,22 @@ public class BPPacket implements BPPacketInterface {
 	
 	public static final int MAX_SYS_SIG_DIST_NUM = 16;
 	public static final int SYS_SIG_START_ID = 0xE000;
+	public static final int CUS_SIG_START_ID = 0x0000;
+	public static final int CUS_SIG_END_ID = 0xDFFF;
 	public static final int SYS_SIG_DIST_STEP = 0x200;
 	public static final int MAX_SIG_ID = 0xFFFF;
+	
+
+	/* 0-u32, 1-u16, 2-i32, 3-i16, 4-enum, 5-float, 6-string, 7-boolean */
+	public static final int VAL_TYPE_UINT32 = 0;
+	public static final int VAL_TYPE_UINT16 = 1;
+	public static final int VAL_TYPE_IINT32 = 2;
+	public static final int VAL_TYPE_IINT16 = 3;
+	public static final int VAL_TYPE_ENUM = 4;
+	public static final int VAL_TYPE_FLOAT = 5;
+	public static final int VAL_TYPE_STRING = 6;
+	public static final int VAL_TYPE_BOOLEAN = 7;
+	public static final int VAL_TYPE_INVALID = 0x7F;
 	
 	IoBuffer bpPacketData;
 	FixedHeader fxHeader;

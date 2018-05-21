@@ -1,6 +1,8 @@
 package db;
 
-public class CustomSignalEnumInfoHbn {
+import bp_packet.BPPacket;
+
+public class CustomSignalEnumInfoHbn extends SignalInterface {
     private Long id;
     private Long cusSigNameLangId;
     private Short permission;
@@ -62,6 +64,10 @@ public class CustomSignalEnumInfoHbn {
 		return "CustomSignalEnumInfoHbn [id=" + id + ", cusSigNameLangId=" + cusSigNameLangId + ", permission="
 				+ permission + ", defVal=" + defVal + ", groupLangId=" + groupLangId + ", cusGroupLangId="
 				+ cusGroupLangId + ", enStatistics=" + enStatistics + ", customSignalId=" + customSignalId + "]";
+	}
+	@Override
+	public int getValType() {
+		return BPPacket.VAL_TYPE_ENUM;
 	}
     
     

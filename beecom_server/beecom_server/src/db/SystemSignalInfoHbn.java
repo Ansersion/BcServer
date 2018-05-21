@@ -1,8 +1,10 @@
 package db;
 
+
 public class SystemSignalInfoHbn {
     private Long id;
     private Boolean ifConfigDef;
+    
     private Long signalId;
 	public Long getId() {
 		return id;

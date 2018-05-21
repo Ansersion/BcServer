@@ -1,6 +1,8 @@
 package db;
 
-public class CustomSignalIFloatInfoHbn {
+import bp_packet.BPPacket;
+
+public class CustomSignalIFloatInfoHbn extends SignalInterface {
     private Long id;
     private Long cusSigNameLangId;
     private Long cusSigUnitLangId;
@@ -91,6 +93,10 @@ public class CustomSignalIFloatInfoHbn {
 				+ cusSigUnitLangId + ", permission=" + permission + ", accuracy=" + accuracy + ", minVal=" + minVal
 				+ ", maxVal=" + maxVal + ", defVal=" + defVal + ", groupLangId=" + groupLangId + ", cusGroupLangId="
 				+ cusGroupLangId + ", enStatistics=" + enStatistics + ", customSignalId=" + customSignalId + "]";
+	}
+	@Override
+	public int getValType() {
+		return BPPacket.VAL_TYPE_FLOAT;
 	}
     
     

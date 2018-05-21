@@ -1,6 +1,8 @@
 package db;
 
-public class SystemSignalBooleanInfoHbn extends SystemSignalInterface {
+import bp_packet.BPPacket;
+
+public class SystemSignalBooleanInfoHbn extends SignalInterface {
     private Long id;
     private Short permission;
     private Boolean defVal;
@@ -52,7 +54,7 @@ public class SystemSignalBooleanInfoHbn extends SystemSignalInterface {
 	
 	@Override
 	public int getValType() {
-		return SystemSignalInterface.VAL_TYPE_BOOLEAN;
+		return BPPacket.VAL_TYPE_BOOLEAN;
 	}
     
 	

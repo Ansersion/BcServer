@@ -1,6 +1,8 @@
 package db;
 
-public class SystemSignalFloatInfoHbn extends SystemSignalInterface {
+import bp_packet.BPPacket;
+
+public class SystemSignalFloatInfoHbn extends SignalInterface {
     private Long id;
     private Short permission;
     private Short accuracy;
@@ -73,7 +75,7 @@ public class SystemSignalFloatInfoHbn extends SystemSignalInterface {
     
 	@Override
 	public int getValType() {
-		return SystemSignalInterface.VAL_TYPE_FLOAT;
+		return BPPacket.VAL_TYPE_FLOAT;
 	}
     
 }

@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import db.BeecomDB;
+import db.CustomSignalInfoUnit;
 import db.SignalInfoHbn;
 import db.SystemSignalInfoUnit;
 import other.BPError;
@@ -42,6 +43,7 @@ public class Payload {
 	Map<Integer, List<Integer> > mapDevId2SigIdLst = new HashMap<>();
 	Map<Integer, Byte[]> mapDist2SysSigMap = new HashMap<>();
 	private List<SystemSignalInfoUnit> systemSignalInfoUnitLst;
+	private List<CustomSignalInfoUnit> customSignalInfoUnitLst;
 	
 	
 	public BPError getError() {
@@ -194,13 +196,22 @@ public class Payload {
 		BeecomDB beecomDB = BeecomDB.getInstance();
 		systemSignalInfoUnitLst = new ArrayList<SystemSignalInfoUnit>();
 		systemSignalInfoUnitLst = beecomDB.getSystemSignalUnitLst(uniqDevId, systemSignalInfoUnitLst);
-		return true;
+		if(null == systemSignalInfoUnitLst || systemSignalInfoUnitLst.isEmpty()) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 	
 	public boolean packCusSigMap(long uniqDevId) {
 		BeecomDB beecomDB = BeecomDB.getInstance();
-		// sysSigMapLst = beecomDB.getSysSigMapLst(uniqDevId);
-		return true;
+		customSignalInfoUnitLst = new ArrayList<CustomSignalInfoUnit>();
+		customSignalInfoUnitLst = beecomDB.getCustomSignalUnitLst(uniqDevId, customSignalInfoUnitLst);
+		if(null == customSignalInfoUnitLst || customSignalInfoUnitLst.isEmpty()) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 	
 	public boolean packSysSigCusInfo(long uniqDevId) {
