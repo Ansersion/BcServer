@@ -25,6 +25,7 @@ public class BPPacketGET extends BPPacket {
 	
 	public static final int RET_CODE_OK = 0x00;
 	public static final int RET_CODE_VRB_HEADER_FLAG_ERR = 0x01;
+	public static final int RET_CODE_SIGNAL_NOT_SUPPORT_ERR = 0x03;
 
 	int packSeq;
 	DeviceSignals devSigData = null;

@@ -38,6 +38,7 @@ import db.BeecomDB;
 import db.ClientIDDB;
 import db.DBDevInfoRec;
 import db.DBSysSigRec;
+import other.BPError;
 
 public class BcServerHandler extends IoHandlerAdapter {
 	
@@ -162,8 +163,13 @@ public class BcServerHandler extends IoHandlerAdapter {
 				if (loginErrorEnum != BeecomDB.LoginErrorEnum.LOGIN_OK) {
 					return;
 				}
-				bpSession = new BPDeviceSession(devUniqId, password);
-				BeecomDB.getInstance().getDevUniqId2SessionMap().put(devUniqId, bpSession);
+				// bpSession = new BPDeviceSession(devUniqId, password);
+				if(!BeecomDB.getInstance().getDevUniqId2SessionMap().containsKey(devUniqId)) {
+					bpSession = new BPDeviceSession(devUniqId, password);
+					BeecomDB.getInstance().getDevUniqId2SessionMap().put(devUniqId, bpSession);
+				} else {
+					bpSession = BeecomDB.getInstance().getDevUniqId2SessionMap().get(devUniqId);
+				}
 				session.setAttribute(SESS_ATTR_BP_SESSION, bpSession);
 			}
 
@@ -217,8 +223,10 @@ public class BcServerHandler extends IoHandlerAdapter {
 				pldAck.packCusSigMap(uniqDevId);
 			}
 			if(sysSigFlag) {
+				bpSession = (BPSession)session.getAttribute(SESS_ATTR_BP_SESSION);
 				List<Integer> sysSigLst = pld.getSysSig();
-				pldAck.packSysSignal(uniqDevId, sysSigLst);
+				BPError bpError = new BPError();
+				pldAck.packSysSignalValues(sysSigLst, bpSession, bpError);
 			}
 			if(cusSigFlag) {
 				List<Integer> cusSigLst = pld.getCusSig();

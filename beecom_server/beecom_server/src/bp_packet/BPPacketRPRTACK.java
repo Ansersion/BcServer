@@ -53,7 +53,7 @@ public class BPPacketRPRTACK extends BPPacket {
 	public boolean assemblePayload() {
 		if(RET_CODE_OK != getVrbHead().getRetCode()) {
 			if(null != getPld().getError()) {
-				getIoBuffer().putUnsignedShort(getPld().getError().getSigIdLst().get(0));
+				getIoBuffer().putUnsignedShort(getPld().getError().getSigId());
 			}
 		}
 

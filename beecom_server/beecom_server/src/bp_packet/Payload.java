@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +45,7 @@ public class Payload {
 	Map<Integer, Byte[]> mapDist2SysSigMap = new HashMap<>();
 	private List<SystemSignalInfoUnit> systemSignalInfoUnitLst;
 	private List<CustomSignalInfoUnit> customSignalInfoUnitLst;
+	private Map<Integer, Object> sysSigValMap;
 	
 	
 	public BPError getError() {
@@ -230,6 +232,37 @@ public class Payload {
 		return true;
 	}
 	
+	public boolean packSysSignalValues(List<Integer> sysSigLst, BPSession bpSession, BPError bpError) {
+		if(null == sysSigLst || null == bpSession) {
+			return false;
+		}
+		sysSigValMap = new HashMap<Integer, Object>();
+		
+		Iterator<Integer> it = sysSigLst.iterator();
+		Map<Integer, Object> systemSignalValueMap;
+		systemSignalValueMap = bpSession.getSystemSignalValueMap();
+		while(it.hasNext()) {
+			int sysSigId = it.next();
+			if(sysSigId < BPPacket.SYS_SIG_START_ID || sysSigId > BPPacket.MAX_SIG_ID) {
+				if(null != bpError) {
+					bpError.setErrorCode(BPPacketGET.RET_CODE_SIGNAL_NOT_SUPPORT_ERR);
+					bpError.setSigId(sysSigId);
+				}
+				return false;
+			}
+			
+			if(!systemSignalValueMap.containsKey(sysSigId)) {
+				if(null != bpError) {
+					bpError.setErrorCode(BPPacketGET.RET_CODE_SIGNAL_NOT_SUPPORT_ERR);
+					bpError.setSigId(sysSigId);
+				}
+				return false;
+			}
+			sysSigValMap.put(sysSigId, systemSignalValueMap.get(sysSigId));
+		}
+		return true;
+	}
+	
 	public boolean packCusSignal(long uniqDevId, List<Integer> sysSigLst, byte langFlags) {
 		return true;
 	}
@@ -245,4 +278,10 @@ public class Payload {
 	public long getSigMapChecksum() {
 		return 0;
 	}
+
+	public Map<Integer, Object> getSysSigValMap() {
+		return sysSigValMap;
+	}
+	
+	
 }

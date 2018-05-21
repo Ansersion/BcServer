@@ -50,6 +50,7 @@ public abstract class BPSession {
 	// String devName;
 	Map<Integer, Byte[]> mapDist2SysSigMap = null;
 	Map<Integer, BPValue> sysSigMap;
+	Map<Integer, Object> systemSignalValueMap;
 	// private BPError error;
 	
 	private int procLevel;
@@ -350,6 +351,14 @@ public abstract class BPSession {
 
 	public void setPerformanceClass(byte performanceClass) {
 		this.performanceClass = performanceClass;
+	}
+
+	public Map<Integer, Object> getSystemSignalValueMap() {
+		return systemSignalValueMap;
+	}
+
+	public void setSystemSignalValueMap(Map<Integer, Object> systemSignalValueMap) {
+		this.systemSignalValueMap = systemSignalValueMap;
 	}
 	
 	
