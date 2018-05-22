@@ -18,6 +18,7 @@ import db.BeecomDB;
 import db.CustomSignalInfoUnit;
 import db.SignalInfoHbn;
 import db.SystemSignalInfoUnit;
+import javafx.util.Pair;
 import other.BPError;
 
 
@@ -46,6 +47,7 @@ public class Payload {
 	private List<SystemSignalInfoUnit> systemSignalInfoUnitLst;
 	private List<CustomSignalInfoUnit> customSignalInfoUnitLst;
 	private Map<Integer, Object> sysSigValMap;
+	private Map<Integer, Pair<Byte, Object>> cusSigValMap;
 	
 	
 	public BPError getError() {
@@ -258,7 +260,52 @@ public class Payload {
 				}
 				return false;
 			}
+			if(sysSigValMap.containsKey(sysSigId)) {
+				if(null != bpError) {
+					bpError.setErrorCode(BPPacketGET.RET_CODE_SIGNAL_REPEAT_ERR);
+					bpError.setSigId(sysSigId);
+				}
+				return false;
+			}
 			sysSigValMap.put(sysSigId, systemSignalValueMap.get(sysSigId));
+		}
+		return true;
+	}
+	
+	public boolean packCusSignalValues(List<Integer> cusSigLst, BPSession bpSession, BPError bpError) {
+		if(null == cusSigLst || null == bpSession) {
+			return false;
+		}
+		cusSigValMap = new HashMap<Integer, Pair<Byte, Object>>();
+		
+		Iterator<Integer> it = cusSigLst.iterator();
+		Map<Integer, Pair<Byte, Object> > customSignalValueMap;
+		customSignalValueMap = bpSession.getCustomSignalValueMap();
+		while(it.hasNext()) {
+			int cusSigId = it.next();
+			if(cusSigId < BPPacket.CUS_SIG_START_ID || cusSigId > BPPacket.CUS_SIG_END_ID) {
+				if(null != bpError) {
+					bpError.setErrorCode(BPPacketGET.RET_CODE_SIGNAL_NOT_SUPPORT_ERR);
+					bpError.setSigId(cusSigId);
+				}
+				return false;
+			}
+			
+			if(!customSignalValueMap.containsKey(cusSigId)) {
+				if(null != bpError) {
+					bpError.setErrorCode(BPPacketGET.RET_CODE_SIGNAL_NOT_SUPPORT_ERR);
+					bpError.setSigId(cusSigId);
+				}
+				return false;
+			}
+			if(cusSigValMap.containsKey(cusSigId)) {
+				if(null != bpError) {
+					bpError.setErrorCode(BPPacketGET.RET_CODE_SIGNAL_REPEAT_ERR);
+					bpError.setSigId(cusSigId);
+				}
+				return false;
+			}
+			cusSigValMap.put(cusSigId, customSignalValueMap.get(cusSigId));
 		}
 		return true;
 	}

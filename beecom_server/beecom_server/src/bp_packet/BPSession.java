@@ -13,6 +13,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.util.Pair;
 import other.BPValue;
 import sys_sig_table.BPSysSigTable;
 
@@ -51,6 +52,7 @@ public abstract class BPSession {
 	Map<Integer, Byte[]> mapDist2SysSigMap = null;
 	Map<Integer, BPValue> sysSigMap;
 	Map<Integer, Object> systemSignalValueMap;
+	Map<Integer, Pair<Byte, Object>> customSignalValueMap;
 	// private BPError error;
 	
 	private int procLevel;
@@ -360,6 +362,15 @@ public abstract class BPSession {
 	public void setSystemSignalValueMap(Map<Integer, Object> systemSignalValueMap) {
 		this.systemSignalValueMap = systemSignalValueMap;
 	}
+
+	public Map<Integer, Pair<Byte, Object>> getCustomSignalValueMap() {
+		return customSignalValueMap;
+	}
+
+	public void setCustomSignalValueMap(Map<Integer, Pair<Byte, Object>> customSignalValueMap) {
+		this.customSignalValueMap = customSignalValueMap;
+	}
+	
 	
 	
 	

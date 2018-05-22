@@ -229,9 +229,10 @@ public class BcServerHandler extends IoHandlerAdapter {
 				pldAck.packSysSignalValues(sysSigLst, bpSession, bpError);
 			}
 			if(cusSigFlag) {
+				bpSession = (BPSession)session.getAttribute(SESS_ATTR_BP_SESSION);
 				List<Integer> cusSigLst = pld.getCusSig();
-				byte langFlags = vrb.getLangFlags();
-				pldAck.packCusSignal(uniqDevId, cusSigLst, langFlags);
+				BPError bpError = new BPError();
+				pldAck.packCusSignalValues(cusSigLst, bpSession, bpError);
 			}
 			if(sysSigCusInfoFlag) {
 				pldAck.packSysSigCusInfo(uniqDevId);
