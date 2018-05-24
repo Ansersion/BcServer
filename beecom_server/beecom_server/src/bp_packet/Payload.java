@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import db.BeecomDB;
 import db.CustomSignalInfoUnit;
 import db.SignalInfoHbn;
+import db.SystemSignalCustomInfoUnit;
 import db.SystemSignalInfoUnit;
 import javafx.util.Pair;
 import other.BPError;
@@ -46,6 +47,7 @@ public class Payload {
 	Map<Integer, Byte[]> mapDist2SysSigMap = new HashMap<>();
 	private List<SystemSignalInfoUnit> systemSignalInfoUnitLst;
 	private List<CustomSignalInfoUnit> customSignalInfoUnitLst;
+	private List<SystemSignalCustomInfoUnit> systemSignalCustomInfoUnitLst;
 	private Map<Integer, Object> sysSigValMap;
 	private Map<Integer, Pair<Byte, Object>> cusSigValMap;
 	
@@ -219,7 +221,25 @@ public class Payload {
 	}
 	
 	public boolean packSysSigCusInfo(long uniqDevId) {
+		BeecomDB beecomDB = BeecomDB.getInstance();
+		systemSignalCustomInfoUnitLst = new ArrayList<SystemSignalCustomInfoUnit>();
+		if(null != systemSignalInfoUnitLst) {
+			Iterator<SystemSignalInfoUnit> it = systemSignalInfoUnitLst.iterator();
+			SystemSignalInfoUnit systemSignalInfoUnit;
+			while(it.hasNext()) {
+				systemSignalInfoUnit = it.next();
+				if(!systemSignalInfoUnit.isIfConfigDef()) {
+					systemSignalCustomInfoUnitLst.add(new SystemSignalCustomInfoUnit(systemSignalInfoUnit.getSysSigId(), systemSignalInfoUnit.getSystemSignalInterface()));
+				}
+			}
+		} else {
+			systemSignalCustomInfoUnitLst = beecomDB.getSystemSignalCustomInfoUnitLst(uniqDevId, systemSignalCustomInfoUnitLst);
+		}
+		if(null == systemSignalCustomInfoUnitLst || systemSignalCustomInfoUnitLst.isEmpty()) {
+			return false;
+		} else {
 		return true;
+		}
 	}
 	
 	public List<Integer> getSysSig() {

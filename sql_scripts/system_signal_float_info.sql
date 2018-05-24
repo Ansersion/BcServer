@@ -8,12 +8,12 @@ CREATE TABLE system_signal_float_info
 	
 	/* The name can't be changed */
 	/* sys_sig_name_lang_id INT unsigned not null,   */
-	permission TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	permission TINYINT UNSIGNED NOT NULL DEFAULT 6,
 	
-	accuracy TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	accuracy TINYINT UNSIGNED NOT NULL DEFAULT 1,
 	min_val FLOAT NOT NULL DEFAULT 0x7FFFFFFF,
 	max_val FLOAT NOT NULL DEFAULT 0x7FFFFFFF,
-	def_val FLOAT NOT NULL DEFAULT 0,
+	def_val FLOAT NOT NULL DEFAULT 0x7FFFFFFF,
 	
 	/* Group language resource is from the sys_group_language_resource.csv */
 	group_lang_id SMALLINT UNSIGNED NOT NULL DEFAULT 0, 

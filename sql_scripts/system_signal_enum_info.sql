@@ -9,8 +9,8 @@ CREATE TABLE system_signal_enum_info
 	/* The name can't be changed */
 	/* sys_sig_name_lang_id INT unsigned not null,   */  
 	
-	permission TINYINT UNSIGNED NOT NULL DEFAULT 0,
-	def_val SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+	permission TINYINT UNSIGNED NOT NULL DEFAULT 6,
+	def_val SMALLINT UNSIGNED NOT NULL DEFAULT 65535,
 	
 	/* Group language resource is from the sys_group_language_resource.csv */
 	group_lang_id SMALLINT UNSIGNED NOT NULL DEFAULT 0, 

@@ -369,7 +369,7 @@ public class BeecomDB {
 		if(null == signalInfoHbnLst || signalInfoHbnLst.isEmpty()) {
 			return null;
 		}
-		List<SystemSignalInfoHbn> systemSignalInfoHbnLst = getSysSigInfoHbnLst(signalInfoHbnLst);
+		List<SystemSignalInfoHbn> systemSignalInfoHbnLst = getSysSigInfoHbnLst(signalInfoHbnLst, null);
 		if(null == systemSignalInfoHbnLst || systemSignalInfoHbnLst.isEmpty()) {
 			return null;
 		}
@@ -540,6 +540,10 @@ public class BeecomDB {
 	}
 	
 	public List<CustomSignalInfoUnit> getCustomSignalUnitLst(long uniqDeviceId, List<CustomSignalInfoUnit> customSignalInfoUnitLst) {
+		if(uniqDeviceId < 0) {
+			return null;
+		}
+		
 		if(null == customSignalInfoUnitLst) {
 			return null;
 		}
@@ -739,6 +743,192 @@ public class BeecomDB {
 		return customSignalInfoUnitLst;
 	}
 	
+	public List<SystemSignalCustomInfoUnit> getSystemSignalCustomInfoUnitLst(long uniqDeviceId, List<SystemSignalCustomInfoUnit> systemSignalCustomInfoUnitLst) {
+		if(uniqDeviceId < 0) {
+			return null;
+		}
+		
+		if(null == systemSignalCustomInfoUnitLst) {
+			return null;
+		}
+		
+		List<SignalInfoHbn> signalInfoHbnLst = getSignalInfoHbnLst(uniqDeviceId, BPPacket.SYS_SIG_START_ID, BPPacket.MAX_SIG_ID);
+		if(null == signalInfoHbnLst || signalInfoHbnLst.isEmpty()) {
+			return null;
+		}
+		List<SystemSignalInfoHbn> systemSignalInfoHbnLst = getSysSigInfoHbnLst(signalInfoHbnLst, false);
+		if(null == systemSignalInfoHbnLst || systemSignalInfoHbnLst.isEmpty()) {
+			return null;
+		}
+		
+		Iterator<SignalInfoHbn> itSI;
+		Iterator<SystemSignalInfoHbn> itSSI = systemSignalInfoHbnLst.iterator();
+		int signalId;
+		while(itSSI.hasNext()) {
+			SystemSignalInfoHbn systemSignalInfoHbn = itSSI.next();
+			itSI = signalInfoHbnLst.iterator();
+			
+			while(itSI.hasNext()) {
+				SignalInfoHbn signalInfoHbn = itSI.next();
+				
+				if(systemSignalInfoHbn.getSignalId() == signalInfoHbn.getId()) {
+					signalId = signalInfoHbn.getSignalId();
+					if(signalId < BPPacket.SYS_SIG_START_ID || signalId > BPPacket.MAX_SIG_ID) {
+						return null;
+					}
+					SignalInterface systemSignalInterface = null;
+					BPSysSigTable sysSigTab = BPSysSigTable.getSysSigTableInstance();
+					List<SysSigInfo> sysSigInfoLst = sysSigTab.getSysSigInfoLst();
+					if (signalId - BPPacket.SYS_SIG_START_ID > sysSigInfoLst.size()) {
+						return null;
+					}
+
+					Transaction tx = null;
+					switch (sysSigInfoLst.get(signalId - BPPacket.SYS_SIG_START_ID).getValType()) {
+					case BPPacket.VAL_TYPE_UINT32:
+						try (Session session = sessionFactory.openSession()) {
+							tx = session.beginTransaction();
+							systemSignalInterface = (SystemSignalU32InfoHbn) session
+									.createQuery("from SystemSignalU32InfoHbn where systemSignalId = :system_signal_id")
+									.setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
+
+							tx.commit();
+						} catch (Exception e) {
+							StringWriter sw = new StringWriter();
+							e.printStackTrace(new PrintWriter(sw, true));
+							String str = sw.toString();
+							logger.error(str);
+							systemSignalInterface = null;
+						}
+						break;
+					case BPPacket.VAL_TYPE_UINT16:
+						try (Session session = sessionFactory.openSession()) {
+							tx = session.beginTransaction();
+							systemSignalInterface = (SystemSignalU16InfoHbn) session
+									.createQuery("from SystemSignalU16InfoHbn where systemSignalId = :system_signal_id")
+									.setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
+
+							tx.commit();
+						} catch (Exception e) {
+							StringWriter sw = new StringWriter();
+							e.printStackTrace(new PrintWriter(sw, true));
+							String str = sw.toString();
+							logger.error(str);
+							systemSignalInterface = null;
+						}
+
+						break;
+					case BPPacket.VAL_TYPE_IINT32:
+						try (Session session = sessionFactory.openSession()) {
+							tx = session.beginTransaction();
+							systemSignalInterface = (SystemSignalI32InfoHbn) session
+									.createQuery("from SystemSignalI32InfoHbn where systemSignalId = :system_signal_id")
+									.setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
+
+							tx.commit();
+						} catch (Exception e) {
+							StringWriter sw = new StringWriter();
+							e.printStackTrace(new PrintWriter(sw, true));
+							String str = sw.toString();
+							logger.error(str);
+							systemSignalInterface = null;
+						}
+						break;
+					case BPPacket.VAL_TYPE_IINT16:
+						try (Session session = sessionFactory.openSession()) {
+							tx = session.beginTransaction();
+							systemSignalInterface = (SystemSignalI16InfoHbn) session
+									.createQuery("from SystemSignalI16InfoHbn where systemSignalId = :system_signal_id")
+									.setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
+
+							tx.commit();
+						} catch (Exception e) {
+							StringWriter sw = new StringWriter();
+							e.printStackTrace(new PrintWriter(sw, true));
+							String str = sw.toString();
+							logger.error(str);
+							systemSignalInterface = null;
+						}
+						break;
+					case BPPacket.VAL_TYPE_ENUM:
+						try (Session session = sessionFactory.openSession()) {
+							tx = session.beginTransaction();
+							systemSignalInterface = (SystemSignalEnumInfoHbn) session
+									.createQuery(
+											"from SystemSignalEnumInfoHbn where systemSignalId = :system_signal_id")
+									.setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
+
+							tx.commit();
+						} catch (Exception e) {
+							StringWriter sw = new StringWriter();
+							e.printStackTrace(new PrintWriter(sw, true));
+							String str = sw.toString();
+							logger.error(str);
+							systemSignalInterface = null;
+						}
+						break;
+					case BPPacket.VAL_TYPE_FLOAT:
+						try (Session session = sessionFactory.openSession()) {
+							tx = session.beginTransaction();
+							systemSignalInterface = (SystemSignalFloatInfoHbn) session
+									.createQuery(
+											"from SystemSignalFloatInfoHbn where systemSignalId = :system_signal_id")
+									.setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
+
+							tx.commit();
+						} catch (Exception e) {
+							StringWriter sw = new StringWriter();
+							e.printStackTrace(new PrintWriter(sw, true));
+							String str = sw.toString();
+							logger.error(str);
+							systemSignalInterface = null;
+						}
+						break;
+					case BPPacket.VAL_TYPE_STRING:
+						try (Session session = sessionFactory.openSession()) {
+							tx = session.beginTransaction();
+							systemSignalInterface = (SystemSignalStringInfoHbn) session
+									.createQuery(
+											"from SystemSignalStringInfoHbn where systemSignalId = :system_signal_id")
+									.setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
+
+							tx.commit();
+						} catch (Exception e) {
+							StringWriter sw = new StringWriter();
+							e.printStackTrace(new PrintWriter(sw, true));
+							String str = sw.toString();
+							logger.error(str);
+							systemSignalInterface = null;
+						}
+						break;
+					case BPPacket.VAL_TYPE_BOOLEAN:
+						try (Session session = sessionFactory.openSession()) {
+							tx = session.beginTransaction();
+							systemSignalInterface = (SystemSignalBooleanInfoHbn) session
+									.createQuery(
+											"from SystemSignalBooleanInfoHbn where systemSignalId = :system_signal_id")
+									.setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
+
+							tx.commit();
+						} catch (Exception e) {
+							StringWriter sw = new StringWriter();
+							e.printStackTrace(new PrintWriter(sw, true));
+							String str = sw.toString();
+							logger.error(str);
+							systemSignalInterface = null;
+						}
+						break;
+					default:
+						return null;
+					}
+					systemSignalCustomInfoUnitLst.add(new SystemSignalCustomInfoUnit(signalId, systemSignalInterface));
+					break;
+				}
+			}
+		}
+		return systemSignalCustomInfoUnitLst;
+	}
+	
 	protected List<SignalInfoHbn> getSignalInfoHbnLst(long uniqDeviceId, int signalIdSmallest, int signalIdBiggest) {
 		if(uniqDeviceId < 0) {
 			return null;
@@ -798,22 +988,31 @@ public class BeecomDB {
 		return getSignalInfoHbnLst(uniqDeviceId, 0, BPPacket.SYS_SIG_START_ID - 1);
 	}
 	
-	public List<SystemSignalInfoHbn> getSysSigInfoHbnLst(List<SignalInfoHbn> signalInfoHbnLst) {
+	public List<SystemSignalInfoHbn> getSysSigInfoHbnLst(List<SignalInfoHbn> signalInfoHbnLst, Boolean ifDef) {
 		List<SystemSignalInfoHbn> systemSignalInfoHbnLst = new ArrayList<SystemSignalInfoHbn>();
 		
 		Transaction tx = null;
+		StringBuilder hql = new StringBuilder();
+		hql.append("from SystemSignalInfoHbn where signalId = :signal_id");
+		if(null != ifDef) {
+			hql.append(" and ifConfigDef = ");
+			hql.append(ifDef.toString());
+		}
+		
 		try (Session session = sessionFactory.openSession()) {
 			Iterator<SignalInfoHbn> it = signalInfoHbnLst.iterator();
 			SystemSignalInfoHbn systemSignalInfoHbn = null;
 			tx = session.beginTransaction();
 			while(it.hasNext()) {
 
-				systemSignalInfoHbn = (SystemSignalInfoHbn)session.createQuery("from SystemSignalInfoHbn where signalId = :signal_id")
+				// systemSignalInfoHbn = (SystemSignalInfoHbn)session.createQuery("from SystemSignalInfoHbn where signalId = :signal_id and ifConfigDef = false")
+				systemSignalInfoHbn = (SystemSignalInfoHbn)session.createQuery(hql.toString())
 				.setParameter("signal_id", it.next().getId())
 				.uniqueResult();
 				
 				if(null == systemSignalInfoHbn) {
-					return null;
+					// return null;
+					continue;
 				}
 				systemSignalInfoHbnLst.add(systemSignalInfoHbn);
 				systemSignalInfoHbn = null;
@@ -825,7 +1024,7 @@ public class BeecomDB {
 			e.printStackTrace(new PrintWriter(sw, true));
 			String str = sw.toString();
 			logger.error(str);
-			systemSignalInfoHbnLst = null;
+			// systemSignalInfoHbnLst = null;
 		}
 		
 		return systemSignalInfoHbnLst;

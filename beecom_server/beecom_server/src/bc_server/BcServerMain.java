@@ -30,6 +30,7 @@ import db.CustomSignalNameLangInfoHbn;
 import db.DevInfoHbn;
 import db.SignalInfoHbn;
 import db.SnInfoHbn;
+import db.SystemSignalCustomInfoUnit;
 import db.SystemSignalInfoHbn;
 import db.SystemSignalInfoUnit;
 import db.SystemSignalStringInfoHbn;
@@ -118,6 +119,12 @@ public class BcServerMain {
 			System.out.println("cusSig: " + cusSigMap.get(i).getSignalId());
 		}
 		
+		List<SystemSignalCustomInfoUnit> systemSignalCustomInfoUnit = new ArrayList<SystemSignalCustomInfoUnit>();
+		systemSignalCustomInfoUnit = beecomDB.getSystemSignalCustomInfoUnitLst(3L, systemSignalCustomInfoUnit);
+		for(int i = 0; i < systemSignalCustomInfoUnit.size(); i++) {
+			System.out.println("SysSigCusUnit: " + systemSignalCustomInfoUnit.get(i).toString());
+		}
+		
 		List<SystemSignalInfoUnit> systemSignalInfoUnitLst = new ArrayList<SystemSignalInfoUnit>();
 		systemSignalInfoUnitLst = beecomDB.getSystemSignalUnitLst(3L, systemSignalInfoUnitLst);
 		for(int i = 0; i < systemSignalInfoUnitLst.size(); i++) {
@@ -129,6 +136,7 @@ public class BcServerMain {
 		for(int i = 0; i < customSignalInfoUnitLst.size(); i++) {
 			System.out.println("cusSigUnit: " + customSignalInfoUnitLst.get(i).toString());
 		}
+
 		
 		/*
 		SessionFactory sessionFactory = buildSessionFactory(); 

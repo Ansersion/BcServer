@@ -9,10 +9,10 @@ CREATE TABLE system_signal_u32_info
 	/* The name can't be changed */
 	/* sys_sig_name_lang_id INT unsigned not null,   */
 	
-	permission TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	permission TINYINT UNSIGNED NOT NULL DEFAULT 6,
 	min_val INT UNSIGNED NOT NULL DEFAULT 4294967295, /* 0xFFFFFFFF */
 	max_val INT UNSIGNED NOT NULL DEFAULT 4294967295, /* 0xFFFFFFFF */
-	def_val INT UNSIGNED NOT NULL DEFAULT 0,
+	def_val INT UNSIGNED NOT NULL DEFAULT 4294967295,
 	
 	/* Group language resource is from the sys_group_language_resource.csv */
 	group_lang_id SMALLINT UNSIGNED NOT NULL DEFAULT 0, 
