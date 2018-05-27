@@ -38,6 +38,8 @@ import db.BeecomDB;
 import db.ClientIDDB;
 import db.DBDevInfoRec;
 import db.DBSysSigRec;
+import db.UserInfoUnit;
+import db.BeecomDB.GetSnErrorEnum;
 import other.BPError;
 
 public class BcServerHandler extends IoHandlerAdapter {
@@ -100,7 +102,8 @@ public class BcServerHandler extends IoHandlerAdapter {
 			String password = decodedPack.getPasswordPld();
 			/* check user/pwd valid */
 			if (userClntFlag) {
-				BeecomDB.LoginErrorEnum loginErrorEnum = BeecomDB.checkUserPassword(userName, password);
+				UserInfoUnit userInfoUnit = new UserInfoUnit();
+				BeecomDB.LoginErrorEnum loginErrorEnum = BeecomDB.getInstance().checkUserPassword(userName, password, userInfoUnit);
 				
 				switch(loginErrorEnum) {
 					case USER_INVALID:
@@ -118,14 +121,18 @@ public class BcServerHandler extends IoHandlerAdapter {
 						session.closeOnFlush();
 						break;
 					default:
-						/* LOGIN_OK */
+						if(null == userInfoUnit.getUserInfoHbn()) {
+							session.write(packAck);
+							session.closeOnFlush();
+							throw new Exception("Error: Database Error");
+						}
 						break;
 				}
 				
 				if (loginErrorEnum != BeecomDB.LoginErrorEnum.LOGIN_OK) {
 					return;
 				}
-				bpSession = new BPUserSession(userName, password);
+				bpSession = new BPUserSession(userInfoUnit);
 				BeecomDB.getInstance().getUserName2SessionMap().put(userName, bpSession);
 				session.setAttribute(SESS_ATTR_BP_SESSION, bpSession);
 				
@@ -207,7 +214,13 @@ public class BcServerHandler extends IoHandlerAdapter {
 				}
 				String sn = pld.getDeviceSn();
 				long devUniqIdTmp = BeecomDB.getInstance().getDeviceUniqId(sn);
-				// TODO: check if the user has permission to access this device
+				BPUserSession bpUserSession = (BPUserSession)session.getAttribute(SESS_ATTR_BP_SESSION);
+				BeecomDB.GetSnErrorEnum getSnErrorEnum = BeecomDB.getInstance().checkGetSNPermission(bpUserSession.getUserInfoUnit().getUserInfoHbn().getId(), sn);
+				if(getSnErrorEnum != BeecomDB.GetSnErrorEnum.GET_SN_OK) {
+					packAck.getVrbHead().setRetCode(BPPacketGET.RET_CODE_GET_SN_PERMISSION_DENY_ERR);
+					session.write(packAck);
+					return;
+				}
 				packAck.getVrbHead().setDevIdFlag(true);
 				packAck.getPld().setDevUniqId(devUniqIdTmp);
 				session.write(packAck);

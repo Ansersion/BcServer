@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import bp_packet.BPPacket;
 import bp_packet.BPSession;
+import bp_packet.BPUserSession;
 import other.Util;
 import sys_sig_table.BPSysSigTable;
 import sys_sig_table.SysSigInfo;
@@ -61,6 +62,14 @@ public class BeecomDB {
 		LOGIN_OK,
 		USER_INVALID,
 		PASSWORD_INVALID,
+		USER_OR_PASSWORD_INVALID,
+	}
+	
+	public static enum GetSnErrorEnum {
+		GET_SN_OK,
+		GET_SN_USER_INVALID, 
+		GET_SN_SN_INVALID,
+		GET_SN_PERMISSION_DENY,
 	}
 
 	private BeecomDB() {
@@ -251,6 +260,49 @@ public class BeecomDB {
 	
 	public static LoginErrorEnum checkUserPassword(String name, String password) {
 		return LoginErrorEnum.LOGIN_OK;
+	}
+	
+	public LoginErrorEnum checkUserPassword(String name, String password, UserInfoUnit userInfoUnit) {
+
+		if(null == name || name.isEmpty()) {
+			return LoginErrorEnum.USER_INVALID;
+		}
+		if(null == password || password.isEmpty()) {
+			return LoginErrorEnum.PASSWORD_INVALID;
+		}
+
+		LoginErrorEnum result = LoginErrorEnum.LOGIN_OK;
+		Transaction tx = null;
+		try (Session session = sessionFactory.openSession()) {
+			tx = session.beginTransaction();
+			UserInfoHbn userInfoHbn = (UserInfoHbn)session  
+		            .createQuery("from UserInfoHbn where name = :p_name and password = :p_password")
+		            .setParameter("p_name", name)
+		            .setParameter("p_password", password).uniqueResult();
+		    
+			tx.commit();
+			if(null == userInfoHbn) {
+				result = LoginErrorEnum.USER_OR_PASSWORD_INVALID;
+			} else {
+				if(null != userInfoUnit) {
+					userInfoUnit.setUserInfoHbn(userInfoHbn);
+				}
+			}
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+			userInfoUnit = null;
+			result = LoginErrorEnum.USER_OR_PASSWORD_INVALID;
+		}
+		return result;
+	}
+	
+	public GetSnErrorEnum checkGetSNPermission(long userId, String sn) {
+		GetSnErrorEnum result = GetSnErrorEnum.GET_SN_OK;
+		
+		return result;
 	}
 	
 	public static LoginErrorEnum checkDeviceUniqId(long devUniqId) {
@@ -1094,7 +1146,7 @@ public class BeecomDB {
 	}
 	*/
 	
-    private static SessionFactory buildSessionFactory() {  
+    public static SessionFactory buildSessionFactory() {  
         try {  
             // Create the SessionFactory from hibernate.cfg.xml  
             return new Configuration().configure().buildSessionFactory();  

@@ -31,7 +31,7 @@ import sys_sig_table.BPSysSigTable;
 
 public class BeecomDBUnitTest {
 	
-	private static final Logger logger = LoggerFactory.getLogger(BcServerHandler.class);
+	private static final Logger logger = LoggerFactory.getLogger(BeecomDBUnitTest.class);
 
 	@Before
 	public void setUp() throws Exception {

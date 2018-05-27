@@ -96,91 +96,6 @@ public class BcServerMain {
 		bcAcceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE,
 				IDLE_READ_PROC_TIME);
 		
-		/*
-		BeecomDB beecomDB = BeecomDB.getInstance();
-		long n = beecomDB.getDeviceUniqId("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2");
-		System.out.println("n: " + n);
-		*/
-		BeecomDB beecomDB = BeecomDB.getInstance();
-		/*
-		List<SignalInfoHbn> sysSigMap = beecomDB.getSysSigMapLst(3L);
-		for(int i = 0; i < sysSigMap.size(); i++) {
-			System.out.println("Sig: " + sysSigMap.get(i).getSignalId());
-		}
-		
-		List<SystemSignalInfoHbn> systemSignalLst = beecomDB.getSysSigInfoHbnLst(sysSigMap);
-		for(int i = 0; i < systemSignalLst.size(); i++) {
-			System.out.println("sysSig: " + systemSignalLst.get(i).getId() + ", configDef: " + systemSignalLst.get(i).getIfConfigDef());
-		}
-		*/
-		
-		List<SignalInfoHbn> cusSigMap = beecomDB.getCusSigMapLst(3L);
-		for(int i = 0; i < cusSigMap.size(); i++) {
-			System.out.println("cusSig: " + cusSigMap.get(i).getSignalId());
-		}
-		
-		List<SystemSignalCustomInfoUnit> systemSignalCustomInfoUnit = new ArrayList<SystemSignalCustomInfoUnit>();
-		systemSignalCustomInfoUnit = beecomDB.getSystemSignalCustomInfoUnitLst(3L, systemSignalCustomInfoUnit);
-		for(int i = 0; i < systemSignalCustomInfoUnit.size(); i++) {
-			System.out.println("SysSigCusUnit: " + systemSignalCustomInfoUnit.get(i).toString());
-		}
-		
-		List<SystemSignalInfoUnit> systemSignalInfoUnitLst = new ArrayList<SystemSignalInfoUnit>();
-		systemSignalInfoUnitLst = beecomDB.getSystemSignalUnitLst(3L, systemSignalInfoUnitLst);
-		for(int i = 0; i < systemSignalInfoUnitLst.size(); i++) {
-			System.out.println("sysSig: " + systemSignalInfoUnitLst.get(i).toString());
-		}
-		
-		List<CustomSignalInfoUnit> customSignalInfoUnitLst = new ArrayList<CustomSignalInfoUnit>();
-		customSignalInfoUnitLst = beecomDB.getCustomSignalUnitLst(3L, customSignalInfoUnitLst);
-		for(int i = 0; i < customSignalInfoUnitLst.size(); i++) {
-			System.out.println("cusSigUnit: " + customSignalInfoUnitLst.get(i).toString());
-		}
-
-		
-		/*
-		SessionFactory sessionFactory = buildSessionFactory(); 
-		Session session = sessionFactory.openSession();
-		Transaction tx = null;
-		try {
-			   tx = session.beginTransaction();
-			   // do some work
-			   UserInfoHbn userInfoHbn = session.load(UserInfoHbn.class, 1L);
-			   logger.info(userInfoHbn.toString());
-			   DevInfoHbn devInfoHbn = session.load(DevInfoHbn.class, 1L);
-			   logger.info(devInfoHbn.toString());
-			   SnInfoHbn snInfoHbn = session.load(SnInfoHbn.class, 1L);
-			   logger.info(snInfoHbn.toString());
-			   UserDevRelInfoHbn userDevRelInfoHbn = session.load(UserDevRelInfoHbn.class, 1L);
-			   logger.info(userDevRelInfoHbn.toString());
-			   SignalInfoHbn signalInfoHbn = session.load(SignalInfoHbn.class, 1L);
-			   logger.info(signalInfoHbn.toString());
-			   CustomSignalInfoHbn customSignalInfoHbn = session.load(CustomSignalInfoHbn.class, 1L);
-			   logger.info(customSignalInfoHbn.toString());
-			   SystemSignalInfoHbn systemSignalInfoHbn = session.load(SystemSignalInfoHbn.class, 1L);
-			   logger.info(systemSignalInfoHbn.toString());
-			   CustomSignalEnumInfoHbn customSignalEnumInfoHbn = session.load(CustomSignalEnumInfoHbn.class, 1L);
-			   logger.info(customSignalEnumInfoHbn.toString());
-			   CustomSignalNameLangInfoHbn customSignalNameLangInfoHbn = session.load(CustomSignalNameLangInfoHbn.class, 1L);
-			   logger.info(customSignalNameLangInfoHbn.toString());
-			   CustomSignalEnumLangInfoHbn customSignalEnumLangInfoHbn = session.load(CustomSignalEnumLangInfoHbn.class, 1L);
-			   logger.info(customSignalEnumLangInfoHbn.toString());
-			   SystemSignalStringInfoHbn systemSignalStringInfoHbn = session.load(SystemSignalStringInfoHbn.class, 1L);
-			   logger.info(systemSignalStringInfoHbn.toString());
-			   // tx.commit();
-			}
-			catch (Exception e) {
-			   if (tx!=null) {
-				   tx.rollback();
-			   }
-	            StringWriter sw = new StringWriter();
-	            e.printStackTrace(new PrintWriter(sw, true));
-	            String str = sw.toString();
-	            logger.error(str);
-			}finally {
-			   session.close();
-			}
-		
 		try {
 			bcAcceptor.bind(new InetSocketAddress(BC_SERVER_PORT));
 		} catch (IOException e) {
@@ -189,7 +104,6 @@ public class BcServerMain {
             String str = sw.toString();
             logger.error(str);
 		}
-		*/
 	}
 	
 }

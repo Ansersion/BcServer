@@ -1,11 +1,15 @@
 package bp_packet;
 
+import db.UserInfoUnit;
+
 public class BPUserSession extends BPSession {
 	private String userName;
 	private String email;
 	private String phone;
 	private String password;
+	private UserInfoUnit userInfoUnit;
 	
+	/*
 	public BPUserSession() {
 		super();
 		this.userName = "";
@@ -20,6 +24,11 @@ public class BPUserSession extends BPSession {
 		this.password = password;
 		this.email = "";
 		this.phone = "";
+	}
+	*/
+	
+	public BPUserSession(UserInfoUnit userInfoUnit) {
+		this.userInfoUnit = userInfoUnit;
 	}
 	
 	@Override
@@ -70,6 +79,10 @@ public class BPUserSession extends BPSession {
 	@Override
 	public String toString() {
 		return userName;
+	}
+
+	public UserInfoUnit getUserInfoUnit() {
+		return userInfoUnit;
 	}
 	
 	
