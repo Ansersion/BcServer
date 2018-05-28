@@ -3,6 +3,8 @@
  */
 package db;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Connection;
@@ -301,6 +303,49 @@ public class BeecomDB {
 	
 	public GetSnErrorEnum checkGetSNPermission(long userId, String sn) {
 		GetSnErrorEnum result = GetSnErrorEnum.GET_SN_OK;
+		
+		if(userId <= 0) {
+			return GetSnErrorEnum.GET_SN_USER_INVALID;
+		}
+		if(null == sn || sn.isEmpty()) {
+			return GetSnErrorEnum.GET_SN_SN_INVALID;
+		}
+
+		Transaction tx = null;
+		try (Session session = sessionFactory.openSession()) {
+			tx = session.beginTransaction();
+			SnInfoHbn snInfoHbn = null;
+			snInfoHbn = (SnInfoHbn)session  
+		            .createQuery("from SnInfoHbn where sn = :p_sn")
+		            .setParameter("p_sn", sn).uniqueResult();
+			if(null == snInfoHbn) {
+				return GetSnErrorEnum.GET_SN_SN_INVALID;
+			}
+			long uniqDeviceId = snInfoHbn.getId();
+			DevInfoHbn devInfoHbn = null;
+			devInfoHbn = (DevInfoHbn)session.createQuery("from DevInfoHbn where snId = :sn_id and adminId = :admin_id")
+					.setParameter("sn_id", uniqDeviceId)
+					.setParameter("admin_id", userId).uniqueResult();
+			if(null == devInfoHbn) {
+				UserDevRelInfoHbn userDevRelInfoHbn = null;
+				userDevRelInfoHbn = (UserDevRelInfoHbn)session.createQuery("from UserDevRelInfoHbn where devId = :dev_id and userId = :user_id")
+						.setParameter("dev_id", uniqDeviceId)
+						.setParameter("user_id", userId).uniqueResult();
+				
+				if(null == userDevRelInfoHbn) {
+					return GetSnErrorEnum.GET_SN_PERMISSION_DENY;
+				}
+			}
+			
+			tx.commit();
+
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+			result = GetSnErrorEnum.GET_SN_PERMISSION_DENY;
+		}
 		
 		return result;
 	}
