@@ -4,20 +4,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.mina.core.session.IoSession;
+
 public class BPDeviceSession extends BPSession {
 	private Long uniqDeviceId;
 	private String password;
 	private Map<Integer, List<Object> > signalValueMap;
 	
-	public BPDeviceSession() {
-		super();
+	public BPDeviceSession(IoSession session) {
+		super(session);
 		uniqDeviceId = 0L;
 		password = "";
 		signalValueMap = new HashMap<>();
 	}
 	
-	public BPDeviceSession(Long uniqDeviceId, String password) {
-		super();
+	public BPDeviceSession(IoSession session, Long uniqDeviceId, String password) {
+		super(session);
 		this.uniqDeviceId = uniqDeviceId;
 		this.password = password;
 		this.signalValueMap = new HashMap<>();

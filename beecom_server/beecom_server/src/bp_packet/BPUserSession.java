@@ -1,5 +1,7 @@
 package bp_packet;
 
+import org.apache.mina.core.session.IoSession;
+
 import db.UserInfoUnit;
 
 public class BPUserSession extends BPSession {
@@ -27,7 +29,8 @@ public class BPUserSession extends BPSession {
 	}
 	*/
 	
-	public BPUserSession(UserInfoUnit userInfoUnit) {
+	public BPUserSession(IoSession session, UserInfoUnit userInfoUnit) {
+		super(session);
 		this.userInfoUnit = userInfoUnit;
 	}
 	

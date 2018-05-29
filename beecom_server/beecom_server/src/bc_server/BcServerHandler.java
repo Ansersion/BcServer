@@ -25,6 +25,7 @@ import bp_packet.BPParseException;
 import bp_packet.BPPacketCONNACK;
 import bp_packet.BPPacketGET;
 import bp_packet.BPPacketPINGACK;
+import bp_packet.BPPacketPOST;
 import bp_packet.BPPacketPUSH;
 import bp_packet.BPPacketRPRTACK;
 import bp_packet.BPSession;
@@ -100,7 +101,6 @@ public class BcServerHandler extends IoHandlerAdapter {
 			}
 			String userName = decodedPack.getUserNamePld();
 			String password = decodedPack.getPasswordPld();
-			/* check user/pwd valid */
 			if (userClntFlag) {
 				UserInfoUnit userInfoUnit = new UserInfoUnit();
 				BeecomDB.LoginErrorEnum loginErrorEnum = BeecomDB.getInstance().checkUserPassword(userName, password, userInfoUnit);
@@ -132,7 +132,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 				if (loginErrorEnum != BeecomDB.LoginErrorEnum.LOGIN_OK) {
 					return;
 				}
-				bpSession = new BPUserSession(userInfoUnit);
+				bpSession = new BPUserSession(session, userInfoUnit);
 				BeecomDB.getInstance().getUserName2SessionMap().put(userName, bpSession);
 				session.setAttribute(SESS_ATTR_BP_SESSION, bpSession);
 				
@@ -170,9 +170,8 @@ public class BcServerHandler extends IoHandlerAdapter {
 				if (loginErrorEnum != BeecomDB.LoginErrorEnum.LOGIN_OK) {
 					return;
 				}
-				// bpSession = new BPDeviceSession(devUniqId, password);
 				if(!BeecomDB.getInstance().getDevUniqId2SessionMap().containsKey(devUniqId)) {
-					bpSession = new BPDeviceSession(devUniqId, password);
+					bpSession = new BPDeviceSession(session, devUniqId, password);
 					BeecomDB.getInstance().getDevUniqId2SessionMap().put(devUniqId, bpSession);
 				} else {
 					bpSession = BeecomDB.getInstance().getDevUniqId2SessionMap().get(devUniqId);
@@ -194,6 +193,24 @@ public class BcServerHandler extends IoHandlerAdapter {
 			session.write(packAck);
 
 		} else if (BPPacketType.GET == packType) {
+			BPPacket packAck = BPPackFactory.createBPPackAck(decodedPack);
+			if(null == packAck) {
+				logger.error("Invalid packAck");
+				return;
+			}
+			BPUserSession bpUserSession = null;
+			try {
+				bpUserSession = (BPUserSession)session.getAttribute(SESS_ATTR_BP_SESSION);
+			} catch(Exception e) {
+				StringWriter sw = new StringWriter();
+				e.printStackTrace(new PrintWriter(sw, true));
+				String str = sw.toString();
+				logger.error(str);
+			}
+			if(null == bpUserSession) {
+				return;
+			}
+			
 			vrb = decodedPack.getVrbHead();
 			pld = decodedPack.getPld();
 			boolean sysSigMapFlag = vrb.getSysSigMapFlag();
@@ -204,8 +221,6 @@ public class BcServerHandler extends IoHandlerAdapter {
 			boolean sysSigCusInfoFlag = vrb.getSysCusFlag();
 			boolean infoLeft = vrb.getInfoLeftFlag();
 			
-			BPPacket packAck = BPPackFactory.createBPPackAck(decodedPack);
-			
 			if(devIdFlag) {
 				if(sysSigMapFlag || cusSigMapFlag || sysSigFlag || cusSigFlag || sysSigCusInfoFlag || infoLeft) {
 					packAck.getVrbHead().setRetCode(BPPacketGET.RET_CODE_VRB_HEADER_FLAG_ERR);
@@ -214,7 +229,6 @@ public class BcServerHandler extends IoHandlerAdapter {
 				}
 				String sn = pld.getDeviceSn();
 				long devUniqIdTmp = BeecomDB.getInstance().getDeviceUniqId(sn);
-				BPUserSession bpUserSession = (BPUserSession)session.getAttribute(SESS_ATTR_BP_SESSION);
 				BeecomDB.GetSnErrorEnum getSnErrorEnum = BeecomDB.getInstance().checkGetSNPermission(bpUserSession.getUserInfoUnit().getUserInfoHbn().getId(), sn);
 				if(getSnErrorEnum != BeecomDB.GetSnErrorEnum.GET_SN_OK) {
 					packAck.getVrbHead().setRetCode(BPPacketGET.RET_CODE_GET_SN_PERMISSION_DENY_ERR);
@@ -228,7 +242,12 @@ public class BcServerHandler extends IoHandlerAdapter {
 			} 
 			long uniqDevId = pld.getUniqDevId();
 			pldAck = packAck.getPld();
-			// TODO: check if the user has permission to access this device
+			if(!BeecomDB.getInstance().checkGetDeviceSignalMapPermission(bpUserSession.getUserInfoUnit().getUserInfoHbn().getId(), uniqDevId)) {
+				packAck.getVrbHead().setRetCode(BPPacketGET.RET_CODE_ACCESS_DEV_PERMISSION_DENY_ERR);
+				session.write(packAck);
+				return;
+			}
+			
 			if(sysSigMapFlag) {			
 				pldAck.packSysSigMap(uniqDevId);
 			}
@@ -257,12 +276,47 @@ public class BcServerHandler extends IoHandlerAdapter {
 
 		} else if (BPPacketType.POST == packType) {
 			BPPacket packAck = BPPackFactory.createBPPackAck(decodedPack);
+			if(null == packAck) {
+				logger.error("Invalid packAck");
+				return;
+			}
+			BPUserSession bpUserSession = null;
+			try {
+				bpUserSession = (BPUserSession)session.getAttribute(SESS_ATTR_BP_SESSION);
+			} catch(Exception e) {
+				StringWriter sw = new StringWriter();
+				e.printStackTrace(new PrintWriter(sw, true));
+				String str = sw.toString();
+				logger.error(str);
+			}
+			if(null == bpUserSession) {
+				return;
+			}
+			
 			vrb = decodedPack.getVrbHead();
 			pld = decodedPack.getPld();
 			long uniqDevId = pld.getUniqDevId();
+			
+			BPDeviceSession bpDeviceSesssion = null;
+			bpDeviceSesssion = (BPDeviceSession)BeecomDB.getInstance().getDevUniqId2SessionMap().get(devUniqId);
+
+			if(null == bpDeviceSesssion) {
+				packAck.getVrbHead().setRetCode(BPPacketPOST.RET_CODE_INVALID_DEVICE_ID_ERR);
+				session.write(packAck);
+				return;
+			}
+			
+			if(!BeecomDB.getInstance().checkGetDeviceSignalMapPermission(bpUserSession.getUserInfoUnit().getUserInfoHbn().getId(), uniqDevId)) {
+				packAck.getVrbHead().setRetCode(BPPacketPOST.RET_CODE_ACCESS_DEV_PERMISSION_DENY_ERR);
+				session.write(packAck);
+				return;
+			}
+			
+			// TODO: check bpDeviceSession.getSession() active and assemble the packAck
+			
 			if(vrb.getSysSigAttrFlag()) {
 				Map<Integer, SignalAttrInfo> sysSigAttrMap = pld.getSysSigAttrMap();
-				/* change the system signal attributes */
+				// bpDeviceSesssion
 			}
 			if(vrb.getCusSigAttrFlag()) {
 				Map<Integer, SignalAttrInfo> sysCusAttrMap = pld.getCusSigAttrMap();

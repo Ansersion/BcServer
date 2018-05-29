@@ -28,7 +28,8 @@ public class BPPacketGET extends BPPacket {
 	public static final int RET_CODE_SIGNAL_NOT_SUPPORT_ERR = 0x03;
 	public static final int RET_CODE_SIGNAL_REPEAT_ERR = 0x05;
 	public static final int RET_CODE_GET_SN_PERMISSION_DENY_ERR = 0x06;
-
+	public static final int RET_CODE_ACCESS_DEV_PERMISSION_DENY_ERR = 0x07;
+	
 	int packSeq;
 	DeviceSignals devSigData = null;
 	int deviceNum;

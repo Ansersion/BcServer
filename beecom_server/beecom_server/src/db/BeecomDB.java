@@ -350,6 +350,48 @@ public class BeecomDB {
 		return result;
 	}
 	
+	public boolean checkGetDeviceSignalMapPermission(long userId, long devUniqId) {
+		boolean result = true;
+		
+		if(userId <= 0) {
+			return false;
+		}
+		if(devUniqId <= 0) {
+			return false;
+		}
+
+		Transaction tx = null;
+		try (Session session = sessionFactory.openSession()) {
+			tx = session.beginTransaction();
+
+			DevInfoHbn devInfoHbn = null;
+			devInfoHbn = (DevInfoHbn)session.createQuery("from DevInfoHbn where snId = :sn_id and adminId = :admin_id")
+					.setParameter("sn_id", devUniqId)
+					.setParameter("admin_id", userId).uniqueResult();
+			if(null == devInfoHbn) {
+				UserDevRelInfoHbn userDevRelInfoHbn = null;
+				userDevRelInfoHbn = (UserDevRelInfoHbn)session.createQuery("from UserDevRelInfoHbn where devId = :dev_id and userId = :user_id")
+						.setParameter("dev_id", devUniqId)
+						.setParameter("user_id", userId).uniqueResult();
+				
+				if(null == userDevRelInfoHbn) {
+					return false;
+				}
+			}
+			
+			tx.commit();
+
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+			result = false;
+		}
+		
+		return result;
+	}
+	
 	public static LoginErrorEnum checkDeviceUniqId(long devUniqId) {
 		return LoginErrorEnum.LOGIN_OK;
 	}

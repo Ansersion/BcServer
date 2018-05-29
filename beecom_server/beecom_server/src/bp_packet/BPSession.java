@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +48,7 @@ public abstract class BPSession {
 	// boolean isUserLogin = false;
 	// boolean isDevLogin = false;
 	// private int seqIdDevClnt = 0;
+	IoSession session;
 	int seqIdUsrClnt = 0;
 	// String devName;
 	Map<Integer, Byte[]> mapDist2SysSigMap = null;
@@ -62,19 +64,22 @@ public abstract class BPSession {
 	private byte performanceClass;
 	
 	
-	public BPSession() {
+	public BPSession(IoSession session) {
+		this.session = session;
 		this.procLevel = 0;
 		this.aliveTime = 3600;
 		this.timeout = 120;
 	}
 	
-	public BPSession(String userName, String password) {
+	public BPSession(IoSession session, String userName, String password) {
+		this.session = session;
 		this.procLevel = 0;
 		this.aliveTime = 3600;
 		this.timeout = 120;
 	}
 	
-	public BPSession(Long uniqDeviceId, String password) {
+	public BPSession(IoSession session, Long uniqDeviceId, String password) {
+		this.session = session;
 		this.procLevel = 0;
 		this.aliveTime = 3600;
 		this.timeout = 120;
@@ -179,6 +184,7 @@ public abstract class BPSession {
 	// }
 
 	
+	
 	public boolean setSysSig(DevSigData devSigData) {
 		// error = new BPError();
 		boolean ret = true;
@@ -254,6 +260,10 @@ public abstract class BPSession {
 		return ret;
 	}
 	
+	public IoSession getSession() {
+		return session;
+	}
+
 	public boolean setSysSig(Integer sigId, BPValue val) {
 		boolean ret = false;
 		if(sysSigMap.containsKey(sigId)) {
