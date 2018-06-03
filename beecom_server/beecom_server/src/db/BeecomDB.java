@@ -21,12 +21,14 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.procedure.internal.Util.ResultClassesResolutionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import bp_packet.BPPacket;
 import bp_packet.BPSession;
 import bp_packet.BPUserSession;
+import bp_packet.SignalAttrInfo;
 import other.Util;
 import sys_sig_table.BPSysSigTable;
 import sys_sig_table.SysSigInfo;
@@ -1200,6 +1202,48 @@ public class BeecomDB {
 		}
 		
 		return customSignalInfoHbnLst;
+	}
+	
+	public int modifySysSigAttrMap(long uniqDevId, Map<Integer, SignalAttrInfo> sysSigAttrMap) {
+		if(null == sysSigAttrMap) {
+			return 0;
+		}
+		  
+		Iterator<Map.Entry<Integer, SignalAttrInfo>> entries = sysSigAttrMap.entrySet().iterator();  
+		Map.Entry<Integer, SignalAttrInfo> entry;
+		  
+		while (entries.hasNext()) {    
+		    entry = entries.next();  
+		    
+			Transaction tx = null;
+		    try (Session session = sessionFactory.openSession()) {
+				tx = session.beginTransaction();
+				
+				SignalInfoHbn signalInfoHbn = (SignalInfoHbn)session.createQuery("from SignalInfoHbn where devId = :dev_id and signalId = :signal_id")
+				.setParameter("dev_id", uniqDevId)
+				.setParameter("signal_id", entry.getKey())
+				.uniqueResult();
+				if(null == signalInfoHbn) {
+					return entry.getKey();
+				}
+				
+				SystemSignalInfoHbn systemSignalInfoHbn = (SystemSignalInfoHbn)session.createQuery("from SystemSignalInfoHbn where signalId = :signal_id")
+				.setParameter("signal_id", signalInfoHbn.getId())
+				.uniqueResult();
+				if(null == systemSignalInfoHbn) {
+					logger.error("DB error: {}", signalInfoHbn.getId());
+					return entry.getKey();
+				}
+				
+				tx.commit();
+			} catch (Exception e) {
+				StringWriter sw = new StringWriter();
+				e.printStackTrace(new PrintWriter(sw, true));
+				String str = sw.toString();
+				logger.error(str);
+			}
+		}  
+		return 0;
 	}
 	
 	/*

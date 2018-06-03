@@ -119,10 +119,7 @@ public class BPPacketREPORT extends BPPacket {
 				
 				counter += newPart.parseSymTable(buf, counter);
 				
-				
 				partitation.addElement(newPart);
-				
-				
 			}while(!endFlag);		
 
 		} catch (Exception e) {

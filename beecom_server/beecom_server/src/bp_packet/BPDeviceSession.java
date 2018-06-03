@@ -16,6 +16,7 @@ public class BPDeviceSession extends BPSession {
 		uniqDeviceId = 0L;
 		password = "";
 		signalValueMap = new HashMap<>();
+		super.setSystemSignalValueMap(new HashMap<Integer, Object>());
 	}
 	
 	public BPDeviceSession(IoSession session, Long uniqDeviceId, String password) {
@@ -23,6 +24,7 @@ public class BPDeviceSession extends BPSession {
 		this.uniqDeviceId = uniqDeviceId;
 		this.password = password;
 		this.signalValueMap = new HashMap<>();
+		super.setSystemSignalValueMap(new HashMap<Integer, Object>());
 	}
 	
 	@Override

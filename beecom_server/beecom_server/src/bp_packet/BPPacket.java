@@ -10,11 +10,12 @@ import other.CrcChecksum;
  */
 public class BPPacket implements BPPacketInterface {
 
+	public static final int BP_SIGNAL_RESERVED = 0x0000;
 	public static final int BP_LEVEL = 0;
 	
 	public static final int MAX_SYS_SIG_DIST_NUM = 16;
 	public static final int SYS_SIG_START_ID = 0xE000;
-	public static final int CUS_SIG_START_ID = 0x0000;
+	public static final int CUS_SIG_START_ID = 0x0001;
 	public static final int CUS_SIG_END_ID = 0xDFFF;
 	public static final int SYS_SIG_DIST_STEP = 0x200;
 	public static final int MAX_SIG_ID = 0xFFFF;

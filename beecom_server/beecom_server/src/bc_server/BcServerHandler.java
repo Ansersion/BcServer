@@ -10,6 +10,7 @@ import java.util.Map;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
@@ -41,6 +42,7 @@ import db.DBDevInfoRec;
 import db.DBSysSigRec;
 import db.UserInfoUnit;
 import db.BeecomDB.GetSnErrorEnum;
+import javafx.util.Pair;
 import other.BPError;
 
 public class BcServerHandler extends IoHandlerAdapter {
@@ -315,10 +317,13 @@ public class BcServerHandler extends IoHandlerAdapter {
 			// TODO: check bpDeviceSession.getSession() active and assemble the packAck
 			
 			if(vrb.getSysSigAttrFlag()) {
+				/* Not completed yes */
 				Map<Integer, SignalAttrInfo> sysSigAttrMap = pld.getSysSigAttrMap();
-				// bpDeviceSesssion
+				BeecomDB.getInstance().modifySysSigAttrMap(uniqDevId, sysSigAttrMap);
+				
 			}
 			if(vrb.getCusSigAttrFlag()) {
+				/* Not completed yes */
 				Map<Integer, SignalAttrInfo> sysCusAttrMap = pld.getCusSigAttrMap();
 				/* change the custom signal attributes */
 			}
@@ -386,6 +391,24 @@ public class BcServerHandler extends IoHandlerAdapter {
 			}
 			
 		} else if (BPPacketType.REPORT == packType) {
+			BPPacket packAck = BPPackFactory.createBPPackAck(decodedPack);
+			if(null == packAck) {
+				logger.error("Invalid packAck");
+				return;
+			}
+			BPDeviceSession bpDeviceSession = null;
+			try {
+				bpDeviceSession = (BPDeviceSession)session.getAttribute(SESS_ATTR_BP_SESSION);
+			} catch(Exception e) {
+				StringWriter sw = new StringWriter();
+				e.printStackTrace(new PrintWriter(sw, true));
+				String str = sw.toString();
+				logger.error(str);
+			}
+			if(null == bpDeviceSession) {
+				return;
+			}
+			
 			vrb = decodedPack.getVrbHead();
 			pld = decodedPack.getPld();
 			boolean sysSigMapFlag = vrb.getSysSigMapFlag();
@@ -395,27 +418,56 @@ public class BcServerHandler extends IoHandlerAdapter {
 			boolean sysSigCusInfoFlag = vrb.getSysCusFlag();
 			boolean sigMapChecksumFlag = vrb.getSigMapChecksumFlag();
 			
-			BPPacket packAck = BPPackFactory.createBPPackAck(decodedPack);
-			
-			long uniqDevId = pld.getUniqDevId();
+			long uniqDevId = bpDeviceSession.getUniqDevId();
 			pldAck = packAck.getPld();
-			// TODO: check if the user has permission to access this device
+			vrbAck = packAck.getVrbHead();
 			
 			if(sigMapChecksumFlag) {
 				long sigMapChecksum = pld.getSigMapChecksum();
 				/* check the sigMapChecksum */
 			} 
 			if(sysSigMapFlag) {			
-				/* save the system signal map */
+				/* TODO: */
+				
 			}
 			if(cusSigMapFlag) {
-				/* save the custom signal map */
+				/* TODO: */
 			}
 			if(sysSigFlag) {
-				/* save the system signal values */
+				Map<Integer, Object> systemSignalValuesSessoin = bpDeviceSession.getSystemSignalValueMap();
+				Map<Integer, Object> systemSignalValues = pld.getSysSigValMap();
+				  
+				Iterator<Map.Entry<Integer, Object>> entries = systemSignalValues.entrySet().iterator();  
+				while (entries.hasNext()) {  
+				    Map.Entry<Integer, Object> entry = entries.next();  
+				    if(!systemSignalValuesSessoin.containsKey(entry.getValue())) {
+				    	vrbAck.setRetCode(BPPacketRPRTACK.RET_CODE_SIG_ID_INVALID);
+				    	pldAck.setUnsupportedSignalId(entry.getKey());
+				    	session.write(packAck);
+				    	return;
+				    }
+				    /* TODO: if(!unformed value) */
+				    systemSignalValuesSessoin.put(entry.getKey(), entry.getValue());
+				  
+				}  
 			}
 			if(cusSigFlag) {
-				/* save the custom signal values */
+				Map<Integer, Pair<Byte, Object>> customSignalValuesSessoin = bpDeviceSession.getCustomSignalValueMap();
+				Map<Integer, Pair<Byte, Object>> customSignalValues = pld.getCusSigValMap();
+				  
+				Iterator<Map.Entry<Integer, Pair<Byte, Object>>> entries = customSignalValues.entrySet().iterator();  
+				while (entries.hasNext()) {  
+				    Map.Entry<Integer, Pair<Byte, Object>> entry = entries.next();  
+				    if(!customSignalValuesSessoin.containsKey(entry.getValue())) {
+				    	vrbAck.setRetCode(BPPacketRPRTACK.RET_CODE_SIG_ID_INVALID);
+				    	pldAck.setUnsupportedSignalId(entry.getKey());
+				    	session.write(packAck);
+				    	return;
+				    }
+				    /* TODO: if(!unformed value) */
+				    customSignalValuesSessoin.put(entry.getKey(), entry.getValue());
+				  
+				}  
 			}
 			if(sysSigCusInfoFlag) {
 				/* save the system signal customized info */

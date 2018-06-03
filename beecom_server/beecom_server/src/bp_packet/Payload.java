@@ -349,6 +349,20 @@ public class Payload {
 	public Map<Integer, Object> getSysSigValMap() {
 		return sysSigValMap;
 	}
+
+	public Map<Integer, Pair<Byte, Object>> getCusSigValMap() {
+		return cusSigValMap;
+	}
+	
+	
+	public void setUnsupportedSignalId(int id) {
+		if(null == error) {
+			error = new BPError();
+		}
+		error.setSigId(id);
+	}
+	
+	
 	
 	
 }
