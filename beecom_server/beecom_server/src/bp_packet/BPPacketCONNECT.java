@@ -135,8 +135,8 @@ public class BPPacketCONNECT extends BPPacket {
 			encodedByte = getIoBuffer().get();
 			super.parseVrbHeadFlags(encodedByte);
 
-			int clientId = getIoBuffer().getUnsignedShort();
-			getVrbHead().setClientId(clientId);
+			// int clientId = getIoBuffer().getUnsignedShort();
+			// getVrbHead().setClientId(clientId);
 
 			int aliveTime = getIoBuffer().getUnsignedShort();
 			getVrbHead().setAliveTime(aliveTime);
@@ -160,7 +160,6 @@ public class BPPacketCONNECT extends BPPacket {
 			if (!getUsrNameFlagVrbHead() || !getPwdFlagVrbHead()) {
 				return 0;
 			}
-			
 
 			int userNameLen = getIoBuffer().getUnsignedShort();
 			byte[] userName = new byte[userNameLen];
@@ -170,8 +169,8 @@ public class BPPacketCONNECT extends BPPacket {
 			byte[] password = new byte[passwordLen];
 			getIoBuffer().get(password);
 			
-			// setPldUserName(userName);
-			// setPldPassword(password);
+			setPldUserName(new String(userName));
+			setPldPassword(new String(password));
 
 		} catch (Exception e) {
             StringWriter sw = new StringWriter();

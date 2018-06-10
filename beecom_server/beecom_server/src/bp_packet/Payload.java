@@ -354,6 +354,28 @@ public class Payload {
 		return cusSigValMap;
 	}
 	
+	public Map<Integer, Object> putSysSigValMap(Integer sigId, Object value) {
+		if(null == sigId || null == value) {
+			return sysSigValMap;
+		}
+		if(null == sysSigValMap) {
+			sysSigValMap = new HashMap<Integer, Object>();
+		}
+		sysSigValMap.put(sigId,  value);
+		return sysSigValMap;
+	}
+	
+	public Map<Integer, Pair<Byte, Object> > putCusSigValMap(Integer sigId, Byte sigType, Object value) {
+		if(null == sigId || null == sigType || null == value) {
+			return cusSigValMap;
+		}
+		if(null == cusSigValMap) {
+			cusSigValMap = new HashMap<Integer, Pair<Byte, Object>>();
+		}
+		cusSigValMap.put(sigId, new Pair<Byte, Object>(sigType, value));
+		return cusSigValMap;
+	}
+	
 	
 	public void setUnsupportedSignalId(int id) {
 		if(null == error) {

@@ -397,6 +397,10 @@ public class BeecomDB {
 	public static LoginErrorEnum checkDeviceUniqId(long devUniqId) {
 		return LoginErrorEnum.LOGIN_OK;
 	}
+	
+	public LoginErrorEnum checkDevicePassword(String userName, String password, DeviceInfoUnit deviceInfoUnit) {
+		return LoginErrorEnum.LOGIN_OK;
+	}
 
 	public static boolean chkDevUniqId(long devUniqId) {
 		BeecomDB db = getInstance();

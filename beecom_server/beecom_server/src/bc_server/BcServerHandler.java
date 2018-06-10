@@ -40,6 +40,7 @@ import db.BeecomDB;
 import db.ClientIDDB;
 import db.DBDevInfoRec;
 import db.DBSysSigRec;
+import db.DeviceInfoUnit;
 import db.UserInfoUnit;
 import db.BeecomDB.GetSnErrorEnum;
 import javafx.util.Pair;
@@ -143,7 +144,8 @@ public class BcServerHandler extends IoHandlerAdapter {
 				BeecomDB.LoginErrorEnum loginErrorEnum;
 				try {
 					devUniqId = Integer.valueOf(userName).intValue();
-					loginErrorEnum = BeecomDB.checkDeviceUniqId(devUniqId);
+					DeviceInfoUnit deviceInfoUnit = new DeviceInfoUnit();
+					loginErrorEnum = BeecomDB.getInstance().checkDevicePassword(userName, password, deviceInfoUnit);
 					switch (loginErrorEnum) {
 					case USER_INVALID:
 						logger.warn("Invalid user name:{}", userName);

@@ -65,12 +65,14 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 		case DEC_FX_HEAD:
 			// The length of fixed-header is 3 at most 
 			if (ioIn.remaining() >= 3) { 
+				/*
 				byte[] tst = ioIn.array();
 				if(tst[0] == 'T' && tst[1] == 'S' && tst[2] == 'T') {
 					ioIn.get(new byte[ioIn.remaining()]);
 					decoderOut.write("TST");
 					return true;
 				}
+				*/
 				BPPacket bpPack = BPPackFactory.createBPPack(ioIn);
 				if(null == bpPack) {
 					throw new BPParseFxHeaderException("Error: cannot create BPPacket!");

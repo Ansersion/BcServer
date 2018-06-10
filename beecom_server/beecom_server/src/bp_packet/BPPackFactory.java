@@ -73,7 +73,6 @@ public class BPPackFactory {
 		
 		BPPacket ret;
 
-
 		try {
 			byte b = io.get();
 			ret = createBPPack(b);

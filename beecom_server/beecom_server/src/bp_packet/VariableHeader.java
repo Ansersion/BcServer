@@ -218,7 +218,7 @@ public class VariableHeader {
 		return bit5;
 	}
 	
-	public boolean getSigFlag() {
+	public boolean getSigValFlag() {
 		return bit4;
 	}
 	
