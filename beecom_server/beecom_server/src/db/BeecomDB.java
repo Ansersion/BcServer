@@ -394,8 +394,40 @@ public class BeecomDB {
 		return result;
 	}
 	
-	public static LoginErrorEnum checkDeviceUniqId(long devUniqId) {
-		return LoginErrorEnum.LOGIN_OK;
+	public LoginErrorEnum checkDevicePassword(long devUniqId, String password, DeviceInfoUnit deviceInfoUnit) {
+		LoginErrorEnum ret = LoginErrorEnum.LOGIN_OK;
+		if(devUniqId <= 0) {
+			return LoginErrorEnum.USER_INVALID;
+		}
+		if(null == deviceInfoUnit) {
+			logger.error("Inner error: null == deviceInfoUnit");
+			return LoginErrorEnum.USER_OR_PASSWORD_INVALID;
+		}
+		
+		Transaction tx = null;
+		try (Session session = sessionFactory.openSession()) {
+			tx = session.beginTransaction();
+
+			DevInfoHbn devInfoHbn = null;
+			devInfoHbn = (DevInfoHbn)session.createQuery("from DevInfoHbn where id = :dev_uniq_id and password = :_password")
+					.setParameter("dev_uniq_id", devUniqId)
+					.setParameter("_password", password).uniqueResult();
+			if(null == devInfoHbn) {
+				return LoginErrorEnum.PASSWORD_INVALID;
+			}
+			deviceInfoUnit.setDevInfoHbn(devInfoHbn);
+			
+			tx.commit();
+
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+			ret = LoginErrorEnum.PASSWORD_INVALID;
+		}
+		
+		return ret;
 	}
 	
 	public LoginErrorEnum checkDevicePassword(String userName, String password, DeviceInfoUnit deviceInfoUnit) {
@@ -476,6 +508,7 @@ public class BeecomDB {
 			e.printStackTrace(new PrintWriter(sw, true));
 			String str = sw.toString();
 			logger.error(str);
+			deviceUniqId = 0;
 		}
 		return deviceUniqId;
 	}

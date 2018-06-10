@@ -143,9 +143,10 @@ public class BcServerHandler extends IoHandlerAdapter {
 			if(devClntFlag) {
 				BeecomDB.LoginErrorEnum loginErrorEnum;
 				try {
-					devUniqId = Integer.valueOf(userName).intValue();
+					// devUniqId = Integer.valueOf(userName).intValue();
+					devUniqId = BeecomDB.getInstance().getDeviceUniqId(userName);
 					DeviceInfoUnit deviceInfoUnit = new DeviceInfoUnit();
-					loginErrorEnum = BeecomDB.getInstance().checkDevicePassword(userName, password, deviceInfoUnit);
+					loginErrorEnum = BeecomDB.getInstance().checkDevicePassword(devUniqId, password, deviceInfoUnit);
 					switch (loginErrorEnum) {
 					case USER_INVALID:
 						logger.warn("Invalid user name:{}", userName);
@@ -160,7 +161,9 @@ public class BcServerHandler extends IoHandlerAdapter {
 						session.closeOnFlush();
 						break;
 					default:
-						/* LOGIN_OK */
+						if(null == deviceInfoUnit.getDevInfoHbn()) {
+							throw new Exception("Inner error: null == deviceInfoUnit.getDeviceInfoHbn()");
+						}
 						break;
 					}
 
