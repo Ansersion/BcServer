@@ -418,6 +418,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 			pld = decodedPack.getPld();
 			boolean sysSigMapFlag = vrb.getSysSigMapFlag();
 			boolean cusSigMapFlag = vrb.getCusSigFlag();
+			boolean sigValFlag = vrb.getSigValFlag();
 			boolean sysSigFlag = vrb.getSysSigFlag();
 			boolean cusSigFlag = vrb.getCusSigFlag();
 			boolean sysSigCusInfoFlag = vrb.getSysCusFlag();
@@ -438,6 +439,52 @@ public class BcServerHandler extends IoHandlerAdapter {
 			if(cusSigMapFlag) {
 				/* TODO: */
 			}
+			if(sigValFlag) {
+				Map<Integer, Object> systemSignalValuesSessoin = bpDeviceSession.getSystemSignalValueMap();
+				Map<Integer, Object> systemSignalValues = pld.getSysSigValMap();
+				  
+				Iterator<Map.Entry<Integer, Object>> entriesSysSigVals = systemSignalValues.entrySet().iterator();  
+				while (entriesSysSigVals.hasNext()) {  
+				    Map.Entry<Integer, Object> entry = entriesSysSigVals.next();  
+				    if(!systemSignalValuesSessoin.containsKey(entry.getValue())) {
+				    	vrbAck.setRetCode(BPPacketRPRTACK.RET_CODE_SIG_ID_INVALID);
+				    	pldAck.setUnsupportedSignalId(entry.getKey());
+				    	session.write(packAck);
+				    	return;
+				    }
+				    
+				    if(BeecomDB.getInstance().checkSystemSignalValueUnformed(bpDeviceSession.getUniqDevId(), entry.getKey(), entry.getValue())) {
+				    	vrbAck.setRetCode(BPPacketRPRTACK.RET_CODE_SIG_VAL_INVALID);
+				    	pldAck.setUnsupportedSignalId(entry.getKey());
+				    	session.write(packAck);
+				    	return;
+				    }
+				    systemSignalValuesSessoin.put(entry.getKey(), entry.getValue());
+				}  
+				
+				Map<Integer, Pair<Byte, Object>> customSignalValuesSessoin = bpDeviceSession.getCustomSignalValueMap();
+				Map<Integer, Pair<Byte, Object>> customSignalValues = pld.getCusSigValMap();
+				  
+				Iterator<Map.Entry<Integer, Pair<Byte, Object>>> entriesCusSigVals = customSignalValues.entrySet().iterator();  
+				while (entriesCusSigVals.hasNext()) {  
+				    Map.Entry<Integer, Pair<Byte, Object>> entry = entriesCusSigVals.next();  
+				    if(!customSignalValuesSessoin.containsKey(entry.getValue())) {
+				    	vrbAck.setRetCode(BPPacketRPRTACK.RET_CODE_SIG_ID_INVALID);
+				    	pldAck.setUnsupportedSignalId(entry.getKey());
+				    	session.write(packAck);
+				    	return;
+				    }
+				    if(BeecomDB.getInstance().checkCustomSignalValueUnformed(bpDeviceSession.getUniqDevId(), entry.getKey(), entry.getValue().getKey(), entry.getValue().getValue())) {
+				    	vrbAck.setRetCode(BPPacketRPRTACK.RET_CODE_SIG_VAL_INVALID);
+				    	pldAck.setUnsupportedSignalId(entry.getKey());
+				    	session.write(packAck);
+				    	return;
+				    }
+				    customSignalValuesSessoin.put(entry.getKey(), entry.getValue());
+				  
+				}  
+			}
+			/*
 			if(sysSigFlag) {
 				Map<Integer, Object> systemSignalValuesSessoin = bpDeviceSession.getSystemSignalValueMap();
 				Map<Integer, Object> systemSignalValues = pld.getSysSigValMap();
@@ -451,7 +498,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 				    	session.write(packAck);
 				    	return;
 				    }
-				    /* TODO: if(!unformed value) */
+				    // TODO: if(!unformed value) 
 				    systemSignalValuesSessoin.put(entry.getKey(), entry.getValue());
 				  
 				}  
@@ -469,11 +516,12 @@ public class BcServerHandler extends IoHandlerAdapter {
 				    	session.write(packAck);
 				    	return;
 				    }
-				    /* TODO: if(!unformed value) */
+				    // TODO: if(!unformed value) 
 				    customSignalValuesSessoin.put(entry.getKey(), entry.getValue());
 				  
 				}  
 			}
+			*/
 			if(sysSigCusInfoFlag) {
 				/* save the system signal customized info */
 			}

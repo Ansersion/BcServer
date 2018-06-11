@@ -2,7 +2,7 @@ package db;
 
 import bp_packet.BPPacket;
 
-public class CustomSignalIFloatInfoHbn extends SignalInterface {
+public class CustomSignalFloatInfoHbn extends SignalInterface {
     private Long id;
     private Long cusSigNameLangId;
     private Long cusSigUnitLangId;

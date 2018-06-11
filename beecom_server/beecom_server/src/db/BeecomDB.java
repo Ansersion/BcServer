@@ -433,6 +433,423 @@ public class BeecomDB {
 	public LoginErrorEnum checkDevicePassword(String userName, String password, DeviceInfoUnit deviceInfoUnit) {
 		return LoginErrorEnum.LOGIN_OK;
 	}
+	
+	public boolean checkSignalValueUnformed(long devUniqId, int sigId, byte sigType, Object sigVal) {
+		boolean ret = false;
+		if(devUniqId <= 0) {
+			return false;
+		}
+		if(sigId < 0 || sigId > BPPacket.MAX_SIG_ID) {
+			return false;
+		}
+		if(null == sigVal) {
+			return false;
+		}
+		
+		Transaction tx = null;
+		try (Session session = sessionFactory.openSession()) {
+			tx = session.beginTransaction();
+
+			SignalInfoHbn signalInfoHbn = null;
+			signalInfoHbn = (SignalInfoHbn)session.createQuery("from SignalInfoHbn where signalId = :signal_id and devId = :dev_id")
+					.setParameter("signal_id", sigId)
+					.setParameter("dev_id", devUniqId).uniqueResult();
+			if(null == signalInfoHbn) {
+				return false;
+			}
+			if(sigId < BPPacket.SYS_SIG_START_ID) {
+				/* TODO: check if alarm signal */
+				CustomSignalInfoHbn customSignalInfoHbn = null;
+				customSignalInfoHbn = (CustomSignalInfoHbn)session.createQuery("from CustomSignalInfoHbn where signalId = :signal_id and valType = :val_type")
+						.setParameter("signal_id", signalInfoHbn.getId())
+						.setParameter("val_type", sigType).uniqueResult();
+				if(null == customSignalInfoHbn) {
+					return false;
+				}
+			} else {
+				/* TODO: check if alarm signal */
+				SystemSignalInfoHbn systemSignalInfoHbn = null;
+				systemSignalInfoHbn = (SystemSignalInfoHbn)session.createQuery("from SystemSignalInfoHbn where signalId = :signal_id")
+						.setParameter("signal_id", signalInfoHbn.getId()).uniqueResult();
+				if(null == systemSignalInfoHbn) {
+					return false;
+				}
+			}
+
+			
+			tx.commit();
+
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+			ret = false;
+		}
+		
+		return ret;
+	}
+	
+	private SignalInterface getSignalIntergaceFromDB(CustomSignalInfoHbn customSignalInfoHbn) {
+		if(null == customSignalInfoHbn) {
+			return null;
+		}
+		
+		Transaction tx = null;
+		SignalInterface customSignalInterface = null;
+		switch(customSignalInfoHbn.getValType()) {
+			case BPPacket.VAL_TYPE_UINT32:
+				try (Session session = sessionFactory.openSession()) {
+					tx = session.beginTransaction();
+					customSignalInterface = (CustomSignalU32InfoHbn)session.createQuery("from CustomSignalU32InfoHbn where customSignalId = :custom_signal_id")
+				            .setParameter("custom_signal_id", customSignalInfoHbn.getId()).uniqueResult();
+				    
+					tx.commit();
+				} catch (Exception e) {
+					StringWriter sw = new StringWriter();
+					e.printStackTrace(new PrintWriter(sw, true));
+					String str = sw.toString();
+					logger.error(str);
+					customSignalInterface = null;
+				}
+			break;
+			case BPPacket.VAL_TYPE_UINT16:
+				try (Session session = sessionFactory.openSession()) {
+					tx = session.beginTransaction();
+					customSignalInterface = (CustomSignalU16InfoHbn)session.createQuery("from CustomSignalU16InfoHbn where customSignalId = :custom_signal_id")
+				            .setParameter("custom_signal_id", customSignalInfoHbn.getId()).uniqueResult();
+				    
+					tx.commit();
+				} catch (Exception e) {
+					StringWriter sw = new StringWriter();
+					e.printStackTrace(new PrintWriter(sw, true));
+					String str = sw.toString();
+					logger.error(str);
+					customSignalInterface = null;
+				}
+				
+			break;
+			case BPPacket.VAL_TYPE_IINT32:
+				try (Session session = sessionFactory.openSession()) {
+					tx = session.beginTransaction();
+					customSignalInterface = (CustomSignalI32InfoHbn)session.createQuery("from CustomSignalI32InfoHbn where customSignalId = :custom_signal_id")
+				            .setParameter("custom_signal_id", customSignalInfoHbn.getId()).uniqueResult();
+				    
+					tx.commit();
+				} catch (Exception e) {
+					StringWriter sw = new StringWriter();
+					e.printStackTrace(new PrintWriter(sw, true));
+					String str = sw.toString();
+					logger.error(str);
+					customSignalInterface = null;
+				}
+			break;
+			case BPPacket.VAL_TYPE_IINT16:
+				try (Session session = sessionFactory.openSession()) {
+					tx = session.beginTransaction();
+					customSignalInterface = (CustomSignalI16InfoHbn)session.createQuery("from CustomSignalI16InfoHbn where customSignalId = :custom_signal_id")
+				            .setParameter("custom_signal_id", customSignalInfoHbn.getId()).uniqueResult();
+				    
+					tx.commit();
+				} catch (Exception e) {
+					StringWriter sw = new StringWriter();
+					e.printStackTrace(new PrintWriter(sw, true));
+					String str = sw.toString();
+					logger.error(str);
+					customSignalInterface = null;
+				}
+			break;
+			case BPPacket.VAL_TYPE_ENUM:
+				try (Session session = sessionFactory.openSession()) {
+					tx = session.beginTransaction();
+					customSignalInterface = (CustomSignalEnumInfoHbn)session.createQuery("from CustomSignalEnumInfoHbn where customSignalId = :custom_signal_id")
+				            .setParameter("custom_signal_id", customSignalInfoHbn.getId()).uniqueResult();
+				    
+					tx.commit();
+				} catch (Exception e) {
+					StringWriter sw = new StringWriter();
+					e.printStackTrace(new PrintWriter(sw, true));
+					String str = sw.toString();
+					logger.error(str);
+					customSignalInterface = null;
+				}
+			break;
+			case BPPacket.VAL_TYPE_FLOAT:
+				try (Session session = sessionFactory.openSession()) {
+					tx = session.beginTransaction();
+					customSignalInterface = (CustomSignalFloatInfoHbn)session.createQuery("from CustomSignalFloatInfoHbn where customSignalId = :custom_signal_id")
+				           .setParameter("custom_signal_id", customSignalInfoHbn.getId()).uniqueResult();
+				    
+					tx.commit();
+				} catch (Exception e) {
+					StringWriter sw = new StringWriter();
+					e.printStackTrace(new PrintWriter(sw, true));
+					String str = sw.toString();
+					logger.error(str);
+					customSignalInterface = null;
+				}
+			break;
+			case BPPacket.VAL_TYPE_STRING:
+				try (Session session = sessionFactory.openSession()) {
+					tx = session.beginTransaction();
+					customSignalInterface = (CustomSignalStringInfoHbn)session.createQuery("from CustomSignalStringInfoHbn where customSignalId = :custom_signal_id")
+				            .setParameter("custom_signal_id", customSignalInfoHbn.getId()).uniqueResult();
+				    
+					tx.commit();
+				} catch (Exception e) {
+					StringWriter sw = new StringWriter();
+					e.printStackTrace(new PrintWriter(sw, true));
+					String str = sw.toString();
+					logger.error(str);
+					customSignalInterface = null;
+				}
+			break;
+			case BPPacket.VAL_TYPE_BOOLEAN:
+				try (Session session = sessionFactory.openSession()) {
+					tx = session.beginTransaction();
+					customSignalInterface = (CustomSignalBooleanInfoHbn)session.createQuery("from CustomSignalBooleanInfoHbn where customSignalId = :custom_signal_id")
+				            .setParameter("custom_signal_id", customSignalInfoHbn.getId()).uniqueResult();
+				    
+					tx.commit();
+				} catch (Exception e) {
+					StringWriter sw = new StringWriter();
+					e.printStackTrace(new PrintWriter(sw, true));
+					String str = sw.toString();
+					logger.error(str);
+					customSignalInterface = null;
+				}
+			break;
+			default:
+				customSignalInterface = null;
+		}
+
+		return customSignalInterface;
+	}
+	
+	public boolean checkSystemSignalValueUnformed(long devUniqId, int signalId, Object value) {
+		if(devUniqId <= 0) {
+			return false;
+		}
+		if(signalId < 0 || signalId >= BPPacket.SYS_SIG_START_ID) {
+			return false;
+		}
+		if(null == value) {
+			return false;
+		}
+		
+		boolean ret = true;
+
+		return ret;
+		
+	}
+	
+	protected List<Integer> getCustomSignalEnumLangInfoEnumKeysLst(CustomSignalEnumInfoHbn customSignalEnumInfoHbn) {
+		if(null == customSignalEnumInfoHbn) {
+			return null;
+		}
+		
+		Transaction tx = null;
+		List<Integer> customSignalEnumLangInfoEnumKeysLst = null;
+		try (Session session = sessionFactory.openSession()) {
+			tx = session.beginTransaction();
+			customSignalEnumLangInfoEnumKeysLst = session  
+		            .createQuery("select enumKey from CustomSignalEnumLangInfoHbn where cusSigEnmId = :cus_sig_enm_id")
+		            .setParameter("cus_sig_enm_id", customSignalEnumInfoHbn.getId()).list();
+		    
+			tx.commit();
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+			customSignalEnumLangInfoEnumKeysLst = null;
+		}
+		
+		return customSignalEnumLangInfoEnumKeysLst;
+		
+	}
+	
+	public boolean checkCustomSignalValueUnformed(long devUniqId, int signalId, byte sigType, Object value) {
+		if(devUniqId <= 0) {
+			return false;
+		}
+		if(signalId < 0 || signalId >= BPPacket.SYS_SIG_START_ID) {
+			return false;
+		}
+		if(BPPacket.VAL_TYPE_INVALID == sigType) {
+			return false;
+		}
+		if(null == value) {
+			return false;
+		}
+		
+		List<SignalInfoHbn> signalInfoHbnLst = getSignalInfoHbnLst(devUniqId, signalId, signalId);
+		List<CustomSignalInfoHbn> customSignalInfoHbnLst = getCusSigInfoHbnLst(signalInfoHbnLst);
+		if(null == customSignalInfoHbnLst) {
+			return false;
+		}
+		if(customSignalInfoHbnLst.size() != 1) {
+			logger.error("Inner error: customSignalInfoHbnLst.size() != 1");
+		}
+		SignalInterface signalInterface = getSignalIntergaceFromDB(customSignalInfoHbnLst.get(0));
+		if(null == signalInterface) {
+			return false;
+		}
+		if(signalInterface.getValType() != sigType) {
+			return false;
+		}
+		boolean ret = true;
+
+		try {
+			switch (signalInterface.getValType()) {
+			case BPPacket.VAL_TYPE_UINT32:
+			{
+				CustomSignalU32InfoHbn customSignalU32InfoHbn = (CustomSignalU32InfoHbn)signalInterface;
+				Long v = (Long)value;
+				if(null == v) {
+					ret = false;
+					break;
+				}
+				if(customSignalU32InfoHbn.getMaxVal() != BPPacket.VAL_U32_UNLIMIT && v > customSignalU32InfoHbn.getMaxVal()) {
+					ret = false;
+					break;
+				}
+				if(customSignalU32InfoHbn.getMinVal() != BPPacket.VAL_U32_UNLIMIT && v < customSignalU32InfoHbn.getMinVal()) {
+					ret = false;
+					break;
+				}
+				
+				break;
+			}
+			case BPPacket.VAL_TYPE_UINT16:
+			{
+				CustomSignalU16InfoHbn customSignalU16InfoHbn = (CustomSignalU16InfoHbn)signalInterface;
+				Integer v = (Integer)value;
+				if(null == v) {
+					ret = false;
+					break;
+				}
+				if(customSignalU16InfoHbn.getMaxVal() != BPPacket.VAL_U16_UNLIMIT && v > customSignalU16InfoHbn.getMaxVal()) {
+					ret = false;
+					break;
+				}
+				if(customSignalU16InfoHbn.getMinVal() != BPPacket.VAL_U16_UNLIMIT && v < customSignalU16InfoHbn.getMinVal()) {
+					ret = false;
+					break;
+				}
+
+				break;
+			}
+			case BPPacket.VAL_TYPE_IINT32:
+			{
+				CustomSignalI32InfoHbn customSignalI32InfoHbn = (CustomSignalI32InfoHbn)signalInterface;
+				Integer v = (Integer)value;
+				if(null == v) {
+					ret = false;
+					break;
+				}
+				if(customSignalI32InfoHbn.getMaxVal() != BPPacket.VAL_I32_UNLIMIT && v > customSignalI32InfoHbn.getMaxVal()) {
+					ret = false;
+					break;
+				}
+				if(customSignalI32InfoHbn.getMinVal() != BPPacket.VAL_I32_UNLIMIT && v < customSignalI32InfoHbn.getMinVal()) {
+					ret = false;
+					break;
+				}
+
+				break;
+			}
+			case BPPacket.VAL_TYPE_IINT16:
+			{
+				CustomSignalI16InfoHbn customSignalI16InfoHbn = (CustomSignalI16InfoHbn)signalInterface;
+				Short v = (Short)value;
+				if(null == v) {
+					ret = false;
+					break;
+				}
+				if(customSignalI16InfoHbn.getMaxVal() != BPPacket.VAL_I16_UNLIMIT && v > customSignalI16InfoHbn.getMaxVal()) {
+					ret = false;
+					break;
+				}
+				if(customSignalI16InfoHbn.getMinVal() != BPPacket.VAL_I16_UNLIMIT && v < customSignalI16InfoHbn.getMinVal()) {
+					ret = false;
+					break;
+				}
+
+				break;
+			}
+			case BPPacket.VAL_TYPE_ENUM:
+			{
+				CustomSignalEnumInfoHbn customSignalEnumInfoHbn = (CustomSignalEnumInfoHbn)signalInterface;
+				Integer v = (Integer)value;
+				if(null == v) {
+					ret = false;
+					break;
+				}
+				List<Integer> enumKeysLst = getCustomSignalEnumLangInfoEnumKeysLst(customSignalEnumInfoHbn);
+				ret = enumKeysLst.contains(v);
+
+				break;
+			}
+			case BPPacket.VAL_TYPE_FLOAT:
+			{
+				CustomSignalFloatInfoHbn customSignalFloatInfoHbn = (CustomSignalFloatInfoHbn)signalInterface;
+				Float v = (Float)value;
+				if(null == v) {
+					ret = false;
+					break;
+				}
+				if(customSignalFloatInfoHbn.getMaxVal() != BPPacket.VAL_FLOAT_UNLIMIT && v > customSignalFloatInfoHbn.getMaxVal()) {
+					ret = false;
+					break;
+				}
+				if(customSignalFloatInfoHbn.getMinVal() != BPPacket.VAL_FLOAT_UNLIMIT && v < customSignalFloatInfoHbn.getMinVal()) {
+					ret = false;
+					break;
+				}
+
+				break;
+			}
+			case BPPacket.VAL_TYPE_STRING:
+			{
+				CustomSignalStringInfoHbn customSignalStringInfoHbn = (CustomSignalStringInfoHbn)signalInterface;
+				String v = (String)value;
+				if(null == v) {
+					ret = false;
+					break;
+				}
+				if(v.length() > 0xFF) {
+					ret = false;
+				}
+
+				break;
+			}
+			case BPPacket.VAL_TYPE_BOOLEAN:
+			{
+				CustomSignalU16InfoHbn customSignalU16InfoHbn = (CustomSignalU16InfoHbn)signalInterface;
+				Boolean v = (Boolean)value;
+				if(null == v) {
+					ret = false;
+					break;
+				}
+				break;
+			}
+			default:
+				ret = false;
+			}
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+			ret = false;
+		}
+		
+		
+		
+		return ret;
+		
+	}
 
 	public static boolean chkDevUniqId(long devUniqId) {
 		BeecomDB db = getInstance();
@@ -842,7 +1259,7 @@ public class BeecomDB {
 					case BPPacket.VAL_TYPE_FLOAT:
 						try (Session session = sessionFactory.openSession()) {
 							tx = session.beginTransaction();
-							signalInterface = (CustomSignalIFloatInfoHbn) session
+							signalInterface = (CustomSignalFloatInfoHbn) session
 									.createQuery(
 											"from CustomSignalFloatInfoHbn where customSignalId = :custom_signal_id")
 									.setParameter("custom_signal_id", customSignalInfoHbn.getId()).uniqueResult();

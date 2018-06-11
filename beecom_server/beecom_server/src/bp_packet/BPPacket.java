@@ -32,6 +32,17 @@ public class BPPacket implements BPPacketInterface {
 	public static final int VAL_TYPE_BOOLEAN = 7;
 	public static final int VAL_TYPE_INVALID = 0x7F;
 	
+	/* unlimit value */
+	public static final long VAL_U32_UNLIMIT =0xFFFFFFFF;
+	public static final int VAL_U16_UNLIMIT =0xFFFF;
+	public static final int VAL_I32_UNLIMIT =0x7FFFFFFF;
+	public static final short VAL_I16_UNLIMIT =0x7FFF;
+	public static final int VAL_ENUM_UNLIMIT =0xFFFFFFFF;
+	public static final long VAL_FLOAT_UNLIMIT =0x7FFFFFFF;
+	public static final long VAL_STR_UNLIMIT =0xFFFFFFFF;
+	public static final long VAL_BOOLEAN_UNLIMIT =0xFFFFFFFF;
+	
+	
 	IoBuffer bpPacketData;
 	FixedHeader fxHeader;
 	VariableHeader vrbHeader;
