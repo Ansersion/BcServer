@@ -12,9 +12,12 @@ public class SysSigInfo {
 	/* 0-ro, 1-rw */
 	private byte permission;
 	private byte accuracy;
-	private BPValue valMin;
-	private BPValue valMax;
-	private BPValue valDef;
+	// private BPValue valMin;
+	// private BPValue valMax;
+	// private BPValue valDef;
+	private Object valMin;
+	private Object valMax;
+	private Object valDef;
 	private int classLangRes;
 	private Map<Integer, Integer> mapEnmLangRes;
 	private boolean enStatistics;
@@ -24,8 +27,8 @@ public class SysSigInfo {
 	private int dlyAftAlm;
 
 	public SysSigInfo(boolean alm, byte valType, int unitLangRes,
-			byte permission, byte accuracy, BPValue valMin, BPValue valMax,
-			BPValue valDef, int classLangRes, Map<Integer, Integer> mapEnumLangRes,
+			byte permission, byte accuracy, Object valMin, Object valMax,
+			Object valDef, int classLangRes, Map<Integer, Integer> mapEnumLangRes,
 			boolean enStatistics, byte almClass, int dlyBefAlm,
 			int dlyAftAlm) {
 
@@ -85,27 +88,27 @@ public class SysSigInfo {
 		this.accuracy = accuracy;
 	}
 
-	public BPValue getValMin() {
+	public Object getValMin() {
 		return valMin;
 	}
 
-	public void setValMin(BPValue valMin) {
+	public void setValMin(Object valMin) {
 		this.valMin = valMin;
 	}
 
-	public BPValue getValMax() {
+	public Object getValMax() {
 		return valMax;
 	}
 
-	public void setValMax(BPValue valMax) {
+	public void setValMax(Object valMax) {
 		this.valMax = valMax;
 	}
 
-	public BPValue getValDef() {
+	public Object getValDef() {
 		return valDef;
 	}
 
-	public void setValDef(BPValue valDef) {
+	public void setValDef(Object valDef) {
 		this.valDef = valDef;
 	}
 

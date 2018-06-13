@@ -9,6 +9,8 @@ import java.io.StringWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import bp_packet.BPPacket;
+
 
 /**
  * @author Ansersion
@@ -167,5 +169,116 @@ public class BPValue {
 			strVal = val;
 		}
 	}
+	
+	static public Object setVal(byte valType, String src, Object dst) {
+		try {
+			switch (valType) {
+			case BPPacket.VAL_TYPE_UINT32:
+				if (null == src) {
+					dst = new Long((Long)BPPacket.VAL_U32_UNLIMIT);
+				} else {
+					dst = Long.valueOf(src);
+				}
+				break;
+			case BPPacket.VAL_TYPE_UINT16:
+				if (null == src) {
+					dst = new Integer((Integer)BPPacket.VAL_U16_UNLIMIT);
+				} else {
+					dst = Integer.valueOf(src);
+				}
+				break;
+			case BPPacket.VAL_TYPE_IINT32:
+				if (null == src) {
+					dst = new Integer((Integer)BPPacket.VAL_I32_UNLIMIT);
+				} else {
+					dst = Integer.valueOf(src);
+				}
+				break;
+			case BPPacket.VAL_TYPE_IINT16:
+				if (null == src) {
+					dst = new Short((Short)BPPacket.VAL_I16_UNLIMIT);
+				} else {
+					dst = Short.valueOf(src);
+				}
+				break;
+			case BPPacket.VAL_TYPE_ENUM:
+				if (null == src) {
+					dst = new Integer((Integer)BPPacket.VAL_ENUM_UNLIMIT);
+				} else {
+					dst = Integer.valueOf(src);
+				}
+				break;
+			case BPPacket.VAL_TYPE_FLOAT:
+				if (null == src) {
+					dst = new Float((Float)BPPacket.VAL_FLOAT_UNLIMIT);
+				} else {
+					dst = Float.valueOf(src);
+				}
+				break;
+			case BPPacket.VAL_TYPE_STRING:
+				if (null == src) {
+					dst = new String((String)BPPacket.VAL_STR_UNLIMIT);
+				} else {
+					dst = String.valueOf(src);
+				}
+				break;
+			case BPPacket.VAL_TYPE_BOOLEAN:
+				if (null == src) {
+					dst = new Boolean((Boolean)BPPacket.VAL_BOOLEAN_UNLIMIT);
+				} else {
+					dst = Boolean.valueOf(src);
+				}
+				break;
+			default:
+				break;
+			}
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+			dst = null;
+		}
+		
+		return dst;
+	}
+	
+	static public Object setVal(byte valType, String src) {
+		return setVal(valType, src, null);
+	}
+
+	
+	/*
+	static public void setVal(byte valType, Object src, String dst) {
+		switch (valType) {
+		case BPPacket.VAL_TYPE_UINT32:
+			dst = new Long((Long)dst);
+			break;
+		case BPPacket.VAL_TYPE_UINT16:
+			dst = new Integer((Integer)dst);
+			break;
+		case BPPacket.VAL_TYPE_IINT32:
+			dst = new Integer((Integer)dst);
+			break;
+		case BPPacket.VAL_TYPE_IINT16:
+			dst = new Short((Short)dst);
+			break;
+		case BPPacket.VAL_TYPE_ENUM:
+			dst = new Integer((Integer)dst);
+			break;
+		case BPPacket.VAL_TYPE_FLOAT:
+			dst = new Float((Float)dst);
+			break;
+		case BPPacket.VAL_TYPE_STRING:
+			dst = new String((String)dst);
+			break;
+		case BPPacket.VAL_TYPE_BOOLEAN:
+			dst = new Boolean((Boolean)dst);
+			break;
+		default:
+			break;
+		}
+	}
+	*/
 
 }

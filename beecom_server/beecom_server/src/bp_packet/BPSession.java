@@ -52,7 +52,7 @@ public abstract class BPSession {
 	int seqIdUsrClnt = 0;
 	// String devName;
 	Map<Integer, Byte[]> mapDist2SysSigMap = null;
-	Map<Integer, BPValue> sysSigMap;
+	Map<Integer, Object> sysSigMap;
 	Map<Integer, Object> systemSignalValueMap;
 	Map<Integer, Pair<Byte, Object>> customSignalValueMap;
 	// private BPError error;
@@ -175,7 +175,7 @@ public abstract class BPSession {
 	public void setUniqDevId(long uniqDevId) {
 	}
 	
-	public Map<Integer, BPValue> getSysSigMap() {
+	public Map<Integer, Object> getSysSigMap() {
 		return sysSigMap;
 	}
 	
@@ -190,7 +190,7 @@ public abstract class BPSession {
 		boolean ret = true;
 		Integer key = null;
 		Short value = null;
-		BPValue tmp = null;
+		Object tmp = null;
 		
 		try {
 			Map<Integer, Short> sigVal = devSigData.get2ByteDataMap();
@@ -204,7 +204,7 @@ public abstract class BPSession {
 					if (null == tmp) {
 						throw new SigIdNonExistException();
 					}
-					tmp.setVal(value);
+					// tmp.setVal(value);
 				}
 			}
 		} catch(SigIdNonExistException e) {
@@ -226,7 +226,7 @@ public abstract class BPSession {
 					if (null == tmp) {
 						throw new SigIdNonExistException();
 					}
-					tmp.setVal(entry.getValue());
+					// tmp.setVal(entry.getValue());
 				}
 			}
 		} catch(Exception e) {
@@ -276,9 +276,9 @@ public abstract class BPSession {
 	public BPValue getSysSigVal(Integer sigId) {
 		BPValue val = null;
 		if(sysSigMap.containsKey(sigId)) {
-			BPValue tmp = sysSigMap.get(sigId);
-			val = new BPValue(tmp.getType());
-			val.setValStr(tmp.getValStr());
+			Object tmp = sysSigMap.get(sigId);
+			// val = new BPValue(tmp.getType());
+			// val.setValStr(tmp.getValStr());
 		}
 		return val;
 	}
@@ -288,12 +288,12 @@ public abstract class BPSession {
 	// }
 	
 	public void dumpSysSig() {
-		Iterator<Map.Entry<Integer, BPValue>> entries = sysSigMap.entrySet().iterator(); 
+		Iterator<Map.Entry<Integer, Object>> entries = sysSigMap.entrySet().iterator(); 
 		while (entries.hasNext()) {    
-		    Map.Entry<Integer, BPValue> entry = entries.next();
+		    Map.Entry<Integer, Object> entry = entries.next();
 		    Integer key = entry.getKey();  
-		    BPValue value = entry.getValue();  
-		    logger.info("{}=>{}", key, value.getValStr()); 
+		    Object value = entry.getValue();  
+		    logger.info("{}=>{}", key, value.toString()); 
 		}  
 	}
 	public void setSysSigMap(Map<Integer, Byte[]> sysSigMap) {

@@ -70,9 +70,9 @@ public class BPSysSigTable {
 		/* 0-ro, 1-rw */
 		byte permission = 0;
 		byte accuracy;
-		BPValue valMin;
-		BPValue valMax;
-		BPValue valDef;
+		Object valMin = null;
+		Object valMax = null;
+		Object valDef = null;
 		int classLangRes;
 		Map<Integer, Integer> mapEnumLangRes = null;
 		boolean enStatistics;
@@ -137,25 +137,21 @@ public class BPSysSigTable {
 
 				accuracy = (byte) Integer.parseInt(m.group(8));
 
-				valMin = new BPValue(valType);
-				valMax = new BPValue(valType);
-				valDef = new BPValue(valType);
-
 				if (Util.isNull(m.group(9))) {
-					valMin.setLimitValid(false);
+					valMin = BPValue.setVal(valType, null, valMin);
 				} else {
-					valMin.setValStr(m.group(9));
+					valMin = BPValue.setVal(valType, m.group(9), valMin);
 				}
 
 				if (Util.isNull(m.group(10))) {
-					valMax.setLimitValid(false);
+					valMax = BPValue.setVal(valType, null, valMax);
 				} else {
-					valMax.setValStr(m.group(10));
+					valMax = BPValue.setVal(valType, m.group(10), valMax);
 				}
 				if (Util.isNull(m.group(11))) {
-					valDef.setLimitValid(false);
+					valDef = BPValue.setVal(valType, null, valDef);
 				} else {
-					valDef.setValStr(m.group(11));
+					valDef = BPValue.setVal(valType, m.group(11), valDef);
 				}
 
 				if (!m.group(12).equals("NULL")) {
@@ -226,9 +222,9 @@ public class BPSysSigTable {
 		StringBuilder debugStr = new StringBuilder();
 		debugStr.append("" + index + ":" + sysSigInfo.isAlm() + "," + sysSigInfo.getValType()
 				+ "," + sysSigInfo.getUnitLangRes() + "," + sysSigInfo.getPermission() + ","
-				+ sysSigInfo.getAccuracy() + "," + sysSigInfo.getValMin().getValStr() + ","
-				+ sysSigInfo.getValMax().getValStr() + ","
-				+ sysSigInfo.getValDef().getValStr() + ",");
+				+ sysSigInfo.getAccuracy() + "," + sysSigInfo.getValMin().toString() + ","
+				+ sysSigInfo.getValMax().toString() + ","
+				+ sysSigInfo.getValDef().toString() + ",");
 		if (null != sysSigInfo.getMapEnmLangRes()) {
 			Iterator<Map.Entry<Integer, Integer>> entries = sysSigInfo.getMapEnmLangRes().entrySet()
 					.iterator();

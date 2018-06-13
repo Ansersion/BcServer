@@ -38,9 +38,9 @@ public class BPPacket implements BPPacketInterface {
 	public static final int VAL_I32_UNLIMIT =0x7FFFFFFF;
 	public static final short VAL_I16_UNLIMIT =0x7FFF;
 	public static final int VAL_ENUM_UNLIMIT =0xFFFFFFFF;
-	public static final long VAL_FLOAT_UNLIMIT =0x7FFFFFFF;
-	public static final long VAL_STR_UNLIMIT =0xFFFFFFFF;
-	public static final long VAL_BOOLEAN_UNLIMIT =0xFFFFFFFF;
+	public static final float VAL_FLOAT_UNLIMIT =0x7FFFFFFF;
+	public static final String VAL_STR_UNLIMIT ="";
+	public static final boolean VAL_BOOLEAN_UNLIMIT =false;
 	
 	
 	IoBuffer bpPacketData;

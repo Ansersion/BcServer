@@ -625,23 +625,7 @@ public class BeecomDB {
 
 		return customSignalInterface;
 	}
-	
-	public boolean checkSystemSignalValueUnformed(long devUniqId, int signalId, Object value) {
-		if(devUniqId <= 0) {
-			return false;
-		}
-		if(signalId < 0 || signalId >= BPPacket.SYS_SIG_START_ID) {
-			return false;
-		}
-		if(null == value) {
-			return false;
-		}
-		
-		boolean ret = true;
 
-		return ret;
-		
-	}
 	
 	protected List<Integer> getCustomSignalEnumLangInfoEnumKeysLst(CustomSignalEnumInfoHbn customSignalEnumInfoHbn) {
 		if(null == customSignalEnumInfoHbn) {
@@ -706,10 +690,6 @@ public class BeecomDB {
 			{
 				CustomSignalU32InfoHbn customSignalU32InfoHbn = (CustomSignalU32InfoHbn)signalInterface;
 				Long v = (Long)value;
-				if(null == v) {
-					ret = false;
-					break;
-				}
 				if(customSignalU32InfoHbn.getMaxVal() != BPPacket.VAL_U32_UNLIMIT && v > customSignalU32InfoHbn.getMaxVal()) {
 					ret = false;
 					break;
@@ -725,10 +705,6 @@ public class BeecomDB {
 			{
 				CustomSignalU16InfoHbn customSignalU16InfoHbn = (CustomSignalU16InfoHbn)signalInterface;
 				Integer v = (Integer)value;
-				if(null == v) {
-					ret = false;
-					break;
-				}
 				if(customSignalU16InfoHbn.getMaxVal() != BPPacket.VAL_U16_UNLIMIT && v > customSignalU16InfoHbn.getMaxVal()) {
 					ret = false;
 					break;
@@ -744,10 +720,6 @@ public class BeecomDB {
 			{
 				CustomSignalI32InfoHbn customSignalI32InfoHbn = (CustomSignalI32InfoHbn)signalInterface;
 				Integer v = (Integer)value;
-				if(null == v) {
-					ret = false;
-					break;
-				}
 				if(customSignalI32InfoHbn.getMaxVal() != BPPacket.VAL_I32_UNLIMIT && v > customSignalI32InfoHbn.getMaxVal()) {
 					ret = false;
 					break;
@@ -763,10 +735,6 @@ public class BeecomDB {
 			{
 				CustomSignalI16InfoHbn customSignalI16InfoHbn = (CustomSignalI16InfoHbn)signalInterface;
 				Short v = (Short)value;
-				if(null == v) {
-					ret = false;
-					break;
-				}
 				if(customSignalI16InfoHbn.getMaxVal() != BPPacket.VAL_I16_UNLIMIT && v > customSignalI16InfoHbn.getMaxVal()) {
 					ret = false;
 					break;
@@ -782,10 +750,6 @@ public class BeecomDB {
 			{
 				CustomSignalEnumInfoHbn customSignalEnumInfoHbn = (CustomSignalEnumInfoHbn)signalInterface;
 				Integer v = (Integer)value;
-				if(null == v) {
-					ret = false;
-					break;
-				}
 				List<Integer> enumKeysLst = getCustomSignalEnumLangInfoEnumKeysLst(customSignalEnumInfoHbn);
 				ret = enumKeysLst.contains(v);
 
@@ -795,10 +759,6 @@ public class BeecomDB {
 			{
 				CustomSignalFloatInfoHbn customSignalFloatInfoHbn = (CustomSignalFloatInfoHbn)signalInterface;
 				Float v = (Float)value;
-				if(null == v) {
-					ret = false;
-					break;
-				}
 				if(customSignalFloatInfoHbn.getMaxVal() != BPPacket.VAL_FLOAT_UNLIMIT && v > customSignalFloatInfoHbn.getMaxVal()) {
 					ret = false;
 					break;
@@ -814,10 +774,6 @@ public class BeecomDB {
 			{
 				CustomSignalStringInfoHbn customSignalStringInfoHbn = (CustomSignalStringInfoHbn)signalInterface;
 				String v = (String)value;
-				if(null == v) {
-					ret = false;
-					break;
-				}
 				if(v.length() > 0xFF) {
 					ret = false;
 				}
@@ -828,10 +784,6 @@ public class BeecomDB {
 			{
 				CustomSignalU16InfoHbn customSignalU16InfoHbn = (CustomSignalU16InfoHbn)signalInterface;
 				Boolean v = (Boolean)value;
-				if(null == v) {
-					ret = false;
-					break;
-				}
 				break;
 			}
 			default:
@@ -845,9 +797,180 @@ public class BeecomDB {
 			ret = false;
 		}
 		
+		return ret;
 		
+	}
+	
+	private boolean checkSystemSignalValueUnformed(SysSigInfo sysSigInfo, Object value)
+	{
+		if(null == sysSigInfo) {
+			return false;
+		}
+		if(null == value) {
+			return false;
+		}
+		boolean ret = true;
+		
+		try {
+			switch (sysSigInfo.getValType()) {
+			case BPPacket.VAL_TYPE_UINT32:
+			{
+				Long v = (Long)value;
+				long maxVal = (long)sysSigInfo.getValMax();
+				long minVal = (long)sysSigInfo.getValMin();
+				if(BPPacket.VAL_U32_UNLIMIT != maxVal && v > maxVal) {
+					ret = false;
+					break;
+				}
+				if(BPPacket.VAL_U32_UNLIMIT != minVal && v < minVal) {
+					ret = false;
+					break;
+				}
+
+				break;
+			}
+			case BPPacket.VAL_TYPE_UINT16:
+			{
+
+				Integer v = (Integer)value;
+				int maxVal = (int)sysSigInfo.getValMax();
+				int minVal = (int)sysSigInfo.getValMin();
+				if(BPPacket.VAL_U16_UNLIMIT != maxVal && v > maxVal) {
+					ret = false;
+					break;
+				}
+				if(BPPacket.VAL_U16_UNLIMIT != minVal && v < minVal) {
+					ret = false;
+					break;
+				}
+
+
+				break;
+			}
+			case BPPacket.VAL_TYPE_IINT32:
+			{
+
+				Integer v = (Integer)value;
+				int maxVal = (int)sysSigInfo.getValMax();
+				int minVal = (int)sysSigInfo.getValMin();
+				if(BPPacket.VAL_I32_UNLIMIT != maxVal && v > maxVal) {
+					ret = false;
+					break;
+				}
+				if(BPPacket.VAL_I32_UNLIMIT != minVal && v < minVal) {
+					ret = false;
+					break;
+				}
+
+
+				break;
+			}
+			case BPPacket.VAL_TYPE_IINT16:
+			{
+				Short v = (Short)value;
+				short maxVal = (short)sysSigInfo.getValMax();
+				short minVal = (short)sysSigInfo.getValMin();
+				if(BPPacket.VAL_I16_UNLIMIT != maxVal && v > maxVal) {
+					ret = false;
+					break;
+				}
+				if(BPPacket.VAL_I16_UNLIMIT != minVal && v < minVal) {
+					ret = false;
+					break;
+				}
+
+
+				break;
+			}
+			case BPPacket.VAL_TYPE_ENUM:
+			{
+
+				Integer v = (Integer)value;
+				ret = sysSigInfo.getMapEnmLangRes().containsKey(v);
+
+				break;
+			}
+			case BPPacket.VAL_TYPE_FLOAT:
+			{
+
+				Float v = (Float)value;
+				float maxVal = (float)sysSigInfo.getValMax();
+				float minVal = (float)sysSigInfo.getValMin();
+				if(BPPacket.VAL_FLOAT_UNLIMIT != maxVal && v > maxVal) {
+					ret = false;
+					break;
+				}
+				if(BPPacket.VAL_FLOAT_UNLIMIT != minVal && v < minVal) {
+					ret = false;
+					break;
+				}
+
+
+				break;
+			}
+			case BPPacket.VAL_TYPE_STRING:
+			{
+
+				String v = (String)value;
+				if(v.length() > 0xFF) {
+					ret = false;
+				}
+
+				break;
+			}
+			case BPPacket.VAL_TYPE_BOOLEAN:
+			{
+				Boolean v = (Boolean)value;
+
+				break;
+			}
+			default:
+				ret = false;
+			}
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+			ret = false;
+		}
 		
 		return ret;
+	}
+	
+	public boolean checkSystemSignalValueUnformed(long devUniqId, int signalId, Object value) {
+		if(devUniqId <= 0) {
+			return false;
+		}
+		if(signalId < BPPacket.SYS_SIG_START_ID || signalId > BPPacket.MAX_SIG_ID) {
+			return false;
+		}
+		if(null == value) {
+			return false;
+		}
+		
+		List<SignalInfoHbn> signalInfoHbnLst = getSignalInfoHbnLst(devUniqId, signalId, signalId);
+		List<SystemSignalInfoHbn> systemSignalInfoHbnLst = getSysSigInfoHbnLst(signalInfoHbnLst, null);
+		if(null == systemSignalInfoHbnLst) {
+			return false;
+		}
+		if(systemSignalInfoHbnLst.size() != 1) {
+			logger.error("Inner error: systemSignalInfoHbnLst.size() != 1");
+		}
+		if(systemSignalInfoHbnLst.get(0).getIfConfigDef()) {
+			BPSysSigTable bpSysSigTable = BPSysSigTable.getSysSigTableInstance();
+			int systemSignalIdOffset = signalId - BPPacket.SYS_SIG_START_ID;
+			final List<SysSigInfo> sysSigInfoLst = bpSysSigTable.getSysSigInfoLst();
+			if(systemSignalIdOffset >= sysSigInfoLst.size()) {
+				return false;
+			}
+			SysSigInfo sysSigInfo = sysSigInfoLst.get(systemSignalIdOffset);
+			return checkSystemSignalValueUnformed(sysSigInfo, value);
+		} else {
+			
+		}
+		
+		return false;
 		
 	}
 
