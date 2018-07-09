@@ -1781,6 +1781,102 @@ public class BeecomDB {
 		return customSignalInfoHbnLst;
 	}
 	
+    public boolean checkSignalMapChksum(long uniqDevId, long checksum) {
+		boolean ret = false;
+    	if(BPPacket.INVALID_SIGNAL_MAP_CHECKSUM == checksum) {
+    		return ret;
+    	}
+		    
+		Transaction tx = null;
+		try (Session session = sessionFactory.openSession()) {
+			tx = session.beginTransaction();
+
+			DevInfoHbn devInfoHbn = (DevInfoHbn) session
+					.createQuery("from DevInfoHbn where devId = :dev_id")
+					.setParameter("dev_id", uniqDevId).uniqueResult();
+			if (null == devInfoHbn || devInfoHbn.getSigMapChksum() != checksum) {
+				return ret;
+			}
+			tx.commit();
+			ret = true;
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+			ret = false;
+		}
+    	return ret;
+    }
+    
+    public boolean putSignalMapChksum(long uniqDevId, long checksum) {
+    	boolean ret = false;
+    	if(BPPacket.INVALID_SIGNAL_MAP_CHECKSUM == checksum) {
+    		logger.error("Internal error: BPPacket.INVALID_SIGNAL_MAP_CHECKSUM == checksum");
+    		return ret;
+    	}
+    	
+		Transaction tx = null;
+		try (Session session = sessionFactory.openSession()) {
+			tx = session.beginTransaction();
+
+			DevInfoHbn devInfoHbn = (DevInfoHbn) session
+					.createQuery("from DevInfoHbn where devId = :dev_id")
+					.setParameter("dev_id", uniqDevId).uniqueResult();
+			if (null == devInfoHbn) {
+				logger.error("Internal error: null == devInfoHbn");
+				return ret;
+			}
+			devInfoHbn.setSigMapChksum(checksum);
+			session.save(devInfoHbn);
+			tx.commit();
+			ret = true;
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+			ret = false;
+		}
+    	return ret;
+    	
+    }
+    
+    public boolean putSystemSignalEnabledMap(long uniqDevId, List<Integer> systemSignalEnabledList) {
+    	boolean ret = false;
+    	if(null == systemSignalEnabledList) {
+    		return ret;
+    	}
+    	
+		Transaction tx = null;
+		try (Session session = sessionFactory.openSession()) {
+			tx = session.beginTransaction();
+
+			for(int i = 0; i < systemSignalEnabledList.size(); i++) {
+				SignalInfoHbn signalInfoHbn = (SignalInfoHbn) session
+						.createQuery("from SignalInfoHbn where signalId = :signal_id and devId = :dev_id")
+						.setParameter("signal_id", systemSignalEnabledList.get(i))
+						.setParameter("dev_id", uniqDevId).uniqueResult();
+				if (null == signalInfoHbn) {
+					signalInfoHbn = new SignalInfoHbn();
+				}
+				signalInfoHbn.setSignalId(systemSignalEnabledList.get(i));
+				signalInfoHbn.setDevId(uniqDevId);
+				session.save(signalInfoHbn);
+			}
+
+			tx.commit();
+			ret = true;
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+			ret = false;
+		}
+    	return ret;
+    }
+	
 	public int modifySysSigAttrMap(long uniqDevId, Map<Integer, SignalAttrInfo> sysSigAttrMap) {
 		if(null == sysSigAttrMap) {
 			return 0;
@@ -1870,4 +1966,5 @@ public class BeecomDB {
     	return sn != null && sn.length() > 0 && sn.length() <=64;
     }
 	
+
 }

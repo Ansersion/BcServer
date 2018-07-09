@@ -20,6 +20,9 @@ import java.util.Vector;
  * 
  */
 public class BPPacketREPORT extends BPPacket {
+	
+	public static final int RET_CODE_INVALID_DEVICE_ID_ERR = 0x02;
+	public static final int RET_CODE_SIGNAL_MAP_CHECKSUM_ERR = 0x05;
 
 	int packSeq;
 	int devNameLen;
@@ -121,7 +124,7 @@ public class BPPacketREPORT extends BPPacket {
 				counter += newPart.parseSymTable(buf, counter);
 				
 				partitation.addElement(newPart);
-			}while(!endFlag);		
+			}while(!endFlag);	
 
 		} catch (Exception e) {
 	        StringWriter sw = new StringWriter();

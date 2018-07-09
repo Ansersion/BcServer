@@ -48,6 +48,7 @@ public class Payload {
 	private List<SystemSignalInfoUnit> systemSignalInfoUnitLst;
 	private List<CustomSignalInfoUnit> customSignalInfoUnitLst;
 	private List<SystemSignalCustomInfoUnit> systemSignalCustomInfoUnitLst;
+	private List<Integer> systemSignalEnabledList;
 	private Map<Integer, Object> sysSigValMap;
 	private Map<Integer, Pair<Byte, Object>> cusSigValMap;
 	
@@ -383,6 +384,16 @@ public class Payload {
 		}
 		error.setSigId(id);
 	}
+
+	public List<Integer> getSystemSignalEnabledList() {
+		return systemSignalEnabledList;
+	}
+
+	public void setSystemSignalEnabledList(List<Integer> systemSignalEnabledList) {
+		this.systemSignalEnabledList = systemSignalEnabledList;
+	}
+
+
 	
 	
 	

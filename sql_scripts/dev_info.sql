@@ -10,6 +10,8 @@ CREATE TABLE dev_info
 	admin_id INT UNSIGNED NOT NULL,
 	/* The password to login in BcServer */
     password CHAR(64) NOT NULL,
+	/* signal map checksum */
+	sig_map_chksum BIGINT NOT NULL DEFAULT 0x7FFFFFFFFFFFFFFF,
 	/* A device can't change its signal table unless 'daily_sig_tab_change_times > 0*/
 	daily_sig_tab_change_times TINYINT UNSIGNED NOT NULL DEFAULT 3,
 

@@ -11,6 +11,7 @@
         <property name="snId" column="sn_id" />  
         <property name="adminId" column="admin_id" />  
         <property name="password" column="password" />  
+        <property name="sigMapChksum" column="sig_map_chksum" />
         <property name="dailySigTabChangeTimes" column="daily_sig_tab_change_times" />  
     </class>    
 </hibernate-mapping>

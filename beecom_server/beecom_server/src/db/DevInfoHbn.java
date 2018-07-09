@@ -5,6 +5,7 @@ public class DevInfoHbn {
     private Long snId;
     private Long adminId;
     private String password;
+    private Long sigMapChksum;
     private Short dailySigTabChangeTimes;
 	public Long getId() {
 		return id;
@@ -29,6 +30,12 @@ public class DevInfoHbn {
 	}
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	public Long getSigMapChksum() {
+		return sigMapChksum;
+	}
+	public void setSigMapChksum(Long sigMapChksum) {
+		this.sigMapChksum = sigMapChksum;
 	}
 	public Short getDailySigTabChangeTimes() {
 		return dailySigTabChangeTimes;

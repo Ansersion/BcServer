@@ -28,6 +28,7 @@ import bp_packet.BPPacketGET;
 import bp_packet.BPPacketPINGACK;
 import bp_packet.BPPacketPOST;
 import bp_packet.BPPacketPUSH;
+import bp_packet.BPPacketREPORT;
 import bp_packet.BPPacketRPRTACK;
 import bp_packet.BPSession;
 import bp_packet.BPUserSession;
@@ -423,18 +424,33 @@ public class BcServerHandler extends IoHandlerAdapter {
 			boolean cusSigFlag = vrb.getCusSigFlag();
 			boolean sysSigCusInfoFlag = vrb.getSysCusFlag();
 			boolean sigMapChecksumFlag = vrb.getSigMapChecksumFlag();
+			boolean gotNewSigMapChecksum = false;
+			
+			
+			boolean sigMapChecksumFlagOnly = false;
+			
+			if(sigMapChecksumFlag && !sysSigMapFlag && !cusSigMapFlag && !sysSigCusInfoFlag) {
+				sigMapChecksumFlagOnly = true;
+			}
 			
 			long uniqDevId = bpDeviceSession.getUniqDevId();
 			pldAck = packAck.getPld();
 			vrbAck = packAck.getVrbHead();
 			
 			if(sigMapChecksumFlag) {
-				long sigMapChecksum = pld.getSigMapChecksum();
-				/* check the sigMapChecksum */
+				if(sigMapChecksumFlagOnly) {
+					if (!BeecomDB.getInstance().checkSignalMapChksum(uniqDevId, pld.getSigMapChecksum())) {
+						packAck.getVrbHead().setRetCode(BPPacketREPORT.RET_CODE_SIGNAL_MAP_CHECKSUM_ERR);
+					}
+				} else {
+					if(!BeecomDB.getInstance().putSignalMapChksum(uniqDevId, pld.getSigMapChecksum())) {
+						logger.error("Internal error: !BeecomDB.getInstance().putSignalMapChksum(uniqDevId, pld.getSigMapChecksum())");
+					}
+				}
 			} 
 			if(sysSigMapFlag) {			
-				/* TODO: */
-				
+				List<Integer> systemSignalEnabledList = pld.getSystemSignalEnabledList();
+				BeecomDB.getInstance().putSystemSignalEnabledMap(uniqDevId, systemSignalEnabledList);
 			}
 			if(cusSigMapFlag) {
 				/* TODO: */
