@@ -1827,8 +1827,10 @@ public class BeecomDB {
 				logger.error("Internal error: null == devInfoHbn");
 				return ret;
 			}
-			devInfoHbn.setSigMapChksum(checksum);
-			session.save(devInfoHbn);
+			if(checksum != devInfoHbn.getSigMapChksum()) {
+				devInfoHbn.setSigMapChksum(checksum);
+				session.save(devInfoHbn);
+			}
 			tx.commit();
 			ret = true;
 		} catch (Exception e) {
@@ -1863,6 +1865,122 @@ public class BeecomDB {
 				signalInfoHbn.setSignalId(systemSignalEnabledList.get(i));
 				signalInfoHbn.setDevId(uniqDevId);
 				session.save(signalInfoHbn);
+			}
+
+			tx.commit();
+			ret = true;
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+			ret = false;
+		}
+    	return ret;
+    }
+    
+    public boolean putSignalInterface(SignalInterface signalInterface, boolean toCommit) {
+    	return true;
+    }
+    
+    public boolean putCustomSignalMap(long uniqDevId, List<CustomSignalInfoUnit> customSignalUnitInfoList) {
+    	boolean ret = false;
+    	if(null == customSignalUnitInfoList) {
+    		return ret;
+    	}
+    	
+		Transaction tx = null;
+		try (Session session = sessionFactory.openSession()) {
+			tx = session.beginTransaction();
+
+			for(int i = 0; i < customSignalUnitInfoList.size(); i++) {
+				SignalInfoHbn signalInfoHbn = (SignalInfoHbn) session
+						.createQuery("from SignalInfoHbn where signalId = :signal_id and devId = :dev_id")
+						.setParameter("signal_id", customSignalUnitInfoList.get(i).getCusSigId())
+						.setParameter("dev_id", uniqDevId).uniqueResult();
+				if (null == signalInfoHbn) {
+					signalInfoHbn = new SignalInfoHbn();
+					signalInfoHbn.setSignalId(customSignalUnitInfoList.get(i).getCusSigId());
+					signalInfoHbn.setDevId(uniqDevId);
+				}
+	
+				signalInfoHbn.setNotifying(customSignalUnitInfoList.get(i).isIfNotifing());
+				session.save(signalInfoHbn);
+				
+				Long signalKeyId = signalInfoHbn.getId();
+				CustomSignalInfoHbn customSignalInfoHbn = (CustomSignalInfoHbn)session
+						.createQuery("from CustomSignalInfoHbn where signalId = :signal_id")
+						.setParameter("signal_id",  signalKeyId).uniqueResult();
+				if(null == customSignalInfoHbn) {
+					customSignalInfoHbn = new CustomSignalInfoHbn();
+					customSignalInfoHbn.setSignalId(signalKeyId);
+				}
+				customSignalInfoHbn.setIfAlarm(customSignalUnitInfoList.get(i).isIfAlarm());
+				customSignalInfoHbn.setValType((short)(customSignalUnitInfoList.get(i).getCustomSignalInterface().getValType() & 0xFFFF));
+				session.save(customSignalInfoHbn);
+				
+				SignalInterface signalInterface = customSignalUnitInfoList.get(i).getCustomSignalInterface();
+				if(signalInterface.saveToDb(session) < 0) {
+					logger.error("Internal error: null == devInfoHbn");
+					return ret;
+				}
+				
+			}
+
+			tx.commit();
+			ret = true;
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+			ret = false;
+		}
+    	return ret;
+    }
+    
+    public boolean putSystemCustomSignalInfoMap(long uniqDevId, List<SystemSignalCustomInfoUnit> systemSignalCustomInfoUnit) {
+    	boolean ret = false;
+    	if(null == systemSignalCustomInfoUnit) {
+    		return ret;
+    	}
+    	
+		Transaction tx = null;
+		try (Session session = sessionFactory.openSession()) {
+			tx = session.beginTransaction();
+
+			for(int i = 0; i < systemSignalCustomInfoUnit.size(); i++) {
+				SignalInfoHbn signalInfoHbn = (SignalInfoHbn) session
+						.createQuery("from SignalInfoHbn where signalId = :signal_id and devId = :dev_id")
+						.setParameter("signal_id", systemSignalCustomInfoUnit.get(i).getSysSigId())
+						.setParameter("dev_id", uniqDevId).uniqueResult();
+				if (null == signalInfoHbn) {
+					signalInfoHbn = new SignalInfoHbn();
+					signalInfoHbn.setSignalId(systemSignalCustomInfoUnit.get(i).getSysSigId());
+					signalInfoHbn.setDevId(uniqDevId);
+				}
+
+				session.save(signalInfoHbn);
+				
+				Long signalKeyId = signalInfoHbn.getId();
+				SystemSignalInfoHbn systemSignalInfoHbn = (SystemSignalInfoHbn)session
+						.createQuery("from SystemSignalInfoHbn where signalId = :signal_id")
+						.setParameter("signal_id",  signalKeyId).uniqueResult();
+				if(null == systemSignalInfoHbn) {
+					systemSignalInfoHbn = new SystemSignalInfoHbn();
+					systemSignalInfoHbn.setSignalId(signalKeyId);
+				}
+
+				systemSignalInfoHbn.setIfConfigDef(false);
+				
+				session.save(systemSignalInfoHbn);
+				
+				SignalInterface signalInterface = systemSignalCustomInfoUnit.get(i).getSignalInterface();
+				if(signalInterface.saveToDb(session) < 0) {
+					logger.error("Internal error: null == devInfoHbn");
+					return ret;
+				}
+				
 			}
 
 			tx.commit();

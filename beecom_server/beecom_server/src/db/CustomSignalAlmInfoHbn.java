@@ -1,5 +1,7 @@
 package db;
 
+import org.hibernate.Session;
+
 public class CustomSignalAlmInfoHbn extends SignalInterface {
     private Long id;
     private Long cusSigNameLangId;
@@ -54,6 +56,18 @@ public class CustomSignalAlmInfoHbn extends SignalInterface {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	@Override
+	public long saveToDb(Session session) {
+		Long ret;
+		try {
+			ret = (Long)session.save(this);
+		} catch(Exception e) {
+			ret = -1L;
+		}
+		return ret;
+	}
+
     
+	
     
 }

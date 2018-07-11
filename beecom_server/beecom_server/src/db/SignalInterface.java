@@ -1,5 +1,7 @@
 package db;
 
+import org.hibernate.Session;
+
 public abstract class SignalInterface {
 	
 	private int bcSystemSignalId;
@@ -13,4 +15,6 @@ public abstract class SignalInterface {
 	}
 
 	public abstract int getValType();
+	
+	public abstract long saveToDb(Session session);
 }

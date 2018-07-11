@@ -1,5 +1,7 @@
 package db;
 
+import org.hibernate.Session;
+
 import bp_packet.BPPacket;
 
 public class SystemSignalBooleanInfoHbn extends SignalInterface {
@@ -56,7 +58,16 @@ public class SystemSignalBooleanInfoHbn extends SignalInterface {
 	public int getValType() {
 		return BPPacket.VAL_TYPE_BOOLEAN;
 	}
-    
+	@Override
+	public long saveToDb(Session session) {
+		Long ret;
+		try {
+			ret = (Long)session.save(this);
+		} catch(Exception e) {
+			ret = -1L;
+		}
+		return ret;
+	}
 	
     
 }

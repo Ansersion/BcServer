@@ -1,5 +1,7 @@
 package db;
 
+import org.hibernate.Session;
+
 import bp_packet.BPPacket;
 
 public class SystemSignalU16InfoHbn extends SignalInterface {
@@ -63,6 +65,17 @@ public class SystemSignalU16InfoHbn extends SignalInterface {
 	@Override
 	public int getValType() {
 		return BPPacket.VAL_TYPE_UINT16;
+	}
+	
+	@Override
+	public long saveToDb(Session session) {
+		Long ret;
+		try {
+			ret = (Long)session.save(this);
+		} catch(Exception e) {
+			ret = -1L;
+		}
+		return ret;
 	}
     
 }

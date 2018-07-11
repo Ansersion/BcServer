@@ -39,9 +39,11 @@ import bp_packet.SignalAttrInfo;
 import bp_packet.VariableHeader;
 import db.BeecomDB;
 import db.ClientIDDB;
+import db.CustomSignalInfoUnit;
 import db.DBDevInfoRec;
 import db.DBSysSigRec;
 import db.DeviceInfoUnit;
+import db.SystemSignalCustomInfoUnit;
 import db.UserInfoUnit;
 import db.BeecomDB.GetSnErrorEnum;
 import javafx.util.Pair;
@@ -423,37 +425,33 @@ public class BcServerHandler extends IoHandlerAdapter {
 			boolean sysSigFlag = vrb.getSysSigFlag();
 			boolean cusSigFlag = vrb.getCusSigFlag();
 			boolean sysSigCusInfoFlag = vrb.getSysCusFlag();
-			boolean sigMapChecksumFlag = vrb.getSigMapChecksumFlag();
+			boolean sigMapChecksumFlagOnly = vrb.getSigMapChecksumFlag();
 			boolean gotNewSigMapChecksum = false;
 			
-			
-			boolean sigMapChecksumFlagOnly = false;
-			
-			if(sigMapChecksumFlag && !sysSigMapFlag && !cusSigMapFlag && !sysSigCusInfoFlag) {
-				sigMapChecksumFlagOnly = true;
-			}
 			
 			long uniqDevId = bpDeviceSession.getUniqDevId();
 			pldAck = packAck.getPld();
 			vrbAck = packAck.getVrbHead();
 			
-			if(sigMapChecksumFlag) {
-				if(sigMapChecksumFlagOnly) {
-					if (!BeecomDB.getInstance().checkSignalMapChksum(uniqDevId, pld.getSigMapChecksum())) {
-						packAck.getVrbHead().setRetCode(BPPacketREPORT.RET_CODE_SIGNAL_MAP_CHECKSUM_ERR);
-					}
-				} else {
-					if(!BeecomDB.getInstance().putSignalMapChksum(uniqDevId, pld.getSigMapChecksum())) {
-						logger.error("Internal error: !BeecomDB.getInstance().putSignalMapChksum(uniqDevId, pld.getSigMapChecksum())");
-					}
+			if(sigMapChecksumFlagOnly) {
+				if (!BeecomDB.getInstance().checkSignalMapChksum(uniqDevId, pld.getSigMapChecksum())) {
+					packAck.getVrbHead().setRetCode(BPPacketREPORT.RET_CODE_SIGNAL_MAP_CHECKSUM_ERR);
 				}
 			} 
+			
+			if(sysSigMapFlag || cusSigMapFlag || sysSigCusInfoFlag) {
+				if(!BeecomDB.getInstance().putSignalMapChksum(uniqDevId, pld.getSigMapChecksum())) {
+					logger.error("Internal error: !BeecomDB.getInstance().putSignalMapChksum(uniqDevId, pld.getSigMapChecksum())");
+				}
+			}
+			
 			if(sysSigMapFlag) {			
 				List<Integer> systemSignalEnabledList = pld.getSystemSignalEnabledList();
 				BeecomDB.getInstance().putSystemSignalEnabledMap(uniqDevId, systemSignalEnabledList);
 			}
 			if(cusSigMapFlag) {
-				/* TODO: */
+				List<CustomSignalInfoUnit> customSignalInfoUnitList = pld.getCustomSignalInfoUnitLst();
+				BeecomDB.getInstance().putCustomSignalMap(uniqDevId, customSignalInfoUnitList);
 			}
 			if(sigValFlag) {
 				Map<Integer, Object> systemSignalValuesSessoin = bpDeviceSession.getSystemSignalValueMap();
@@ -500,134 +498,13 @@ public class BcServerHandler extends IoHandlerAdapter {
 				  
 				}  
 			}
-			/*
-			if(sysSigFlag) {
-				Map<Integer, Object> systemSignalValuesSessoin = bpDeviceSession.getSystemSignalValueMap();
-				Map<Integer, Object> systemSignalValues = pld.getSysSigValMap();
-				  
-				Iterator<Map.Entry<Integer, Object>> entries = systemSignalValues.entrySet().iterator();  
-				while (entries.hasNext()) {  
-				    Map.Entry<Integer, Object> entry = entries.next();  
-				    if(!systemSignalValuesSessoin.containsKey(entry.getValue())) {
-				    	vrbAck.setRetCode(BPPacketRPRTACK.RET_CODE_SIG_ID_INVALID);
-				    	pldAck.setUnsupportedSignalId(entry.getKey());
-				    	session.write(packAck);
-				    	return;
-				    }
-				    // TODO: if(!unformed value) 
-				    systemSignalValuesSessoin.put(entry.getKey(), entry.getValue());
-				  
-				}  
-			}
-			if(cusSigFlag) {
-				Map<Integer, Pair<Byte, Object>> customSignalValuesSessoin = bpDeviceSession.getCustomSignalValueMap();
-				Map<Integer, Pair<Byte, Object>> customSignalValues = pld.getCusSigValMap();
-				  
-				Iterator<Map.Entry<Integer, Pair<Byte, Object>>> entries = customSignalValues.entrySet().iterator();  
-				while (entries.hasNext()) {  
-				    Map.Entry<Integer, Pair<Byte, Object>> entry = entries.next();  
-				    if(!customSignalValuesSessoin.containsKey(entry.getValue())) {
-				    	vrbAck.setRetCode(BPPacketRPRTACK.RET_CODE_SIG_ID_INVALID);
-				    	pldAck.setUnsupportedSignalId(entry.getKey());
-				    	session.write(packAck);
-				    	return;
-				    }
-				    // TODO: if(!unformed value) 
-				    customSignalValuesSessoin.put(entry.getKey(), entry.getValue());
-				  
-				}  
-			}
-			*/
+
 			if(sysSigCusInfoFlag) {
-				/* save the system signal customized info */
+				List<SystemSignalCustomInfoUnit> systemSignalCustomInfoUnit = pld.getSystemSignalCustomInfoUnitLst();
+				BeecomDB.getInstance().putSystemCustomSignalInfoMap(uniqDevId, systemSignalCustomInfoUnit);
 			}
 			
 			session.write(packAck);
-			/*
-			
-			int retCode = BPPacketRPRTACK.RET_CODE_OK;
-			int seqId = decodedPack.getPackSeq();
-			BPSession bpSess = (BPSession) session.getAttribute(SESS_ATTR_ID);
-			BeecomDB db = BeecomDB.getInstance();
-			DBDevInfoRec devRec = db.getDevInfoRec(Integer
-					.parseInt(new String(bpSess.getUserName())));
-			
-			if (devRec.getDevUniqId() == 0) {
-				s = "TODO: dev_rec.getDevUniqId() == 0";
-				logger.debug(s);
-				return;
-			}
-			
-			BPPacket packAck = BPPackFactory.createBPPackAck(decodedPack);
-			
-			vrb = decodedPack.getVrbHead();
-			
-			do {
-				if (vrb.getSigFlag()) {
-					if (vrb.getSysSigMapFlag() || vrb.getDevNameFlag()) {
-						retCode = BPPacketRPRTACK.RET_CODE_FLAGS_INVALID;
-						break;
-					}
-					s = "REPORT signal values";
-					logger.debug(s);
-					decodedPack.getPld().getSigData().dump();
-					if(!bpSess.setSysSig(decodedPack.getPld().getSigData())) {
-						// retCode = bpSess.getError().getErrId();
-						// if(BPPacketRPRTACK.RET_CODE_SIG_ID_INVALID == retCode) {
-						//	packAck.getPld().setError(bpSess.getError());
-						// }
-						break;
-					}
-
-				} else {
-
-					if (decodedPack.getVrbHead().getDevNameFlag()) {
-						// bpSess.setDevName(decodedPack.getPld().getDevName());
-						// System.out.println("DevName: " +
-						// devRec.setDevName(bpSess.getDevName());
-					}
-					if (decodedPack.getVrbHead().getSysSigMapFlag()) {
-						bpSess.setSysSigMap(decodedPack.getPld()
-								.getMapDist2SysSigMap());
-						bpSess.initSysSigValDefault();
-
-						DBSysSigRec sysSigRec;
-						if (devRec.getSysSigTabId() == 0) {
-							devRec.setSysSigTabId(devRec.getDevUniqId());
-							sysSigRec = new DBSysSigRec();
-							sysSigRec.setSysSigTabId(devRec.getDevUniqId());
-
-							Map<Integer, Byte[]> sysSigMap = decodedPack
-									.getPld().getMapDist2SysSigMap();
-							sysSigRec.setSysSigEnableLst(sysSigMap);
-							sysSigRec.insertRec(db.getConn());
-						} else {
-							s = "TODO: get sys_sig_info from database";
-							logger.debug(s);
-							List<DBSysSigRec> lst = db.getSysSigRecLst();
-							for (int i = 0; i < lst.size(); i++) {
-								if (lst.get(i).getSysSigTabId() == devRec
-										.getSysSigTabId()) {
-									lst.get(i).dumpRec();
-								}
-							}
-						}
-
-					}
-				}
-			} while (false);
-			
-			s = "Start dump(REPORT)";
-			logger.debug(s);
-			bpSess.dumpSysSig();
-			
-			packAck.getVrbHead().setPackSeq(seqId);
-			packAck.getVrbHead().setRetCode(retCode);
-
-			devRec.updateRec(db.getConn());
-
-			session.write(packAck);
-			*/
 		} else if(BPPacketType.RPRTACK == packType) {
 			/* NOT SUPPORTED */
 		} else if (BPPacketType.DISCONN == packType) {

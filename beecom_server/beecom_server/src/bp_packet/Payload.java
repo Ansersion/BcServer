@@ -393,6 +393,24 @@ public class Payload {
 		this.systemSignalEnabledList = systemSignalEnabledList;
 	}
 
+	public List<CustomSignalInfoUnit> getCustomSignalInfoUnitLst() {
+		return customSignalInfoUnitLst;
+	}
+
+	public void setCustomSignalInfoUnitLst(List<CustomSignalInfoUnit> customSignalInfoUnitLst) {
+		this.customSignalInfoUnitLst = customSignalInfoUnitLst;
+	}
+
+	public List<SystemSignalCustomInfoUnit> getSystemSignalCustomInfoUnitLst() {
+		return systemSignalCustomInfoUnitLst;
+	}
+
+	public void setSystemSignalCustomInfoUnitLst(List<SystemSignalCustomInfoUnit> systemSignalCustomInfoUnitLst) {
+		this.systemSignalCustomInfoUnitLst = systemSignalCustomInfoUnitLst;
+	}
+	
+	
+
 
 	
 	
