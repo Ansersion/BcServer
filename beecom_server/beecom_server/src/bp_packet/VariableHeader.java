@@ -203,11 +203,11 @@ public class VariableHeader {
 	}
 	
 	public boolean getSysSigFlag() {
-		return bit7;
+		return bit4;
 	}
 	
 	public boolean getCusSigFlag() {
-		return bit5;
+		return bit3;
 	}
 	
 	public boolean getCusSigMapFlag() {
@@ -285,4 +285,5 @@ public class VariableHeader {
 	public boolean getCusSigAttrFlag() {
 		return bit0;
 	}
+	
 }

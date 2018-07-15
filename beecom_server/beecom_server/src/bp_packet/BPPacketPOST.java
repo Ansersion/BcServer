@@ -18,8 +18,11 @@ public class BPPacketPOST extends BPPacket {
 	
 	private static final Logger logger = LoggerFactory.getLogger(BPPacketPOST.class); 
 	
+	public static final int RET_CODE_INVALID_FLAGS_ERR = 0x01;
 	public static final int RET_CODE_INVALID_DEVICE_ID_ERR = 0x02;
+	public static final int RET_CODE_OFF_LINE_ERR = 0x06;
 	public static final int RET_CODE_ACCESS_DEV_PERMISSION_DENY_ERR = 0x07;
+	public static final int RET_CODE_BUFFER_FILLED_ERR = 0x0;
 	
 	
 	int packSeq;

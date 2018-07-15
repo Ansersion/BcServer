@@ -7,6 +7,10 @@ package bc_server;
 
 import java.util.List;
 import java.util.Map;
+import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -307,53 +311,96 @@ public class BcServerHandler extends IoHandlerAdapter {
 			pld = decodedPack.getPld();
 			long uniqDevId = pld.getUniqDevId();
 			
-			BPDeviceSession bpDeviceSesssion = null;
-			bpDeviceSesssion = (BPDeviceSession)BeecomDB.getInstance().getDevUniqId2SessionMap().get(devUniqId);
+			
+			boolean sysSigFlag = vrb.getSysSigFlag();
+			boolean cusSigFlag = vrb.getCusSigFlag();
+			boolean sysSigAttrFlag = vrb.getSysSigAttrFlag();
+			boolean cusSigAttrFlag = vrb.getCusSigAttrFlag();
+			if((sysSigFlag || cusSigFlag) && (sysSigAttrFlag || cusSigAttrFlag)) {
+				packAck.getVrbHead().setRetCode(BPPacketPOST.RET_CODE_INVALID_FLAGS_ERR);
+				session.write(packAck);
+				return;
+			}
+			
+			// TODO: 
+			// 1. check if attribute packet / control packet
+			if(sysSigFlag || cusSigFlag) {
+				if(!BeecomDB.getInstance().getDevUniqId2SessionMap().containsKey(devUniqId)) {
+					packAck.getVrbHead().setRetCode(BPPacketPOST.RET_CODE_OFF_LINE_ERR);
+					session.write(packAck);
+					return;
+				}
+				final BPDeviceSession bpDeviceSession = (BPDeviceSession)BeecomDB.getInstance().getDevUniqId2SessionMap().get(devUniqId);
+				// 2. relay the packet when it is a control packet
+		        TimerTask timeoutTask = new TimerTask() {  
+		            @Override  
+		            public void run() {  
+		            	// bpDeviceSession.getSession().write(arg0); 
+		            }  
+		        };  
+				bpDeviceSession.getSession().write(decodedPack);
+				if(!bpDeviceSession.putRelayList(session, decodedPack)) {
+					packAck.getVrbHead().setRetCode(BPPacketPOST.RET_CODE_BUFFER_FILLED_ERR);
+					session.write(packAck);
+					return;
+				}
+			}
+			
+			if(sysSigAttrFlag || cusSigAttrFlag) {
+				BPDeviceSession bpDeviceSesssion = null;
+				bpDeviceSesssion = (BPDeviceSession)BeecomDB.getInstance().getDevUniqId2SessionMap().get(devUniqId);
 
-			if(null == bpDeviceSesssion) {
-				packAck.getVrbHead().setRetCode(BPPacketPOST.RET_CODE_INVALID_DEVICE_ID_ERR);
-				session.write(packAck);
-				return;
-			}
-			
-			if(!BeecomDB.getInstance().checkGetDeviceSignalMapPermission(bpUserSession.getUserInfoUnit().getUserInfoHbn().getId(), uniqDevId)) {
-				packAck.getVrbHead().setRetCode(BPPacketPOST.RET_CODE_ACCESS_DEV_PERMISSION_DENY_ERR);
-				session.write(packAck);
-				return;
-			}
-			
-			// TODO: check bpDeviceSession.getSession() active and assemble the packAck
-			
-			if(vrb.getSysSigAttrFlag()) {
-				/* Not completed yes */
-				Map<Integer, SignalAttrInfo> sysSigAttrMap = pld.getSysSigAttrMap();
-				BeecomDB.getInstance().modifySysSigAttrMap(uniqDevId, sysSigAttrMap);
+				if(null == bpDeviceSesssion) {
+					packAck.getVrbHead().setRetCode(BPPacketPOST.RET_CODE_INVALID_DEVICE_ID_ERR);
+					session.write(packAck);
+					return;
+				}
 				
-			}
-			if(vrb.getCusSigAttrFlag()) {
-				/* Not completed yes */
-				Map<Integer, SignalAttrInfo> sysCusAttrMap = pld.getCusSigAttrMap();
-				/* change the custom signal attributes */
-			}
-			if(vrb.getSysSigFlag() || vrb.getCusSigFlag()) {
-				/* forward the packet to the device
-				 * and put a callback when get the response */
+				if(!BeecomDB.getInstance().checkGetDeviceSignalMapPermission(bpUserSession.getUserInfoUnit().getUserInfoHbn().getId(), uniqDevId)) {
+					packAck.getVrbHead().setRetCode(BPPacketPOST.RET_CODE_ACCESS_DEV_PERMISSION_DENY_ERR);
+					session.write(packAck);
+					return;
+				}
+				
+				// TODO: check bpDeviceSession.getSession() active and assemble the packAck
+				
+				if(vrb.getSysSigAttrFlag()) {
+					/* Not completed yes */
+					Map<Integer, SignalAttrInfo> sysSigAttrMap = pld.getSysSigAttrMap();
+					BeecomDB.getInstance().modifySysSigAttrMap(uniqDevId, sysSigAttrMap);
+					
+				}
+				if(vrb.getCusSigAttrFlag()) {
+					/* Not completed yes */
+					Map<Integer, SignalAttrInfo> sysCusAttrMap = pld.getCusSigAttrMap();
+					/* change the custom signal attributes */
+				}
+				if(vrb.getSysSigFlag() || vrb.getCusSigFlag()) {
+					/* forward the packet to the device
+					 * and put a callback when get the response */
+				}
 			}
 			
+
 		} else if (BPPacketType.POSTACK == packType) {
-			/* POSTACK forward */
-			/*
-			byte flags = decodedPack.getVrbHead().getFlags();
-			int clientId = decodedPack.getVrbHead().getClientId();
-			int seqId = decodedPack.getVrbHead().getPackSeq();
-			int retCode = decodedPack.getVrbHead().getRetCode();
-			if (retCode != 0) {
-				logger.info("Error(GETACK): get return code = {}", retCode);
+			BPPacket packAck = BPPackFactory.createBPPackAck(decodedPack);
+			if(null == packAck) {
+				logger.error("Invalid packAck");
 				return;
 			}
-			logger.info("POSTACK: flags={}, cid={}, sid={}, rcode={}", flags, clientId
-					, seqId, retCode);
-			*/
+			BPDeviceSession bpDeviceSession = null;
+			try {
+				bpDeviceSession = (BPDeviceSession)session.getAttribute(SESS_ATTR_BP_SESSION);
+			} catch(Exception e) {
+				StringWriter sw = new StringWriter();
+				e.printStackTrace(new PrintWriter(sw, true));
+				String str = sw.toString();
+				logger.error(str);
+			}
+			if(null == bpDeviceSession) {
+				logger.error("Inner error: null == bpDeviceSession");
+				return;
+			}
 
 		} else if (BPPacketType.PING == packType) {
 			vrb = decodedPack.getVrbHead();

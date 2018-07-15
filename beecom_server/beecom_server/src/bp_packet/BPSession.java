@@ -9,6 +9,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
@@ -63,26 +67,24 @@ public abstract class BPSession {
 	private boolean debugMode;
 	private byte performanceClass;
 	
+	private Map<Integer, Timer> seqId2TimerRelayMap;
+	private Lock relayMaplock = new ReentrantLock();    
 	
 	public BPSession(IoSession session) {
 		this.session = session;
 		this.procLevel = 0;
 		this.aliveTime = 3600;
 		this.timeout = 120;
+		this.seqId2TimerRelayMap = new HashMap<>();
+		this.relayMaplock = new ReentrantLock();    
 	}
 	
 	public BPSession(IoSession session, String userName, String password) {
-		this.session = session;
-		this.procLevel = 0;
-		this.aliveTime = 3600;
-		this.timeout = 120;
+		this(session);
 	}
 	
 	public BPSession(IoSession session, Long uniqDeviceId, String password) {
-		this.session = session;
-		this.procLevel = 0;
-		this.aliveTime = 3600;
-		this.timeout = 120;
+		this(session);    
 	}
 	
 	public abstract boolean ifUserSession(); 
@@ -380,7 +382,44 @@ public abstract class BPSession {
 	public void setCustomSignalValueMap(Map<Integer, Pair<Byte, Object>> customSignalValueMap) {
 		this.customSignalValueMap = customSignalValueMap;
 	}
+
+	public int getRelayListSize() {
+		int ret = 0;
+		relayMaplock.lock();
+        try {
+        	ret = seqId2TimerRelayMap.size();
+        } catch (Exception e) {
+        	logger.error("Inner error: Exception in getRelayListSize");
+            ret = 0;
+        }finally {
+        	relayMaplock.unlock();
+        }
+        
+        return ret;
+	}
 	
+	public boolean putRelayList(int seqId, int delayMs, TimerTask timeTask) {
+		boolean ret = false;
+		relayMaplock.lock();
+        try {
+        	if(!seqId2TimerRelayMap.containsKey(seqId)) {
+        		ret = true;
+        		Timer timer = new Timer();
+        		timer.schedule(timeTask, delayMs);
+        		seqId2TimerRelayMap.put(seqId, timer);
+        	} else {
+        		logger.error("Inner error: seqId2TimerRelayMap.containsKey(seqId)");
+        	}
+        	
+        } catch (Exception e) {
+        	logger.error("Inner error: Exception in putRelayList");
+        	ret = false;
+        }finally {
+        	relayMaplock.unlock();
+        }
+        
+        return ret;
+	}
 	
 	
 	
