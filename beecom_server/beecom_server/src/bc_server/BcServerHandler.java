@@ -332,14 +332,9 @@ public class BcServerHandler extends IoHandlerAdapter {
 				}
 				final BPDeviceSession bpDeviceSession = (BPDeviceSession)BeecomDB.getInstance().getDevUniqId2SessionMap().get(devUniqId);
 				// 2. relay the packet when it is a control packet
-		        TimerTask timeoutTask = new TimerTask() {  
-		            @Override  
-		            public void run() {  
-		            	// bpDeviceSession.getSession().write(arg0); 
-		            }  
-		        };  
+  
 				bpDeviceSession.getSession().write(decodedPack);
-				if(!bpDeviceSession.putRelayList(session, decodedPack)) {
+				if(!bpDeviceSession.putRelayList(session, BPPackFactory.createBPPackAck(decodedPack), bpDeviceSession.getTimeout())) {
 					packAck.getVrbHead().setRetCode(BPPacketPOST.RET_CODE_BUFFER_FILLED_ERR);
 					session.write(packAck);
 					return;

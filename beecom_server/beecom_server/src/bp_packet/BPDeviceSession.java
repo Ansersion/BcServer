@@ -1,16 +1,24 @@
 package bp_packet;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.mina.core.session.IoSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import db.RelayData;
 
 public class BPDeviceSession extends BPSession {
+	private static final Logger logger = LoggerFactory.getLogger(BPDeviceSession.class); 
 	private static final int MAX_RELAY_LIST_SIZE = 10;
 	private Long uniqDeviceId;
 	private String password;
@@ -33,20 +41,33 @@ public class BPDeviceSession extends BPSession {
 		super.setSystemSignalValueMap(new HashMap<Integer, Object>());
 	}
 	
-	public boolean putRelayList(IoSession iosession, BPPacket bppacket) {
+	public boolean putRelayList(IoSession iosession, BPPacket bppacket, int timeout) {
 		
 		if(MAX_RELAY_LIST_SIZE <= getRelayListSize()) {
 			return false;
 		}
-		Runnable runnable = new Runnable() {
-			public void run() {
-				// task to run goes here
-				System.out.println("Timeout !!");
-			}
-		};
-		ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-		service.schedule(runnable, getTimeout(), TimeUnit.SECONDS);
-		return true;
+		
+        TimerTask timeoutTask = new TimerTask() {  
+            @Override  
+            public void run() {  
+            	try {
+					RelayData relayData = getRelayData(this);
+					BPPacket packAck = (BPPacket) relayData.getRelayData();
+					packAck.getVrbHead().setRetCode(BPPacketPOST.RET_CODE_OFF_LINE_ERR);
+					session.write(packAck);
+					relayData.getIoSession().write(packAck);
+				} catch (Exception e) {
+					StringWriter sw = new StringWriter();
+					e.printStackTrace(new PrintWriter(sw, true));
+					String str = sw.toString();
+					logger.error(str);
+				}
+            }  
+        };
+        
+		RelayData relayData = new RelayData(new Timer(), timeoutTask, iosession, System.currentTimeMillis(), bppacket);
+		
+		return super.putRelayList(bppacket.getVrbHead().getPackSeq(), timeout * 1000, relayData);
 	}
 	
 	@Override

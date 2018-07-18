@@ -18,6 +18,7 @@ import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import db.RelayData;
 import javafx.util.Pair;
 import other.BPValue;
 import sys_sig_table.BPSysSigTable;
@@ -67,8 +68,8 @@ public abstract class BPSession {
 	private boolean debugMode;
 	private byte performanceClass;
 	
-	private Map<Integer, Timer> seqId2TimerRelayMap;
-	private Lock relayMaplock = new ReentrantLock();    
+	private Map<Integer, RelayData> seqId2TimerRelayMap;
+	private Lock relayMaplock = new ReentrantLock();
 	
 	public BPSession(IoSession session) {
 		this.session = session;
@@ -398,15 +399,15 @@ public abstract class BPSession {
         return ret;
 	}
 	
-	public boolean putRelayList(int seqId, int delayMs, TimerTask timeTask) {
+	public boolean putRelayList(int seqId, int delayMs, RelayData relayData) {
 		boolean ret = false;
 		relayMaplock.lock();
         try {
         	if(!seqId2TimerRelayMap.containsKey(seqId)) {
         		ret = true;
         		Timer timer = new Timer();
-        		timer.schedule(timeTask, delayMs);
-        		seqId2TimerRelayMap.put(seqId, timer);
+        		timer.schedule(relayData.getTimerTask(), delayMs);
+        		seqId2TimerRelayMap.put(seqId, relayData);
         	} else {
         		logger.error("Inner error: seqId2TimerRelayMap.containsKey(seqId)");
         	}
@@ -414,6 +415,27 @@ public abstract class BPSession {
         } catch (Exception e) {
         	logger.error("Inner error: Exception in putRelayList");
         	ret = false;
+        }finally {
+        	relayMaplock.unlock();
+        }
+        
+        return ret;
+	}
+	
+	public RelayData getRelayData(TimerTask timerTask) {
+		RelayData ret = null;
+		relayMaplock.lock();
+        try {
+			Iterator<Map.Entry<Integer, RelayData>> it = seqId2TimerRelayMap.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry<Integer, RelayData> entry = it.next();
+				if(entry.getValue().getTimerTask() == timerTask) {
+					ret = entry.getValue();
+				}
+			}
+        } catch (Exception e) {
+        	logger.error("Inner error: Exception in getRelayData");
+        	ret = null;
         }finally {
         	relayMaplock.unlock();
         }
