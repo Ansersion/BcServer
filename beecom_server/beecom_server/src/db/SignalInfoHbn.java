@@ -5,6 +5,7 @@ public class SignalInfoHbn {
     private Integer signalId;
     private Long devId;
     private Boolean notifying;
+    private Boolean display;
 	public Long getId() {
 		return id;
 	}
@@ -29,11 +30,15 @@ public class SignalInfoHbn {
 	public void setNotifying(Boolean notifying) {
 		this.notifying = notifying;
 	}
+	public Boolean getDisplay() {
+		return display;
+	}
+	public void setDisplay(Boolean display) {
+		this.display = display;
+	}
 	@Override
 	public String toString() {
 		return "SignalInfoHbn [id=" + id + ", signalId=" + signalId + ", devId=" + devId + ", notifying=" + notifying
-				+ "]";
+				+ ", display=" + display + "]";
 	}
-    
-    
 }

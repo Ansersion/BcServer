@@ -22,7 +22,9 @@ public class BPPacketPOST extends BPPacket {
 	public static final int RET_CODE_INVALID_DEVICE_ID_ERR = 0x02;
 	public static final int RET_CODE_OFF_LINE_ERR = 0x06;
 	public static final int RET_CODE_ACCESS_DEV_PERMISSION_DENY_ERR = 0x07;
+	public static final int RET_CODE_TIMEOUT_ERR = 0x09;
 	public static final int RET_CODE_BUFFER_FILLED_ERR = 0x0;
+	public static final int RET_CODE_PEER_INNER_ERR = 0xFF;
 	
 	
 	int packSeq;

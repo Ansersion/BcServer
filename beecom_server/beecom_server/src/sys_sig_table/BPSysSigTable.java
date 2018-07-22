@@ -33,6 +33,7 @@ public class BPSysSigTable {
 
 	private static final Logger logger = LoggerFactory.getLogger(BPSysSigTable.class);
 
+	public static final int SYSTEM_SIGNAL_ATTR_COLUMN_NUM = 18;
 	public static final int SID_ID_RESERVED = 0x0000;
 
 	private List<SysSigInfo> sysSigInfoLst;
@@ -69,6 +70,7 @@ public class BPSysSigTable {
 		int unitLangRes = 0;
 		/* 0-ro, 1-rw */
 		byte permission = 0;
+		boolean ifDisplay = false;
 		byte accuracy;
 		Object valMin = null;
 		Object valMax = null;
@@ -83,41 +85,50 @@ public class BPSysSigTable {
 
 		try (BufferedReader sysSigIn = new BufferedReader(isr)) {
 			String s;
-			String pattern = "^(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+)$";
+			// String pattern = "^(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+)$";
+			String pattern = "^";
+			for(int i = 0; i < SYSTEM_SIGNAL_ATTR_COLUMN_NUM-1; i++) {
+				pattern += "(.+),";
+			}
+			pattern += "(.+)$";
 			Pattern r = Pattern.compile(pattern);
 			s = sysSigIn.readLine();
 			s = sysSigIn.readLine();
+			int groupIndex = 0;
 
 			while ((s = sysSigIn.readLine()) != null) {
 				Matcher m = r.matcher(s);
 				if (!m.find()) {
 					break;
 				}
-				if (0 == m.group(4).compareToIgnoreCase("YES")) {
+				groupIndex = 4;
+				if (0 == m.group(groupIndex).compareToIgnoreCase("YES")) {
 					alm = true;
 				} else {
 					alm = false;
 				}
 				/* 0-u32, 1-u16, 2-i32, 3-i16, 4-enum, 5-float, 6-string */
-				if (0 == m.group(5).compareToIgnoreCase("UINT32")) {
+				groupIndex++;
+				if (0 == m.group(groupIndex).compareToIgnoreCase("UINT32")) {
 					valType = 0;
-				} else if (0 == m.group(5).compareToIgnoreCase("UINT16")) {
+				} else if (0 == m.group(groupIndex).compareToIgnoreCase("UINT16")) {
 					valType = 1;
-				} else if (0 == m.group(5).compareToIgnoreCase("INT32")) {
+				} else if (0 == m.group(groupIndex).compareToIgnoreCase("INT32")) {
 					valType = 2;
-				} else if (0 == m.group(5).compareToIgnoreCase("INT16")) {
+				} else if (0 == m.group(groupIndex).compareToIgnoreCase("INT16")) {
 					valType = 3;
-				} else if (0 == m.group(5).compareToIgnoreCase("ENUM")) {
+				} else if (0 == m.group(groupIndex).compareToIgnoreCase("ENUM")) {
 					valType = 4;
-				} else if (0 == m.group(5).compareToIgnoreCase("FLOAT")) {
+				} else if (0 == m.group(groupIndex).compareToIgnoreCase("FLOAT")) {
 					valType = 5;
-				} else if (0 == m.group(5).compareToIgnoreCase("STRING")) {
+				} else if (0 == m.group(groupIndex).compareToIgnoreCase("STRING")) {
 					valType = 6;
 				} else {
-					throw new BPParseCsvFileException(m.group(1) + ": value type error");
+					throw new BPParseCsvFileException(m.group(1) + ":(" + m.group(groupIndex) + ") value type error");
 				}
 
-				strTmp = m.group(6);
+				groupIndex++;
+				strTmp = m.group(groupIndex);
 
 				try (Scanner scannerUnit = new Scanner(strTmp)) {
 					scannerUnit.useDelimiter("ULR");
@@ -126,35 +137,48 @@ public class BPSysSigTable {
 					}
 					unitLangRes = scannerUnit.nextInt();
 
-					if (0 == m.group(7).compareToIgnoreCase("RO")) {
+					groupIndex++;
+					if (0 == m.group(groupIndex).compareToIgnoreCase("RO")) {
 						permission = 0;
 					} else {
 						permission = 1;
+					}
+					groupIndex++;
+					if (0 == m.group(groupIndex).compareToIgnoreCase("YES")) {
+						ifDisplay = true;
+					} else {
+						ifDisplay = false;
 					}
 				} catch (BPParseCsvFileException e) {
 					Util.bcLog(e, logger);
 				}
 
-				accuracy = (byte) Integer.parseInt(m.group(8));
+				groupIndex++;
+				accuracy = (byte) Integer.parseInt(m.group(groupIndex));
 
-				if (Util.isNull(m.group(9))) {
+				groupIndex++;
+				if (Util.isNull(m.group(groupIndex))) {
 					valMin = BPValue.setVal(valType, null, valMin);
 				} else {
-					valMin = BPValue.setVal(valType, m.group(9), valMin);
+					valMin = BPValue.setVal(valType, m.group(groupIndex), valMin);
 				}
 
-				if (Util.isNull(m.group(10))) {
+				groupIndex++;
+				if (Util.isNull(m.group(groupIndex))) {
 					valMax = BPValue.setVal(valType, null, valMax);
 				} else {
-					valMax = BPValue.setVal(valType, m.group(10), valMax);
+					valMax = BPValue.setVal(valType, m.group(groupIndex), valMax);
 				}
-				if (Util.isNull(m.group(11))) {
+				
+				groupIndex++;
+				if (Util.isNull(m.group(groupIndex))) {
 					valDef = BPValue.setVal(valType, null, valDef);
 				} else {
-					valDef = BPValue.setVal(valType, m.group(11), valDef);
+					valDef = BPValue.setVal(valType, m.group(groupIndex), valDef);
 				}
 
-				if (!m.group(12).equals("NULL")) {
+				groupIndex++;
+				if (!m.group(groupIndex).equals("NULL")) {
 					classLangRes = 1;
 				} else {
 					classLangRes = 0;
@@ -165,7 +189,8 @@ public class BPSysSigTable {
 				}
 
 				if (4 == valType) {
-					strTmp = m.group(13);
+					groupIndex++;
+					strTmp = m.group(groupIndex);
 
 					try (Scanner scannerEnum = new Scanner(strTmp).useDelimiter("/")) {
 						mapEnumLangRes = new HashMap<>();
@@ -187,19 +212,23 @@ public class BPSysSigTable {
 					}
 				}
 
-				if (0 == m.group(14).compareToIgnoreCase("YES")) {
+				groupIndex++;
+				if (0 == m.group(groupIndex).compareToIgnoreCase("YES")) {
 					enStatistics = true;
 				} else {
 					enStatistics = false;
 				}
 				
 				if (alm) {
-					almClass = Byte.parseByte(m.group(15));
-					dlyBefAlm = Integer.parseInt(m.group(16));
-					dlyAftAlm = Integer.parseInt(m.group(17));
+					groupIndex++;
+					almClass = Byte.parseByte(m.group(groupIndex));
+					groupIndex++;
+					dlyBefAlm = Integer.parseInt(m.group(groupIndex));
+					groupIndex++;
+					dlyAftAlm = Integer.parseInt(m.group(groupIndex));
 				}
 
-				sysSigInfoLst.add(new SysSigInfo(alm, valType, unitLangRes, permission, accuracy, valMin, valMax,
+				sysSigInfoLst.add(new SysSigInfo(alm, valType, unitLangRes, permission, ifDisplay, accuracy, valMin, valMax,
 						valDef, classLangRes, mapEnumLangRes, enStatistics, almClass, dlyBefAlm, dlyAftAlm));
 			}
 
@@ -222,7 +251,7 @@ public class BPSysSigTable {
 		StringBuilder debugStr = new StringBuilder();
 		debugStr.append("" + index + ":" + sysSigInfo.isAlm() + "," + sysSigInfo.getValType()
 				+ "," + sysSigInfo.getUnitLangRes() + "," + sysSigInfo.getPermission() + ","
-				+ sysSigInfo.getAccuracy() + "," + sysSigInfo.getValMin().toString() + ","
+				+ sysSigInfo.isIfDisplay() + "," + sysSigInfo.getAccuracy() + "," + sysSigInfo.getValMin().toString() + ","
 				+ sysSigInfo.getValMax().toString() + ","
 				+ sysSigInfo.getValDef().toString() + ",");
 		if (null != sysSigInfo.getMapEnmLangRes()) {

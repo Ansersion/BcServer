@@ -53,9 +53,11 @@ public class BPDeviceSession extends BPSession {
             	try {
 					RelayData relayData = getRelayData(this);
 					BPPacket packAck = (BPPacket) relayData.getRelayData();
-					packAck.getVrbHead().setRetCode(BPPacketPOST.RET_CODE_OFF_LINE_ERR);
+					packAck.getVrbHead().setRetCode(BPPacketPOST.RET_CODE_TIMEOUT_ERR);
 					session.write(packAck);
 					relayData.getIoSession().write(packAck);
+					relayData.setTimeoutRelayed(true);
+					removeRelayList(packAck.getVrbHead().getPackSeq());
 				} catch (Exception e) {
 					StringWriter sw = new StringWriter();
 					e.printStackTrace(new PrintWriter(sw, true));

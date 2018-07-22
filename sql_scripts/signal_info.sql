@@ -16,5 +16,8 @@ CREATE TABLE signal_info
 	/* Attributes which users can change*/
 	notifying BOOLEAN NOT NULL DEFAULT false,
 	
+	/* Attributes which users can change*/
+	display BOOLEAN NOT NULL DEFAULT true,
+	
 	INDEX i_dev_id(dev_id)
 );

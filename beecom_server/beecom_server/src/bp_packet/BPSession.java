@@ -443,6 +443,69 @@ public abstract class BPSession {
         return ret;
 	}
 	
+	public boolean startRelay(int seqId) {
+		boolean ret = false;
+		relayMaplock.lock();
+        try {
+        	if(!seqId2TimerRelayMap.containsKey(seqId)) {
+        		RelayData relayData = seqId2TimerRelayMap.get(seqId);
+        		relayData.getTimer().cancel();
+        		if(relayData.isTimeoutRelayed()) {
+        			return false;
+        		}
+        		relayData.getIoSession().write(relayData.getRelayData());
+        		removeRelayList(seqId);
+        		
+        	} else {
+        		logger.error("Inner error: seqId2TimerRelayMap.containsKey(seqId)");
+        	}
+        	
+        } catch (Exception e) {
+        	logger.error("Inner error: Exception in putRelayList");
+        	ret = false;
+        }finally {
+        	relayMaplock.unlock();
+        }
+        
+        return ret;
+	}
+	
+	public boolean updateRelayList(int seqId, Object relayData) {
+		boolean ret = false;
+		relayMaplock.lock();
+        try {
+        	if(!seqId2TimerRelayMap.containsKey(seqId)) {
+        		seqId2TimerRelayMap.get(seqId).setRelayData(relayData);
+        	} else {
+        		logger.error("Inner error: seqId2TimerRelayMap.containsKey(seqId)");
+        	}
+        	
+        } catch (Exception e) {
+        	logger.error("Inner error: Exception in putRelayList");
+        	ret = false;
+        }finally {
+        	relayMaplock.unlock();
+        }
+        
+        return ret;
+	}
+	
+	public boolean removeRelayList(int seqId) {
+		boolean ret = false;
+		relayMaplock.lock();
+        try {
+        	seqId2TimerRelayMap.remove(seqId);
+        	ret = true;
+        } catch (Exception e) {
+        	logger.error("Inner error: Exception in removeRelayList");
+        	ret = false;
+        }finally {
+        	relayMaplock.unlock();
+        }
+        
+        return ret;
+	}
+	
 	
 	
 }

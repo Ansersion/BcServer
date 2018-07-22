@@ -330,7 +330,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 					session.write(packAck);
 					return;
 				}
-				final BPDeviceSession bpDeviceSession = (BPDeviceSession)BeecomDB.getInstance().getDevUniqId2SessionMap().get(devUniqId);
+				BPDeviceSession bpDeviceSession = (BPDeviceSession)BeecomDB.getInstance().getDevUniqId2SessionMap().get(devUniqId);
 				// 2. relay the packet when it is a control packet
   
 				bpDeviceSession.getSession().write(decodedPack);
@@ -376,13 +376,10 @@ public class BcServerHandler extends IoHandlerAdapter {
 				}
 			}
 			
+			session.write(packAck);
+			
 
 		} else if (BPPacketType.POSTACK == packType) {
-			BPPacket packAck = BPPackFactory.createBPPackAck(decodedPack);
-			if(null == packAck) {
-				logger.error("Invalid packAck");
-				return;
-			}
 			BPDeviceSession bpDeviceSession = null;
 			try {
 				bpDeviceSession = (BPDeviceSession)session.getAttribute(SESS_ATTR_BP_SESSION);
@@ -393,9 +390,22 @@ public class BcServerHandler extends IoHandlerAdapter {
 				logger.error(str);
 			}
 			if(null == bpDeviceSession) {
-				logger.error("Inner error: null == bpDeviceSession");
 				return;
 			}
+			
+			vrb = decodedPack.getVrbHead();
+			pld = decodedPack.getPld();
+			
+			boolean sysSigAttrFlag = vrb.getSysSigAttrFlag();
+			boolean cusSigAttrFlag = vrb.getCusSigAttrFlag();
+			
+			if(sysSigAttrFlag || cusSigAttrFlag) {
+				decodedPack.getVrbHead().setRetCode(BPPacketPOST.RET_CODE_PEER_INNER_ERR);
+				bpDeviceSession.updateRelayList(vrb.getPackSeq(), decodedPack);	
+			}
+			
+			bpDeviceSession.startRelay(vrb.getPackSeq());
+			return;
 
 		} else if (BPPacketType.PING == packType) {
 			vrb = decodedPack.getVrbHead();

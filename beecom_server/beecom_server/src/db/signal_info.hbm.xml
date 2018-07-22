@@ -10,6 +10,7 @@
         </id>  
         <property name="signalId" column="signal_id" />  
         <property name="devId" column="dev_id" />  
-        <property name="notifying" column="notifying" />  
+        <property name="notifying" column="notifying" />
+        <property name="display" column="display" />  
     </class>    
 </hibernate-mapping>

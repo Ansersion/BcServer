@@ -11,6 +11,7 @@ public class SysSigInfo {
 	private int unitLangRes;
 	/* 0-ro, 1-rw */
 	private byte permission;
+	private boolean ifDisplay;
 	private byte accuracy;
 	// private BPValue valMin;
 	// private BPValue valMax;
@@ -27,7 +28,7 @@ public class SysSigInfo {
 	private int dlyAftAlm;
 
 	public SysSigInfo(boolean alm, byte valType, int unitLangRes,
-			byte permission, byte accuracy, Object valMin, Object valMax,
+			byte permission, boolean ifDisplay, byte accuracy, Object valMin, Object valMax,
 			Object valDef, int classLangRes, Map<Integer, Integer> mapEnumLangRes,
 			boolean enStatistics, byte almClass, int dlyBefAlm,
 			int dlyAftAlm) {
@@ -36,6 +37,7 @@ public class SysSigInfo {
 		this.valType = valType;
 		this.unitLangRes = unitLangRes;
 		this.permission = permission;
+		this.ifDisplay = ifDisplay;
 		this.accuracy = accuracy;
 		this.valMin = valMin;
 		this.valMax = valMax;
@@ -78,6 +80,14 @@ public class SysSigInfo {
 
 	public void setPermission(byte permission) {
 		this.permission = permission;
+	}
+
+	public boolean isIfDisplay() {
+		return ifDisplay;
+	}
+
+	public void setIfDisplay(boolean ifDisplay) {
+		this.ifDisplay = ifDisplay;
 	}
 
 	public byte getAccuracy() {

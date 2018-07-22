@@ -111,4 +111,25 @@ public class BPPackFactory {
 		
 		return ret;
 	}
+	
+	public static BPPacket createBPPack(BPPacketType type) {
+		
+		BPPacket ret;
+		
+		if(BPPacketType.CONNECT == type) {
+			ret = new BPPacketCONNECT();
+		} else if(BPPacketType.PING == type) {
+			ret = new BPPacketPING();
+		} else if(BPPacketType.REPORT == type) {
+			ret = new BPPacketREPORT();
+		} else if(BPPacketType.POST == type) {
+			ret = new BPPacketPOST();
+		} else if(BPPacketType.POSTACK == type) {
+			ret = new BPPacketPOSTACK();
+		} else {
+			ret = null;
+		}
+		
+		return ret;
+	}
 }
