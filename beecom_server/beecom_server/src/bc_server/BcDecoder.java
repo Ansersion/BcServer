@@ -64,7 +64,7 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 		switch (currState) {
 		case DEC_FX_HEAD:
 			// The length of fixed-header is 3 at most 
-			if (ioIn.remaining() >= 3) { 
+			if (ioIn.remaining() >= BPPacket.FIXED_HEADER_SIZE) { 
 				/*
 				byte[] tst = ioIn.array();
 				if(tst[0] == 'T' && tst[1] == 'S' && tst[2] == 'T') {

@@ -114,7 +114,7 @@ public class BPPacketGETACK extends BPPacket {
 		getIoBuffer().put(encodedByte);
 
 		// Remaininglength 1 byte reserved
-		getIoBuffer().put((byte) 0);
+		getIoBuffer().putUnsignedShort(0);
 
 		return false;
 	}

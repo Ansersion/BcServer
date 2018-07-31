@@ -66,7 +66,6 @@ public class BeecomDB {
 		LOGIN_OK,
 		USER_INVALID,
 		PASSWORD_INVALID,
-		USER_OR_PASSWORD_INVALID,
 	}
 	
 	public static enum GetSnErrorEnum {
@@ -286,7 +285,7 @@ public class BeecomDB {
 		    
 			tx.commit();
 			if(null == userInfoHbn) {
-				result = LoginErrorEnum.USER_OR_PASSWORD_INVALID;
+				result = LoginErrorEnum.PASSWORD_INVALID;
 			} else {
 				if(null != userInfoUnit) {
 					userInfoUnit.setUserInfoHbn(userInfoHbn);
@@ -298,7 +297,7 @@ public class BeecomDB {
 			String str = sw.toString();
 			logger.error(str);
 			userInfoUnit = null;
-			result = LoginErrorEnum.USER_OR_PASSWORD_INVALID;
+			result = LoginErrorEnum.PASSWORD_INVALID;
 		}
 		return result;
 	}
@@ -401,7 +400,7 @@ public class BeecomDB {
 		}
 		if(null == deviceInfoUnit) {
 			logger.error("Inner error: null == deviceInfoUnit");
-			return LoginErrorEnum.USER_OR_PASSWORD_INVALID;
+			return LoginErrorEnum.USER_INVALID;
 		}
 		
 		Transaction tx = null;

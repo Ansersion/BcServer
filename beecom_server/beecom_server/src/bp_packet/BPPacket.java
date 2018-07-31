@@ -19,6 +19,7 @@ public class BPPacket implements BPPacketInterface {
 	public static final int CUS_SIG_END_ID = 0xDFFF;
 	public static final int SYS_SIG_DIST_STEP = 0x200;
 	public static final int MAX_SIG_ID = 0xFFFF;
+    public static final int FIXED_HEADER_SIZE = 3;
 	
 
 	/* 0-u32, 1-u16, 2-i32, 3-i16, 4-enum, 5-float, 6-string, 7-boolean */
@@ -329,45 +330,18 @@ public class BPPacket implements BPPacketInterface {
 	@Override
 	public boolean assembleEnd() throws BPAssembleException {
 		int crcLen = (getFxHead().getCrcChk() == CrcChecksum.CRC32 ? 4 : 2);
-		int packRmnLen = bpPacketData.position() - 2 + crcLen;
+		int packRmnLen = bpPacketData.position() - BPPacket.FIXED_HEADER_SIZE + crcLen;
 		
-		if(packRmnLen > 256) {
-			int dataLenOld = bpPacketData.minimumCapacity();
-			byte[] byteBuf = new byte[dataLenOld - 1 - 1];
-			bpPacketData.flip();
-			byte encodedByte = bpPacketData.get();
-			// skip 1 byte of temporary "RemainingLength"
-			bpPacketData.get();
-			bpPacketData.get(byteBuf);
-			
-			bpPacketData.clear();
-			
-			bpPacketData.put(encodedByte);
-			
-			int dataLenNew = dataLenOld + 1;
-			do {
-				encodedByte = (byte)(dataLenNew % 128);
-				
-				dataLenNew = dataLenNew / 128;
-				// if there are more data to encode, set the top bit of this byte
-				if ( dataLenNew > 0 ) {
-					encodedByte = (byte)(encodedByte | 0x80);
-				}
-				bpPacketData.put(encodedByte);
-			} while ( dataLenNew > 0 );
-
-		} else {
 			int posCrc = bpPacketData.position();
 			bpPacketData.rewind();
 			bpPacketData.get();
-			bpPacketData.put((byte)packRmnLen);
+			bpPacketData.putUnsignedShort(packRmnLen);
 			bpPacketData.position(posCrc);
 			byte[] buf = bpPacketData.array();
 			long crcTmp = CrcChecksum.calcCrc32(buf, 0, posCrc);
 			bpPacketData.putUnsignedInt(crcTmp);
 			bpPacketData.flip();
 			
-		}
 		return false;
 	}
 	
