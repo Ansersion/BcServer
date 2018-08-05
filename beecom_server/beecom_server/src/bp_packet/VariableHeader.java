@@ -286,4 +286,8 @@ public class VariableHeader {
 		return bit0;
 	}
 	
+	public boolean getReqAllDeviceId() {
+		return bit1;
+	}
+	
 }

@@ -233,10 +233,10 @@ public class BcServerHandler extends IoHandlerAdapter {
 			boolean sysSigFlag = vrb.getSysSigFlag();
 			boolean cusSigFlag = vrb.getCusSigFlag();
 			boolean sysSigCusInfoFlag = vrb.getSysCusFlag();
-			boolean infoLeft = vrb.getInfoLeftFlag();
+			boolean pushDeviceIdFlag = vrb.getReqAllDeviceId();
 			
 			if(devIdFlag) {
-				if(sysSigMapFlag || cusSigMapFlag || sysSigFlag || cusSigFlag || sysSigCusInfoFlag || infoLeft) {
+				if(sysSigMapFlag || cusSigMapFlag || sysSigFlag || cusSigFlag || sysSigCusInfoFlag || pushDeviceIdFlag) {
 					packAck.getVrbHead().setRetCode(BPPacketGET.RET_CODE_VRB_HEADER_FLAG_ERR);
 					session.write(packAck);
 					return;
@@ -254,6 +254,16 @@ public class BcServerHandler extends IoHandlerAdapter {
 				session.write(packAck);
 				return;
 			} 
+			if(pushDeviceIdFlag) {
+				if(sysSigMapFlag || cusSigMapFlag || sysSigFlag || cusSigFlag || sysSigCusInfoFlag) {
+					packAck.getVrbHead().setRetCode(BPPacketGET.RET_CODE_VRB_HEADER_FLAG_ERR);
+					session.write(packAck);
+					return;
+				}
+				// TODO: start push device IDs task
+				session.write(packAck);
+				return;
+			}
 			long uniqDevId = pld.getUniqDevId();
 			pldAck = packAck.getPld();
 			if(!BeecomDB.getInstance().checkGetDeviceSignalMapPermission(bpUserSession.getUserInfoUnit().getUserInfoHbn().getId(), uniqDevId)) {
