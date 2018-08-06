@@ -290,4 +290,8 @@ public class VariableHeader {
 		return bit1;
 	}
 	
+	public void setReqAllDeviceIdFlag(boolean reqAllDeviceIdFlag) {
+		bit1 = reqAllDeviceIdFlag;
+	}
+	
 }

@@ -1808,6 +1808,54 @@ public class BeecomDB {
     	return ret;
     }
     
+    public List<Long> getDeviceIDList(String userName) {
+
+		if(null == userName) {
+			return null;
+		}
+		List<Long> deviceIdList = null;
+		Transaction tx = null;
+		try (Session session = sessionFactory.openSession()) {
+			tx = session.beginTransaction();
+
+			UserInfoHbn userInfoHbn = (UserInfoHbn) session
+					.createQuery("from UserInfoHbn where name = :user_name")
+					.setParameter("user_name", userName).uniqueResult();
+			if (null == userInfoHbn) {
+				return null;
+			}
+			long userId = userInfoHbn.getId();
+			
+			List<Long> deviceIdListAdminTmp = (List<Long>)session  
+		            .createQuery("select id from DevInfoHbn where adminId = :user_id")
+		            .setParameter("user_id", userId).list();
+			List<Long> deviceIdListTmp = (List<Long>)session  
+		            .createQuery("select devId from UserDevRelInfoHbn where userId = :user_id")
+		            .setParameter("user_id", userId).list();
+			
+			if(null == deviceIdListAdminTmp && null == deviceIdListTmp) {
+				return null;
+			} else if(null == deviceIdListAdminTmp) {
+				deviceIdList = deviceIdListTmp;
+			} else if(null == deviceIdListTmp) {
+				deviceIdList = deviceIdListAdminTmp;
+			} else {
+				deviceIdListAdminTmp.addAll(deviceIdListTmp);
+				deviceIdList = deviceIdListAdminTmp;
+			}
+			
+			
+			tx.commit();
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+			deviceIdList = null;
+		}
+    	return deviceIdList;
+    }
+    
     public boolean putSignalMapChksum(long uniqDevId, long checksum) {
     	boolean ret = false;
     	if(BPPacket.INVALID_SIGNAL_MAP_CHECKSUM == checksum) {

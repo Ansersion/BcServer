@@ -51,6 +51,7 @@ public class Payload {
 	private List<Integer> systemSignalEnabledList;
 	private Map<Integer, Object> sysSigValMap;
 	private Map<Integer, Pair<Byte, Object>> cusSigValMap;
+	private List<Long> deviceIdList;
 	
 	
 	public BPError getError() {
@@ -408,12 +409,13 @@ public class Payload {
 	public void setSystemSignalCustomInfoUnitLst(List<SystemSignalCustomInfoUnit> systemSignalCustomInfoUnitLst) {
 		this.systemSignalCustomInfoUnitLst = systemSignalCustomInfoUnitLst;
 	}
-	
-	
 
+	public List<Long> getDeviceIdList() {
+		return deviceIdList;
+	}
 
-	
-	
-	
+	public void setDeviceIdList(List<Long> deviceIdList) {
+		this.deviceIdList = deviceIdList;
+	}
 	
 }

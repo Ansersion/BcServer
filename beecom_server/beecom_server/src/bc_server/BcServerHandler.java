@@ -56,13 +56,59 @@ import other.BPError;
 public class BcServerHandler extends IoHandlerAdapter {
 	
 	private static final Logger logger = LoggerFactory.getLogger(BcServerHandler.class);
-	
 
 	Map<Integer, BPSession> cliId2SsnMap = new HashMap<>();
 	Map<Long, BPSession> devUniqId2SsnMap = new HashMap<>();
 	
 	static final String SESS_ATTR_ID = "SESS_ATTR_ID";
 	public static final String SESS_ATTR_BP_SESSION = "SESS_ATTR_BP_SESSION";
+	
+	static enum ProductType {
+		PUSH_DEVICE_ID_LIST,
+	}
+	
+	static class PushPacketDeviceIDProduct extends Product {
+		private BPUserSession bpUserSession;
+		private BPPacket bpPacket;
+		
+		public PushPacketDeviceIDProduct(BPUserSession bpSession) {
+			super();
+			this.bpUserSession = bpSession;
+			bpPacket = null;
+		}
+		
+		@Override
+		public boolean consume() {
+			// TODO:
+			logger.debug("PushPacketDeviceIDProduct consumed");
+			return false;
+		}
+
+		@Override
+		public boolean product() {
+			boolean ret = false;
+			if(null == bpUserSession) {
+				return ret;
+			}
+			try {
+				bpPacket = BPPackFactory.createBPPack(BPPacketType.PUSH);
+				bpPacket.getVrbHead().setReqAllDeviceIdFlag(true);
+				String userName = bpUserSession.getUserName();
+				Payload pld = bpPacket.getPld();
+				BeecomDB beecomDb = BeecomDB.getInstance();
+				// TODO: 0806
+				beecomDb.getDeviceIDList(bpUserSession.getUserName());
+				ret = true;
+			} catch(Exception e) {
+				StringWriter sw = new StringWriter();
+				e.printStackTrace(new PrintWriter(sw, true));
+				String str = sw.toString();
+				logger.error(str);
+			}
+			return ret;
+		}
+		
+	}
 
 	// 捕获异常
 	@Override
@@ -435,7 +481,8 @@ public class BcServerHandler extends IoHandlerAdapter {
 			session.write(packAck);
 			
 			if(userOnLine) {
-				pushMessage(bpSession);
+				// TODO: change the ProductType 
+				pushMessage(bpSession, ProductType.PUSH_DEVICE_ID_LIST);
 			}
 		} else if(BPPacketType.PINGACK == packType) {
 			/* NOT SUPPORTED */
@@ -590,7 +637,16 @@ public class BcServerHandler extends IoHandlerAdapter {
 
 	}
 	
-	private void pushMessage(BPSession bpSession) {
-		// TODO: 
+	private void pushMessage(BPSession bpSession, ProductType productType) {
+		Product product = null;
+		switch(productType) {
+			case PUSH_DEVICE_ID_LIST:
+				product = new PushPacketDeviceIDProduct((BPUserSession)bpSession);
+				break;
+		}
+		if(product != null) {
+			product.product();
+		}
+		BcServerMain.consumerTask.produce(product);
 	}
 }
