@@ -101,6 +101,8 @@ public class BPPackFactory {
 		
 		if(BPPacketType.CONNECT == packReqType) {
 			ret = new BPPacketCONNACK();
+		} else if(BPPacketType.GET == packReqType) {
+			ret = new BPPacketGETACK();
 		} else if(BPPacketType.PING == packReqType) {
 			ret = new BPPacketPINGACK();
 		} else if(BPPacketType.REPORT == packReqType) {

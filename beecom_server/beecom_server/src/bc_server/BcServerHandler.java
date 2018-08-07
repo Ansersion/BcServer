@@ -79,9 +79,17 @@ public class BcServerHandler extends IoHandlerAdapter {
 		
 		@Override
 		public boolean consume() {
-			// TODO:
-			logger.debug("PushPacketDeviceIDProduct consumed");
-			return false;
+			boolean ret = false; 
+			try {
+				logger.debug("PushPacketDeviceIDProduct consumed");
+				ret = true;
+			} catch(Exception e) {
+				StringWriter sw = new StringWriter();
+				e.printStackTrace(new PrintWriter(sw, true));
+				String str = sw.toString();
+				logger.error(str);
+			}
+			return ret;
 		}
 
 		@Override
@@ -91,13 +99,15 @@ public class BcServerHandler extends IoHandlerAdapter {
 				return ret;
 			}
 			try {
+				IoSession session = bpUserSession.getSession();
 				bpPacket = BPPackFactory.createBPPack(BPPacketType.PUSH);
 				bpPacket.getVrbHead().setReqAllDeviceIdFlag(true);
 				String userName = bpUserSession.getUserName();
 				Payload pld = bpPacket.getPld();
 				BeecomDB beecomDb = BeecomDB.getInstance();
-				// TODO: 0806
-				beecomDb.getDeviceIDList(bpUserSession.getUserName());
+				List<Long> deviceIDList = beecomDb.getDeviceIDList(bpUserSession.getUserName());
+				pld.setDeviceIdList(deviceIDList);
+				session.write(bpPacket);
 				ret = true;
 			} catch(Exception e) {
 				StringWriter sw = new StringWriter();
