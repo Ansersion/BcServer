@@ -316,7 +316,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 					session.write(packAck);
 					return;
 				}
-				// TODO: start push device IDs task
+				packAck.getVrbHead().setReqAllDeviceIdFlag(true);
 				session.write(packAck);
 				return;
 			}

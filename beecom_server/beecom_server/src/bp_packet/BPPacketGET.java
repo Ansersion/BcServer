@@ -36,22 +36,18 @@ public class BPPacketGET extends BPPacket {
 
 	@Override
 	public boolean parseVariableHeader(IoBuffer ioBuf) {
-		int clientIdLen = 0;
 
 		try {
 			byte encodedByte = 0;
-			clientIdLen = 2;
-
-			byte[] id = new byte[clientIdLen];
-			for (int i = 0; i < clientIdLen; i++) {
-				id[i] = ioBuf.get();
-			}
-			super.parseVrbClientId(id, clientIdLen);
-
 			encodedByte = ioBuf.get();
 			super.parseVrbHeadFlags(encodedByte);
+			if(getVrbHead().getCusSigMapFlag()) {
+				encodedByte = ioBuf.get();
+				getVrbHead().setLangFlags(encodedByte);
+			}
 
 			packSeq = ioBuf.getUnsignedShort();
+			getVrbHead().setPackSeq(packSeq);
 
 		} catch (Exception e) {
             StringWriter sw = new StringWriter();
@@ -99,12 +95,13 @@ public class BPPacketGET extends BPPacket {
 	@Override
 	public int parseVariableHeader() {
 		try {
-			byte flags = getIoBuffer().get();
-			super.parseVrbHeadFlags(flags);
-
-			int clientId = getIoBuffer().getUnsignedShort();
-			getVrbHead().setClientId(clientId);
-
+			byte encodedByte = 0;
+			encodedByte = getIoBuffer().get();
+			getVrbHead().parseFlags(encodedByte);
+			if(getVrbHead().getCusSigMapFlag()) {
+				encodedByte = getIoBuffer().get();
+				getVrbHead().setLangFlags(encodedByte);
+			}
 			int packSeqTmp = getIoBuffer().getUnsignedShort();
 			getVrbHead().setPackSeq(packSeqTmp);
 		} catch (Exception e) {
@@ -121,6 +118,9 @@ public class BPPacketGET extends BPPacket {
 	@Override
 	public int parsePayload() {
 		try {
+			if(getVrbHead().getReqAllDeviceId()) {
+				return 0;
+			}
 			String s;
 			short devNum = getIoBuffer().get();
 			Map<Integer, List<Integer> > mapDev2siglst = getPld().getMapDev2SigLst();

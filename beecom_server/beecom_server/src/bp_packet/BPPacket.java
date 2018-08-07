@@ -303,7 +303,15 @@ public class BPPacket implements BPPacketInterface {
 
 	@Override
 	public boolean assembleFixedHeader() throws BPAssembleFxHeaderException {
-		return false;
+		int packType = getPackTypeIntFxHead();
+		byte packFlags = getPackFlagsByteFxHead();
+		byte encodedByte = (byte) (((packType & 0xf) << 4) | (packFlags & 0xf));
+		
+		getIoBuffer().put(encodedByte);
+		
+		// Remaininglength 1 byte reserved
+		getIoBuffer().put((byte)0);
+		return true;
 	}
 
 	@Override

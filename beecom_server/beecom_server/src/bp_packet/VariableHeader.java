@@ -18,6 +18,7 @@ public class VariableHeader {
 	short timeout = 0;
 	int retCode = 0;
 	int packSeq = 0;
+	private byte langFlags;
 	
 	Boolean bit0 = false;
 	Boolean bit1 = false;
@@ -293,5 +294,12 @@ public class VariableHeader {
 	public void setReqAllDeviceIdFlag(boolean reqAllDeviceIdFlag) {
 		bit1 = reqAllDeviceIdFlag;
 	}
+
+
+	public void setLangFlags(byte langFlags) {
+		this.langFlags = langFlags;
+	}
+	
+	
 	
 }
