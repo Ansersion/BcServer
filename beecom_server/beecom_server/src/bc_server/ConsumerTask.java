@@ -17,9 +17,6 @@ import bp_packet.BPPacketCONNECT;
  */
 
 public class ConsumerTask extends Thread {
-	
-
-	
 	private static final Logger logger = LoggerFactory.getLogger(ConsumerTask.class); 
     private final int MAX_SIZE = 100;
     private LinkedList<Product> list = new LinkedList<Product>();
@@ -92,9 +89,10 @@ public class ConsumerTask extends Thread {
 
 	@Override 
     public void run() {
+		logger.info("ConsumerTask start");
 		while(loop) {
 			consume();
-			logger.debug("consumed");
+			logger.info("consumed");
 		}
     	
     }

@@ -1,10 +1,18 @@
 package bp_packet;
 
-import org.apache.mina.core.session.IoSession;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
+import org.apache.mina.core.session.IoSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import bc_server.BcServerHandler;
 import db.UserInfoUnit;
 
 public class BPUserSession extends BPSession {
+	private static final Logger logger = LoggerFactory.getLogger(BPUserSession.class);
+	
 	private String userName;
 	private String email;
 	private String phone;
@@ -32,6 +40,14 @@ public class BPUserSession extends BPSession {
 	public BPUserSession(IoSession session, UserInfoUnit userInfoUnit) {
 		super(session);
 		this.userInfoUnit = userInfoUnit;
+		try {
+			this.userName = this.userInfoUnit.getUserInfoHbn().getName();
+		} catch(Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+		}
 	}
 	
 	@Override

@@ -12,7 +12,7 @@
         </layout>
     </appender>
 
-    <logger name="cn.justfly.training.logging" level="info" />
+    <logger name="cn.justfly.training.logging" level="debug" />
 
     <root level="trace">
         <appender-ref ref="FILE" ></appender-ref>

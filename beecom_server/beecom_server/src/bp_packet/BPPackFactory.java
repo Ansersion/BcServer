@@ -103,10 +103,14 @@ public class BPPackFactory {
 			ret = new BPPacketCONNACK();
 		} else if(BPPacketType.GET == packReqType) {
 			ret = new BPPacketGETACK();
-		} else if(BPPacketType.PING == packReqType) {
-			ret = new BPPacketPINGACK();
+		} else if(BPPacketType.POST == packReqType) {
+			ret = new BPPacketPOSTACK();
 		} else if(BPPacketType.REPORT == packReqType) {
 			ret = new BPPacketRPRTACK();
+		} else if(BPPacketType.PING == packReqType) {
+			ret = new BPPacketPINGACK();
+		} else if(BPPacketType.PUSH == packReqType) {
+			ret = new BPPacketPUSHACK();
 		} else {
 			ret = null;
 		}
@@ -120,14 +124,30 @@ public class BPPackFactory {
 		
 		if(BPPacketType.CONNECT == type) {
 			ret = new BPPacketCONNECT();
-		} else if(BPPacketType.PING == type) {
-			ret = new BPPacketPING();
-		} else if(BPPacketType.REPORT == type) {
-			ret = new BPPacketREPORT();
+		} else if(BPPacketType.CONNACK == type) {
+			ret = new BPPacketCONNACK();
+		} else if(BPPacketType.GET == type) {
+			ret = new BPPacketGET();
+		} else if(BPPacketType.GETACK == type) {
+			ret = new BPPacketGETACK();
 		} else if(BPPacketType.POST == type) {
 			ret = new BPPacketPOST();
 		} else if(BPPacketType.POSTACK == type) {
 			ret = new BPPacketPOSTACK();
+		} else if(BPPacketType.REPORT == type) {
+			ret = new BPPacketREPORT();
+		} else if(BPPacketType.RPRTACK == type) {
+			ret = new BPPacketRPRTACK();
+		} else if(BPPacketType.PING == type) {
+			ret = new BPPacketPING();
+		} else if(BPPacketType.PINGACK == type) {
+			ret = new BPPacketPINGACK();
+		} else if(BPPacketType.PUSH == type) {
+			ret = new BPPacketPUSH();
+		} else if(BPPacketType.PUSHACK == type) {
+			ret = new BPPacketPUSHACK();
+		} else if(BPPacketType.DISCONN == type) {
+			ret = new BPPacketDISCONN();
 		} else {
 			ret = null;
 		}

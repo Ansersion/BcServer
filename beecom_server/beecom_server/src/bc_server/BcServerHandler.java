@@ -81,7 +81,9 @@ public class BcServerHandler extends IoHandlerAdapter {
 		public boolean consume() {
 			boolean ret = false; 
 			try {
-				logger.debug("PushPacketDeviceIDProduct consumed");
+				logger.info("PushPacketDeviceIDProduct consumed");
+				IoSession session = bpUserSession.getSession();
+				session.write(bpPacket);
 				ret = true;
 			} catch(Exception e) {
 				StringWriter sw = new StringWriter();
@@ -99,7 +101,8 @@ public class BcServerHandler extends IoHandlerAdapter {
 				return ret;
 			}
 			try {
-				IoSession session = bpUserSession.getSession();
+				logger.info("PushPacketDeviceIDProduct producting");
+				// IoSession session = bpUserSession.getSession();
 				bpPacket = BPPackFactory.createBPPack(BPPacketType.PUSH);
 				bpPacket.getVrbHead().setReqAllDeviceIdFlag(true);
 				String userName = bpUserSession.getUserName();
@@ -107,7 +110,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 				BeecomDB beecomDb = BeecomDB.getInstance();
 				List<Long> deviceIDList = beecomDb.getDeviceIDList(bpUserSession.getUserName());
 				pld.setDeviceIdList(deviceIDList);
-				session.write(bpPacket);
+				// session.write(bpPacket);
 				ret = true;
 			} catch(Exception e) {
 				StringWriter sw = new StringWriter();
@@ -318,6 +321,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 				}
 				packAck.getVrbHead().setReqAllDeviceIdFlag(true);
 				session.write(packAck);
+				pushMessage(bpUserSession, ProductType.PUSH_DEVICE_ID_LIST);
 				return;
 			}
 			long uniqDevId = pld.getUniqDevId();
@@ -492,7 +496,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 			
 			if(userOnLine) {
 				// TODO: change the ProductType 
-				pushMessage(bpSession, ProductType.PUSH_DEVICE_ID_LIST);
+				// pushMessage(bpSession, ProductType.PUSH_DEVICE_ID_LIST);
 			}
 		} else if(BPPacketType.PINGACK == packType) {
 			/* NOT SUPPORTED */
@@ -656,7 +660,8 @@ public class BcServerHandler extends IoHandlerAdapter {
 		}
 		if(product != null) {
 			product.product();
+			BcServerMain.consumerTask.produce(product);
 		}
-		BcServerMain.consumerTask.produce(product);
+		
 	}
 }
