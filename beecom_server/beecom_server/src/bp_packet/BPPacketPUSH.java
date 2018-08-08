@@ -65,8 +65,10 @@ public class BPPacketPUSH extends BPPacket {
 		if(getVrbHead().getReqAllDeviceId()) {
 			List<Long> deviceIdList = pld.getDeviceIdList();
 			if(null == deviceIdList) {
+				buffer.putUnsignedShort(0);
 				return false;
 			}
+			buffer.putUnsignedShort(deviceIdList.size());
 			for(int i = 0; i < deviceIdList.size(); i++) {
 				buffer.putUnsignedInt(deviceIdList.get(i));
 			}

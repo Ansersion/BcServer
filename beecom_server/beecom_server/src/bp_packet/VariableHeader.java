@@ -3,12 +3,18 @@
  */
 package bp_packet;
 
+import java.util.Random;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * @author Ansersion
  *
  */
 public class VariableHeader {
-	
+    private static int globalPackSeq = new Random().nextInt(0x10000);
+    private static Lock globalPackSeqLock = new ReentrantLock();
+    
 	public static final byte DIST_END_FLAG_MSK = 0x01; 
 	
 	int level = 0;
@@ -43,6 +49,13 @@ public class VariableHeader {
 	Boolean otherLanguageFlag;
 	*/
 	
+    private static int generatePackSeq() {
+        globalPackSeqLock.lock();
+        int ret = globalPackSeq++;
+        globalPackSeqLock.unlock();
+        return ret;
+    }
+	
 	public VariableHeader() {
 		/*
 		userFlag = bit7;
@@ -59,7 +72,10 @@ public class VariableHeader {
 		*/
 	}
 
-	
+    public void initPackSeq() {
+    	packSeq = generatePackSeq();
+    }
+    
 	public void parseLevel(byte encodedByte) {
 		level = encodedByte;
 	}

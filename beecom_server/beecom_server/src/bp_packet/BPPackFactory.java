@@ -114,6 +114,9 @@ public class BPPackFactory {
 		} else {
 			ret = null;
 		}
+		if(ret != null) {
+			ret.getVrbHead().setPackSeq(packReq.getVrbHead().getPackSeq());
+		}
 		
 		return ret;
 	}
