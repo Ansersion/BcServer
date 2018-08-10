@@ -50,10 +50,13 @@ public class BPPacketPUSH extends BPPacket {
 
 	@Override
 	public boolean assembleVariableHeader() throws BPAssembleVrbHeaderException {
+		super.assembleVariableHeader();
+		VariableHeader vrb = getVrbHead();
+		vrb.initPackSeq();
 		IoBuffer buffer = getIoBuffer();
-		byte flags = getVrbHead().getFlags();
+		byte flags = vrb.getFlags();
 		buffer.put(flags);
-		int packSeq = getVrbHead().getPackSeq();
+		int packSeq = vrb.getPackSeq();
 		buffer.putUnsignedShort(packSeq);
 		return true;
 	}

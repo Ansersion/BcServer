@@ -43,7 +43,8 @@ public class BPPacketPOSTACK extends BPPacket {
 	}
 
 	@Override
-	public boolean assembleVariableHeader() {
+	public boolean assembleVariableHeader() throws BPAssembleVrbHeaderException {
+		super.assembleVariableHeader();
 		getIoBuffer().putShort((short)packSeq);
 
 		return false;

@@ -12,7 +12,9 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  */
 public class VariableHeader {
-    private static int globalPackSeq = new Random().nextInt(0x10000);
+    private static final int MAX_GLOBAL_PACK_SEQ_PLUS_ONE = 0xFFFF+1;
+    private static int globalPackSeq = new Random().nextInt(MAX_GLOBAL_PACK_SEQ_PLUS_ONE);
+    
     private static Lock globalPackSeqLock = new ReentrantLock();
     
 	public static final byte DIST_END_FLAG_MSK = 0x01; 
@@ -52,6 +54,9 @@ public class VariableHeader {
     private static int generatePackSeq() {
         globalPackSeqLock.lock();
         int ret = globalPackSeq++;
+        if(globalPackSeq >= MAX_GLOBAL_PACK_SEQ_PLUS_ONE) {
+            globalPackSeq = 0;
+        }
         globalPackSeqLock.unlock();
         return ret;
     }
@@ -215,9 +220,49 @@ public class VariableHeader {
 		return bit7;
 	}
 	
-	public boolean getSysSigMapFlag() {
-		return bit7;
-	}
+	   /* for GET */
+    public boolean getSysSigMapCustomInfo() {
+        return bit2;
+    }
+
+    public VariableHeader setSysSigMapCustomInfo() {
+        bit2 = true;
+        return this;
+    }
+
+    public VariableHeader clrSysSigMapCustomInfo() {
+        bit2 = false;
+        return this;
+    }
+
+    public boolean getCusSigMapFlag() {
+        return bit6;
+    }
+
+    public VariableHeader setCusSigMapFlag() {
+        bit6 = true;
+        return this;
+    }
+
+    public VariableHeader clrCusSigMapFlag() {
+        bit6 = false;
+        return this;
+    }
+
+    public boolean getSysSigMapFlag() {
+        return bit7;
+    }
+
+    public VariableHeader setSysSigMapFlag() {
+        bit7 = true;
+        return this;
+    }
+
+    public VariableHeader clrSysSigMapFlag() {
+        bit7 = false;
+        return this;
+    }
+    /* for GET end */
 	
 	public boolean getSysSigFlag() {
 		return bit4;
@@ -225,10 +270,6 @@ public class VariableHeader {
 	
 	public boolean getCusSigFlag() {
 		return bit3;
-	}
-	
-	public boolean getCusSigMapFlag() {
-		return bit6;
 	}
 	
 	public boolean getDevIdFlag() {

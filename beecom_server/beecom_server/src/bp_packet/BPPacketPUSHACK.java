@@ -23,14 +23,17 @@ public class BPPacketPUSHACK extends BPPacket {
 	}
 
 	@Override
-	public boolean assembleVariableHeader() {
+	public boolean assembleVariableHeader() throws BPAssembleVrbHeaderException {
+		super.assembleVariableHeader();
+		VariableHeader vrb = getVrbHead();
+		vrb.initPackSeq();
 		byte encodedByte;
 		
-		encodedByte = (byte)getVrbHead().getLevel();
+		encodedByte = (byte)vrb.getLevel();
 		getIoBuffer().put(encodedByte);
-		encodedByte = getVrbHead().getFlags();
+		encodedByte = vrb.getFlags();
 		getIoBuffer().put(encodedByte);
-		encodedByte = (byte)getVrbHead().getRetCode();
+		encodedByte = (byte)vrb.getRetCode();
 		getIoBuffer().put(encodedByte);
 		
 		return false;

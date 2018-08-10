@@ -39,6 +39,7 @@ public class Payload {
 	int clntIdLen;
 	int clntId;
 	int symSetVer;
+	private long devUniqId;
 	DevSigData sigData = null;
 	
 	private BPError error;
@@ -193,11 +194,11 @@ public class Payload {
 	}
 	
 	public void setDevUniqId(long devUniqId) {
-		
+		this.devUniqId = devUniqId;
 	}
 	
 	public long getUniqDevId() {
-		return 0;
+		return devUniqId;
 	}
 	
 	public boolean packSysSigMap(long uniqDevId) {

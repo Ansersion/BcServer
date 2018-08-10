@@ -40,7 +40,8 @@ public class BPPacketRPRTACK extends BPPacket {
 	}
 
 	@Override
-	public boolean assembleVariableHeader() {
+	public boolean assembleVariableHeader() throws BPAssembleVrbHeaderException {
+		super.assembleVariableHeader();
 		int packSeq = (byte)getVrbHead().getPackSeq();
 		getIoBuffer().putUnsignedShort(packSeq);	
 		byte retCode = (byte)getVrbHead().getRetCode();

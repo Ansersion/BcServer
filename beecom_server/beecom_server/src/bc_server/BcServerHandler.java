@@ -513,6 +513,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 			*/
 			switch(retCode) {
 			case BPPacketPUSH.RET_CODE_OK:
+				logger.info("PUSHACK OK");
 				break;
 			case BPPacketPUSH.RET_CODE_UNSUPPORTED_SIGNAL_ID:
 				/* handle unsupported signal ID*/

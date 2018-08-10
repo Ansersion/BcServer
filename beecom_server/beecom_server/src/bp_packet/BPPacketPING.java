@@ -88,12 +88,15 @@ public class BPPacketPING extends BPPacket {
 	}
 
 	@Override
-	public boolean assembleVariableHeader() {
-		byte flags = getVrbHead().getFlags();
+	public boolean assembleVariableHeader() throws BPAssembleVrbHeaderException {
+		super.assembleVariableHeader();
+		VariableHeader vrb = getVrbHead();
+		vrb.initPackSeq();
+		byte flags = vrb.getFlags();
 		getIoBuffer().put(flags);
-		int clntId = getVrbHead().getClientId();
+		int clntId = vrb.getClientId();
 		getIoBuffer().putUnsignedShort(clntId);
-		int packSeq = getVrbHead().getPackSeq();
+		int packSeq = vrb.getPackSeq();
 		getIoBuffer().putUnsignedShort(packSeq);	
 		
 		return false;

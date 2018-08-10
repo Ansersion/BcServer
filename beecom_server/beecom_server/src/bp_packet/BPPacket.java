@@ -315,6 +315,7 @@ public class BPPacket implements BPPacketInterface {
 
 	@Override
 	public boolean assembleVariableHeader() throws BPAssembleVrbHeaderException {
+		// getVrbHead().initPackSeq();
 		return false;
 	}
 

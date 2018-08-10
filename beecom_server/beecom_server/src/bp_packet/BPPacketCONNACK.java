@@ -65,7 +65,8 @@ public class BPPacketCONNACK extends BPPacket {
 	}
 
 	@Override
-	public boolean assembleVariableHeader() {
+	public boolean assembleVariableHeader() throws BPAssembleVrbHeaderException {
+		super.assembleVariableHeader();
 		byte encodedByte;
 		
 		encodedByte = (byte)getVrbHead().getLevel();
