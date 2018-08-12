@@ -5,15 +5,19 @@ package bp_packet;
 
 import java.util.Vector;
 
+import org.apache.mina.core.buffer.IoBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import db.SystemSignalInfoUnit;
 import other.CrcChecksum;
 
 import java.util.Map;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Ansersion
@@ -121,10 +125,72 @@ public class BPPacketGETACK extends BPPacket {
 	@Override
 	public boolean assemblePayload() {
 		byte encodedByte;
-		if(getVrbHead().getReqAllDeviceId()) {
-			return true;
+		try {
+
+			VariableHeader vrb = getVrbHead();
+			if (vrb.getReqAllDeviceId()) {
+				return true;
+			}
+
+			Payload pld = getPld();
+			IoBuffer buffer = getIoBuffer();
+			if (vrb.getSysSigMapFlag()) {
+				List<SystemSignalInfoUnit> systemSignalInfoUnitList = pld.getSystemSignalInfoUnitLst();
+				if (null == systemSignalInfoUnitList || systemSignalInfoUnitList.isEmpty()) {
+					buffer.put(Payload.SYSTEM_SIGNAL_MAP_END_MASK);
+				} else {
+					int classInfo = 0;
+					int classInfoTmp = 0;
+					byte[] systemDistMask = new byte[BPPacket.BYTE_NUM_OF_A_DIST];
+					SystemSignalInfoUnit systemSignalInfoUnitTmp = null;
+					boolean endFlag = false;
+					for (int i = 0; i < BPPacket.MAX_SYS_SIG_DIST_NUM; i++) {
+						classInfo = 0;
+						Arrays.fill(systemDistMask, (byte)0);
+						Iterator<SystemSignalInfoUnit> it = systemSignalInfoUnitList.iterator();
+						
+						while (it.hasNext()) {
+							systemSignalInfoUnitTmp = it.next();
+							if (BPPacket.inDist(i, systemSignalInfoUnitTmp.getSysSigId())) {
+								classInfoTmp = BPPacket.whichClass(i, systemSignalInfoUnitTmp.getSysSigId());
+								/* set the biggest classInfoTmp */
+								if(classInfoTmp > classInfo) {
+									classInfo = classInfoTmp;
+								}
+								BPPacket.setSystemSignalBit(i, systemSignalInfoUnitTmp.getSysSigId(), systemDistMask);
+								it.remove();
+							}
+							
+						}
+						if (systemSignalInfoUnitList.isEmpty()) {
+							endFlag = true;
+						}
+						if(classInfo > 0) {
+							byte systemSignalMapHeader = (byte)((i << 4) | (classInfo << 1));
+							if(endFlag) {
+								systemSignalMapHeader |= Payload.SYSTEM_SIGNAL_MAP_END_MASK;
+							}
+							buffer.put(systemSignalMapHeader);
+							int systemSignalBytesNum = 1 << (classInfo - 1);
+							for(int j = 0; j < systemSignalBytesNum; j++) {
+								buffer.put(systemDistMask[j]);
+							}
+						}
+						if(endFlag) {
+							break;
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
 		}
 
+
+		/*
 		int devNum = vctDevSigData.size() & 0x0000FFFF;
 		getIoBuffer().putUnsignedShort(devNum);
 		String s;
@@ -203,6 +269,7 @@ public class BPPacketGETACK extends BPPacket {
 				}
 			}
 		}
+		*/
 
 		return false;
 	}

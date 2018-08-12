@@ -14,12 +14,15 @@ public class BPPacket implements BPPacketInterface {
 	public static final int BP_LEVEL = 0;
 	
 	public static final int MAX_SYS_SIG_DIST_NUM = 16;
+    public static final int MAX_SYS_SIG_CLASS_NUM = 7;
+	public static final int BYTE_NUM_OF_A_DIST = 64;
 	public static final int SYS_SIG_START_ID = 0xE000;
 	public static final int CUS_SIG_START_ID = 0x0001;
 	public static final int CUS_SIG_END_ID = 0xDFFF;
 	public static final int SYS_SIG_DIST_STEP = 0x200;
 	public static final int MAX_SIG_ID = 0xFFFF;
     public static final int FIXED_HEADER_SIZE = 3;
+
 	
 
 	/* 0-u32, 1-u16, 2-i32, 3-i16, 4-enum, 5-float, 6-string, 7-boolean */
@@ -44,6 +47,31 @@ public class BPPacket implements BPPacketInterface {
 	public static final boolean VAL_BOOLEAN_UNLIMIT =false;
 	
 	public static final long INVALID_SIGNAL_MAP_CHECKSUM = 0x7FFFFFFFFFFFFFFFL;
+	
+	public static boolean inDist(int distIndex, int signalId) {
+		return (signalId >= SYS_SIG_START_ID + distIndex * SYS_SIG_DIST_STEP) && (signalId < SYS_SIG_START_ID + (distIndex + 1) * SYS_SIG_DIST_STEP);
+	}
+	
+	public static int whichClass(int distIndex, int signalId) {
+		int signalIdDistOffset = signalId - distIndex * SYS_SIG_DIST_STEP - SYS_SIG_START_ID;
+		if(signalIdDistOffset < 0) {
+			return 0;
+		}
+		for(int i = 0; i < MAX_SYS_SIG_CLASS_NUM; i++) {
+			if(signalIdDistOffset <= (1 << i) * 8) {
+				return i + 1;
+			}
+		}
+		return 0;
+	}
+	
+	/* NOTE:
+	 * all parameter is thought formal!!! 
+	 * bitBytes.length == 64 */
+	public static void setSystemSignalBit(int distInfo, int signalId, byte[] bitBytes) {
+		int signalIdDistOffset = signalId - SYS_SIG_START_ID - SYS_SIG_DIST_STEP * distInfo;
+		bitBytes[signalIdDistOffset/8] |= (1 << (signalIdDistOffset%8));
+	}
 	
 	
 	IoBuffer bpPacketData;
@@ -308,9 +336,10 @@ public class BPPacket implements BPPacketInterface {
         byte encoded_byte = (byte) (((pack_type & 0xf) << 4) | (pack_flags & 0xf));
 
         getIoBuffer().put(encoded_byte);
-
         getIoBuffer().putUnsignedShort(0);
+
         return true;
+
 	}
 
 	@Override

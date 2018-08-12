@@ -29,6 +29,7 @@ import other.BPError;
  */
 public class Payload {
 	
+	public static final byte SYSTEM_SIGNAL_MAP_END_MASK = 0x01;
 	private static final Logger logger = LoggerFactory.getLogger(Payload.class);
 
 	// byte[] userName = null;
@@ -53,7 +54,6 @@ public class Payload {
 	private Map<Integer, Object> sysSigValMap;
 	private Map<Integer, Pair<Byte, Object>> cusSigValMap;
 	private List<Long> deviceIdList;
-	
 	
 	public BPError getError() {
 		return error;
@@ -418,5 +418,11 @@ public class Payload {
 	public void setDeviceIdList(List<Long> deviceIdList) {
 		this.deviceIdList = deviceIdList;
 	}
+
+	public List<SystemSignalInfoUnit> getSystemSignalInfoUnitLst() {
+		return systemSignalInfoUnitLst;
+	}
+	
+	
 	
 }
