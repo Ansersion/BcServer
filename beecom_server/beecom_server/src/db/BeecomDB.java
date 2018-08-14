@@ -1856,6 +1856,31 @@ public class BeecomDB {
     	return deviceIdList;
     }
     
+    public int getDeviceLangSupportMask(long uniqDevId) {
+
+    	int ret = 0;
+		if(uniqDevId < 0) {
+			return ret;
+		}
+
+		Transaction tx = null;
+		try (Session session = sessionFactory.openSession()) {
+			tx = session.beginTransaction();
+
+			ret = (Integer)session
+					.createQuery("select langSupportMask from DevInfoHbn where id = :dev_id")
+					.setParameter("dev_id", uniqDevId).uniqueResult();
+
+			tx.commit();
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+		}
+    	return ret;
+    }
+    
     public boolean putSignalMapChksum(long uniqDevId, long checksum) {
     	boolean ret = false;
     	if(BPPacket.INVALID_SIGNAL_MAP_CHECKSUM == checksum) {

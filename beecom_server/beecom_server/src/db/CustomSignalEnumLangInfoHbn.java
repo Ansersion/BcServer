@@ -3,7 +3,7 @@ package db;
 public class CustomSignalEnumLangInfoHbn {
     private Long id;
     private Integer enumKey;
-    private String enumVal;
+    private Long enumValLangId;
     private Integer cusSigEnmId;
 	public Long getId() {
 		return id;
@@ -17,11 +17,11 @@ public class CustomSignalEnumLangInfoHbn {
 	public void setEnumKey(Integer enumKey) {
 		this.enumKey = enumKey;
 	}
-	public String getEnumVal() {
-		return enumVal;
+	public Long getEnumVal() {
+		return enumValLangId;
 	}
-	public void setEnumVal(String enumVal) {
-		this.enumVal = enumVal;
+	public void setEnumVal(Long enumVal) {
+		this.enumValLangId = enumVal;
 	}
 	public Integer getCusSigEnmId() {
 		return cusSigEnmId;
@@ -31,7 +31,7 @@ public class CustomSignalEnumLangInfoHbn {
 	}
 	@Override
 	public String toString() {
-		return "CustomSignalEnumLangInfoHbn [id=" + id + ", enumKey=" + enumKey + ", enumVal=" + enumVal
+		return "CustomSignalEnumLangInfoHbn [id=" + id + ", enumKey=" + enumKey + ", enumVal=" + enumValLangId
 				+ ", cusSigEnmId=" + cusSigEnmId + "]";
 	}
     

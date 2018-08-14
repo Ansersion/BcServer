@@ -25,6 +25,8 @@ public class CustomSignalBooleanInfoHbn extends SignalInterface {
 	public void setCusSigNameLangId(Long cusSigNameLangId) {
 		this.cusSigNameLangId = cusSigNameLangId;
 	}
+	
+	@Override
 	public Short getPermission() {
 		return permission;
 	}

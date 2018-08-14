@@ -17,6 +17,8 @@ public class SystemSignalStringInfoHbn extends SignalInterface {
 	public void setId(Long id) {
 		this.id = id;
 	}
+	
+	@Override
 	public Short getPermission() {
 		return permission;
 	}

@@ -326,6 +326,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 			}
 			long uniqDevId = pld.getUniqDevId();
 			pldAck = packAck.getPld();
+			pldAck.setDevUniqId(uniqDevId);
 			if(!BeecomDB.getInstance().checkGetDeviceSignalMapPermission(bpUserSession.getUserInfoUnit().getUserInfoHbn().getId(), uniqDevId)) {
 				packAck.getVrbHead().setRetCode(BPPacketGET.RET_CODE_ACCESS_DEV_PERMISSION_DENY_ERR);
 				session.write(packAck);
@@ -336,7 +337,14 @@ public class BcServerHandler extends IoHandlerAdapter {
 				pldAck.packSysSigMap(uniqDevId);
 			}
 			if(cusSigMapFlag) {
+				int langSupportMask = BeecomDB.getInstance().getDeviceLangSupportMask(uniqDevId);
+				if(langSupportMask <= 0 || (langSupportMask & 0xFF) == 0) {
+					packAck.getVrbHead().setRetCode(BPPacketGET.RET_CODE_INNER_ERR);
+					session.write(packAck);
+					return;
+				}
 				pldAck.packCusSigMap(uniqDevId);
+				pldAck.setCustomSignalLangSupportMask(langSupportMask);
 			}
 			if(sysSigFlag) {
 				bpSession = (BPSession)session.getAttribute(SESS_ATTR_BP_SESSION);

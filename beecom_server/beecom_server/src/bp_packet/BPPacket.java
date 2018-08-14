@@ -22,10 +22,13 @@ public class BPPacket implements BPPacketInterface {
 	public static final int SYS_SIG_DIST_STEP = 0x200;
 	public static final int MAX_SIG_ID = 0xFFFF;
     public static final int FIXED_HEADER_SIZE = 3;
-
-	
+    
+    /* 0-ro, 1-rw */
+    public static final int SIGNAL_PERMISSION_CODE_RO = 0; 
+    public static final int SIGNAL_PERMISSION_CODE_RW = 1; 
 
 	/* 0-u32, 1-u16, 2-i32, 3-i16, 4-enum, 5-float, 6-string, 7-boolean */
+    public static final int MAX_VAL_TYPE_NUM = 8;
 	public static final int VAL_TYPE_UINT32 = 0;
 	public static final int VAL_TYPE_UINT16 = 1;
 	public static final int VAL_TYPE_IINT32 = 2;

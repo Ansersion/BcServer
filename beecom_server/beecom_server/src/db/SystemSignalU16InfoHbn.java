@@ -19,6 +19,8 @@ public class SystemSignalU16InfoHbn extends SignalInterface {
 	public void setId(Long id) {
 		this.id = id;
 	}
+	
+	@Override
 	public Short getPermission() {
 		return permission;
 	}

@@ -9,6 +9,8 @@ import org.apache.mina.core.buffer.IoBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import db.CustomSignalInfoUnit;
+import db.CustomSignalU32InfoHbn;
 import db.SystemSignalInfoUnit;
 import other.CrcChecksum;
 
@@ -181,6 +183,91 @@ public class BPPacketGETACK extends BPPacket {
 						}
 					}
 				}
+			}
+			if(vrb.getCusSigMapFlag()) {
+				int langSupportMask = pld.getCustomSignalLangSupportMask();
+				List<CustomSignalInfoUnit> customSignalInfoUnitList = pld.getCustomSignalInfoUnitLst();
+				if (null == customSignalInfoUnitList || customSignalInfoUnitList.isEmpty()) {
+					/* no custom signal */
+					buffer.putUnsignedShort(0);
+				} else if(langSupportMask <= 0 || (langSupportMask & 0xFF) == 0) { 
+					/* no supported language */
+					buffer.putUnsignedShort(0);
+				} else {
+					buffer.putUnsignedShort(customSignalInfoUnitList.size());
+					Iterator<CustomSignalInfoUnit> it = customSignalInfoUnitList.iterator();
+					byte cusSignalFlag = 0;
+					int signalIdTmp = 0;
+					int valType = BPPacket.VAL_TYPE_INVALID;
+
+					while(it.hasNext()) {
+						CustomSignalInfoUnit customSignalInfoUnit = it.next();
+						signalIdTmp = customSignalInfoUnit.getCusSigId();
+						cusSignalFlag = 0;
+						if(customSignalInfoUnit.isIfAlarm()) {
+							cusSignalFlag |= Payload.CUSTOM_SIGNAL_ALARM_FLAG_MASK;
+						}
+						if(customSignalInfoUnit.isIfNotifing()) {
+							cusSignalFlag |= Payload.CUSTOM_SIGNAL_STATISTICS_FLAG_MASK;
+						}
+						switch(customSignalInfoUnit.getCustomSignalInterface().getPermission()) {
+							case BPPacket.SIGNAL_PERMISSION_CODE_RO:
+								/* need do nothing */
+								break;
+							case BPPacket.SIGNAL_PERMISSION_CODE_RW:
+								cusSignalFlag |= Payload.CUSTOM_SIGNAL_RW_FLAG_MASK;
+								break;
+							default:
+								logger.warn("inner warning: unknown permission code, force to set it RO");
+								
+						}
+						valType = customSignalInfoUnit.getCustomSignalInterface().getValType();
+						if(valType < 0 || valType >= BPPacket.MAX_VAL_TYPE_NUM) {
+							throw new Exception("inner error: invalid valType=" + valType) ;
+						}
+						cusSignalFlag |= (valType << 4);
+						buffer.put(cusSignalFlag);
+						// buffer.put((byte)(langSupportMask & 0xFF));
+						
+						// TODO: not support other language now(2018.08.14)
+						byte langSupportMaskByte = 0;
+						for (int i = 7; i > 0; i--) {
+							if(((langSupportMask >> i) & 0x01) == 0) {
+								continue;
+							} else {
+								langSupportMaskByte = 0;
+								if((langSupportMask & (~(1 << i))) == 0) {
+									/* 0x01 end flag*/
+									langSupportMaskByte = 0x01;
+								}
+							}
+							buffer.put(langSupportMaskByte);
+							switch (valType) {
+							case BPPacket.VAL_TYPE_UINT32:
+								CustomSignalU32InfoHbn customSignalU32InfoHbn = (CustomSignalU32InfoHbn) customSignalInfoUnit
+										.getCustomSignalInterface();
+								break;
+							case BPPacket.VAL_TYPE_UINT16:
+								break;
+							case BPPacket.VAL_TYPE_IINT32:
+								break;
+							case BPPacket.VAL_TYPE_IINT16:
+								break;
+							case BPPacket.VAL_TYPE_ENUM:
+								break;
+							case BPPacket.VAL_TYPE_FLOAT:
+								break;
+							case BPPacket.VAL_TYPE_STRING:
+								break;
+							case BPPacket.VAL_TYPE_BOOLEAN:
+								break;
+							}
+						}
+					}
+					
+
+				}
+				
 			}
 		} catch (Exception e) {
 			StringWriter sw = new StringWriter();

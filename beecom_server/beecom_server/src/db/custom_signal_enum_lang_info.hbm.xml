@@ -9,7 +9,7 @@
             <generator class="native" />
         </id>  
         <property name="enumKey" column="enum_key" />  
-        <property name="enumVal" column="enum_val" />  
+        <property name="enumValLangId" column="enum_val_lang_id" />  
         <property name="cusSigEnmId" column="cus_sig_enm_id" />  
     </class>    
 </hibernate-mapping>

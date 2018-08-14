@@ -13,5 +13,7 @@
         <property name="password" column="password" />  
         <property name="sigMapChksum" column="sig_map_chksum" />
         <property name="dailySigTabChangeTimes" column="daily_sig_tab_change_times" />  
+        <property name="langSupportMask" column="lang_support_mask" />  
+        
     </class>    
 </hibernate-mapping>

@@ -34,6 +34,8 @@ public class CustomSignalU32InfoHbn extends SignalInterface {
 	public void setCusSigUnitLangId(Long cusSigUnitLangId) {
 		this.cusSigUnitLangId = cusSigUnitLangId;
 	}
+	
+	@Override
 	public Short getPermission() {
 		return permission;
 	}

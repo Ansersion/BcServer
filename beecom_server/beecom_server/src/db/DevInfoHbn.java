@@ -7,6 +7,8 @@ public class DevInfoHbn {
     private String password;
     private Long sigMapChksum;
     private Short dailySigTabChangeTimes;
+    private Byte langSupportMask;
+    
 	public Long getId() {
 		return id;
 	}
@@ -43,11 +45,19 @@ public class DevInfoHbn {
 	public void setDailySigTabChangeTimes(Short dailySigTabChangeTimes) {
 		this.dailySigTabChangeTimes = dailySigTabChangeTimes;
 	}
+	public Byte getLangSupportMask() {
+		return langSupportMask;
+	}
+	public void setLangSupportMask(Byte langSupportMask) {
+		this.langSupportMask = langSupportMask;
+	}
 	@Override
 	public String toString() {
 		return "DevInfoHbn [id=" + id + ", snId=" + snId + ", adminId=" + adminId + ", password=" + password
-				+ ", dailySigTabChangeTimes=" + dailySigTabChangeTimes + "]";
+				+ ", sigMapChksum=" + sigMapChksum + ", dailySigTabChangeTimes=" + dailySigTabChangeTimes
+				+ ", langSupportMask=" + langSupportMask + "]";
 	}
+	
     
     
 }

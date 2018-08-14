@@ -30,6 +30,10 @@ import other.BPError;
 public class Payload {
 	
 	public static final byte SYSTEM_SIGNAL_MAP_END_MASK = 0x01;
+	
+	public static final byte CUSTOM_SIGNAL_ALARM_FLAG_MASK = 0x01;
+	public static final byte CUSTOM_SIGNAL_STATISTICS_FLAG_MASK = 0x02;
+	public static final byte CUSTOM_SIGNAL_RW_FLAG_MASK = 0x04;
 	private static final Logger logger = LoggerFactory.getLogger(Payload.class);
 
 	// byte[] userName = null;
@@ -54,6 +58,7 @@ public class Payload {
 	private Map<Integer, Object> sysSigValMap;
 	private Map<Integer, Pair<Byte, Object>> cusSigValMap;
 	private List<Long> deviceIdList;
+	private int customSignalLangSupportMask;
 	
 	public BPError getError() {
 		return error;
@@ -421,6 +426,14 @@ public class Payload {
 
 	public List<SystemSignalInfoUnit> getSystemSignalInfoUnitLst() {
 		return systemSignalInfoUnitLst;
+	}
+
+	public int getCustomSignalLangSupportMask() {
+		return customSignalLangSupportMask;
+	}
+
+	public void setCustomSignalLangSupportMask(int customSignalLangSupportMask) {
+		this.customSignalLangSupportMask = customSignalLangSupportMask;
 	}
 	
 	

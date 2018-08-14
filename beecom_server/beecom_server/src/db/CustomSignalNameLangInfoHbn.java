@@ -2,17 +2,17 @@ package db;
 
 public class CustomSignalNameLangInfoHbn {
 	private Long id;
-    private String customSignalName;
+    private Long customSignalName;
 	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public String getCustomSignalName() {
+	public Long getCustomSignalName() {
 		return customSignalName;
 	}
-	public void setCustomSignalName(String customSignalName) {
+	public void setCustomSignalName(Long customSignalName) {
 		this.customSignalName = customSignalName;
 	}
 	@Override

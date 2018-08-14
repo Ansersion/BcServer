@@ -20,6 +20,8 @@ public class SystemSignalFloatInfoHbn extends SignalInterface {
 	public void setId(Long id) {
 		this.id = id;
 	}
+	
+	@Override
 	public Short getPermission() {
 		return permission;
 	}
