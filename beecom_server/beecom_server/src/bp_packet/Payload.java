@@ -220,7 +220,7 @@ public class Payload {
 	public boolean packCusSigMap(long uniqDevId) {
 		BeecomDB beecomDB = BeecomDB.getInstance();
 		customSignalInfoUnitLst = new ArrayList<CustomSignalInfoUnit>();
-		customSignalInfoUnitLst = beecomDB.getCustomSignalUnitLst(uniqDevId, customSignalInfoUnitLst);
+		customSignalInfoUnitLst = beecomDB.getCustomSignalUnitLst(uniqDevId, customSignalInfoUnitLst, customSignalLangSupportMask);
 		if(null == customSignalInfoUnitLst || customSignalInfoUnitLst.isEmpty()) {
 			return false;
 		} else {

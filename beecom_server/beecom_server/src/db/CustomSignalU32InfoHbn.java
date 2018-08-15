@@ -6,14 +6,10 @@ import bp_packet.BPPacket;
 
 public class CustomSignalU32InfoHbn extends SignalInterface {
     private Long id;
-    private Long cusSigNameLangId;
-    private Long cusSigUnitLangId;
     private Short permission;
     private Long minVal;
     private Long maxVal;
     private Long defVal;
-    private Integer groupLangId;
-    private Long cusGroupLangId;
     private Boolean enStatistics;
     private Long customSignalId;
 	public Long getId() {
@@ -21,18 +17,6 @@ public class CustomSignalU32InfoHbn extends SignalInterface {
 	}
 	public void setId(Long id) {
 		this.id = id;
-	}
-	public Long getCusSigNameLangId() {
-		return cusSigNameLangId;
-	}
-	public void setCusSigNameLangId(Long cusSigNameLangId) {
-		this.cusSigNameLangId = cusSigNameLangId;
-	}
-	public Long getCusSigUnitLangId() {
-		return cusSigUnitLangId;
-	}
-	public void setCusSigUnitLangId(Long cusSigUnitLangId) {
-		this.cusSigUnitLangId = cusSigUnitLangId;
 	}
 	
 	@Override
@@ -60,18 +44,6 @@ public class CustomSignalU32InfoHbn extends SignalInterface {
 	public void setDefVal(Long defVal) {
 		this.defVal = defVal;
 	}
-	public Integer getGroupLangId() {
-		return groupLangId;
-	}
-	public void setGroupLangId(Integer groupLangId) {
-		this.groupLangId = groupLangId;
-	}
-	public Long getCusGroupLangId() {
-		return cusGroupLangId;
-	}
-	public void setCusGroupLangId(Long cusGroupLangId) {
-		this.cusGroupLangId = cusGroupLangId;
-	}
 	public Boolean getEnStatistics() {
 		return enStatistics;
 	}
@@ -84,12 +56,12 @@ public class CustomSignalU32InfoHbn extends SignalInterface {
 	public void setCustomSignalId(Long customSignalId) {
 		this.customSignalId = customSignalId;
 	}
+
 	@Override
 	public String toString() {
-		return "CustomSignalU32InfoHbn [id=" + id + ", cusSigNameLangId=" + cusSigNameLangId + ", cusSigUnitLangId="
-				+ cusSigUnitLangId + ", permission=" + permission + ", minVal=" + minVal + ", maxVal=" + maxVal
-				+ ", defVal=" + defVal + ", groupLangId=" + groupLangId + ", cusGroupLangId=" + cusGroupLangId
-				+ ", enStatistics=" + enStatistics + ", customSignalId=" + customSignalId + "]";
+		return "CustomSignalU32InfoHbn [id=" + id + ", permission=" + permission + ", minVal=" + minVal + ", maxVal="
+				+ maxVal + ", defVal=" + defVal + ", enStatistics=" + enStatistics + ", customSignalId="
+				+ customSignalId + "]";
 	}
 	@Override
 	public int getValType() {

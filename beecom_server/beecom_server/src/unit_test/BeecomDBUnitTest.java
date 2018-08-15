@@ -88,7 +88,7 @@ public class BeecomDBUnitTest {
 		assertEquals(systemSignalInfoUnitLst.get(1).getSysSigId(), 0xE002);
 		
 		List<CustomSignalInfoUnit> customSignalInfoUnitLst = new ArrayList<CustomSignalInfoUnit>();
-		customSignalInfoUnitLst = beecomDB.getCustomSignalUnitLst(3L, customSignalInfoUnitLst);
+		customSignalInfoUnitLst = beecomDB.getCustomSignalUnitLst(3L, customSignalInfoUnitLst, 0x80);
 		assertEquals(customSignalInfoUnitLst.size(), 2);
 		assertEquals(customSignalInfoUnitLst.get(0).getCusSigId(), 1);
 		assertEquals(customSignalInfoUnitLst.get(1).getCusSigId(), 2);

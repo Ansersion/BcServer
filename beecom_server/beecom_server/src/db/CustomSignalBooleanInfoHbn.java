@@ -6,11 +6,8 @@ import bp_packet.BPPacket;
 
 public class CustomSignalBooleanInfoHbn extends SignalInterface {
     private Long id;
-    private Long cusSigNameLangId;
     private Short permission;
     private Boolean defVal;
-    private Integer groupLangId;
-    private Long cusGroupLangId;
     private Boolean enStatistics;
     private Long customSignalId;
 	public Long getId() {
@@ -18,12 +15,6 @@ public class CustomSignalBooleanInfoHbn extends SignalInterface {
 	}
 	public void setId(Long id) {
 		this.id = id;
-	}
-	public Long getCusSigNameLangId() {
-		return cusSigNameLangId;
-	}
-	public void setCusSigNameLangId(Long cusSigNameLangId) {
-		this.cusSigNameLangId = cusSigNameLangId;
 	}
 	
 	@Override
@@ -39,18 +30,6 @@ public class CustomSignalBooleanInfoHbn extends SignalInterface {
 	public void setDefVal(Boolean defVal) {
 		this.defVal = defVal;
 	}
-	public Integer getGroupLangId() {
-		return groupLangId;
-	}
-	public void setGroupLangId(Integer groupLangId) {
-		this.groupLangId = groupLangId;
-	}
-	public Long getCusGroupLangId() {
-		return cusGroupLangId;
-	}
-	public void setCusGroupLangId(Long cusGroupLangId) {
-		this.cusGroupLangId = cusGroupLangId;
-	}
 	public Boolean getEnStatistics() {
 		return enStatistics;
 	}
@@ -63,11 +42,11 @@ public class CustomSignalBooleanInfoHbn extends SignalInterface {
 	public void setCustomSignalId(Long customSignalId) {
 		this.customSignalId = customSignalId;
 	}
+
 	@Override
 	public String toString() {
-		return "CustomSignalBooleanInfoHbn [id=" + id + ", cusSigNameLangId=" + cusSigNameLangId + ", permission="
-				+ permission + ", defVal=" + defVal + ", groupLangId=" + groupLangId + ", cusGroupLangId="
-				+ cusGroupLangId + ", enStatistics=" + enStatistics + ", customSignalId=" + customSignalId + "]";
+		return "CustomSignalBooleanInfoHbn [id=" + id + ", permission=" + permission + ", defVal=" + defVal
+				+ ", enStatistics=" + enStatistics + ", customSignalId=" + customSignalId + "]";
 	}
 	@Override
 	public int getValType() {

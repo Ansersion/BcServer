@@ -8,14 +8,10 @@
         <id name="id" column="id">  
             <generator class="native" />
         </id>  
-        <property name="cusSigNameLangId" column="cus_sig_name_lang_id" />  
-        <property name="cusSigUnitLangId" column="cus_sig_unit_lang_id" />  
         <property name="permission" column="permission" />  
         <property name="minVal" column="min_val" />  
         <property name="maxVal" column="max_val" />  
         <property name="defVal" column="def_val" />  
-        <property name="groupLangId" column="group_lang_id" /> 
-        <property name="cusGroupLangId" column="cus_group_lang_id" />   
         <property name="enStatistics" column="en_statistics" />  
         <property name="customSignalId" column="custom_signal_id" /> 
     </class>    

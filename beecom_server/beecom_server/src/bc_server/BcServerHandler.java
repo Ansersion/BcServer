@@ -343,8 +343,9 @@ public class BcServerHandler extends IoHandlerAdapter {
 					session.write(packAck);
 					return;
 				}
-				pldAck.packCusSigMap(uniqDevId);
 				pldAck.setCustomSignalLangSupportMask(langSupportMask);
+				pldAck.packCusSigMap(uniqDevId);
+				
 			}
 			if(sysSigFlag) {
 				bpSession = (BPSession)session.getAttribute(SESS_ATTR_BP_SESSION);

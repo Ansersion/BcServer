@@ -6,15 +6,11 @@ import bp_packet.BPPacket;
 
 public class CustomSignalFloatInfoHbn extends SignalInterface {
     private Long id;
-    private Long cusSigNameLangId;
-    private Long cusSigUnitLangId;
     private Short permission;
     private Short accuracy;
     private Float minVal;
     private Float maxVal;
     private Float defVal;
-    private Integer groupLangId;
-    private Long cusGroupLangId;
     private Boolean enStatistics;
     private Long customSignalId;
 	public Long getId() {
@@ -22,18 +18,6 @@ public class CustomSignalFloatInfoHbn extends SignalInterface {
 	}
 	public void setId(Long id) {
 		this.id = id;
-	}
-	public Long getCusSigNameLangId() {
-		return cusSigNameLangId;
-	}
-	public void setCusSigNameLangId(Long cusSigNameLangId) {
-		this.cusSigNameLangId = cusSigNameLangId;
-	}
-	public Long getCusSigUnitLangId() {
-		return cusSigUnitLangId;
-	}
-	public void setCusSigUnitLangId(Long cusSigUnitLangId) {
-		this.cusSigUnitLangId = cusSigUnitLangId;
 	}
 	
 	@Override
@@ -67,18 +51,6 @@ public class CustomSignalFloatInfoHbn extends SignalInterface {
 	public void setDefVal(Float defVal) {
 		this.defVal = defVal;
 	}
-	public Integer getGroupLangId() {
-		return groupLangId;
-	}
-	public void setGroupLangId(Integer groupLangId) {
-		this.groupLangId = groupLangId;
-	}
-	public Long getCusGroupLangId() {
-		return cusGroupLangId;
-	}
-	public void setCusGroupLangId(Long cusGroupLangId) {
-		this.cusGroupLangId = cusGroupLangId;
-	}
 	public Boolean getEnStatistics() {
 		return enStatistics;
 	}
@@ -91,12 +63,12 @@ public class CustomSignalFloatInfoHbn extends SignalInterface {
 	public void setCustomSignalId(Long customSignalId) {
 		this.customSignalId = customSignalId;
 	}
+
 	@Override
 	public String toString() {
-		return "CustomSignalIFloatInfoHbn [id=" + id + ", cusSigNameLangId=" + cusSigNameLangId + ", cusSigUnitLangId="
-				+ cusSigUnitLangId + ", permission=" + permission + ", accuracy=" + accuracy + ", minVal=" + minVal
-				+ ", maxVal=" + maxVal + ", defVal=" + defVal + ", groupLangId=" + groupLangId + ", cusGroupLangId="
-				+ cusGroupLangId + ", enStatistics=" + enStatistics + ", customSignalId=" + customSignalId + "]";
+		return "CustomSignalFloatInfoHbn [id=" + id + ", permission=" + permission + ", accuracy=" + accuracy
+				+ ", minVal=" + minVal + ", maxVal=" + maxVal + ", defVal=" + defVal + ", enStatistics=" + enStatistics
+				+ ", customSignalId=" + customSignalId + "]";
 	}
 	@Override
 	public int getValType() {

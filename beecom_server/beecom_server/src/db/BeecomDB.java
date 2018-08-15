@@ -1253,17 +1253,59 @@ public class BeecomDB {
 		}
 		
 		return systemSignalInfoUnitLst;
-
 	}
 	
-	public List<CustomSignalInfoUnit> getCustomSignalUnitLst(long uniqDeviceId, List<CustomSignalInfoUnit> customSignalInfoUnitLst) {
+	private void putLangIntoMap(Map<Integer, String> map, int langSupportMask, CustomSignalNameLangEntityInfoHbn customSignalNameLangEntityInfoHbn) {
+		
+	}
+	
+	private Map<Integer, String> getCustomSignalNameLangMap(long custonSignalNameLangId, int langSupportMask) {
+		Map<Integer, String> customSignalLangMap = null;
+		
+		Transaction tx = null;
+		try (Session session = sessionFactory.openSession()) {
+			tx = session.beginTransaction();
+
+			// CustomSignalNameLangInfoHbn customSignalNameLangInfoHbn = (CustomSignalNameLangInfoHbn)session  
+		    //        .createQuery("from CustomSignalNameLangInfoHbn where cusSigEnmId = :cus_sig_enm_id")
+		    //        .setParameter("id", custonSignalNameLangId).list();
+			CustomSignalNameLangInfoHbn customSignalNameLangInfoHbn = session.load(CustomSignalNameLangInfoHbn.class, custonSignalNameLangId);
+			if(null != customSignalNameLangInfoHbn) {
+				tx.commit();
+				return null;
+			}
+			CustomSignalNameLangEntityInfoHbn customSignalNameLangEntityInfoHbn = session.load(CustomSignalNameLangEntityInfoHbn.class, customSignalNameLangInfoHbn.getCustomSignalName());
+			if(null == customSignalNameLangEntityInfoHbn) {
+				tx.commit();
+				return null;
+			}
+			customSignalLangMap = new HashMap<>();
+			putLangIntoMap(customSignalLangMap, langSupportMask, customSignalNameLangEntityInfoHbn);
+			
+			/* TODO: add support for other language */
+			
+			tx.commit();
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+		}
+		
+		return customSignalLangMap;
+	}
+	
+	public List<CustomSignalInfoUnit> getCustomSignalUnitLst(long uniqDeviceId, List<CustomSignalInfoUnit> customSignalInfoUnitLst, int langSupportMask) {
 		if(uniqDeviceId < 0) {
 			return null;
 		}
-		
 		if(null == customSignalInfoUnitLst) {
 			return null;
 		}
+		if(langSupportMask < 0 || (langSupportMask & 0xFF) == 0) {
+			return null;
+		}
+		
 		List<SignalInfoHbn> signalInfoHbnLst = getSignalInfoHbnLst(uniqDeviceId, BPPacket.CUS_SIG_START_ID, BPPacket.CUS_SIG_END_ID);
 		if(null == signalInfoHbnLst || signalInfoHbnLst.isEmpty()) {
 			return null;
@@ -1292,6 +1334,7 @@ public class BeecomDB {
 					ifNotifying = signalInfoHbn.getNotifying();
 					ifAlarm = customSignalInfoHbn.getIfAlarm();
 					SignalInterface signalInterface = null;
+					// customSignalInfoHbn.getCusSigNameLangId(), langSupportMask
 
 
 					Transaction tx = null;
@@ -1450,6 +1493,7 @@ public class BeecomDB {
 							return null;
 						}
 					}
+					
 
 					customSignalInfoUnitLst.add(new CustomSignalInfoUnit(signalId, ifNotifying, ifAlarm, signalInterface));
 					break;

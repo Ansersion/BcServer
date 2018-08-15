@@ -14,6 +14,23 @@ CREATE TABLE custom_signal_info
 	
 	/* ID in signal_info table */
 	signal_id INT UNSIGNED NOT NULL, 
+
+	/* Customized signal name */
+	/* ID in custom_signal_name_lang_info table */
+	cus_sig_name_lang_id INT UNSIGNED NOT NULL DEFAULT 0,  
+	
+	/* Customized signal unit */
+	/* ID in custom_unit_lang_info table */
+	cus_sig_unit_lang_id INT UNSIGNED NOT NULL DEFAULT 0,  
+
+	/* Group language resource is from the sys_group_language_resource.csv */
+	/* 0: no group language ID; */
+	/* 0xFFFFFFFF: search for custom signal group language ID*/
+	group_lang_id SMALLINT UNSIGNED NOT NULL DEFAULT 0, 
+	
+	/* ID in custom_signal_group_lang_info table */
+	/* Valid when "group_lang_id == 0xFFFFFFFF" */
+	cus_group_lang_id INT UNSIGNED NOT NULL DEFAULT 0, 
 	
 	UNIQUE INDEX i_signal_id(signal_id)
 );
