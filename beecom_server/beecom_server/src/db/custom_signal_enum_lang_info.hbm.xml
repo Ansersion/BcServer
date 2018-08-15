@@ -8,7 +8,7 @@
         <id name="id" column="id">  
             <generator class="native" />
         </id>  
-        <property name="enumKey" column="enum_key" />  
+        <property name="enumKey" column="enum_key" /> 
         <property name="enumValLangId" column="enum_val_lang_id" />  
         <property name="cusSigEnmId" column="cus_sig_enm_id" />  
     </class>    

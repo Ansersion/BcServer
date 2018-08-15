@@ -4,7 +4,7 @@ public class CustomSignalEnumLangInfoHbn {
     private Long id;
     private Integer enumKey;
     private Long enumValLangId;
-    private Integer cusSigEnmId;
+    private Long cusSigEnmId;
 	public Long getId() {
 		return id;
 	}
@@ -17,16 +17,16 @@ public class CustomSignalEnumLangInfoHbn {
 	public void setEnumKey(Integer enumKey) {
 		this.enumKey = enumKey;
 	}
-	public Long getEnumVal() {
+	public Long getEnumValLangId() {
 		return enumValLangId;
 	}
-	public void setEnumVal(Long enumVal) {
-		this.enumValLangId = enumVal;
+	public void setEnumValLangId(Long enumValLangId) {
+		this.enumValLangId = enumValLangId;
 	}
-	public Integer getCusSigEnmId() {
+	public Long getCusSigEnmId() {
 		return cusSigEnmId;
 	}
-	public void setCusSigEnmId(Integer cusSigEnmId) {
+	public void setCusSigEnmId(Long cusSigEnmId) {
 		this.cusSigEnmId = cusSigEnmId;
 	}
 	@Override

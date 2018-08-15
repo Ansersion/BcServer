@@ -9,10 +9,10 @@
             <generator class="native" />
         </id>  
         <property name="chinese" column="chinese" />  
-        <property name="chinese" column="chinese" />  
-        <property name="chinese" column="chinese" />  
-        <property name="chinese" column="chinese" />  
-        <property name="chinese" column="chinese" />  
-        <property name="chinese" column="chinese" />  
+        <property name="english" column="english" />  
+        <property name="french" column="french" />  
+        <property name="russian" column="russian" />  
+        <property name="arabic" column="arabic" />  
+        <property name="spanish" column="spanish" />  
     </class>    
 </hibernate-mapping>
