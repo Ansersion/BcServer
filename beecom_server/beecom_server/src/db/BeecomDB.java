@@ -1255,8 +1255,34 @@ public class BeecomDB {
 		return systemSignalInfoUnitLst;
 	}
 	
-	private void putLangIntoMap(Map<Integer, String> map, int langSupportMask, CustomSignalNameLangEntityInfoHbn customSignalNameLangEntityInfoHbn) {
+	private void putLangIntoMap(Map<Integer, String> map, int langSupportMask, SignalLanguageInterface signalLanguageInterface) {
+		int langMaskSet = 0;
 		
+		langMaskSet = 0x01 << BPLanguageId.CHINESE;
+		if((langSupportMask & langMaskSet) == langMaskSet) {
+			map.put(BPLanguageId.CHINESE, signalLanguageInterface.getChinese());
+		}
+		langMaskSet = 0x01 << BPLanguageId.ENGLISH;
+		if((langSupportMask & langMaskSet) == langMaskSet) {
+			map.put(BPLanguageId.ENGLISH, signalLanguageInterface.getEnglish());
+		}
+		langMaskSet = 0x01 << BPLanguageId.FRENCH;
+		if((langSupportMask & langMaskSet) == langMaskSet) {
+			map.put(BPLanguageId.FRENCH, signalLanguageInterface.getFrench());
+		}
+		langMaskSet = 0x01 << BPLanguageId.RUSSIAN;
+		if((langSupportMask & langMaskSet) == langMaskSet) {
+			map.put(BPLanguageId.RUSSIAN, signalLanguageInterface.getRussian());
+		}
+		langMaskSet = 0x01 << BPLanguageId.ARABIC;
+		if((langSupportMask & langMaskSet) == langMaskSet) {
+			map.put(BPLanguageId.ARABIC, signalLanguageInterface.getArabic());
+		}
+		langMaskSet = 0x01 << BPLanguageId.SPANISH;
+		if((langSupportMask & langMaskSet) == langMaskSet) {
+			map.put(BPLanguageId.SPANISH, signalLanguageInterface.getSpanish());
+		}
+
 	}
 	
 	private Map<Integer, String> getCustomSignalNameLangMap(long custonSignalNameLangId, int langSupportMask) {
@@ -1295,6 +1321,78 @@ public class BeecomDB {
 		return customSignalLangMap;
 	}
 	
+	private Map<Integer, String> getCustomUnitLangMap(long custonUnitLangId, int langSupportMask) {
+		Map<Integer, String> customUnitLangMap = null;
+		
+		Transaction tx = null;
+		try (Session session = sessionFactory.openSession()) {
+			tx = session.beginTransaction();
+
+			// CustomSignalNameLangInfoHbn customSignalNameLangInfoHbn = (CustomSignalNameLangInfoHbn)session  
+		    //        .createQuery("from CustomSignalNameLangInfoHbn where cusSigEnmId = :cus_sig_enm_id")
+		    //        .setParameter("id", custonSignalNameLangId).list();
+			CustomUnitLangInfoHbn customUnitLangInfoHbn = session.load(CustomUnitLangInfoHbn.class, custonUnitLangId);
+			if(null != customUnitLangInfoHbn) {
+				tx.commit();
+				return null;
+			}
+			CustomUnitLangEntityInfoHbn customUnitLangEntityInfoHbn = session.load(CustomUnitLangEntityInfoHbn.class, customUnitLangInfoHbn.getUnitLang());
+			if(null == customUnitLangEntityInfoHbn) {
+				tx.commit();
+				return null;
+			}
+			customUnitLangMap = new HashMap<>();
+			putLangIntoMap(customUnitLangMap, langSupportMask, customUnitLangEntityInfoHbn);
+			
+			/* TODO: add support for other language */
+			
+			tx.commit();
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+		}
+		
+		return customUnitLangMap;
+	}
+	
+	private Map<Integer, String> getCustomGroupLangMap(long custonGroupLangId, int langSupportMask) {
+		Map<Integer, String> customGroupLangMap = null;
+		
+		Transaction tx = null;
+		try (Session session = sessionFactory.openSession()) {
+			tx = session.beginTransaction();
+
+			// CustomSignalNameLangInfoHbn customSignalNameLangInfoHbn = (CustomSignalNameLangInfoHbn)session  
+		    //        .createQuery("from CustomSignalNameLangInfoHbn where cusSigEnmId = :cus_sig_enm_id")
+		    //        .setParameter("id", custonSignalNameLangId).list();
+			CustomGroupLangInfoHbn customGroupLangInfoHbn = session.load(CustomGroupLangInfoHbn.class, custonGroupLangId);
+			if(null != customGroupLangInfoHbn) {
+				tx.commit();
+				return null;
+			}
+			CustomSignalGroupLangEntityInfoHbn customSignalGroupLangEntityInfoHbn = session.load(CustomSignalGroupLangEntityInfoHbn.class, customGroupLangInfoHbn.getGroupLang());
+			if(null == customSignalGroupLangEntityInfoHbn) {
+				tx.commit();
+				return null;
+			}
+			customGroupLangMap = new HashMap<>();
+			putLangIntoMap(customGroupLangMap, langSupportMask, customSignalGroupLangEntityInfoHbn);
+			
+			/* TODO: add support for other language */
+			
+			tx.commit();
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+		}
+		
+		return customGroupLangMap;
+	}
+	
 	public List<CustomSignalInfoUnit> getCustomSignalUnitLst(long uniqDeviceId, List<CustomSignalInfoUnit> customSignalInfoUnitLst, int langSupportMask) {
 		if(uniqDeviceId < 0) {
 			return null;
@@ -1320,10 +1418,17 @@ public class BeecomDB {
 		int signalId;
 		boolean ifNotifying;
 		boolean ifAlarm;
+		Map<Integer, String> cusSignalNameLangMap = null;
+		Map<Integer, String> cusSignalUnitLangMap = null;
+		Map<Integer, String> cusSignalGroupLangMap = null;
+		
 		while(itSI.hasNext()) {
 			SignalInfoHbn signalInfoHbn = itSI.next();
 			itCSI = customSignalInfoHbnLst.iterator();
 			while(itCSI.hasNext()) {
+				cusSignalNameLangMap = null;
+				cusSignalUnitLangMap = null;
+				cusSignalGroupLangMap = null;
 				CustomSignalInfoHbn customSignalInfoHbn = itCSI.next();
 
 				if (customSignalInfoHbn.getSignalId() == signalInfoHbn.getId()) {
@@ -1334,7 +1439,12 @@ public class BeecomDB {
 					ifNotifying = signalInfoHbn.getNotifying();
 					ifAlarm = customSignalInfoHbn.getIfAlarm();
 					SignalInterface signalInterface = null;
-					// customSignalInfoHbn.getCusSigNameLangId(), langSupportMask
+					cusSignalNameLangMap = getCustomSignalNameLangMap(customSignalInfoHbn.getCusSigNameLangId(), langSupportMask);
+					cusSignalUnitLangMap = getCustomUnitLangMap(customSignalInfoHbn.getCusSigUnitLangId(), langSupportMask);
+					if(BPPacket.INVALID_LANGUAGE_ID == customSignalInfoHbn.getGroupLangId()) {
+						cusSignalGroupLangMap = getCustomGroupLangMap(customSignalInfoHbn.getCusGroupLangId(), langSupportMask);
+					}
+					
 
 
 					Transaction tx = null;

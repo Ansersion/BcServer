@@ -48,6 +48,7 @@ public class BPPacket implements BPPacketInterface {
 	public static final float VAL_FLOAT_UNLIMIT =0x7FFFFFFF;
 	public static final String VAL_STR_UNLIMIT ="";
 	public static final boolean VAL_BOOLEAN_UNLIMIT =false;
+	public static final long INVALID_LANGUAGE_ID = 0;
 	
 	public static final long INVALID_SIGNAL_MAP_CHECKSUM = 0x7FFFFFFFFFFFFFFFL;
 	
