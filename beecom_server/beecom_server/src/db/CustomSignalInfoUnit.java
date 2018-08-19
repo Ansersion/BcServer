@@ -1,16 +1,37 @@
 package db;
 
+import java.util.Map;
+
 public class CustomSignalInfoUnit {
 	private int cusSigId;
 	private boolean ifNotifing;
 	private boolean ifAlarm;
+	/* system group language ID */
+	private int groupLangId;
+	/* custom signal name language map */
+	private Map<Integer, String> signalNameLangMap;
+	/* custom signal unit language map */
+	private Map<Integer, String> signalUnitLangMap;
+	/* custom group language map */
+	private Map<Integer, String> groupLangMap;
+	/* custom enumerate signal language map */
+	private Map<Integer, Map<Integer, String> > signalEnumLangMap;
 	private SignalInterface customSignalInterface;
-	public CustomSignalInfoUnit(int cusSigId, boolean ifNotifing, boolean ifAlarm,
+	
+
+	public CustomSignalInfoUnit(int cusSigId, boolean ifNotifing, boolean ifAlarm, int groupLangId,
+			Map<Integer, String> signalNameLangMap, Map<Integer, String> signalUnitLangMap,
+			Map<Integer, String> groupLangMap, Map<Integer, Map<Integer, String>> signalEnumLangMap,
 			SignalInterface customSignalInterface) {
 		super();
 		this.cusSigId = cusSigId;
 		this.ifNotifing = ifNotifing;
 		this.ifAlarm = ifAlarm;
+		this.groupLangId = groupLangId;
+		this.signalNameLangMap = signalNameLangMap;
+		this.signalUnitLangMap = signalUnitLangMap;
+		this.groupLangMap = groupLangMap;
+		this.signalEnumLangMap = signalEnumLangMap;
 		this.customSignalInterface = customSignalInterface;
 	}
 	public int getCusSigId() {
@@ -25,11 +46,26 @@ public class CustomSignalInfoUnit {
 	public SignalInterface getCustomSignalInterface() {
 		return customSignalInterface;
 	}
+	public int getGroupLangId() {
+		return groupLangId;
+	}
+	public Map<Integer, String> getSignalNameLangMap() {
+		return signalNameLangMap;
+	}
+	public Map<Integer, String> getSignalUnitLangMap() {
+		return signalUnitLangMap;
+	}
+	public Map<Integer, String> getGroupLangMap() {
+		return groupLangMap;
+	}
+	public Map<Integer, Map<Integer, String>> getSignalEnumLangMap() {
+		return signalEnumLangMap;
+	}
 	@Override
 	public String toString() {
 		return "CustomSignalInfoUnit [cusSigId=" + cusSigId + ", ifNotifing=" + ifNotifing + ", ifAlarm=" + ifAlarm
+				+ ", groupLangId=" + groupLangId + ", signalNameLangMap=" + signalNameLangMap + ", signalUnitLangMap="
+				+ signalUnitLangMap + ", groupLangMap=" + groupLangMap + ", signalEnumLangMap=" + signalEnumLangMap
 				+ ", customSignalInterface=" + customSignalInterface + "]";
 	}
-
-	
 }

@@ -227,9 +227,19 @@ public class BPPacketGETACK extends BPPacket {
 						}
 						cusSignalFlag |= (valType << 4);
 						buffer.put(cusSignalFlag);
+						/* default to add language end flag */
+						// langSupportMask |= 0x01;
 						// buffer.put((byte)(langSupportMask & 0xFF));
 						
 						// TODO: not support other language now(2018.08.14)
+						Map<Integer, String> nameLangMap = customSignalInfoUnit.getSignalNameLangMap();
+						if(null == nameLangMap) {
+							logger.error("inner error: null == nameLangMap");
+						}
+						Map<Integer, String> unitLangMap = customSignalInfoUnit.getSignalNameLangMap();
+						int groupId = customSignalInfoUnit.getGroupLangId();
+						Map<Integer, String> groupLangMap = customSignalInfoUnit.getSignalNameLangMap();
+						Map<Integer, String> enumLangMap = customSignalInfoUnit.getSignalNameLangMap();
 						byte langSupportMaskByte = 0;
 						for (int i = 7; i > 0; i--) {
 							if(((langSupportMask >> i) & 0x01) == 0) {
@@ -246,6 +256,52 @@ public class BPPacketGETACK extends BPPacket {
 							case BPPacket.VAL_TYPE_UINT32:
 								CustomSignalU32InfoHbn customSignalU32InfoHbn = (CustomSignalU32InfoHbn) customSignalInfoUnit
 										.getCustomSignalInterface();
+								if(null == customSignalU32InfoHbn) {
+									logger.error("inner error: null == customSignalU32InfoHbn");
+									break;
+								}
+								String name = nameLangMap.get(i);
+								if(null == name || name.length() > BPPacket.MAX_CUSTOM_SIGNAL_NAME_LENGTH) {
+									logger.error("inner error: null == nameLangMap.get({})", i);
+									break;
+								}
+								buffer.put((byte)(name.length() & 0xFF));
+								buffer.put(name.getBytes());
+								if(null == unitLangMap) {
+									/* 2 bytes */
+									/* TODO: temporary no support the system unit language unit */
+									// buffer.put(BPPacket.SYSTEM_UNIT_LANGUAGE_FLAG & 0x02);
+									buffer.put((byte)0);
+								} else {
+									String unit = unitLangMap.get(i);
+									if(null == unit || unit.length() > BPPacket.MAX_CUSTOM_SIGNAL_UNIT_LENGTH) {
+										logger.error("inner error: null == nameLangMap.get({})", i);
+										break;
+									}
+									buffer.put((byte)(unit.length() & 0xFF));
+									buffer.put(unit.getBytes());
+								}
+								
+								if(null == groupLangMap) {
+									/* 2 bytes */
+									/* TODO: temporary no support the system unit language unit */
+									// buffer.put(BPPacket.SYSTEM_UNIT_LANGUAGE_FLAG & 0x02);
+									buffer.put((byte)0);
+								} else {
+									String group = groupLangMap.get(i);
+									if(null == group || group.length() > BPPacket.MAX_CUSTOM_SIGNAL_UNIT_LENGTH) {
+										logger.error("inner error: null == nameLangMap.get({})", i);
+										break;
+									}
+									buffer.put((byte)(group.length() & 0xFF));
+									buffer.put(group.getBytes());
+								}
+								/* accuracy 0 */
+								buffer.put((byte)0);
+								buffer.putUnsignedInt(customSignalU32InfoHbn.getMinVal());
+								buffer.putUnsignedInt(customSignalU32InfoHbn.getMaxVal());
+								buffer.putUnsignedInt(customSignalU32InfoHbn.getDefVal());
+								
 								break;
 							case BPPacket.VAL_TYPE_UINT16:
 								break;
@@ -260,6 +316,9 @@ public class BPPacketGETACK extends BPPacket {
 							case BPPacket.VAL_TYPE_STRING:
 								break;
 							case BPPacket.VAL_TYPE_BOOLEAN:
+								break;
+							default:
+								logger.error("inner error: unknown value type");
 								break;
 							}
 						}

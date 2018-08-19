@@ -1393,6 +1393,55 @@ public class BeecomDB {
 		return customGroupLangMap;
 	}
 	
+	private Map<Integer, Map<Integer, String> > getCustomSignalEnumLangMap(long customSignalId, int langSupportMask) {
+		Map<Integer, Map<Integer, String> > customSignalEnumLangMap = null;
+		
+		Transaction tx = null;
+		try (Session session = sessionFactory.openSession()) {
+			tx = session.beginTransaction();
+
+			// CustomSignalNameLangInfoHbn customSignalNameLangInfoHbn = (CustomSignalNameLangInfoHbn)session  
+		    //        .createQuery("from CustomSignalNameLangInfoHbn where cusSigEnmId = :cus_sig_enm_id")
+		    //        .setParameter("id", custonSignalNameLangId).list();
+			CustomSignalEnumInfoHbn customSignalEnumInfoHbn = session.load(CustomSignalEnumInfoHbn.class, customSignalId);
+			if(null == customSignalEnumInfoHbn) {
+				tx.commit();
+				return null;
+			}
+			List<CustomSignalEnumLangInfoHbn> customSignalEnumLangInfoHbnList = session  
+		           .createQuery("from CustomSignalEnumLangInfoHbn where cusSigEnmId = :cus_sig_enm_id")
+		           .setParameter("cus_sig_enm_id", customSignalEnumInfoHbn.getCustomSignalId()).list();
+			if(null != customSignalEnumLangInfoHbnList) {
+				tx.commit();
+				return null;
+			}
+			Iterator<CustomSignalEnumLangInfoHbn> it = customSignalEnumLangInfoHbnList.iterator();
+			while(it.hasNext()) {
+				CustomSignalEnumLangInfoHbn customSignalEnumLangInfoHbn = it.next();
+				CustomSignalEnumLangEntityInfoHbn customSignalEnumLangEntityInfoHbn = session.get(CustomSignalEnumLangEntityInfoHbn.class, customSignalEnumLangInfoHbn.getEnumValLangId());
+				if(null == customSignalEnumLangEntityInfoHbn) {
+					tx.commit();
+					return null;
+				}
+				Map<Integer, String> customSignalEnumLangMapEntry = new HashMap<>();
+				putLangIntoMap(customSignalEnumLangMapEntry, langSupportMask, customSignalEnumLangEntityInfoHbn);
+				customSignalEnumLangMap.put(customSignalEnumLangInfoHbn.getEnumKey(), customSignalEnumLangMapEntry);
+				
+			}
+			
+			/* TODO: add support for other language */
+			
+			tx.commit();
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+		}
+		
+		return customSignalEnumLangMap;
+	}
+	
 	public List<CustomSignalInfoUnit> getCustomSignalUnitLst(long uniqDeviceId, List<CustomSignalInfoUnit> customSignalInfoUnitLst, int langSupportMask) {
 		if(uniqDeviceId < 0) {
 			return null;
@@ -1421,6 +1470,8 @@ public class BeecomDB {
 		Map<Integer, String> cusSignalNameLangMap = null;
 		Map<Integer, String> cusSignalUnitLangMap = null;
 		Map<Integer, String> cusSignalGroupLangMap = null;
+		Map<Integer, Map<Integer, String> > cusSignalEnumLangMap = null;
+		int groupLangId = BPPacket.INVALID_LANGUAGE_ID;
 		
 		while(itSI.hasNext()) {
 			SignalInfoHbn signalInfoHbn = itSI.next();
@@ -1429,6 +1480,8 @@ public class BeecomDB {
 				cusSignalNameLangMap = null;
 				cusSignalUnitLangMap = null;
 				cusSignalGroupLangMap = null;
+				cusSignalEnumLangMap = null;
+				groupLangId = BPPacket.INVALID_LANGUAGE_ID;
 				CustomSignalInfoHbn customSignalInfoHbn = itCSI.next();
 
 				if (customSignalInfoHbn.getSignalId() == signalInfoHbn.getId()) {
@@ -1444,8 +1497,9 @@ public class BeecomDB {
 					if(BPPacket.INVALID_LANGUAGE_ID == customSignalInfoHbn.getGroupLangId()) {
 						cusSignalGroupLangMap = getCustomGroupLangMap(customSignalInfoHbn.getCusGroupLangId(), langSupportMask);
 					}
-					
-
+					if(BPPacket.VAL_TYPE_ENUM == customSignalInfoHbn.getValType()) {
+						cusSignalEnumLangMap = getCustomSignalEnumLangMap(customSignalInfoHbn.getCusSigUnitLangId(), langSupportMask);
+					}
 
 					Transaction tx = null;
 					switch (customSignalInfoHbn.getValType()) {
@@ -1603,9 +1657,8 @@ public class BeecomDB {
 							return null;
 						}
 					}
-					
 
-					customSignalInfoUnitLst.add(new CustomSignalInfoUnit(signalId, ifNotifying, ifAlarm, signalInterface));
+					customSignalInfoUnitLst.add(new CustomSignalInfoUnit(signalId, ifNotifying, ifAlarm, groupLangId, cusSignalNameLangMap, cusSignalUnitLangMap, cusSignalGroupLangMap, cusSignalEnumLangMap, signalInterface));
 					break;
 				}
 			}
