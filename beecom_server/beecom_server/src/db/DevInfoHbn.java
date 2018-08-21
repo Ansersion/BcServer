@@ -7,7 +7,7 @@ public class DevInfoHbn {
     private String password;
     private Long sigMapChksum;
     private Short dailySigTabChangeTimes;
-    private Byte langSupportMask;
+    private Short langSupportMask;
     
 	public Long getId() {
 		return id;
@@ -45,10 +45,10 @@ public class DevInfoHbn {
 	public void setDailySigTabChangeTimes(Short dailySigTabChangeTimes) {
 		this.dailySigTabChangeTimes = dailySigTabChangeTimes;
 	}
-	public Byte getLangSupportMask() {
+	public Short getLangSupportMask() {
 		return langSupportMask;
 	}
-	public void setLangSupportMask(Byte langSupportMask) {
+	public void setLangSupportMask(Short langSupportMask) {
 		this.langSupportMask = langSupportMask;
 	}
 	@Override

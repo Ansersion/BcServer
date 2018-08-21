@@ -366,8 +366,8 @@ public class BeecomDB {
 			tx = session.beginTransaction();
 
 			DevInfoHbn devInfoHbn = null;
-			devInfoHbn = (DevInfoHbn)session.createQuery("from DevInfoHbn where snId = :sn_id and adminId = :admin_id")
-					.setParameter("sn_id", devUniqId)
+			devInfoHbn = (DevInfoHbn)session.createQuery("from DevInfoHbn where id = :id_ and adminId = :admin_id")
+					.setParameter("id_", devUniqId)
 					.setParameter("admin_id", userId).uniqueResult();
 			if(null == devInfoHbn) {
 				UserDevRelInfoHbn userDevRelInfoHbn = null;
@@ -1296,7 +1296,7 @@ public class BeecomDB {
 		    //        .createQuery("from CustomSignalNameLangInfoHbn where cusSigEnmId = :cus_sig_enm_id")
 		    //        .setParameter("id", custonSignalNameLangId).list();
 			CustomSignalNameLangInfoHbn customSignalNameLangInfoHbn = session.load(CustomSignalNameLangInfoHbn.class, custonSignalNameLangId);
-			if(null != customSignalNameLangInfoHbn) {
+			if(null == customSignalNameLangInfoHbn) {
 				tx.commit();
 				return null;
 			}
@@ -1331,12 +1331,12 @@ public class BeecomDB {
 			// CustomSignalNameLangInfoHbn customSignalNameLangInfoHbn = (CustomSignalNameLangInfoHbn)session  
 		    //        .createQuery("from CustomSignalNameLangInfoHbn where cusSigEnmId = :cus_sig_enm_id")
 		    //        .setParameter("id", custonSignalNameLangId).list();
-			CustomUnitLangInfoHbn customUnitLangInfoHbn = session.load(CustomUnitLangInfoHbn.class, custonUnitLangId);
-			if(null != customUnitLangInfoHbn) {
+			CustomUnitLangInfoHbn customUnitLangInfoHbn = session.get(CustomUnitLangInfoHbn.class, custonUnitLangId);
+			if(null == customUnitLangInfoHbn) {
 				tx.commit();
 				return null;
 			}
-			CustomUnitLangEntityInfoHbn customUnitLangEntityInfoHbn = session.load(CustomUnitLangEntityInfoHbn.class, customUnitLangInfoHbn.getUnitLang());
+			CustomUnitLangEntityInfoHbn customUnitLangEntityInfoHbn = session.get(CustomUnitLangEntityInfoHbn.class, customUnitLangInfoHbn.getUnitLang());
 			if(null == customUnitLangEntityInfoHbn) {
 				tx.commit();
 				return null;
@@ -1367,12 +1367,12 @@ public class BeecomDB {
 			// CustomSignalNameLangInfoHbn customSignalNameLangInfoHbn = (CustomSignalNameLangInfoHbn)session  
 		    //        .createQuery("from CustomSignalNameLangInfoHbn where cusSigEnmId = :cus_sig_enm_id")
 		    //        .setParameter("id", custonSignalNameLangId).list();
-			CustomGroupLangInfoHbn customGroupLangInfoHbn = session.load(CustomGroupLangInfoHbn.class, custonGroupLangId);
-			if(null != customGroupLangInfoHbn) {
+			CustomGroupLangInfoHbn customGroupLangInfoHbn = session.get(CustomGroupLangInfoHbn.class, custonGroupLangId);
+			if(null == customGroupLangInfoHbn) {
 				tx.commit();
 				return null;
 			}
-			CustomSignalGroupLangEntityInfoHbn customSignalGroupLangEntityInfoHbn = session.load(CustomSignalGroupLangEntityInfoHbn.class, customGroupLangInfoHbn.getGroupLang());
+			CustomSignalGroupLangEntityInfoHbn customSignalGroupLangEntityInfoHbn = session.get(CustomSignalGroupLangEntityInfoHbn.class, customGroupLangInfoHbn.getGroupLang());
 			if(null == customSignalGroupLangEntityInfoHbn) {
 				tx.commit();
 				return null;
@@ -1394,24 +1394,23 @@ public class BeecomDB {
 	}
 	
 	private Map<Integer, Map<Integer, String> > getCustomSignalEnumLangMap(long customSignalId, int langSupportMask) {
-		Map<Integer, Map<Integer, String> > customSignalEnumLangMap = null;
+		Map<Integer, Map<Integer, String> > customSignalEnumLangMap = new HashMap<>();
 		
 		Transaction tx = null;
 		try (Session session = sessionFactory.openSession()) {
 			tx = session.beginTransaction();
 
-			// CustomSignalNameLangInfoHbn customSignalNameLangInfoHbn = (CustomSignalNameLangInfoHbn)session  
-		    //        .createQuery("from CustomSignalNameLangInfoHbn where cusSigEnmId = :cus_sig_enm_id")
-		    //        .setParameter("id", custonSignalNameLangId).list();
-			CustomSignalEnumInfoHbn customSignalEnumInfoHbn = session.load(CustomSignalEnumInfoHbn.class, customSignalId);
+			CustomSignalEnumInfoHbn customSignalEnumInfoHbn = (CustomSignalEnumInfoHbn)session  
+		           .createQuery("from CustomSignalEnumInfoHbn where customSignalId = :custom_signal_id")
+		           .setParameter("custom_signal_id", customSignalId).uniqueResult();
 			if(null == customSignalEnumInfoHbn) {
 				tx.commit();
 				return null;
 			}
 			List<CustomSignalEnumLangInfoHbn> customSignalEnumLangInfoHbnList = session  
 		           .createQuery("from CustomSignalEnumLangInfoHbn where cusSigEnmId = :cus_sig_enm_id")
-		           .setParameter("cus_sig_enm_id", customSignalEnumInfoHbn.getCustomSignalId()).list();
-			if(null != customSignalEnumLangInfoHbnList) {
+		           .setParameter("cus_sig_enm_id", customSignalEnumInfoHbn.getId()).list();
+			if(null == customSignalEnumLangInfoHbnList) {
 				tx.commit();
 				return null;
 			}
@@ -1437,6 +1436,7 @@ public class BeecomDB {
 			e.printStackTrace(new PrintWriter(sw, true));
 			String str = sw.toString();
 			logger.error(str);
+			customSignalEnumLangMap = null;
 		}
 		
 		return customSignalEnumLangMap;
@@ -1498,7 +1498,7 @@ public class BeecomDB {
 						cusSignalGroupLangMap = getCustomGroupLangMap(customSignalInfoHbn.getCusGroupLangId(), langSupportMask);
 					}
 					if(BPPacket.VAL_TYPE_ENUM == customSignalInfoHbn.getValType()) {
-						cusSignalEnumLangMap = getCustomSignalEnumLangMap(customSignalInfoHbn.getCusSigUnitLangId(), langSupportMask);
+						cusSignalEnumLangMap = getCustomSignalEnumLangMap(customSignalInfoHbn.getId(), langSupportMask);
 					}
 
 					Transaction tx = null;
