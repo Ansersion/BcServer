@@ -2074,7 +2074,7 @@ public class BeecomDB {
 		try (Session session = sessionFactory.openSession()) {
 			tx = session.beginTransaction();
 
-			ret = (Integer)session
+			ret = (Short)session /* tinyint unsigned must be cast to short */
 					.createQuery("select langSupportMask from DevInfoHbn where id = :dev_id")
 					.setParameter("dev_id", uniqDevId).uniqueResult();
 

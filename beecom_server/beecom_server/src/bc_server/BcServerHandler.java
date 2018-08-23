@@ -287,7 +287,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 			vrb = decodedPack.getVrbHead();
 			pld = decodedPack.getPld();
 			boolean sysSigMapFlag = vrb.getSysSigMapFlag();
-			boolean cusSigMapFlag = vrb.getCusSigFlag();
+			boolean cusSigMapFlag = vrb.getCusSigMapFlag();
 			boolean devIdFlag = vrb.getDevIdFlag();
 			boolean sysSigFlag = vrb.getSysSigFlag();
 			boolean cusSigFlag = vrb.getCusSigFlag();
