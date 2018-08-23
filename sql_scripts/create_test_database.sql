@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.7.17, for macos10.12 (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
 --
--- Host: 127.0.0.1    Database: bc_server_db
+-- Host: localhost    Database: bc_server_db
 -- ------------------------------------------------------
--- Server version	8.0.11
+-- Server version	5.7.21-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -112,11 +112,8 @@ CREATE TABLE `custom_signal_boolean_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `mtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `cus_sig_name_lang_id` int(10) unsigned NOT NULL,
   `permission` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `def_val` tinyint(1) NOT NULL DEFAULT '0',
-  `group_lang_id` smallint(5) unsigned NOT NULL DEFAULT '0',
-  `cus_group_lang_id` int(10) unsigned NOT NULL DEFAULT '0',
   `en_statistics` tinyint(1) NOT NULL DEFAULT '1',
   `custom_signal_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
@@ -144,11 +141,8 @@ CREATE TABLE `custom_signal_enum_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `mtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `cus_sig_name_lang_id` int(10) unsigned NOT NULL,
   `permission` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `def_val` smallint(5) unsigned NOT NULL DEFAULT '0',
-  `group_lang_id` smallint(5) unsigned NOT NULL DEFAULT '0',
-  `cus_group_lang_id` int(10) unsigned NOT NULL DEFAULT '0',
   `en_statistics` tinyint(1) NOT NULL DEFAULT '1',
   `custom_signal_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
@@ -162,7 +156,7 @@ CREATE TABLE `custom_signal_enum_info` (
 
 LOCK TABLES `custom_signal_enum_info` WRITE;
 /*!40000 ALTER TABLE `custom_signal_enum_info` DISABLE KEYS */;
-INSERT INTO `custom_signal_enum_info` VALUES (1,'2018-04-24 10:39:59','2018-04-24 10:39:59',1,0,0,0,0,1,1),(2,'2018-04-24 10:39:59','2018-04-24 10:39:59',2,1,0,0,0,1,2);
+INSERT INTO `custom_signal_enum_info` VALUES (1,'2018-08-15 15:04:55','2018-08-15 15:04:55',0,0,1,1),(2,'2018-08-15 15:04:55','2018-08-15 15:04:55',1,0,1,2);
 /*!40000 ALTER TABLE `custom_signal_enum_info` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -238,15 +232,11 @@ CREATE TABLE `custom_signal_float_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `mtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `cus_sig_name_lang_id` int(10) unsigned NOT NULL,
-  `cus_sig_unit_lang_id` int(10) unsigned NOT NULL,
   `permission` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `accuracy` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `min_val` float NOT NULL DEFAULT '2147480000',
   `max_val` float NOT NULL DEFAULT '2147480000',
   `def_val` float NOT NULL DEFAULT '0',
-  `group_lang_id` smallint(5) unsigned NOT NULL DEFAULT '0',
-  `cus_group_lang_id` int(10) unsigned NOT NULL DEFAULT '0',
   `en_statistics` tinyint(1) NOT NULL DEFAULT '1',
   `custom_signal_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
@@ -264,6 +254,34 @@ LOCK TABLES `custom_signal_float_info` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `custom_signal_group_lang_entity_info`
+--
+
+DROP TABLE IF EXISTS `custom_signal_group_lang_entity_info`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `custom_signal_group_lang_entity_info` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `chinese` varchar(255) DEFAULT NULL,
+  `english` varchar(255) DEFAULT NULL,
+  `french` varchar(255) DEFAULT NULL,
+  `russian` varchar(255) DEFAULT NULL,
+  `arabic` varchar(255) DEFAULT NULL,
+  `spanish` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `custom_signal_group_lang_entity_info`
+--
+
+LOCK TABLES `custom_signal_group_lang_entity_info` WRITE;
+/*!40000 ALTER TABLE `custom_signal_group_lang_entity_info` DISABLE KEYS */;
+/*!40000 ALTER TABLE `custom_signal_group_lang_entity_info` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `custom_signal_i16_info`
 --
 
@@ -274,14 +292,10 @@ CREATE TABLE `custom_signal_i16_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `mtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `cus_sig_name_lang_id` int(10) unsigned NOT NULL,
-  `cus_sig_unit_lang_id` int(10) unsigned NOT NULL,
   `permission` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `min_val` smallint(6) NOT NULL DEFAULT '32767',
   `max_val` smallint(6) NOT NULL DEFAULT '32767',
   `def_val` smallint(6) NOT NULL DEFAULT '0',
-  `group_lang_id` smallint(5) unsigned NOT NULL DEFAULT '0',
-  `cus_group_lang_id` int(10) unsigned NOT NULL DEFAULT '0',
   `en_statistics` tinyint(1) NOT NULL DEFAULT '1',
   `custom_signal_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
@@ -309,14 +323,10 @@ CREATE TABLE `custom_signal_i32_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `mtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `cus_sig_name_lang_id` int(10) unsigned NOT NULL,
-  `cus_sig_unit_lang_id` int(10) unsigned NOT NULL,
   `permission` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `min_val` int(11) NOT NULL DEFAULT '2147483647',
   `max_val` int(11) NOT NULL DEFAULT '2147483647',
   `def_val` int(11) NOT NULL DEFAULT '0',
-  `group_lang_id` smallint(5) unsigned NOT NULL DEFAULT '0',
-  `cus_group_lang_id` int(10) unsigned NOT NULL DEFAULT '0',
   `en_statistics` tinyint(1) NOT NULL DEFAULT '1',
   `custom_signal_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
@@ -347,6 +357,10 @@ CREATE TABLE `custom_signal_info` (
   `is_alarm` tinyint(1) NOT NULL DEFAULT '0',
   `val_type` tinyint(3) unsigned NOT NULL,
   `signal_id` int(10) unsigned NOT NULL,
+  `cus_sig_name_lang_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `cus_sig_unit_lang_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `group_lang_id` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `cus_group_lang_id` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `i_signal_id` (`signal_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
@@ -358,7 +372,7 @@ CREATE TABLE `custom_signal_info` (
 
 LOCK TABLES `custom_signal_info` WRITE;
 /*!40000 ALTER TABLE `custom_signal_info` DISABLE KEYS */;
-INSERT INTO `custom_signal_info` VALUES (1,'2018-04-24 10:40:00','2018-04-24 10:40:00',0,4,8),(2,'2018-04-24 10:40:00','2018-04-24 10:40:00',0,4,9);
+INSERT INTO `custom_signal_info` VALUES (1,'2018-08-15 15:04:29','2018-08-15 15:04:29',0,4,8,1,0,0,0),(2,'2018-08-15 15:04:29','2018-08-15 15:04:29',0,4,9,2,0,0,0);
 /*!40000 ALTER TABLE `custom_signal_info` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -431,11 +445,8 @@ CREATE TABLE `custom_signal_string_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `mtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `cus_sig_name_lang_id` int(10) unsigned NOT NULL,
   `permission` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `def_val` varchar(512) NOT NULL DEFAULT '',
-  `group_lang_id` smallint(5) unsigned NOT NULL DEFAULT '0',
-  `cus_group_lang_id` int(10) unsigned NOT NULL DEFAULT '0',
   `en_statistics` tinyint(1) NOT NULL DEFAULT '1',
   `custom_signal_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
@@ -463,14 +474,10 @@ CREATE TABLE `custom_signal_u16_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `mtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `cus_sig_name_lang_id` int(10) unsigned NOT NULL,
-  `cus_sig_unit_lang_id` int(10) unsigned NOT NULL,
   `permission` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `min_val` smallint(5) unsigned NOT NULL DEFAULT '65535',
   `max_val` smallint(5) unsigned NOT NULL DEFAULT '65535',
   `def_val` smallint(5) unsigned NOT NULL DEFAULT '0',
-  `group_lang_id` smallint(5) unsigned NOT NULL DEFAULT '0',
-  `cus_group_lang_id` int(10) unsigned NOT NULL DEFAULT '0',
   `en_statistics` tinyint(1) NOT NULL DEFAULT '1',
   `custom_signal_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
@@ -498,14 +505,10 @@ CREATE TABLE `custom_signal_u32_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `mtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `cus_sig_name_lang_id` int(10) unsigned NOT NULL,
-  `cus_sig_unit_lang_id` int(10) unsigned NOT NULL,
   `permission` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `min_val` int(10) unsigned NOT NULL DEFAULT '4294967295',
   `max_val` int(10) unsigned NOT NULL DEFAULT '4294967295',
   `def_val` int(10) unsigned NOT NULL DEFAULT '0',
-  `group_lang_id` smallint(5) unsigned NOT NULL DEFAULT '0',
-  `cus_group_lang_id` int(10) unsigned NOT NULL DEFAULT '0',
   `en_statistics` tinyint(1) NOT NULL DEFAULT '1',
   `custom_signal_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
@@ -1081,4 +1084,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-08-14 18:29:07
+-- Dump completed on 2018-08-23 22:08:34
