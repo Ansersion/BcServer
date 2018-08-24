@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.17, for macos10.12 (x86_64)
 --
--- Host: localhost    Database: bc_server_db
+-- Host: 127.0.0.1    Database: bc_server_db
 -- ------------------------------------------------------
--- Server version	5.7.21-log
+-- Server version	8.0.11
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -432,6 +432,36 @@ LOCK TABLES `custom_signal_name_lang_info` WRITE;
 /*!40000 ALTER TABLE `custom_signal_name_lang_info` DISABLE KEYS */;
 INSERT INTO `custom_signal_name_lang_info` VALUES (1,'2018-08-14 10:23:17','2018-08-14 10:23:17',1),(2,'2018-08-14 10:23:17','2018-08-14 10:23:17',2);
 /*!40000 ALTER TABLE `custom_signal_name_lang_info` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `custom_signal_string_default_value_entity_info`
+--
+
+DROP TABLE IF EXISTS `custom_signal_string_default_value_entity_info`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `custom_signal_string_default_value_entity_info` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ctime` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `mtime` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `chinese` varchar(128) NOT NULL DEFAULT '',
+  `english` varchar(128) NOT NULL DEFAULT '',
+  `french` varchar(128) NOT NULL DEFAULT '',
+  `russian` varchar(128) NOT NULL DEFAULT '',
+  `arabic` varchar(128) NOT NULL DEFAULT '',
+  `spanish` varchar(128) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `custom_signal_string_default_value_entity_info`
+--
+
+LOCK TABLES `custom_signal_string_default_value_entity_info` WRITE;
+/*!40000 ALTER TABLE `custom_signal_string_default_value_entity_info` DISABLE KEYS */;
+/*!40000 ALTER TABLE `custom_signal_string_default_value_entity_info` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -918,6 +948,36 @@ INSERT INTO `system_signal_info` VALUES (1,'2018-04-24 10:40:00','2018-04-24 10:
 UNLOCK TABLES;
 
 --
+-- Table structure for table `system_signal_string_default_value_entity_info`
+--
+
+DROP TABLE IF EXISTS `system_signal_string_default_value_entity_info`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `system_signal_string_default_value_entity_info` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ctime` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `mtime` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `chinese` varchar(128) NOT NULL DEFAULT '',
+  `english` varchar(128) NOT NULL DEFAULT '',
+  `french` varchar(128) NOT NULL DEFAULT '',
+  `russian` varchar(128) NOT NULL DEFAULT '',
+  `arabic` varchar(128) NOT NULL DEFAULT '',
+  `spanish` varchar(128) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `system_signal_string_default_value_entity_info`
+--
+
+LOCK TABLES `system_signal_string_default_value_entity_info` WRITE;
+/*!40000 ALTER TABLE `system_signal_string_default_value_entity_info` DISABLE KEYS */;
+/*!40000 ALTER TABLE `system_signal_string_default_value_entity_info` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `system_signal_string_info`
 --
 
@@ -1084,4 +1144,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-08-23 22:08:34
+-- Dump completed on 2018-08-24 12:02:14

@@ -142,6 +142,7 @@ public class BPPacketGETACK extends BPPacket {
 
 			Payload pld = getPld();
 			IoBuffer buffer = getIoBuffer();
+			buffer.putUnsignedInt(pld.getUniqDevId());
 			if (vrb.getSysSigMapFlag()) {
 				List<SystemSignalInfoUnit> systemSignalInfoUnitList = pld.getSystemSignalInfoUnitLst();
 				if (null == systemSignalInfoUnitList || systemSignalInfoUnitList.isEmpty()) {
@@ -248,16 +249,18 @@ public class BPPacketGETACK extends BPPacket {
 						Map<Integer, String> groupLangMap = customSignalInfoUnit.getGroupLangMap();
 						Map<Integer, Map<Integer, String>> enumLangMap = customSignalInfoUnit.getSignalEnumLangMap();
 						int langSupportMaskByte = 0;
+						int langSupportMaskTmp = langSupportMask;
 						for (int i = 7; i > 0; i--) {
 							langSupportMaskByte = 0x01 << i;
-							if ((langSupportMask & langSupportMaskByte) == 0) {
+							if ((langSupportMaskTmp & langSupportMaskByte) == 0) {
 								continue;
 							} else {
-								if ((langSupportMask & (~langSupportMaskByte)) == 0) {
+								if ((langSupportMaskTmp & (~langSupportMaskByte)) == 0) {
 									/* 0x01 end flag */
 									langSupportMaskByte |= 0x01;
 								}
 							}
+							langSupportMaskTmp &= (~langSupportMaskByte);
 							buffer.put((byte) langSupportMaskByte);
 							String name = nameLangMap.get(i);
 							if (null == name || name.getBytes().length > BPPacket.MAX_CUSTOM_SIGNAL_NAME_LENGTH) {
@@ -413,14 +416,16 @@ public class BPPacketGETACK extends BPPacket {
 							}
 							// TODO: with language default string
 							/* accuracy 0 */
+							/*
 							buffer.put((byte) 0);
-							String defVal = customSignalStringInfoHbn.getDefVal();
+							long defVal = customSignalStringInfoHbn.getDefVal();
 							int strlen = customSignalStringInfoHbn.getDefVal().getBytes().length;
 							if (strlen > BPPacket.MAX_CUSTOM_SIGNAL_STRING_LENGTH) {
 								strlen = BPPacket.MAX_CUSTOM_SIGNAL_STRING_LENGTH;
 							}
 							buffer.put((byte) (strlen & 0xFF));
 							buffer.put(defVal.getBytes(), 0, strlen);
+							*/
 							break;
 						}
 						case BPPacket.VAL_TYPE_BOOLEAN:

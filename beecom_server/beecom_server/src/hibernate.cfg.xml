@@ -66,6 +66,9 @@
    <mapping resource="db/system_signal_string_info.hbm.xml"/>
    <mapping resource="db/system_signal_u16_info.hbm.xml"/>
    <mapping resource="db/system_signal_u32_info.hbm.xml"/>
+   
+   <mapping resource="db/system_signal_string_default_value_entity_info.hbm.xml"/>
+   <mapping resource="db/custom_signal_string_default_value_entity_info.hbm.xml"/>
 
 
 </session-factory>

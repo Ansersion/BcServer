@@ -7,7 +7,7 @@ import bp_packet.BPPacket;
 public class CustomSignalStringInfoHbn extends SignalInterface {
     private Long id;
     private Short permission;
-    private String defVal;
+    private Long defVal;
     private Boolean enStatistics;
     private Long customSignalId;
 	public Long getId() {
@@ -24,10 +24,10 @@ public class CustomSignalStringInfoHbn extends SignalInterface {
 	public void setPermission(Short permission) {
 		this.permission = permission;
 	}
-	public String getDefVal() {
+	public Long getDefVal() {
 		return defVal;
 	}
-	public void setDefVal(String defVal) {
+	public void setDefVal(Long defVal) {
 		this.defVal = defVal;
 	}
 	public Boolean getEnStatistics() {
