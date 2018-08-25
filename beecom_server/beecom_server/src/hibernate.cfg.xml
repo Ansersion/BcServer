@@ -69,6 +69,8 @@
    
    <mapping resource="db/system_signal_string_default_value_entity_info.hbm.xml"/>
    <mapping resource="db/custom_signal_string_default_value_entity_info.hbm.xml"/>
+   <mapping resource="db/custom_alarm_name_lang_entity_info.hbm.xml"/>
+   
 
 
 </session-factory>

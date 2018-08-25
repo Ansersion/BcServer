@@ -62,5 +62,10 @@ public class CustomSignalBooleanInfoHbn extends SignalInterface {
 		}
 		return ret;
 	}
+	@Override
+	public Object getDefaultValue() {
+		return getDefVal();
+	}
+	
     
 }

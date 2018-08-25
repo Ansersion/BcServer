@@ -9,6 +9,8 @@ import org.apache.mina.core.buffer.IoBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import db.CustomAlarmInfoUnit;
+import db.CustomSignalAlmInfoHbn;
 import db.CustomSignalEnumInfoHbn;
 import db.CustomSignalFloatInfoHbn;
 import db.CustomSignalI16InfoHbn;
@@ -245,9 +247,10 @@ public class BPPacketGETACK extends BPPacket {
 							logger.error("inner error: null == nameLangMap");
 						}
 						Map<Integer, String> unitLangMap = customSignalInfoUnit.getSignalUnitLangMap();
-						int groupId = customSignalInfoUnit.getGroupLangId();
 						Map<Integer, String> groupLangMap = customSignalInfoUnit.getGroupLangMap();
 						Map<Integer, Map<Integer, String>> enumLangMap = customSignalInfoUnit.getSignalEnumLangMap();
+						Map<Integer, String> stringSignalDefaultValueLangMap = customSignalInfoUnit.getSignalStringDefaultValueLangMap();
+						CustomAlarmInfoUnit customAlarmInfoUnit = customSignalInfoUnit.getCustomAlarmInfoUnit();
 						int langSupportMaskByte = 0;
 						int langSupportMaskTmp = langSupportMask;
 						for (int i = 7; i > 0; i--) {
@@ -283,7 +286,6 @@ public class BPPacketGETACK extends BPPacket {
 								buffer.put((byte) (unit.getBytes().length & 0xFF));
 								buffer.put(unit.getBytes());
 							}
-
 							if (null == groupLangMap) {
 								/* 2 bytes */
 								/* TODO: temporary no support the system unit language unit */
@@ -298,6 +300,24 @@ public class BPPacketGETACK extends BPPacket {
 								buffer.put((byte) (group.getBytes().length & 0xFF));
 								buffer.put(group.getBytes());
 							}
+							if (customSignalInfoUnit.isIfAlarm()) {
+								if (null == customAlarmInfoUnit || null == customAlarmInfoUnit.getCustomAlarmNameLangMap()) {
+									/* 2 bytes */
+									/* TODO: temporary no support the system unit language unit */
+									// buffer.put(BPPacket.SYSTEM_UNIT_LANGUAGE_FLAG & 0x02);
+									buffer.put((byte) 0);
+								} else {
+									String alarmLang = customAlarmInfoUnit.getCustomAlarmNameLangMap().get(i);
+									if (null == alarmLang || alarmLang.getBytes().length > BPPacket.MAX_CUSTOM_SIGNAL_UNIT_LENGTH) {
+										logger.error("inner error: null == nameLangMap.get({})", i);
+										break;
+									}
+									buffer.put((byte) (alarmLang.getBytes().length & 0xFF));
+									buffer.put(alarmLang.getBytes());
+								}
+							}
+
+
 							if (BPPacket.VAL_TYPE_ENUM == valType) {
 								int enumLangNum = enumLangMap.size();
 								buffer.put((byte) enumLangNum);
@@ -315,6 +335,22 @@ public class BPPacketGETACK extends BPPacket {
 									buffer.put((byte) (enumVal.getBytes().length & 0xFF));
 									buffer.put(enumVal.getBytes());
 
+								}
+							}
+							if (BPPacket.VAL_TYPE_STRING == valType) {
+								if (null == stringSignalDefaultValueLangMap) {
+									/* 2 bytes */
+									/* TODO: temporary no support the system unit language unit */
+									// buffer.put(BPPacket.SYSTEM_UNIT_LANGUAGE_FLAG & 0x02);
+									buffer.put((byte) 0);
+								} else {
+									String defValue = stringSignalDefaultValueLangMap.get(i);
+									if (null == defValue || defValue.getBytes().length > BPPacket.MAX_CUSTOM_SIGNAL_UNIT_LENGTH) {
+										logger.error("inner error: null == nameLangMap.get({})", i);
+										break;
+									}
+									buffer.put((byte) (defValue.getBytes().length & 0xFF));
+									buffer.put(defValue.getBytes());
 								}
 							}
 						}
@@ -408,15 +444,14 @@ public class BPPacketGETACK extends BPPacket {
 							break;
 						}
 						case BPPacket.VAL_TYPE_STRING: {
+							/*
 							CustomSignalStringInfoHbn customSignalStringInfoHbn = (CustomSignalStringInfoHbn) customSignalInfoUnit
 									.getCustomSignalInterface();
 							if (null == customSignalStringInfoHbn) {
 								logger.error("inner error: null == customSignalStringInfoHbn");
 								break;
 							}
-							// TODO: with language default string
-							/* accuracy 0 */
-							/*
+							
 							buffer.put((byte) 0);
 							long defVal = customSignalStringInfoHbn.getDefVal();
 							int strlen = customSignalStringInfoHbn.getDefVal().getBytes().length;
@@ -440,7 +475,25 @@ public class BPPacketGETACK extends BPPacket {
 							logger.error("inner error: unknown value type");
 							break;
 						}
+						if (customSignalInfoUnit.isIfAlarm()) {
+							if (null == customAlarmInfoUnit || null == customAlarmInfoUnit.getCustomSignalAlmInfoHbn()) {
+								/* 2 bytes */
+								/* TODO: temporary no support the system unit language unit */
+								// buffer.put(BPPacket.SYSTEM_UNIT_LANGUAGE_FLAG & 0x02);
+								buffer.putUnsigned(BPPacket.ALARM_CLASS_INVALID);
+								buffer.putUnsigned(BPPacket.ALARM_DELAY_INVALID);
+								buffer.putUnsigned(BPPacket.ALARM_DELAY_INVALID);
+								
+							} else {
+								CustomSignalAlmInfoHbn customSignalAlmInfoHbnTmp = customAlarmInfoUnit.getCustomSignalAlmInfoHbn();
+								buffer.putUnsigned(customSignalAlmInfoHbnTmp.getAlmClass());
+								buffer.putUnsigned(customSignalAlmInfoHbnTmp.getDlyBeforeAlm());
+								buffer.putUnsigned(customSignalAlmInfoHbnTmp.getDlyAfterAlm());
+							}	
+						}
 					}
+					
+					
 
 				}
 			}

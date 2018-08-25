@@ -85,4 +85,8 @@ public class SystemSignalU32InfoHbn extends SignalInterface {
 		}
 		return ret;
 	}
+	@Override
+	public Object getDefaultValue() {
+		return getDefVal();
+	}
 }

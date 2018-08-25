@@ -77,5 +77,8 @@ public class CustomSignalU16InfoHbn extends SignalInterface {
 		}
 		return ret;
 	}
-    
+	@Override
+	public Object getDefaultValue() {
+		return getDefVal();
+	}
 }

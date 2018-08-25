@@ -70,6 +70,9 @@ public class SystemSignalBooleanInfoHbn extends SignalInterface {
 		}
 		return ret;
 	}
-	
+	@Override
+	public Object getDefaultValue() {
+		return getDefVal();
+	}
     
 }

@@ -24,6 +24,8 @@ public abstract class SignalInterface {
 	}
 
 	public abstract int getValType();
-	
+
 	public abstract long saveToDb(Session session);
+	
+	public abstract Object getDefaultValue();
 }

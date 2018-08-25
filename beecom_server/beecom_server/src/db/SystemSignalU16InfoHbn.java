@@ -79,5 +79,8 @@ public class SystemSignalU16InfoHbn extends SignalInterface {
 		}
 		return ret;
 	}
-    
+	@Override
+	public Object getDefaultValue() {
+		return getDefVal();
+	}
 }

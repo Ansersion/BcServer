@@ -7,7 +7,6 @@ public class CustomSignalInfoHbn {
     private Long signalId;
     private Long cusSigNameLangId;
     private Long cusSigUnitLangId;
-    private Integer groupLangId;
     private Long cusGroupLangId;
 	public Long getId() {
 		return id;
@@ -45,12 +44,7 @@ public class CustomSignalInfoHbn {
 	public void setCusSigUnitLangId(Long cusSigUnitLangId) {
 		this.cusSigUnitLangId = cusSigUnitLangId;
 	}
-	public Integer getGroupLangId() {
-		return groupLangId;
-	}
-	public void setGroupLangId(Integer groupLangId) {
-		this.groupLangId = groupLangId;
-	}
+
 	public Long getCusGroupLangId() {
 		return cusGroupLangId;
 	}
@@ -61,8 +55,9 @@ public class CustomSignalInfoHbn {
 	public String toString() {
 		return "CustomSignalInfoHbn [id=" + id + ", ifAlarm=" + ifAlarm + ", valType=" + valType + ", signalId="
 				+ signalId + ", cusSigNameLangId=" + cusSigNameLangId + ", cusSigUnitLangId=" + cusSigUnitLangId
-				+ ", groupLangId=" + groupLangId + ", cusGroupLangId=" + cusGroupLangId + "]";
+				+ ", cusGroupLangId=" + cusGroupLangId + "]";
 	}
+
 
     
 }

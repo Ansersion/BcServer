@@ -85,4 +85,8 @@ public class CustomSignalFloatInfoHbn extends SignalInterface {
 		}
 		return ret;
 	}
+	@Override
+	public Object getDefaultValue() {
+		return getDefVal();
+	}
 }

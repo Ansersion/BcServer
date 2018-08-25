@@ -63,4 +63,8 @@ public class CustomSignalEnumInfoHbn extends SignalInterface {
 		}
 		return ret;
 	}
+	@Override
+	public Object getDefaultValue() {
+		return getDefVal();
+	}
 }

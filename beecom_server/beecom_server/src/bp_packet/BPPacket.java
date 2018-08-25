@@ -57,6 +57,15 @@ public class BPPacket implements BPPacketInterface {
 	
 	public static final long INVALID_SIGNAL_MAP_CHECKSUM = 0x7FFFFFFFFFFFFFFFL;
 	
+	/* alarm info */
+	public static final int ALARM_CLASS_EMERGANCY = 0x00;
+	public static final int ALARM_CLASS_SERIOUS = 0x01;
+	public static final int ALARM_CLASS_WARNING = 0x02;
+	public static final int ALARM_CLASS_ATTENTION = 0x03;
+	public static final int ALARM_CLASS_NOTE = 0x04;
+	public static final int ALARM_CLASS_INVALID = 0xFF;
+	public static final int ALARM_DELAY_INVALID = 0xFF;
+	
 	public static boolean inDist(int distIndex, int signalId) {
 		return (signalId >= SYS_SIG_START_ID + distIndex * SYS_SIG_DIST_STEP) && (signalId < SYS_SIG_START_ID + (distIndex + 1) * SYS_SIG_DIST_STEP);
 	}

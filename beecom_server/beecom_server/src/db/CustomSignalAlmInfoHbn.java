@@ -66,7 +66,15 @@ public class CustomSignalAlmInfoHbn extends SignalInterface {
 		}
 		return ret;
 	}
+	@Override
+	public Object getDefaultValue() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
 
+	
     
 	
     
