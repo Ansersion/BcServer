@@ -34,6 +34,8 @@ public class Payload {
 	public static final byte CUSTOM_SIGNAL_ALARM_FLAG_MASK = 0x01;
 	public static final byte CUSTOM_SIGNAL_STATISTICS_FLAG_MASK = 0x02;
 	public static final byte CUSTOM_SIGNAL_RW_FLAG_MASK = 0x04;
+	public static final byte CUSTOM_SIGNAL_PUSH_SIGNAL_VALUE_MAX_NUM = 7;
+	public static final byte CUSTOM_SIGNAL_PUSH_SIGNAL_VALUE_END_MASK = 0x08;
 	private static final Logger logger = LoggerFactory.getLogger(Payload.class);
 
 	// byte[] userName = null;
@@ -435,6 +437,8 @@ public class Payload {
 	public void setCustomSignalLangSupportMask(int customSignalLangSupportMask) {
 		this.customSignalLangSupportMask = customSignalLangSupportMask;
 	}
+
+
 	
 	
 	

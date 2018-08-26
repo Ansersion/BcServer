@@ -427,5 +427,68 @@ public class BPPacket implements BPPacketInterface {
 		return (short)ret;
 	}
 	
+	public static int putValue2Buffer(int valType, Object value, IoBuffer buffer) {
+		int ret = 0;
+		try {
+			switch (valType) {
+			case VAL_TYPE_UINT32: {
+				ret = 4;
+				Long v = (Long) value;
+				buffer.putUnsignedInt(v);
+				break;
+			}
+			case VAL_TYPE_UINT16: {
+				ret = 2;
+				Integer v = (Integer) value;
+				buffer.putUnsignedShort(v);
+				break;
+			}
+			case VAL_TYPE_IINT32: {
+				ret = 4;
+				Integer v = (Integer) value;
+				buffer.putInt(v);
+				break;
+			}
+			case VAL_TYPE_IINT16: {
+				ret = 2;
+				Short v = (Short) value;
+				buffer.putShort(v);
+				break;
+			}
+			case VAL_TYPE_ENUM: {
+				ret = 2;
+				Integer v = (Integer) value;
+				buffer.putUnsignedShort(v);
+				break;
+			}
+			case VAL_TYPE_FLOAT: {
+				ret = 4;
+				Float v = (Float) value;
+				buffer.putFloat(v);
+				break;
+			}
+			case VAL_TYPE_STRING: {
+				String v = (String) value;
+				ret = v.length();
+				buffer.put(v.getBytes());
+				break;
+			}
+			case VAL_TYPE_BOOLEAN: {
+				ret = 1;
+				Boolean v = (Boolean) value;
+				buffer.put(v == true ? (byte)1 : (byte)0);
+				break;
+			}
+			default: {
+				break;
+			}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			ret = 0;
+		}
+		return ret;
+
+	}
 
 }
