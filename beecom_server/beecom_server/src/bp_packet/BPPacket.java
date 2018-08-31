@@ -490,5 +490,9 @@ public class BPPacket implements BPPacketInterface {
 		return ret;
 
 	}
+	
+	public static boolean ifSigTypeValid(int sigType) {
+		return sigType >= VAL_TYPE_UINT32 && sigType <= VAL_TYPE_BOOLEAN;
+	}
 
 }

@@ -7,7 +7,7 @@ import bp_packet.BPPacket;
 public class SystemSignalStringInfoHbn extends SignalInterface {
     private Long id;
     private Short permission;
-    private Long defVal;
+    private String defVal;
     private Integer groupLangId;
     private Boolean enStatistics;
     private Long systemSignalId;
@@ -25,10 +25,10 @@ public class SystemSignalStringInfoHbn extends SignalInterface {
 	public void setPermission(Short permission) {
 		this.permission = permission;
 	}
-	public Long getDefVal() {
+	public String getDefVal() {
 		return defVal;
 	}
-	public void setDefVal(Long defVal) {
+	public void setDefVal(String defVal) {
 		this.defVal = defVal;
 	}
 	public Integer getGroupLangId() {

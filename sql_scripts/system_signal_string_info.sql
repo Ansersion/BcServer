@@ -10,9 +10,7 @@ CREATE TABLE system_signal_string_info
 	/* sys_sig_name_lang_id INT unsigned not null,   */
 	
 	permission TINYINT UNSIGNED NOT NULL DEFAULT 4,
-
-    /* id in system_signal_string_default_value_entity_info.sql */
-	def_val INT UNSIGNED NOT NULL DEFAULT 0,
+	def_val VARCHAR(512) NOT NULL DEFAULT "",
 	
 	/* Group language resource is from the sys_group_language_resource.csv */
 	group_lang_id SMALLINT UNSIGNED NOT NULL DEFAULT 0, 

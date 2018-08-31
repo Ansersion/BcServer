@@ -8,10 +8,34 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import bc_server.BcDecoder;
+import db.CustomAlarmInfoUnit;
+import db.CustomSignalBooleanInfoHbn;
+import db.CustomSignalEnumInfoHbn;
+import db.CustomSignalFloatInfoHbn;
+import db.CustomSignalI16InfoHbn;
+import db.CustomSignalI32InfoHbn;
+import db.CustomSignalInfoUnit;
+import db.CustomSignalStringInfoHbn;
+import db.CustomSignalU16InfoHbn;
+import db.CustomSignalU32InfoHbn;
+import db.SignalInterface;
+import db.SystemSignalBooleanInfoHbn;
+import db.SystemSignalCustomInfoUnit;
+import db.SystemSignalEnumInfoHbn;
+import db.SystemSignalFloatInfoHbn;
+import db.SystemSignalI16InfoHbn;
+import db.SystemSignalI32InfoHbn;
+import db.SystemSignalStringInfoHbn;
+import db.SystemSignalU16InfoHbn;
+import db.SystemSignalU32InfoHbn;
 import javafx.util.Pair;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -28,6 +52,8 @@ public class BPPacketREPORT extends BPPacket {
 	int devNameLen;
 	Vector<BPPartitation> partitation;
 	byte[] devName;
+	private List<CustomSignalInfoUnit> customSignalInfoUnitList;
+	private List<SystemSignalCustomInfoUnit> systemSignalCustomInfoUnitList;
 
 	private static final Logger logger = LoggerFactory.getLogger(BcDecoder.class); 
 	
@@ -102,7 +128,6 @@ public class BPPacketREPORT extends BPPacket {
 
 	@Override
 	public boolean parsePayload(byte[] buf) {
-		
 		try {
 			int counter = 0;
 			
@@ -141,12 +166,9 @@ public class BPPacketREPORT extends BPPacket {
 	public int parseVariableHeader() {
 
 		try {
-			// flags(1 byte) + client ID(2 byte) + sequence id(2 byte)
+			// flags(1 byte) + sequence id(2 byte)
 			byte flags = getIoBuffer().get();
 			super.parseVrbHeadFlags(flags);
-
-			// int clientId = getIoBuffer().getUnsignedShort();
-			// getVrbHead().setClientId(clientId);
 
 			int packSeqTmp = getIoBuffer().getUnsignedShort();
 			getVrbHead().setPackSeq(packSeqTmp);
@@ -165,11 +187,11 @@ public class BPPacketREPORT extends BPPacket {
 	public int parsePayload() {
 		try {
 
-			VariableHeader vb = getVrbHead();
+			VariableHeader vrb = getVrbHead();
 			Payload pld = getPld();
 			IoBuffer ioBuffer = getIoBuffer();
 			
-			if (vb.getSigValFlag()) {
+			if (vrb.getSigValFlag()) {
 				final int sigNum = ioBuffer.get();
 				for(int i = 0; i < sigNum; i++) {
 					int sigId = ioBuffer.getUnsignedShort();
@@ -265,14 +287,7 @@ public class BPPacketREPORT extends BPPacket {
 								
 			} else {
 
-				if (vb.getDevNameFlag()) {
-					int devNameLenTmp = getIoBuffer().get();
-					byte[] devNameTmp = new byte[devNameLenTmp];
-					getIoBuffer().get(devNameTmp);
-					pld.setDevName(devNameTmp);
-				}
-
-				if (vb.getSysSigMapFlag()) {
+				if (vrb.getSysSigMapFlag()) {
 					byte distAndClass;
 					int dist;
 					int sysSigClass;
@@ -282,10 +297,13 @@ public class BPPacketREPORT extends BPPacket {
 						distAndClass = getIoBuffer().get();
 						dist = (distAndClass >> 4) & 0x0F;
 						sysSigClass = (distAndClass >> 1) & 0x07;
-						if (sysSigClass >= 0x07) {
+						if (sysSigClass > 0x07) {
 							throw new BPParsePldException("Error: System signal class 0x7");
 						}
-						mapNum = 0x200 / 8 / (1 << sysSigClass);
+						if (0 == sysSigClass) {
+							break;
+						}
+						mapNum = 0x01 << (sysSigClass - 1);
 						Byte[] sysSigMap = new Byte[mapNum];
 						Map<Integer, Byte[]> sysMap = pld
 								.getMapDist2SysSigMap();
@@ -294,6 +312,390 @@ public class BPPacketREPORT extends BPPacket {
 						}
 						sysMap.put(dist, sysSigMap);
 					} while ((distAndClass & VariableHeader.DIST_END_FLAG_MSK) != VariableHeader.DIST_END_FLAG_MSK);
+				}
+				
+				if(vrb.getSysSigMapCustomInfo()) {
+					int signalNum = ioBuffer.getUnsigned();
+					int signalId;
+					byte basicCustomInfoByte;
+					byte alarmCustomInfoByte;
+					boolean ifNotifing;
+					boolean ifAlarm;
+					boolean ifStatistics;
+					boolean ifDisplay;
+					short perm;
+					int groupLangId;
+					int accuracy;
+					int sigType;
+					List<Integer> enumLangList;
+					SignalInterface signalInterface;
+					for (int i = 0; i < signalNum; i++) {
+						enumLangList = null;
+						if (null == systemSignalCustomInfoUnitList) {
+							systemSignalCustomInfoUnitList = new ArrayList<>();
+						}
+						signalInterface = null;
+						ifAlarm = false;
+						signalId = ioBuffer.getUnsignedShort();
+						/* TODO: search the system signal table to get the sigType */
+						sigType = 0;
+						basicCustomInfoByte = ioBuffer.get();
+						alarmCustomInfoByte = ioBuffer.get();
+						if ((basicCustomInfoByte & 0x01) == 0x01) {
+							ifStatistics = ioBuffer.get() != 0;
+						}
+						if ((basicCustomInfoByte & 0x02) == 0x02) {
+							enumLangList = new ArrayList<>();
+							int enumLangNum = ioBuffer.getUnsigned();
+							for (int j = 0; j < enumLangNum; j++) {
+								enumLangList.add(ioBuffer.getUnsignedShort());
+							}
+						}
+						if ((basicCustomInfoByte & 0x04) == 0x04) {
+							groupLangId = ioBuffer.getUnsignedShort();
+						}
+						switch (sigType) {
+						case BPPacket.VAL_TYPE_UINT32: {
+							SystemSignalU32InfoHbn systemSignalU32InfoHbn = null;
+							if ((basicCustomInfoByte & 0x10) == 0x10) {
+								if (null == systemSignalU32InfoHbn) {
+									systemSignalU32InfoHbn = new SystemSignalU32InfoHbn();
+								}
+								systemSignalU32InfoHbn.setMinVal(ioBuffer.getUnsignedInt());
+							}
+							if ((basicCustomInfoByte & 0x20) == 0x20) {
+								if (null == systemSignalU32InfoHbn) {
+									systemSignalU32InfoHbn = new SystemSignalU32InfoHbn();
+								}
+								systemSignalU32InfoHbn.setMaxVal(ioBuffer.getUnsignedInt());
+							}
+							if ((basicCustomInfoByte & 0x40) == 0x40) {
+								if (null == systemSignalU32InfoHbn) {
+									systemSignalU32InfoHbn = new SystemSignalU32InfoHbn();
+								}
+								systemSignalU32InfoHbn.setDefVal(ioBuffer.getUnsignedInt());
+							}
+							signalInterface = systemSignalU32InfoHbn;
+							break;
+						}
+						case BPPacket.VAL_TYPE_UINT16: {
+							SystemSignalU16InfoHbn systemSignalU16InfoHbn = null;
+							if ((basicCustomInfoByte & 0x10) == 0x10) {
+								if (null == systemSignalU16InfoHbn) {
+									systemSignalU16InfoHbn = new SystemSignalU16InfoHbn();
+								}
+								systemSignalU16InfoHbn.setMinVal(ioBuffer.getUnsignedShort());
+							}
+							if ((basicCustomInfoByte & 0x20) == 0x20) {
+								if (null == systemSignalU16InfoHbn) {
+									systemSignalU16InfoHbn = new SystemSignalU16InfoHbn();
+								}
+								systemSignalU16InfoHbn.setMaxVal(ioBuffer.getUnsignedShort());
+							}
+							if ((basicCustomInfoByte & 0x40) == 0x40) {
+								if (null == systemSignalU16InfoHbn) {
+									systemSignalU16InfoHbn = new SystemSignalU16InfoHbn();
+								}
+								systemSignalU16InfoHbn.setDefVal(ioBuffer.getUnsignedShort());
+							}
+							signalInterface = systemSignalU16InfoHbn;
+							break;
+						}
+						case BPPacket.VAL_TYPE_IINT32: {
+							SystemSignalI32InfoHbn systemSignalI32InfoHbn = null;
+							if ((basicCustomInfoByte & 0x10) == 0x10) {
+								if (null == systemSignalI32InfoHbn) {
+									systemSignalI32InfoHbn = new SystemSignalI32InfoHbn();
+								}
+								systemSignalI32InfoHbn.setMinVal(ioBuffer.getInt());
+							}
+							if ((basicCustomInfoByte & 0x20) == 0x20) {
+								if (null == systemSignalI32InfoHbn) {
+									systemSignalI32InfoHbn = new SystemSignalI32InfoHbn();
+								}
+								systemSignalI32InfoHbn.setMaxVal(ioBuffer.getInt());
+							}
+							if ((basicCustomInfoByte & 0x40) == 0x40) {
+								if (null == systemSignalI32InfoHbn) {
+									systemSignalI32InfoHbn = new SystemSignalI32InfoHbn();
+								}
+								systemSignalI32InfoHbn.setDefVal(ioBuffer.getInt());
+							}
+							signalInterface = systemSignalI32InfoHbn;
+							break;
+						}
+						case BPPacket.VAL_TYPE_IINT16: {
+							SystemSignalI16InfoHbn systemSignalI16InfoHbn = null;
+							if ((basicCustomInfoByte & 0x10) == 0x10) {
+								if (null == systemSignalI16InfoHbn) {
+									systemSignalI16InfoHbn = new SystemSignalI16InfoHbn();
+								}
+								systemSignalI16InfoHbn.setMinVal(ioBuffer.getShort());
+							}
+							if ((basicCustomInfoByte & 0x20) == 0x20) {
+								if (null == systemSignalI16InfoHbn) {
+									systemSignalI16InfoHbn = new SystemSignalI16InfoHbn();
+								}
+								systemSignalI16InfoHbn.setMaxVal(ioBuffer.getShort());
+							}
+							if ((basicCustomInfoByte & 0x40) == 0x40) {
+								if (null == systemSignalI16InfoHbn) {
+									systemSignalI16InfoHbn = new SystemSignalI16InfoHbn();
+								}
+								systemSignalI16InfoHbn.setDefVal(ioBuffer.getShort());
+							}
+							signalInterface = systemSignalI16InfoHbn;
+							break;
+						}
+						case BPPacket.VAL_TYPE_ENUM: {
+							SystemSignalEnumInfoHbn systemSignalEnumInfoHbn = null;
+							if ((basicCustomInfoByte & 0x40) == 0x40) {
+								if (null == systemSignalEnumInfoHbn) {
+									systemSignalEnumInfoHbn = new SystemSignalEnumInfoHbn();
+								}
+								systemSignalEnumInfoHbn.setDefVal(ioBuffer.getUnsignedShort());
+							}
+							signalInterface = systemSignalEnumInfoHbn;
+							break;
+						}
+						case BPPacket.VAL_TYPE_FLOAT: {
+							SystemSignalFloatInfoHbn systemSignalFloatInfoHbn = null;
+							if ((basicCustomInfoByte & 0x04) == 0x04) {
+								if (null == systemSignalFloatInfoHbn) {
+									systemSignalFloatInfoHbn = new SystemSignalFloatInfoHbn();
+								}
+								systemSignalFloatInfoHbn.setAccuracy(ioBuffer.getUnsigned());
+							}
+							if ((basicCustomInfoByte & 0x10) == 0x10) {
+								if (null == systemSignalFloatInfoHbn) {
+									systemSignalFloatInfoHbn = new SystemSignalFloatInfoHbn();
+								}
+								systemSignalFloatInfoHbn.setMinVal(ioBuffer.getFloat());
+							}
+							if ((basicCustomInfoByte & 0x20) == 0x20) {
+								if (null == systemSignalFloatInfoHbn) {
+									systemSignalFloatInfoHbn = new SystemSignalFloatInfoHbn();
+								}
+								systemSignalFloatInfoHbn.setMaxVal(ioBuffer.getFloat());
+							}
+							if ((basicCustomInfoByte & 0x40) == 0x40) {
+								if (null == systemSignalFloatInfoHbn) {
+									systemSignalFloatInfoHbn = new SystemSignalFloatInfoHbn();
+								}
+								systemSignalFloatInfoHbn.setDefVal(ioBuffer.getFloat());
+							}
+							signalInterface = systemSignalFloatInfoHbn;
+							break;
+						}
+						case BPPacket.VAL_TYPE_STRING: {
+							SystemSignalStringInfoHbn systemSignalStringInfoHbn = null;
+
+							if ((basicCustomInfoByte & 0x40) == 0x40) {
+								if (null == systemSignalStringInfoHbn) {
+									systemSignalStringInfoHbn = new SystemSignalStringInfoHbn();
+								}
+								int langLen = ioBuffer.getUnsigned();
+								byte[] bytes = new byte[langLen];
+								ioBuffer.get(bytes);
+								systemSignalStringInfoHbn.setDefVal(new String(bytes));
+							}
+							signalInterface = systemSignalStringInfoHbn;
+							break;
+						}
+						case BPPacket.VAL_TYPE_BOOLEAN: {
+							SystemSignalBooleanInfoHbn systemSignalBooleanInfoHbn = null;
+
+							if ((basicCustomInfoByte & 0x40) == 0x40) {
+								if (null == systemSignalBooleanInfoHbn) {
+									systemSignalBooleanInfoHbn = new SystemSignalBooleanInfoHbn();
+								}
+								systemSignalBooleanInfoHbn.setDefVal(ioBuffer.get() != 0);
+							}
+							signalInterface = systemSignalBooleanInfoHbn;
+							break;
+						}
+						}
+						if((basicCustomInfoByte & 0x80) == 0x08) {
+							ifAlarm = true;
+						}
+						if(ifAlarm) {
+							// TODO: 
+						}
+
+					}
+				}
+				
+				if(vrb.getCusSigMapFlag()) {
+					int signalNum = ioBuffer.getUnsigned();
+					customSignalInfoUnitList = new ArrayList<CustomSignalInfoUnit>(signalNum);
+					byte byteTmp;
+					int sigType;
+					short perm;
+					int cusSigId;
+					boolean ifNotifing = false;
+					boolean ifAlarm;
+					boolean ifStatistics;
+					boolean ifDisplay;
+					int groupLangId;
+					Map<Integer, String> signalNameLangMap = null;
+					Map<Integer, String> signalUnitLangMap = null;
+					Map<Integer, String> groupLangMap = null;
+					Map<Integer, Map<Integer, String> > signalEnumLangMap = null;
+					CustomAlarmInfoUnit customAlarmInfoUnit;
+					SignalInterface customSignalInterface;
+					for(int i = 0; i < signalNum; i++) {
+						cusSigId = ioBuffer.getUnsignedShort();
+						byteTmp = ioBuffer.get();
+						sigType = (byteTmp >> 4) & 0x0F;
+						if(!BPPacket.ifSigTypeValid(sigType)) {
+							logger.info("REPORT Parse Payload Error: !BPPacket.ifSigTypeValid(sigType)");
+							return -1;
+						}
+						signalNameLangMap = null;
+						signalUnitLangMap = null;
+						groupLangMap = null;
+						signalEnumLangMap = null;
+						customSignalInterface = null;
+						customAlarmInfoUnit = null;
+						perm = (short)((byteTmp >> 3) & 0x01);
+						ifStatistics = ((byteTmp >> 2) & 0x01) == 0x01;
+						ifAlarm = ((byteTmp >> 1) & 0x01) == 0x01;
+						ifDisplay = (byteTmp & 0x01) == 0x01;
+						do {
+							byteTmp = ioBuffer.get();
+							int langSupportMaskByte;
+							int langLen;
+							String lang;
+							for (int j = 7; j > 0; j--) {
+								langSupportMaskByte = 0x01 << j;
+								if ((byteTmp & langSupportMaskByte) == 0) {
+									continue;
+								}
+								langLen = ioBuffer.getUnsigned();
+								if (langLen != 0) {
+									byte[] bytes = new byte[langLen];
+									ioBuffer.get(bytes);
+									lang = new String(bytes);
+									if (null == signalNameLangMap) {
+										signalNameLangMap = new HashMap<>();
+									}
+									signalNameLangMap.put(j, lang);
+								}
+								langLen = ioBuffer.getUnsigned();
+								if (langLen != 0) {
+									byte[] bytes = new byte[langLen];
+									ioBuffer.get(bytes);
+									lang = new String(bytes);
+									if (null == signalUnitLangMap) {
+										signalUnitLangMap = new HashMap<>();
+									}
+									signalUnitLangMap.put(j, lang);
+								}
+								langLen = ioBuffer.getUnsigned();
+								if (langLen != 0) {
+									byte[] bytes = new byte[langLen];
+									ioBuffer.get(bytes);
+									lang = new String(bytes);
+									if (null == groupLangMap) {
+										groupLangMap = new HashMap<>();
+									}
+									groupLangMap.put(j, lang);
+								}
+
+								if (BPPacket.VAL_TYPE_ENUM == sigType) {
+									int enumLangNum = ioBuffer.getUnsigned();
+									if(enumLangNum != 0) {
+										if(null == signalEnumLangMap) {
+											signalEnumLangMap = new HashMap<>();
+										}
+										for(int k = 0; k < enumLangNum; k++) {
+											langLen = ioBuffer.getUnsigned();
+											if (langLen != 0) {
+												if(!signalEnumLangMap.containsKey(k)) {
+													signalEnumLangMap.put(k, new HashMap<Integer, String>());
+												}
+												byte[] bytes = new byte[langLen];
+												ioBuffer.get(bytes);
+												lang = new String(bytes);
+												Map<Integer, String> enumLangMap = signalEnumLangMap.get(k);
+												enumLangMap.put(j, lang);
+											}
+										
+										}
+									}
+								}	
+							}
+
+							
+						} while((byteTmp != 0) && (byteTmp & 0x01) != 0x01);
+						
+						switch(sigType) {
+						case BPPacket.VAL_TYPE_UINT32:
+							CustomSignalU32InfoHbn customSignalU32InfoHbn = new CustomSignalU32InfoHbn();
+							customSignalU32InfoHbn.setMinVal(ioBuffer.getUnsignedInt());
+							customSignalU32InfoHbn.setMaxVal(ioBuffer.getUnsignedInt());
+							customSignalU32InfoHbn.setDefVal(ioBuffer.getUnsignedInt());
+							customSignalInterface = customSignalU32InfoHbn;
+							break;
+						case BPPacket.VAL_TYPE_UINT16:
+							CustomSignalU16InfoHbn customSignalU16InfoHbn = new CustomSignalU16InfoHbn();
+							customSignalU16InfoHbn.setMinVal(ioBuffer.getUnsignedShort());
+							customSignalU16InfoHbn.setMaxVal(ioBuffer.getUnsignedShort());
+							customSignalU16InfoHbn.setDefVal(ioBuffer.getUnsignedShort());
+							customSignalInterface = customSignalU16InfoHbn;
+							break;
+						case BPPacket.VAL_TYPE_IINT32:
+							CustomSignalI32InfoHbn customSignalI32InfoHbn = new CustomSignalI32InfoHbn();
+							customSignalI32InfoHbn.setMinVal(ioBuffer.getInt());
+							customSignalI32InfoHbn.setMaxVal(ioBuffer.getInt());
+							customSignalI32InfoHbn.setDefVal(ioBuffer.getInt());
+							customSignalInterface = customSignalI32InfoHbn;
+							break;
+						case BPPacket.VAL_TYPE_IINT16:
+							CustomSignalI16InfoHbn customSignalI16InfoHbn = new CustomSignalI16InfoHbn();
+							customSignalI16InfoHbn.setMinVal(ioBuffer.getShort());
+							customSignalI16InfoHbn.setMaxVal(ioBuffer.getShort());
+							customSignalI16InfoHbn.setDefVal(ioBuffer.getShort());
+							customSignalInterface = customSignalI16InfoHbn;
+							break;
+						case BPPacket.VAL_TYPE_ENUM:
+							CustomSignalEnumInfoHbn customSignalEnumInfoHbn = new CustomSignalEnumInfoHbn();
+							customSignalEnumInfoHbn.setDefVal(ioBuffer.getUnsignedShort());
+							customSignalInterface = customSignalEnumInfoHbn;
+							break;
+						case BPPacket.VAL_TYPE_FLOAT:
+							CustomSignalFloatInfoHbn customSignalFloatInfoHbn = new CustomSignalFloatInfoHbn();
+							customSignalFloatInfoHbn.setAccuracy(ioBuffer.getUnsigned());
+							customSignalFloatInfoHbn.setMinVal(ioBuffer.getFloat());
+							customSignalFloatInfoHbn.setMaxVal(ioBuffer.getFloat());
+							customSignalFloatInfoHbn.setDefVal(ioBuffer.getFloat());
+							customSignalInterface = customSignalFloatInfoHbn;
+							break;
+						case BPPacket.VAL_TYPE_STRING:
+							CustomSignalStringInfoHbn customSignalStringInfoHbn = new CustomSignalStringInfoHbn();
+							int langLen = ioBuffer.getUnsigned();
+							if(langLen > 0) {
+								byte[] bytes = new byte[langLen];
+								ioBuffer.get(bytes);
+								customSignalStringInfoHbn.setDefVal(new String(bytes));
+							}
+							customSignalInterface = customSignalStringInfoHbn;
+							break;
+						case BPPacket.VAL_TYPE_BOOLEAN:
+							CustomSignalBooleanInfoHbn customSignalBooleanInfoHbn = new CustomSignalBooleanInfoHbn();
+							customSignalBooleanInfoHbn.setDefVal(ioBuffer.getUnsigned() != 0);
+							customSignalInterface = customSignalBooleanInfoHbn;
+							break;
+						}
+						
+						customSignalInterface.setEnStatistics(ifStatistics);
+						
+						if(ifAlarm) {
+							// TODO: 
+						}
+						
+						customSignalInfoUnitList.add(new CustomSignalInfoUnit(cusSigId, ifNotifing, ifAlarm, ifDisplay, 0, signalNameLangMap, signalUnitLangMap, groupLangMap, signalEnumLangMap, customAlarmInfoUnit, customSignalInterface));
+					}
 				}
 			}
 
@@ -309,4 +711,10 @@ public class BPPacketREPORT extends BPPacket {
 	public Vector<BPPartitation> getPartitation() {
 		return partitation;
 	}
+
+	public List<CustomSignalInfoUnit> getCustomSignalInfoUnitList() {
+		return customSignalInfoUnitList;
+	}
+	
+	
 }

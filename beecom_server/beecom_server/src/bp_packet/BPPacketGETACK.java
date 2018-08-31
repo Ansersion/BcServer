@@ -249,7 +249,6 @@ public class BPPacketGETACK extends BPPacket {
 						Map<Integer, String> unitLangMap = customSignalInfoUnit.getSignalUnitLangMap();
 						Map<Integer, String> groupLangMap = customSignalInfoUnit.getGroupLangMap();
 						Map<Integer, Map<Integer, String>> enumLangMap = customSignalInfoUnit.getSignalEnumLangMap();
-						Map<Integer, String> stringSignalDefaultValueLangMap = customSignalInfoUnit.getSignalStringDefaultValueLangMap();
 						CustomAlarmInfoUnit customAlarmInfoUnit = customSignalInfoUnit.getCustomAlarmInfoUnit();
 						int langSupportMaskByte = 0;
 						int langSupportMaskTmp = langSupportMask;
@@ -337,22 +336,7 @@ public class BPPacketGETACK extends BPPacket {
 
 								}
 							}
-							if (BPPacket.VAL_TYPE_STRING == valType) {
-								if (null == stringSignalDefaultValueLangMap) {
-									/* 2 bytes */
-									/* TODO: temporary no support the system unit language unit */
-									// buffer.put(BPPacket.SYSTEM_UNIT_LANGUAGE_FLAG & 0x02);
-									buffer.put((byte) 0);
-								} else {
-									String defValue = stringSignalDefaultValueLangMap.get(i);
-									if (null == defValue || defValue.getBytes().length > BPPacket.MAX_CUSTOM_SIGNAL_UNIT_LENGTH) {
-										logger.error("inner error: null == nameLangMap.get({})", i);
-										break;
-									}
-									buffer.put((byte) (defValue.getBytes().length & 0xFF));
-									buffer.put(defValue.getBytes());
-								}
-							}
+				
 						}
 
 						switch (valType) {
@@ -444,7 +428,6 @@ public class BPPacketGETACK extends BPPacket {
 							break;
 						}
 						case BPPacket.VAL_TYPE_STRING: {
-							/*
 							CustomSignalStringInfoHbn customSignalStringInfoHbn = (CustomSignalStringInfoHbn) customSignalInfoUnit
 									.getCustomSignalInterface();
 							if (null == customSignalStringInfoHbn) {
@@ -452,15 +435,13 @@ public class BPPacketGETACK extends BPPacket {
 								break;
 							}
 							
-							buffer.put((byte) 0);
-							long defVal = customSignalStringInfoHbn.getDefVal();
+							String defVal = customSignalStringInfoHbn.getDefVal();
 							int strlen = customSignalStringInfoHbn.getDefVal().getBytes().length;
 							if (strlen > BPPacket.MAX_CUSTOM_SIGNAL_STRING_LENGTH) {
 								strlen = BPPacket.MAX_CUSTOM_SIGNAL_STRING_LENGTH;
 							}
 							buffer.put((byte) (strlen & 0xFF));
 							buffer.put(defVal.getBytes(), 0, strlen);
-							*/
 							break;
 						}
 						case BPPacket.VAL_TYPE_BOOLEAN:

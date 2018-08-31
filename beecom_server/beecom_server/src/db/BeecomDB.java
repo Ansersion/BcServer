@@ -1557,12 +1557,12 @@ public class BeecomDB {
 		int signalId;
 		boolean ifNotifying;
 		boolean ifAlarm;
+		boolean ifDisplay;
 		CustomAlarmInfoUnit customAlarmInfoUnit = null;
 		Map<Integer, String> cusSignalNameLangMap = null;
 		Map<Integer, String> cusSignalUnitLangMap = null;
 		Map<Integer, String> cusSignalGroupLangMap = null;
 		Map<Integer, Map<Integer, String> > cusSignalEnumLangMap = null;
-		Map<Integer, String> cusSignalStringDefaultLangMap = null;
 		int groupLangId = BPPacket.INVALID_LANGUAGE_ID;
 		
 		while(itSI.hasNext()) {
@@ -1574,7 +1574,6 @@ public class BeecomDB {
 				cusSignalUnitLangMap = null;
 				cusSignalGroupLangMap = null;
 				cusSignalEnumLangMap = null;
-				cusSignalStringDefaultLangMap = null;
 				groupLangId = BPPacket.INVALID_LANGUAGE_ID;
 				CustomSignalInfoHbn customSignalInfoHbn = itCSI.next();
 
@@ -1584,6 +1583,7 @@ public class BeecomDB {
 						return null;
 					}
 					ifNotifying = signalInfoHbn.getNotifying();
+					ifDisplay = signalInfoHbn.getDisplay();
 					ifAlarm = customSignalInfoHbn.getIfAlarm();
 					if(ifAlarm) {
 						customAlarmInfoUnit = getCustomSignalAlmInfoUnit(customSignalInfoHbn.getId(), langSupportMask);
@@ -1707,8 +1707,6 @@ public class BeecomDB {
 											"from CustomSignalStringInfoHbn where customSignalId = :custom_signal_id")
 									.setParameter("custom_signal_id", customSignalInfoHbn.getId()).uniqueResult();
 							tx.commit();
-							Long defValueLangId = (long)signalInterface.getDefaultValue();
-							cusSignalStringDefaultLangMap = getCustomDefaultStringLangMap(defValueLangId, langSupportMask);
 						} catch (Exception e) {
 							StringWriter sw = new StringWriter();
 							e.printStackTrace(new PrintWriter(sw, true));
@@ -1738,7 +1736,7 @@ public class BeecomDB {
 						return null;
 					}
 
-					customSignalInfoUnitLst.add(new CustomSignalInfoUnit(signalId, ifNotifying, ifAlarm, groupLangId, cusSignalNameLangMap, cusSignalUnitLangMap, cusSignalGroupLangMap, cusSignalEnumLangMap, cusSignalStringDefaultLangMap, customAlarmInfoUnit, signalInterface));
+					customSignalInfoUnitLst.add(new CustomSignalInfoUnit(signalId, ifNotifying, ifAlarm, ifDisplay, groupLangId, cusSignalNameLangMap, cusSignalUnitLangMap, cusSignalGroupLangMap, cusSignalEnumLangMap, customAlarmInfoUnit, signalInterface));
 					break;
 				}
 			}

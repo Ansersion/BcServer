@@ -22,6 +22,12 @@ public abstract class SignalInterface {
 	
 	public void setPermission(Short permission) {
 	}
+	
+	public Boolean getEnStatistics() {
+		return false;
+	}
+	public void setEnStatistics(Boolean enStatistics) {
+	}
 
 	public abstract int getValType();
 

@@ -6,6 +6,7 @@ public class CustomSignalInfoUnit {
 	private int cusSigId;
 	private boolean ifNotifing;
 	private boolean ifAlarm;
+	private boolean ifDisplay;
 	/* system group language ID */
 	private int groupLangId;
 	/* custom signal name language map */
@@ -16,28 +17,25 @@ public class CustomSignalInfoUnit {
 	private Map<Integer, String> groupLangMap;
 	/* custom enumerate signal language map */
 	private Map<Integer, Map<Integer, String> > signalEnumLangMap;
-	/* custom string signal default value language map */
-	private Map<Integer, String> signalStringDefaultValueLangMap;
 	/* custom alarm info */
 	private CustomAlarmInfoUnit customAlarmInfoUnit;
 	
 	private SignalInterface customSignalInterface;
 	
-	public CustomSignalInfoUnit(int cusSigId, boolean ifNotifing, boolean ifAlarm, int groupLangId,
+	public CustomSignalInfoUnit(int cusSigId, boolean ifNotifing, boolean ifAlarm, boolean ifDisplay, int groupLangId,
 			Map<Integer, String> signalNameLangMap, Map<Integer, String> signalUnitLangMap,
 			Map<Integer, String> groupLangMap, Map<Integer, Map<Integer, String>> signalEnumLangMap,
-			Map<Integer, String> signalStringDefaultValueLangMap, CustomAlarmInfoUnit customAlarmInfoUnit,
-			SignalInterface customSignalInterface) {
+			CustomAlarmInfoUnit customAlarmInfoUnit, SignalInterface customSignalInterface) {
 		super();
 		this.cusSigId = cusSigId;
 		this.ifNotifing = ifNotifing;
 		this.ifAlarm = ifAlarm;
+		this.ifDisplay = ifDisplay;
 		this.groupLangId = groupLangId;
 		this.signalNameLangMap = signalNameLangMap;
 		this.signalUnitLangMap = signalUnitLangMap;
 		this.groupLangMap = groupLangMap;
 		this.signalEnumLangMap = signalEnumLangMap;
-		this.signalStringDefaultValueLangMap = signalStringDefaultValueLangMap;
 		this.customAlarmInfoUnit = customAlarmInfoUnit;
 		this.customSignalInterface = customSignalInterface;
 	}
@@ -49,6 +47,9 @@ public class CustomSignalInfoUnit {
 	}
 	public boolean isIfAlarm() {
 		return ifAlarm;
+	}
+	public boolean isIfDisplay() {
+		return ifDisplay;
 	}
 	public SignalInterface getCustomSignalInterface() {
 		return customSignalInterface;
@@ -69,20 +70,19 @@ public class CustomSignalInfoUnit {
 		return signalEnumLangMap;
 	}
 
-	public Map<Integer, String> getSignalStringDefaultValueLangMap() {
-		return signalStringDefaultValueLangMap;
-	}
 	public CustomAlarmInfoUnit getCustomAlarmInfoUnit() {
 		return customAlarmInfoUnit;
 	}
 	@Override
 	public String toString() {
 		return "CustomSignalInfoUnit [cusSigId=" + cusSigId + ", ifNotifing=" + ifNotifing + ", ifAlarm=" + ifAlarm
-				+ ", groupLangId=" + groupLangId + ", signalNameLangMap=" + signalNameLangMap + ", signalUnitLangMap="
-				+ signalUnitLangMap + ", groupLangMap=" + groupLangMap + ", signalEnumLangMap=" + signalEnumLangMap
-				+ ", signalStringDefaultValueLangMap=" + signalStringDefaultValueLangMap + ", customAlarmInfoUnit="
-				+ customAlarmInfoUnit + ", customSignalInterface=" + customSignalInterface + "]";
+				+ ", ifDisplay=" + ifDisplay + ", groupLangId=" + groupLangId + ", signalNameLangMap="
+				+ signalNameLangMap + ", signalUnitLangMap=" + signalUnitLangMap + ", groupLangMap=" + groupLangMap
+				+ ", signalEnumLangMap=" + signalEnumLangMap + ", customAlarmInfoUnit=" + customAlarmInfoUnit
+				+ ", customSignalInterface=" + customSignalInterface + "]";
 	}
+
+	
 
 
 }
