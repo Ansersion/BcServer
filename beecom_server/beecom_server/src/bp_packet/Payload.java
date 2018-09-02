@@ -61,6 +61,7 @@ public class Payload {
 	private Map<Integer, Pair<Byte, Object>> cusSigValMap;
 	private List<Long> deviceIdList;
 	private int customSignalLangSupportMask;
+	private long sigMapCheckSum;
 	
 	public BPError getError() {
 		return error;
@@ -239,8 +240,10 @@ public class Payload {
 			while(it.hasNext()) {
 				systemSignalInfoUnit = it.next();
 				if(!systemSignalInfoUnit.isIfConfigDef()) {
-					systemSignalCustomInfoUnitLst.add(new SystemSignalCustomInfoUnit(systemSignalInfoUnit.getSysSigId(), systemSignalInfoUnit.getSystemSignalInterface()));
+					// TODO: 
+					// systemSignalCustomInfoUnitLst.add(new SystemSignalCustomInfoUnit(systemSignalInfoUnit.getSysSigId(), systemSignalInfoUnit.getSystemSignalInterface()));
 				}
+				systemSignalCustomInfoUnitLst.add(new SystemSignalCustomInfoUnit(systemSignalInfoUnit.getSysSigId(), BPPacket.ALARM_CLASS_NONE, BPPacket.ALARM_DELAY_DEFAULT, BPPacket.ALARM_DELAY_DEFAULT, systemSignalInfoUnit.getSystemSignalInterface()));
 			}
 		} else {
 			systemSignalCustomInfoUnitLst = beecomDB.getSystemSignalCustomInfoUnitLst(uniqDevId, systemSignalCustomInfoUnitLst);
@@ -436,6 +439,14 @@ public class Payload {
 
 	public void setCustomSignalLangSupportMask(int customSignalLangSupportMask) {
 		this.customSignalLangSupportMask = customSignalLangSupportMask;
+	}
+
+	public long getSigMapCheckSum() {
+		return sigMapCheckSum;
+	}
+
+	public void setSigMapCheckSum(long sigMapCheckSum) {
+		this.sigMapCheckSum = sigMapCheckSum;
 	}
 
 

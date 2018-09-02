@@ -6,6 +6,10 @@ public class SignalInfoHbn {
     private Long devId;
     private Boolean notifying;
     private Boolean display;
+    private Short almClass;
+    private Short almDlyBef;
+    private Short almDlyAft;
+    
 	public Long getId() {
 		return id;
 	}
@@ -36,9 +40,29 @@ public class SignalInfoHbn {
 	public void setDisplay(Boolean display) {
 		this.display = display;
 	}
+	public Short getAlmClass() {
+		return almClass;
+	}
+	public void setAlmClass(Short almClass) {
+		this.almClass = almClass;
+	}
+	public Short getAlmDlyBef() {
+		return almDlyBef;
+	}
+	public void setAlmDlyBef(Short almDlyBef) {
+		this.almDlyBef = almDlyBef;
+	}
+	public Short getAlmDlyAft() {
+		return almDlyAft;
+	}
+	public void setAlmDlyAft(Short almDlyAft) {
+		this.almDlyAft = almDlyAft;
+	}
 	@Override
 	public String toString() {
 		return "SignalInfoHbn [id=" + id + ", signalId=" + signalId + ", devId=" + devId + ", notifying=" + notifying
-				+ ", display=" + display + "]";
+				+ ", display=" + display + ", almClass=" + almClass + ", almDlyBef=" + almDlyBef + ", almDlyAft="
+				+ almDlyAft + "]";
 	}
+	
 }

@@ -1923,7 +1923,7 @@ public class BeecomDB {
 					default:
 						return null;
 					}
-					systemSignalCustomInfoUnitLst.add(new SystemSignalCustomInfoUnit(signalId, systemSignalInterface));
+					systemSignalCustomInfoUnitLst.add(new SystemSignalCustomInfoUnit(signalId, signalInfoHbn.getAlmClass(), signalInfoHbn.getAlmDlyBef(), signalInfoHbn.getAlmDlyAft(), systemSignalInterface));
 					break;
 				}
 			}

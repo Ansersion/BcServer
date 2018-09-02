@@ -12,5 +12,8 @@
         <property name="devId" column="dev_id" />  
         <property name="notifying" column="notifying" />
         <property name="display" column="display" />  
+        <property name="almClass" column="alm_class" />  
+        <property name="almDlyBef" column="alm_dly_bef" />  
+        <property name="almDlyAft" column="alm_dly_aft" />  
     </class>    
 </hibernate-mapping>

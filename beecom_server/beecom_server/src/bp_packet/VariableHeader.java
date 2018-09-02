@@ -357,6 +357,8 @@ public class VariableHeader {
 		this.langFlags = langFlags;
 	}
 	
-	
+	public boolean getSigMapChecksumOnly() {
+		return bit1;
+	}
 	
 }

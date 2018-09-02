@@ -29,6 +29,8 @@ import db.SystemSignalStringInfoHbn;
 import db.SystemSignalU16InfoHbn;
 import db.SystemSignalU32InfoHbn;
 import javafx.util.Pair;
+import sys_sig_table.BPSysSigTable;
+import sys_sig_table.SysSigInfo;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -52,8 +54,6 @@ public class BPPacketREPORT extends BPPacket {
 	int devNameLen;
 	Vector<BPPartitation> partitation;
 	byte[] devName;
-	private List<CustomSignalInfoUnit> customSignalInfoUnitList;
-	private List<SystemSignalCustomInfoUnit> systemSignalCustomInfoUnitList;
 
 	private static final Logger logger = LoggerFactory.getLogger(BcDecoder.class); 
 	
@@ -286,6 +286,11 @@ public class BPPacketREPORT extends BPPacket {
 				*/
 								
 			} else {
+				pld.setSigMapCheckSum(ioBuffer.getUnsignedInt());
+				if(vrb.getSigMapChecksumOnly()) {
+					return 0;
+				}
+				
 
 				if (vrb.getSysSigMapFlag()) {
 					byte distAndClass;
@@ -327,8 +332,10 @@ public class BPPacketREPORT extends BPPacket {
 					int groupLangId;
 					int accuracy;
 					int sigType;
+					short alarmClass, delayBeforeAlarm, delayAfterAlarm;
 					List<Integer> enumLangList;
 					SignalInterface signalInterface;
+					List<SystemSignalCustomInfoUnit> systemSignalCustomInfoUnitList = null;
 					for (int i = 0; i < signalNum; i++) {
 						enumLangList = null;
 						if (null == systemSignalCustomInfoUnitList) {
@@ -336,9 +343,16 @@ public class BPPacketREPORT extends BPPacket {
 						}
 						signalInterface = null;
 						ifAlarm = false;
+						alarmClass = BPPacket.ALARM_CLASS_NONE;
+						delayBeforeAlarm = BPPacket.ALARM_DELAY_DEFAULT;
+						delayAfterAlarm = BPPacket.ALARM_DELAY_DEFAULT;
 						signalId = ioBuffer.getUnsignedShort();
-						/* TODO: search the system signal table to get the sigType */
-						sigType = 0;
+						BPSysSigTable bpSysSigTable = BPSysSigTable.getSysSigTableInstance();
+						SysSigInfo sysSigInfo = BPSysSigTable.getSysSigTableInstance().getSysSigInfoLst().get(signalId - BPPacket.SYS_SIG_START_ID);
+						if(null == sysSigInfo) {
+							throw new Exception("null == sysSigInfo");
+						}
+						sigType = sysSigInfo.getValType();
 						basicCustomInfoByte = ioBuffer.get();
 						alarmCustomInfoByte = ioBuffer.get();
 						if ((basicCustomInfoByte & 0x01) == 0x01) {
@@ -516,18 +530,20 @@ public class BPPacketREPORT extends BPPacket {
 						}
 						}
 						if((basicCustomInfoByte & 0x80) == 0x08) {
-							ifAlarm = true;
+							alarmClass = ioBuffer.getUnsigned();
+							delayBeforeAlarm = ioBuffer.getUnsigned();
+							delayAfterAlarm = ioBuffer.getUnsigned();
 						}
-						if(ifAlarm) {
-							// TODO: 
-						}
+						systemSignalCustomInfoUnitList.add(new SystemSignalCustomInfoUnit(signalId, alarmClass, delayBeforeAlarm, delayAfterAlarm, signalInterface));
 
 					}
+					
+					pld.setSystemSignalCustomInfoUnitLst(systemSignalCustomInfoUnitList);
 				}
 				
 				if(vrb.getCusSigMapFlag()) {
 					int signalNum = ioBuffer.getUnsigned();
-					customSignalInfoUnitList = new ArrayList<CustomSignalInfoUnit>(signalNum);
+					List<CustomSignalInfoUnit> customSignalInfoUnitList = new ArrayList<CustomSignalInfoUnit>(signalNum);
 					byte byteTmp;
 					int sigType;
 					short perm;
@@ -691,11 +707,12 @@ public class BPPacketREPORT extends BPPacket {
 						customSignalInterface.setEnStatistics(ifStatistics);
 						
 						if(ifAlarm) {
-							// TODO: 
+							// TODO:
 						}
 						
 						customSignalInfoUnitList.add(new CustomSignalInfoUnit(cusSigId, ifNotifing, ifAlarm, ifDisplay, 0, signalNameLangMap, signalUnitLangMap, groupLangMap, signalEnumLangMap, customAlarmInfoUnit, customSignalInterface));
 					}
+					pld.setCustomSignalInfoUnitLst(customSignalInfoUnitList);
 				}
 			}
 
@@ -710,10 +727,6 @@ public class BPPacketREPORT extends BPPacket {
 	
 	public Vector<BPPartitation> getPartitation() {
 		return partitation;
-	}
-
-	public List<CustomSignalInfoUnit> getCustomSignalInfoUnitList() {
-		return customSignalInfoUnitList;
 	}
 	
 	

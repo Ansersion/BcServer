@@ -461,9 +461,9 @@ public class BPPacketGETACK extends BPPacket {
 								/* 2 bytes */
 								/* TODO: temporary no support the system unit language unit */
 								// buffer.put(BPPacket.SYSTEM_UNIT_LANGUAGE_FLAG & 0x02);
-								buffer.putUnsigned(BPPacket.ALARM_CLASS_INVALID);
-								buffer.putUnsigned(BPPacket.ALARM_DELAY_INVALID);
-								buffer.putUnsigned(BPPacket.ALARM_DELAY_INVALID);
+								buffer.putUnsigned(BPPacket.ALARM_CLASS_NONE);
+								buffer.putUnsigned(BPPacket.ALARM_DELAY_DEFAULT);
+								buffer.putUnsigned(BPPacket.ALARM_DELAY_DEFAULT);
 								
 							} else {
 								CustomSignalAlmInfoHbn customSignalAlmInfoHbnTmp = customAlarmInfoUnit.getCustomSignalAlmInfoHbn();
