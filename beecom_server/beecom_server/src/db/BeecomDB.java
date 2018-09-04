@@ -1041,7 +1041,13 @@ public class BeecomDB {
 		            .setParameter(0, sn)
 		            .uniqueResult();  
 		    if(snInfoHbn != null) {
-		    	deviceUniqId = snInfoHbn.getId();
+			    DevInfoHbn devInfoHbn = (DevInfoHbn)session  
+			            .createQuery(" from DevInfoHbn where snId = :sn_id ")
+			            .setParameter("sn_id", snInfoHbn.getId())
+			            .uniqueResult();  
+			    if(null != devInfoHbn) {
+			    	deviceUniqId = devInfoHbn.getId();
+			    }
 		    }
 		    
 			tx.commit();
@@ -2077,9 +2083,7 @@ public class BeecomDB {
 		try (Session session = sessionFactory.openSession()) {
 			tx = session.beginTransaction();
 
-			DevInfoHbn devInfoHbn = (DevInfoHbn) session
-					.createQuery("from DevInfoHbn where devId = :dev_id")
-					.setParameter("dev_id", uniqDevId).uniqueResult();
+			DevInfoHbn devInfoHbn = (DevInfoHbn) session.get(DevInfoHbn.class, uniqDevId);
 			if (null == devInfoHbn || devInfoHbn.getSigMapChksum() != checksum) {
 				return ret;
 			}
@@ -2187,7 +2191,7 @@ public class BeecomDB {
 			}
 			if(checksum != devInfoHbn.getSigMapChksum()) {
 				devInfoHbn.setSigMapChksum(checksum);
-				session.save(devInfoHbn);
+				session.update(devInfoHbn);
 			}
 			tx.commit();
 			ret = true;
@@ -2482,7 +2486,7 @@ public class BeecomDB {
 				session.update(systemSignalInfoHbn);
 				
 				SignalInterface signalInterface = systemSignalCustomInfoUnit.get(i).getSignalInterface();
-				signalInterface.setSystemSignalId(signalKeyId);
+				signalInterface.setSystemSignalId(systemSignalInfoHbn.getId());
 				if(signalInterface.saveToDb(session) < 0) {
 					logger.error("Internal error: null == devInfoHbn");
 					return ret;

@@ -83,11 +83,6 @@ public class BPDeviceSession extends BPSession {
 	}
 
 	@Override
-	public Long getUniqDeviceId() {
-		return uniqDeviceId;
-	}
-
-	@Override
 	public void setUniqDeviceId(Long uniqDeviceId) {
 		this.uniqDeviceId = uniqDeviceId;
 	}

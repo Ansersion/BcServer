@@ -243,12 +243,16 @@ public class BcServerHandler extends IoHandlerAdapter {
 				if (loginErrorEnum != BeecomDB.LoginErrorEnum.LOGIN_OK) {
 					return;
 				}
+				bpSession = new BPDeviceSession(session, devUniqId, password);
+				BeecomDB.getInstance().getDevUniqId2SessionMap().put(devUniqId, bpSession);
+			/*
 				if(!BeecomDB.getInstance().getDevUniqId2SessionMap().containsKey(devUniqId)) {
 					bpSession = new BPDeviceSession(session, devUniqId, password);
 					BeecomDB.getInstance().getDevUniqId2SessionMap().put(devUniqId, bpSession);
 				} else {
 					bpSession = BeecomDB.getInstance().getDevUniqId2SessionMap().get(devUniqId);
 				}
+				*/
 				session.setAttribute(SESS_ATTR_BP_SESSION, bpSession);
 			}
 
@@ -567,17 +571,20 @@ public class BcServerHandler extends IoHandlerAdapter {
 			vrbAck = packAck.getVrbHead();
 			
 			if(sigMapChecksumFlagOnly) {
-				if (!BeecomDB.getInstance().checkSignalMapChksum(uniqDevId, pld.getSigMapChecksum())) {
+				if (!BeecomDB.getInstance().checkSignalMapChksum(uniqDevId, pld.getSigMapCheckSum())) {
 					packAck.getVrbHead().setRetCode(BPPacketREPORT.RET_CODE_SIGNAL_MAP_CHECKSUM_ERR);
 				}
 				session.write(packAck);
 				return;
 			} 
 			
+			if(sysSigMapFlag || sysSigCusInfoFlag || cusSigMapFlag) {
+				BeecomDB.getInstance().clearDeviceSignalInfo(uniqDevId);
+			}
+			
 
 			boolean newSigMapFlagOk = true;
 			
-			/*
 			if(newSigMapFlagOk && sysSigMapFlag) {			
 				List<Integer> systemSignalEnabledList = pld.getSystemSignalEnabledList();
 				if(!BeecomDB.getInstance().putSystemSignalEnabledMap(uniqDevId, systemSignalEnabledList)) {
@@ -591,7 +598,6 @@ public class BcServerHandler extends IoHandlerAdapter {
 					newSigMapFlagOk = false;
 				}
 			}
-			*/
 			if(newSigMapFlagOk && cusSigMapFlag) {
 				List<CustomSignalInfoUnit> customSignalInfoUnitList = pld.getCustomSignalInfoUnitLst();
 				if(!BeecomDB.getInstance().putCustomSignalMap(uniqDevId, customSignalInfoUnitList)) {
@@ -604,7 +610,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 				return;
 			}
 			if(newSigMapFlagOk && (sysSigMapFlag || cusSigMapFlag || sysSigCusInfoFlag)) {
-				if(!BeecomDB.getInstance().putSignalMapChksum(uniqDevId, pld.getSigMapChecksum())) {
+				if(!BeecomDB.getInstance().putSignalMapChksum(uniqDevId, pld.getSigMapCheckSum())) {
 					logger.error("Internal error: !BeecomDB.getInstance().putSignalMapChksum(uniqDevId, pld.getSigMapChecksum())");
 				}
 			}
@@ -691,6 +697,23 @@ public class BcServerHandler extends IoHandlerAdapter {
 			product.product();
 			BcServerMain.consumerTask.produce(product);
 		}
-		
 	}
+
+	@Override
+	public void sessionClosed(IoSession session) throws Exception {
+		super.sessionClosed(session);
+		BPSession bpSession = (BPSession)session.getAttribute(SESS_ATTR_BP_SESSION);
+		if(null == bpSession) {
+			return;
+		}
+		if(bpSession.ifUserSession()) {
+			logger.info("user client {}: session closed", bpSession.getUserName());
+			BeecomDB.getInstance().getUserName2SessionMap().remove(bpSession.getUserName());
+		} else {
+			logger.info("device client {}: session closed", bpSession.getUniqDevId());
+			BeecomDB.getInstance().getDevUniqId2SessionMap().remove(bpSession.getUniqDevId());
+		}
+	}
+	
+	
 }

@@ -48,8 +48,9 @@ public class BPPacketDISCONN extends BPPacket {
 	@Override
 	public int parseVariableHeader() {
 		try {
-			int clientId = getIoBuffer().getUnsignedShort();
-			getVrbHead().setClientId(clientId);
+			byte encodedByte = 0;
+			encodedByte = getIoBuffer().get();
+			super.parseVrbHeadLevel(encodedByte);
 		} catch (Exception e) {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw, true));

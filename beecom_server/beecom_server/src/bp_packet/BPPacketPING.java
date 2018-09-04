@@ -46,9 +46,6 @@ public class BPPacketPING extends BPPacket {
 
 			byte flags = getIoBuffer().get();
 			super.parseVrbHeadFlags(flags);
-			
-			int clientId = getIoBuffer().getUnsignedShort();
-			getVrbHead().setClientId(clientId);
 
 			int packSeq = getIoBuffer().getUnsignedShort();
 			getVrbHead().setPackSeq(packSeq);
@@ -72,19 +69,6 @@ public class BPPacketPING extends BPPacket {
 	@Override
 	public int parsePayload() {
 		return 0;
-	}
-	
-	@Override
-	public boolean assembleFixedHeader() {
-		int packType = getPackTypeIntFxHead();
-		byte packFlags = getPackFlagsByteFxHead();
-		byte encodedByte = (byte) (((packType & 0xf) << 4) | (packFlags & 0xf));
-		
-		getIoBuffer().put(encodedByte);
-		
-		getIoBuffer().put((byte)0);
-		
-		return false;
 	}
 
 	@Override

@@ -121,11 +121,7 @@ public abstract class BPSession {
 
 	public void setPassword(String password) {
 	}
-
-	public Long getUniqDeviceId() {
-		return 0L;
-	}
-
+	
 	public void setUniqDeviceId(Long uniqDeviceId) {
 	}
 
