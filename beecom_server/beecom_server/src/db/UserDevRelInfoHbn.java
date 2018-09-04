@@ -3,7 +3,7 @@ package db;
 public class UserDevRelInfoHbn {
 	private Long id;
     private Long userId;
-    private Long devId;
+    private Long snId;
     private Short auth;
 	public Long getId() {
 		return id;
@@ -17,11 +17,12 @@ public class UserDevRelInfoHbn {
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
-	public Long getDevId() {
-		return devId;
+
+	public Long getSnId() {
+		return snId;
 	}
-	public void setDevId(Long devId) {
-		this.devId = devId;
+	public void setSnId(Long snId) {
+		this.snId = snId;
 	}
 	public Short getAuth() {
 		return auth;
@@ -31,8 +32,9 @@ public class UserDevRelInfoHbn {
 	}
 	@Override
 	public String toString() {
-		return "UserDevRelInfoHbn [id=" + id + ", userId=" + userId + ", devId=" + devId + ", auth=" + auth + "]";
+		return "UserDevRelInfoHbn [id=" + id + ", userId=" + userId + ", snId=" + snId + ", auth=" + auth + "]";
 	}
+
     
     
 }

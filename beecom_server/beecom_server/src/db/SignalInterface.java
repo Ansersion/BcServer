@@ -6,18 +6,14 @@ import bp_packet.BPPacket;
 
 public abstract class SignalInterface {
 	
-	private int bcSystemSignalId;
-	
-	public int getBcSystemSignalId() {
-		return bcSystemSignalId;
-	}
-
-	public void setBcSystemSignalId(int bcSystemSignalId) {
-		this.bcSystemSignalId = bcSystemSignalId;
-	}
-	
 	public Short getPermission() {
 		return BPPacket.SIGNAL_PERMISSION_CODE_RO;
+	}
+	
+	public Long getSystemSignalId() {
+		return 0L;
+	}
+	public void setSystemSignalId(Long systemSignalId) {
 	}
 	
 	public void setPermission(Short permission) {
@@ -34,4 +30,8 @@ public abstract class SignalInterface {
 	public abstract long saveToDb(Session session);
 	
 	public abstract Object getDefaultValue();
+	
+	public void setCustomSignalId(Long customSignalId) {
+		
+	}
 }

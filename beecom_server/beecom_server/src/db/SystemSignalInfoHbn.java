@@ -6,6 +6,14 @@ public class SystemSignalInfoHbn {
     private Boolean ifConfigDef;
     
     private Long signalId;
+    
+    public SystemSignalInfoHbn() {
+    	
+    }
+    public SystemSignalInfoHbn(Long signalId) {
+    	ifConfigDef = true;
+    	this.signalId = signalId;
+    }
 	public Long getId() {
 		return id;
 	}

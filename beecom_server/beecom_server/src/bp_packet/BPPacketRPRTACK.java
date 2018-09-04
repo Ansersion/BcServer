@@ -24,20 +24,6 @@ public class BPPacketRPRTACK extends BPPacket {
 		fxHead.setPacketType(BPPacketType.RPRTACK);
 		fxHead.setCrcType(CrcChecksum.CRC32);
 	}
-	
-	@Override
-	public boolean assembleFixedHeader() {
-		int packType = getPackTypeIntFxHead();
-		byte packFlags = getPackFlagsByteFxHead();
-		byte encodedByte = (byte) (((packType & 0xf) << 4) | (packFlags & 0xf));
-		
-		getIoBuffer().put(encodedByte);
-		
-		// Remaininglength 1 byte reserved
-		getIoBuffer().put((byte)0);
-		
-		return false;
-	}
 
 	@Override
 	public boolean assembleVariableHeader() throws BPAssembleVrbHeaderException {

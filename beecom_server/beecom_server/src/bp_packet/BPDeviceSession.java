@@ -106,4 +106,8 @@ public class BPDeviceSession extends BPSession {
 	public String toString() {
 		return uniqDeviceId.toString();
 	}
+	
+	public long getUniqDevId() {
+		return uniqDeviceId;
+	}
 }

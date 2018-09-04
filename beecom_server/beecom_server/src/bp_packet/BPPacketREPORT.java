@@ -49,6 +49,7 @@ public class BPPacketREPORT extends BPPacket {
 	
 	public static final int RET_CODE_INVALID_DEVICE_ID_ERR = 0x02;
 	public static final int RET_CODE_SIGNAL_MAP_CHECKSUM_ERR = 0x05;
+	public static final int RET_CODE_SIGNAL_MAP_ERR = 0x07;
 
 	int packSeq;
 	int devNameLen;
@@ -273,24 +274,8 @@ public class BPPacketREPORT extends BPPacket {
 					}
 				}
 			
-				
-				/*
-				int sigTabNum = getIoBuffer().get();
-				if(null == getPld().getSigData()) {
-					getPld().setSigData(new DevSigData());
-				}
-				getPld().getSigData().clear();
-				for(int i = 0; i < sigTabNum; i++) {
-					getPld().getSigData().parseSigDataTab(getIoBuffer());
-				}
-				*/
-								
 			} else {
-				pld.setSigMapCheckSum(ioBuffer.getUnsignedInt());
-				if(vrb.getSigMapChecksumOnly()) {
-					return 0;
-				}
-				
+
 
 				if (vrb.getSysSigMapFlag()) {
 					byte distAndClass;
@@ -309,18 +294,26 @@ public class BPPacketREPORT extends BPPacket {
 							break;
 						}
 						mapNum = 0x01 << (sysSigClass - 1);
-						Byte[] sysSigMap = new Byte[mapNum];
-						Map<Integer, Byte[]> sysMap = pld
-								.getMapDist2SysSigMap();
+						List<Integer> systemSignalEnabledList = new ArrayList<Integer>();
+						// Byte[] sysSigMap = new Byte[mapNum];
+						// Map<Integer, Byte[]> sysMap = pld
+						//		.getMapDist2SysSigMap();
+						byte tmp;
 						for (int i = 0; i < mapNum; i++) {
-							sysSigMap[i] = getIoBuffer().get();
+							tmp = getIoBuffer().get();
+							for(int j = 0; j < 8; j++) {
+								if((tmp & (1 << j)) != 0) {
+									systemSignalEnabledList.add(dist * BPPacket.SYS_SIG_DIST_STEP + i * 8 + j);
+								}
+							}
 						}
-						sysMap.put(dist, sysSigMap);
+						pld.setSystemSignalEnabledList(systemSignalEnabledList);
+						//sysMap.put(dist, sysSigMap);
 					} while ((distAndClass & VariableHeader.DIST_END_FLAG_MSK) != VariableHeader.DIST_END_FLAG_MSK);
 				}
 				
 				if(vrb.getSysSigMapCustomInfo()) {
-					int signalNum = ioBuffer.getUnsigned();
+					int signalNum = ioBuffer.getUnsignedShort();
 					int signalId;
 					byte basicCustomInfoByte;
 					byte alarmCustomInfoByte;
@@ -542,7 +535,7 @@ public class BPPacketREPORT extends BPPacket {
 				}
 				
 				if(vrb.getCusSigMapFlag()) {
-					int signalNum = ioBuffer.getUnsigned();
+					int signalNum = ioBuffer.getUnsignedShort();
 					List<CustomSignalInfoUnit> customSignalInfoUnitList = new ArrayList<CustomSignalInfoUnit>(signalNum);
 					byte byteTmp;
 					int sigType;
@@ -713,6 +706,11 @@ public class BPPacketREPORT extends BPPacket {
 						customSignalInfoUnitList.add(new CustomSignalInfoUnit(cusSigId, ifNotifing, ifAlarm, ifDisplay, 0, signalNameLangMap, signalUnitLangMap, groupLangMap, signalEnumLangMap, customAlarmInfoUnit, customSignalInterface));
 					}
 					pld.setCustomSignalInfoUnitLst(customSignalInfoUnitList);
+				}
+				
+				pld.setSigMapCheckSum(ioBuffer.getUnsignedInt());
+				if(vrb.getSigMapChecksumOnly()) {
+					return 0;
 				}
 			}
 

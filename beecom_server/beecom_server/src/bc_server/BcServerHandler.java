@@ -553,7 +553,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 			vrb = decodedPack.getVrbHead();
 			pld = decodedPack.getPld();
 			boolean sysSigMapFlag = vrb.getSysSigMapFlag();
-			boolean cusSigMapFlag = vrb.getCusSigFlag();
+			boolean cusSigMapFlag = vrb.getCusSigMapFlag();
 			boolean sigValFlag = vrb.getSigValFlag();
 			boolean sysSigFlag = vrb.getSysSigFlag();
 			boolean cusSigFlag = vrb.getCusSigFlag();
@@ -570,22 +570,45 @@ public class BcServerHandler extends IoHandlerAdapter {
 				if (!BeecomDB.getInstance().checkSignalMapChksum(uniqDevId, pld.getSigMapChecksum())) {
 					packAck.getVrbHead().setRetCode(BPPacketREPORT.RET_CODE_SIGNAL_MAP_CHECKSUM_ERR);
 				}
+				session.write(packAck);
+				return;
 			} 
 			
-			if(sysSigMapFlag || cusSigMapFlag || sysSigCusInfoFlag) {
+
+			boolean newSigMapFlagOk = true;
+			
+			/*
+			if(newSigMapFlagOk && sysSigMapFlag) {			
+				List<Integer> systemSignalEnabledList = pld.getSystemSignalEnabledList();
+				if(!BeecomDB.getInstance().putSystemSignalEnabledMap(uniqDevId, systemSignalEnabledList)) {
+					newSigMapFlagOk = false;
+				}
+			}
+			
+			if(newSigMapFlagOk && sysSigCusInfoFlag) {
+				List<SystemSignalCustomInfoUnit> systemSignalCustomInfoUnit = pld.getSystemSignalCustomInfoUnitLst();
+				if(!BeecomDB.getInstance().putSystemCustomSignalInfoMap(uniqDevId, systemSignalCustomInfoUnit)) {
+					newSigMapFlagOk = false;
+				}
+			}
+			*/
+			if(newSigMapFlagOk && cusSigMapFlag) {
+				List<CustomSignalInfoUnit> customSignalInfoUnitList = pld.getCustomSignalInfoUnitLst();
+				if(!BeecomDB.getInstance().putCustomSignalMap(uniqDevId, customSignalInfoUnitList)) {
+					newSigMapFlagOk = false;
+				}
+			}
+			if(!newSigMapFlagOk) {
+				packAck.getVrbHead().setRetCode(BPPacketREPORT.RET_CODE_SIGNAL_MAP_ERR);
+				session.write(packAck);
+				return;
+			}
+			if(newSigMapFlagOk && (sysSigMapFlag || cusSigMapFlag || sysSigCusInfoFlag)) {
 				if(!BeecomDB.getInstance().putSignalMapChksum(uniqDevId, pld.getSigMapChecksum())) {
 					logger.error("Internal error: !BeecomDB.getInstance().putSignalMapChksum(uniqDevId, pld.getSigMapChecksum())");
 				}
 			}
 			
-			if(sysSigMapFlag) {			
-				List<Integer> systemSignalEnabledList = pld.getSystemSignalEnabledList();
-				BeecomDB.getInstance().putSystemSignalEnabledMap(uniqDevId, systemSignalEnabledList);
-			}
-			if(cusSigMapFlag) {
-				List<CustomSignalInfoUnit> customSignalInfoUnitList = pld.getCustomSignalInfoUnitLst();
-				BeecomDB.getInstance().putCustomSignalMap(uniqDevId, customSignalInfoUnitList);
-			}
 			if(sigValFlag) {
 				Map<Integer, Object> systemSignalValuesSessoin = bpDeviceSession.getSystemSignalValueMap();
 				Map<Integer, Object> systemSignalValues = pld.getSysSigValMap();
@@ -632,10 +655,6 @@ public class BcServerHandler extends IoHandlerAdapter {
 				}  
 			}
 
-			if(sysSigCusInfoFlag) {
-				List<SystemSignalCustomInfoUnit> systemSignalCustomInfoUnit = pld.getSystemSignalCustomInfoUnitLst();
-				BeecomDB.getInstance().putSystemCustomSignalInfoMap(uniqDevId, systemSignalCustomInfoUnit);
-			}
 			
 			session.write(packAck);
 		} else if(BPPacketType.RPRTACK == packType) {

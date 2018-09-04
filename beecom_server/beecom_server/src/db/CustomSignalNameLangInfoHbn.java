@@ -3,6 +3,18 @@ package db;
 public class CustomSignalNameLangInfoHbn {
 	private Long id;
     private Long customSignalName;
+    
+    public CustomSignalNameLangInfoHbn() {
+    	
+    }
+    
+
+	public CustomSignalNameLangInfoHbn(Long customSignalName) {
+		super();
+		this.customSignalName = customSignalName;
+	}
+
+
 	public Long getId() {
 		return id;
 	}

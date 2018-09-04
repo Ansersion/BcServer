@@ -1,5 +1,7 @@
 package db;
 
+import bp_packet.BPPacket;
+
 public class CustomSignalInfoHbn {
     private Long id;
     private Boolean ifAlarm;
@@ -8,6 +10,7 @@ public class CustomSignalInfoHbn {
     private Long cusSigNameLangId;
     private Long cusSigUnitLangId;
     private Long cusGroupLangId;
+    
 	public Long getId() {
 		return id;
 	}

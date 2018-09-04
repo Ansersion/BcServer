@@ -3,6 +3,15 @@ package db;
 public class CustomUnitLangInfoHbn {
 	private Long id;
     private Long unitLang;
+    public CustomUnitLangInfoHbn() {
+    	
+    }
+
+	public CustomUnitLangInfoHbn(Long unitLang) {
+		super();
+		this.unitLang = unitLang;
+	}
+
 	public Long getId() {
 		return id;
 	}

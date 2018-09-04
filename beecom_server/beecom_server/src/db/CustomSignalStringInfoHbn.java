@@ -10,6 +10,14 @@ public class CustomSignalStringInfoHbn extends SignalInterface {
     private String defVal;
     private Boolean enStatistics;
     private Long customSignalId;
+    
+    
+	public CustomSignalStringInfoHbn() {
+		super();
+		permission = 4; // read
+		defVal = "";
+		enStatistics = true;
+	}
 	public Long getId() {
 		return id;
 	}

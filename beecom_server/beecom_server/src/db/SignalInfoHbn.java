@@ -1,5 +1,7 @@
 package db;
 
+import bp_packet.BPPacket;
+
 public class SignalInfoHbn {
 	private Long id;
     private Integer signalId;
@@ -9,6 +11,14 @@ public class SignalInfoHbn {
     private Short almClass;
     private Short almDlyBef;
     private Short almDlyAft;
+    
+    public SignalInfoHbn() {
+    	notifying = false;
+    	display = true;
+    	almClass = BPPacket.ALARM_CLASS_NONE;
+    	almDlyBef = BPPacket.ALARM_DELAY_DEFAULT;
+    	almDlyAft = BPPacket.ALARM_DELAY_DEFAULT;
+    }
     
 	public Long getId() {
 		return id;

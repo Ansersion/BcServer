@@ -43,6 +43,8 @@ public class BeecomDB {
 	
 	private static final Logger logger = LoggerFactory.getLogger(BeecomDB.class);
 	private static final Long INVALID_LANGUAGE_ID = 0L;
+	private static final Long INVALID_ADMIN_ID = 0L;
+	private static final Long INVALID_SIG_MAP_CHECKSUM = 0x7FFFFFFFFFFFFFFFL;
 	
 
 	static BeecomDB bcDb = null;
@@ -2177,9 +2179,8 @@ public class BeecomDB {
 		try (Session session = sessionFactory.openSession()) {
 			tx = session.beginTransaction();
 
-			DevInfoHbn devInfoHbn = (DevInfoHbn) session
-					.createQuery("from DevInfoHbn where devId = :dev_id")
-					.setParameter("dev_id", uniqDevId).uniqueResult();
+			DevInfoHbn devInfoHbn = (DevInfoHbn) session.get(DevInfoHbn.class, uniqDevId);
+
 			if (null == devInfoHbn) {
 				logger.error("Internal error: null == devInfoHbn");
 				return ret;
@@ -2219,9 +2220,18 @@ public class BeecomDB {
 				if (null == signalInfoHbn) {
 					signalInfoHbn = new SignalInfoHbn();
 				}
-				signalInfoHbn.setSignalId(systemSignalEnabledList.get(i));
+				signalInfoHbn.setSignalId(systemSignalEnabledList.get(i) + BPPacket.SYS_SIG_START_ID);
 				signalInfoHbn.setDevId(uniqDevId);
-				session.save(signalInfoHbn);
+				session.saveOrUpdate(signalInfoHbn);
+				
+				SystemSignalInfoHbn systemSignalInfoHbn = (SystemSignalInfoHbn) session
+						.createQuery("from SystemSignalInfoHbn where signalId = :signal_id")
+						.setParameter("signal_id", signalInfoHbn.getId()).uniqueResult();
+				if(null == systemSignalInfoHbn) {
+					systemSignalInfoHbn = new SystemSignalInfoHbn(signalInfoHbn.getId());
+					session.save(systemSignalInfoHbn);
+				}
+				
 			}
 
 			tx.commit();
@@ -2251,18 +2261,20 @@ public class BeecomDB {
 			tx = session.beginTransaction();
 
 			for(int i = 0; i < customSignalUnitInfoList.size(); i++) {
+				CustomSignalInfoUnit customSignalInfoUnit = customSignalUnitInfoList.get(i); 
+				int valueType = customSignalInfoUnit.getCustomSignalInterface().getValType();
 				SignalInfoHbn signalInfoHbn = (SignalInfoHbn) session
 						.createQuery("from SignalInfoHbn where signalId = :signal_id and devId = :dev_id")
-						.setParameter("signal_id", customSignalUnitInfoList.get(i).getCusSigId())
+						.setParameter("signal_id", customSignalInfoUnit.getCusSigId())
 						.setParameter("dev_id", uniqDevId).uniqueResult();
 				if (null == signalInfoHbn) {
 					signalInfoHbn = new SignalInfoHbn();
-					signalInfoHbn.setSignalId(customSignalUnitInfoList.get(i).getCusSigId());
+					signalInfoHbn.setSignalId(customSignalInfoUnit.getCusSigId());
 					signalInfoHbn.setDevId(uniqDevId);
 				}
 	
-				signalInfoHbn.setNotifying(customSignalUnitInfoList.get(i).isIfNotifing());
-				session.save(signalInfoHbn);
+				signalInfoHbn.setNotifying(customSignalInfoUnit.isIfNotifing());
+				session.saveOrUpdate(signalInfoHbn);
 				
 				Long signalKeyId = signalInfoHbn.getId();
 				CustomSignalInfoHbn customSignalInfoHbn = (CustomSignalInfoHbn)session
@@ -2272,11 +2284,151 @@ public class BeecomDB {
 					customSignalInfoHbn = new CustomSignalInfoHbn();
 					customSignalInfoHbn.setSignalId(signalKeyId);
 				}
-				customSignalInfoHbn.setIfAlarm(customSignalUnitInfoList.get(i).isIfAlarm());
-				customSignalInfoHbn.setValType((short)(customSignalUnitInfoList.get(i).getCustomSignalInterface().getValType() & 0xFFFF));
-				session.save(customSignalInfoHbn);
+				customSignalInfoHbn.setIfAlarm(customSignalInfoUnit.isIfAlarm());
+				customSignalInfoHbn.setValType((short)(customSignalInfoUnit.getCustomSignalInterface().getValType() & 0xFFFF));
+				Map<Integer, String> langMap = customSignalInfoUnit.getSignalNameLangMap();
+				if(null == langMap || langMap.isEmpty()) {
+					customSignalInfoHbn.setCusSigNameLangId(0L);
+				} else {
+					Iterator<Map.Entry<Integer, String> > itLangEntity = langMap.entrySet().iterator();
+					CustomSignalNameLangEntityInfoHbn customSignalNameLangEntityInfoHbn = new CustomSignalNameLangEntityInfoHbn();
+					while(itLangEntity.hasNext()) {
+						Map.Entry<Integer, String> entry = itLangEntity.next();
+						switch(entry.getKey()) {
+						case BPLanguageId.CHINESE:
+							customSignalNameLangEntityInfoHbn.setChinese(entry.getValue());
+							break;
+						case BPLanguageId.ENGLISH:
+							customSignalNameLangEntityInfoHbn.setEnglish(entry.getValue());
+							break;
+						case BPLanguageId.FRENCH:
+							customSignalNameLangEntityInfoHbn.setFrench(entry.getValue());
+							break;
+						case BPLanguageId.RUSSIAN:
+							customSignalNameLangEntityInfoHbn.setRussian(entry.getValue());
+							break;
+						case BPLanguageId.ARABIC:
+							customSignalNameLangEntityInfoHbn.setArabic(entry.getValue());
+							break;
+						case BPLanguageId.SPANISH:
+							customSignalNameLangEntityInfoHbn.setSpanish(entry.getValue());
+							break;
+						}
+					}
+					session.save(customSignalNameLangEntityInfoHbn);
+					CustomSignalNameLangInfoHbn customSignalNameLangInfoHbn = new CustomSignalNameLangInfoHbn(customSignalNameLangEntityInfoHbn.getId()); 
+					session.save(customSignalNameLangInfoHbn);
+					customSignalInfoHbn.setCusSigNameLangId(customSignalNameLangInfoHbn.getId());
+				}
+				langMap = customSignalInfoUnit.getGroupLangMap();
+				if(null == langMap || langMap.isEmpty()) {
+					customSignalInfoHbn.setCusGroupLangId(0L);
+				} else {
+					Iterator<Map.Entry<Integer, String> > itLangEntity = langMap.entrySet().iterator();
+					CustomSignalGroupLangEntityInfoHbn customSignalGroupLangEntityInfoHbn = new CustomSignalGroupLangEntityInfoHbn();
+					while(itLangEntity.hasNext()) {
+						Map.Entry<Integer, String> entry = itLangEntity.next();
+						switch(entry.getKey()) {
+						case BPLanguageId.CHINESE:
+							customSignalGroupLangEntityInfoHbn.setChinese(entry.getValue());
+							break;
+						case BPLanguageId.ENGLISH:
+							customSignalGroupLangEntityInfoHbn.setEnglish(entry.getValue());
+							break;
+						case BPLanguageId.FRENCH:
+							customSignalGroupLangEntityInfoHbn.setFrench(entry.getValue());
+							break;
+						case BPLanguageId.RUSSIAN:
+							customSignalGroupLangEntityInfoHbn.setRussian(entry.getValue());
+							break;
+						case BPLanguageId.ARABIC:
+							customSignalGroupLangEntityInfoHbn.setArabic(entry.getValue());
+							break;
+						case BPLanguageId.SPANISH:
+							customSignalGroupLangEntityInfoHbn.setSpanish(entry.getValue());
+							break;
+						}
+					}
+					session.save(customSignalGroupLangEntityInfoHbn);
+					CustomGroupLangInfoHbn customGroupLangInfoHbn = new CustomGroupLangInfoHbn(customSignalGroupLangEntityInfoHbn.getId()); 
+					session.save(customGroupLangInfoHbn);
+					customSignalInfoHbn.setCusGroupLangId(customGroupLangInfoHbn.getId());
+				}
+				langMap = customSignalInfoUnit.getSignalUnitLangMap();
+				if(null == langMap || langMap.isEmpty()) {
+					customSignalInfoHbn.setCusSigUnitLangId(0L);
+				} else {
+					Iterator<Map.Entry<Integer, String> > itLangEntity = langMap.entrySet().iterator();
+					CustomUnitLangEntityInfoHbn customUnitLangEntityInfoHbn = new CustomUnitLangEntityInfoHbn();
+					while(itLangEntity.hasNext()) {
+						Map.Entry<Integer, String> entry = itLangEntity.next();
+						switch(entry.getKey()) {
+						case BPLanguageId.CHINESE:
+							customUnitLangEntityInfoHbn.setChinese(entry.getValue());
+							break;
+						case BPLanguageId.ENGLISH:
+							customUnitLangEntityInfoHbn.setEnglish(entry.getValue());
+							break;
+						case BPLanguageId.FRENCH:
+							customUnitLangEntityInfoHbn.setFrench(entry.getValue());
+							break;
+						case BPLanguageId.RUSSIAN:
+							customUnitLangEntityInfoHbn.setRussian(entry.getValue());
+							break;
+						case BPLanguageId.ARABIC:
+							customUnitLangEntityInfoHbn.setArabic(entry.getValue());
+							break;
+						case BPLanguageId.SPANISH:
+							customUnitLangEntityInfoHbn.setSpanish(entry.getValue());
+							break;
+						}
+					}
+					session.save(customUnitLangEntityInfoHbn);
+					CustomUnitLangInfoHbn customUnitLangInfoHbn = new CustomUnitLangInfoHbn(customUnitLangEntityInfoHbn.getId()); 
+					session.save(customUnitLangInfoHbn);
+					customSignalInfoHbn.setCusSigNameLangId(customUnitLangInfoHbn.getId());
+				}
+				if(BPPacket.VAL_TYPE_ENUM == valueType) {
+					Map<Integer, Map<Integer, String> > enumLangMap = customSignalInfoUnit.getSignalEnumLangMap();
+					if(null != enumLangMap && !enumLangMap.isEmpty()) {
+						/*
+						Iterator<Map.Entry<Integer, Map<Integer, String> > > itLangEntity = enumLangMap.entrySet().iterator();
+						CustomUnitLangEntityInfoHbn customUnitLangEntityInfoHbn = new CustomUnitLangEntityInfoHbn();
+						while(itLangEntity.hasNext()) {
+							Map.Entry<Integer, String> entry = itLangEntity.next();
+							switch(entry.getKey()) {
+							case BPLanguageId.CHINESE:
+								customUnitLangEntityInfoHbn.setChinese(entry.getValue());
+								break;
+							case BPLanguageId.ENGLISH:
+								customUnitLangEntityInfoHbn.setEnglish(entry.getValue());
+								break;
+							case BPLanguageId.FRENCH:
+								customUnitLangEntityInfoHbn.setFrench(entry.getValue());
+								break;
+							case BPLanguageId.RUSSIAN:
+								customUnitLangEntityInfoHbn.setRussian(entry.getValue());
+								break;
+							case BPLanguageId.ARABIC:
+								customUnitLangEntityInfoHbn.setArabic(entry.getValue());
+								break;
+							case BPLanguageId.SPANISH:
+								customUnitLangEntityInfoHbn.setSpanish(entry.getValue());
+								break;
+							}
+							
+						}
+						session.save(customUnitLangEntityInfoHbn);
+						CustomUnitLangInfoHbn customUnitLangInfoHbn = new CustomUnitLangInfoHbn(customUnitLangEntityInfoHbn.getId()); 
+						session.save(customUnitLangInfoHbn);
+						customSignalInfoHbn.setCusSigNameLangId(customUnitLangInfoHbn.getId());
+						*/
+					}
+				}
+				session.saveOrUpdate(customSignalInfoHbn);
 				
-				SignalInterface signalInterface = customSignalUnitInfoList.get(i).getCustomSignalInterface();
+				SignalInterface signalInterface = customSignalInfoUnit.getCustomSignalInterface();
+				signalInterface.setCustomSignalId(customSignalInfoHbn.getId());
 				if(signalInterface.saveToDb(session) < 0) {
 					logger.error("Internal error: null == devInfoHbn");
 					return ret;
@@ -2312,27 +2464,25 @@ public class BeecomDB {
 						.setParameter("signal_id", systemSignalCustomInfoUnit.get(i).getSysSigId())
 						.setParameter("dev_id", uniqDevId).uniqueResult();
 				if (null == signalInfoHbn) {
-					signalInfoHbn = new SignalInfoHbn();
-					signalInfoHbn.setSignalId(systemSignalCustomInfoUnit.get(i).getSysSigId());
-					signalInfoHbn.setDevId(uniqDevId);
+					logger.error("Internal error: null == signalInfoHbn");
+					return ret;
 				}
-
-				session.save(signalInfoHbn);
 				
 				Long signalKeyId = signalInfoHbn.getId();
 				SystemSignalInfoHbn systemSignalInfoHbn = (SystemSignalInfoHbn)session
 						.createQuery("from SystemSignalInfoHbn where signalId = :signal_id")
 						.setParameter("signal_id",  signalKeyId).uniqueResult();
 				if(null == systemSignalInfoHbn) {
-					systemSignalInfoHbn = new SystemSignalInfoHbn();
-					systemSignalInfoHbn.setSignalId(signalKeyId);
+					logger.error("Internal error: null == systemSignalInfoHbn");
+					return ret;
 				}
 
 				systemSignalInfoHbn.setIfConfigDef(false);
 				
-				session.save(systemSignalInfoHbn);
+				session.update(systemSignalInfoHbn);
 				
 				SignalInterface signalInterface = systemSignalCustomInfoUnit.get(i).getSignalInterface();
+				signalInterface.setSystemSignalId(signalKeyId);
 				if(signalInterface.saveToDb(session) < 0) {
 					logger.error("Internal error: null == devInfoHbn");
 					return ret;
@@ -2394,6 +2544,287 @@ public class BeecomDB {
 		return 0;
 	}
 	
+    
+    public void clearDeviceSignalInfo(Long uniqDevId) {
+		if(uniqDevId <= 0) {
+			return;
+		}
+		  
+		Transaction tx = null;
+		try (Session session = sessionFactory.openSession()) {
+			tx = session.beginTransaction();
+
+			DevInfoHbn devInfoHbn = session.get(DevInfoHbn.class, uniqDevId);
+			if(null == devInfoHbn) {
+				return;
+			}
+			List<SignalInfoHbn> signalInfoHbnList = session  
+		            .createQuery("from SignalInfoHbn where devId = :dev_id")
+		            .setParameter("dev_id", uniqDevId).list();
+			if(null == signalInfoHbnList) {
+				return;
+			}
+			Iterator<SignalInfoHbn> it = signalInfoHbnList.iterator();
+			while(it.hasNext()) {
+				SignalInfoHbn signalInfoHbn = it.next();
+				if (signalInfoHbn.getSignalId() >= 0 && signalInfoHbn.getSignalId() < BPPacket.SYS_SIG_START_ID) {
+					CustomSignalInfoHbn customSignalInfoHbn = (CustomSignalInfoHbn) session
+							.createQuery("from CustomSignalInfoHbn where signalId = :signal_id")
+							.setParameter("signal_id", signalInfoHbn.getId()).uniqueResult();
+					if(null == customSignalInfoHbn) {
+						session.delete(signalInfoHbn);
+						continue;
+					}
+					if(null != customSignalInfoHbn) {
+						if(0 != customSignalInfoHbn.getCusSigNameLangId()) {
+							CustomSignalNameLangInfoHbn customSignalNameLangInfoHbn = session.get(CustomSignalNameLangInfoHbn.class,  customSignalInfoHbn.getCusSigNameLangId());
+							if(null != customSignalNameLangInfoHbn) {
+								CustomSignalNameLangEntityInfoHbn customSignalNameLangEntityInfoHbn = session.get(CustomSignalNameLangEntityInfoHbn.class,  customSignalNameLangInfoHbn.getCustomSignalName());
+								if(null != customSignalNameLangEntityInfoHbn) {
+									session.delete(customSignalNameLangEntityInfoHbn);
+								}
+								session.delete(customSignalNameLangInfoHbn);
+							}
+						}
+						if(0 != customSignalInfoHbn.getCusGroupLangId()) {
+							CustomGroupLangInfoHbn customGroupLangInfoHbn = session.get(CustomGroupLangInfoHbn.class,  customSignalInfoHbn.getCusGroupLangId());
+							if(null != customGroupLangInfoHbn) {
+								CustomSignalGroupLangEntityInfoHbn customSignalGroupLangEntityInfoHbn = session.get(CustomSignalGroupLangEntityInfoHbn.class,  customGroupLangInfoHbn.getGroupLang());
+								if(null != customSignalGroupLangEntityInfoHbn) {
+									session.delete(customSignalGroupLangEntityInfoHbn);
+								}
+								session.delete(customGroupLangInfoHbn);
+							}
+						}
+						if(0 != customSignalInfoHbn.getCusSigUnitLangId()) {
+							CustomUnitLangInfoHbn customUnitLangInfoHbn = session.get(CustomUnitLangInfoHbn.class,  customSignalInfoHbn.getCusSigUnitLangId());
+							if(null != customUnitLangInfoHbn) {
+								CustomUnitLangEntityInfoHbn customUnitLangEntityInfoHbn = session.get(CustomUnitLangEntityInfoHbn.class,  customUnitLangInfoHbn.getUnitLang());
+								if(null != customUnitLangEntityInfoHbn) {
+									session.delete(customUnitLangEntityInfoHbn);
+								}
+								session.delete(customSignalInfoHbn);
+							}
+						}
+						switch(customSignalInfoHbn.getValType()) {
+						case BPPacket.VAL_TYPE_UINT32: {
+							CustomSignalU32InfoHbn customSignalU32InfoHbn = (CustomSignalU32InfoHbn) session
+							.createQuery("from CustomSignalU32InfoHbn where customSignalId = :custom_signal_id")
+							.setParameter("custom_signal_id", customSignalInfoHbn.getId()).uniqueResult();
+							if(null != customSignalU32InfoHbn) {
+								session.delete(customSignalU32InfoHbn);
+							}
+							break;
+						}
+						case BPPacket.VAL_TYPE_UINT16: {
+							CustomSignalU16InfoHbn customSignalU16InfoHbn = (CustomSignalU16InfoHbn) session
+							.createQuery("from CustomSignalU16InfoHbn where customSignalId = :custom_signal_id")
+							.setParameter("custom_signal_id", customSignalInfoHbn.getId()).uniqueResult();
+							if(null != customSignalU16InfoHbn) {
+								session.delete(customSignalU16InfoHbn);
+							}
+							break;
+						}
+						case BPPacket.VAL_TYPE_IINT32: {
+							CustomSignalI32InfoHbn customSignalI32InfoHbn = (CustomSignalI32InfoHbn) session
+							.createQuery("from CustomSignalI32InfoHbn where customSignalId = :custom_signal_id")
+							.setParameter("custom_signal_id", customSignalInfoHbn.getId()).uniqueResult();
+							if(null != customSignalI32InfoHbn) {
+								session.delete(customSignalI32InfoHbn);
+							}
+							break;
+						}
+						case BPPacket.VAL_TYPE_IINT16: {
+							CustomSignalI16InfoHbn customSignalI16InfoHbn = (CustomSignalI16InfoHbn) session
+							.createQuery("from CustomSignalI16InfoHbn where customSignalId = :custom_signal_id")
+							.setParameter("custom_signal_id", customSignalInfoHbn.getId()).uniqueResult();
+							if(null != customSignalI16InfoHbn) {
+								session.delete(customSignalI16InfoHbn);
+							}
+							break;
+						}
+						case BPPacket.VAL_TYPE_ENUM: {
+							CustomSignalEnumInfoHbn customSignalEnumInfoHbn = (CustomSignalEnumInfoHbn) session
+							.createQuery("from CustomSignalEnumInfoHbn where customSignalId = :custom_signal_id")
+							.setParameter("custom_signal_id", customSignalInfoHbn.getId()).uniqueResult();
+							if(null != customSignalEnumInfoHbn) {
+								List<CustomSignalEnumLangInfoHbn> customSignalEnumLangInfoHbnList = session
+										.createQuery("from CustomSignalEnumLangInfoHbn where cusSigEnmId = :cus_sig_enm_id")
+										.setParameter("cus_sig_enm_id", customSignalEnumInfoHbn.getId()).list();
+								if(null != customSignalEnumLangInfoHbnList) {
+									Iterator<CustomSignalEnumLangInfoHbn> itCustomSignalEnumLangInfoHbn = customSignalEnumLangInfoHbnList.iterator();
+									while(itCustomSignalEnumLangInfoHbn.hasNext()) {
+										CustomSignalEnumLangInfoHbn customSignalEnumLangInfoHbn = itCustomSignalEnumLangInfoHbn.next();
+										CustomSignalEnumLangEntityInfoHbn customSignalEnumLangEntityInfoHbn = session.get(CustomSignalEnumLangEntityInfoHbn.class, customSignalEnumLangInfoHbn.getCusSigEnmId());
+										if(null != customSignalEnumLangEntityInfoHbn) {
+											session.delete(customSignalEnumLangEntityInfoHbn);
+										}
+										session.delete(customSignalEnumLangInfoHbn);
+									}
+								
+								}
+									
+								session.delete(customSignalEnumInfoHbn);
+							}
+							break;
+						}
+						case BPPacket.VAL_TYPE_FLOAT: {
+							CustomSignalFloatInfoHbn customSignalFloatInfoHbn = (CustomSignalFloatInfoHbn) session
+							.createQuery("from CustomSignalFloatInfoHbn where customSignalId = :custom_signal_id")
+							.setParameter("custom_signal_id", customSignalInfoHbn.getId()).uniqueResult();
+							if(null != customSignalFloatInfoHbn) {
+								session.delete(customSignalFloatInfoHbn);
+							}
+							break;
+						}
+						case BPPacket.VAL_TYPE_STRING: {
+							CustomSignalStringInfoHbn customSignalStringInfoHbn = (CustomSignalStringInfoHbn) session
+							.createQuery("from CustomSignalStringInfoHbn where customSignalId = :custom_signal_id")
+							.setParameter("custom_signal_id", customSignalInfoHbn.getId()).uniqueResult();
+							if(null != customSignalStringInfoHbn) {
+								session.delete(customSignalStringInfoHbn);
+							}
+							break;
+						}
+						case BPPacket.VAL_TYPE_BOOLEAN: {
+							CustomSignalBooleanInfoHbn customSignalBooleanInfoHbn = (CustomSignalBooleanInfoHbn) session
+							.createQuery("from CustomSignalBooleanInfoHbn where customSignalId = :custom_signal_id")
+							.setParameter("custom_signal_id", customSignalInfoHbn.getId()).uniqueResult();
+							if(null != customSignalBooleanInfoHbn) {
+								session.delete(customSignalBooleanInfoHbn);
+							}
+							break;
+						}
+						default:
+							// do nothing
+						}
+						session.delete(customSignalInfoHbn);
+					}
+					
+				} else if (signalInfoHbn.getSignalId() >= BPPacket.SYS_SIG_START_ID
+						&& signalInfoHbn.getSignalId() <= BPPacket.MAX_SIG_ID) {
+					SystemSignalInfoHbn systemSignalInfoHbn = (SystemSignalInfoHbn) session
+							.createQuery("from SystemSignalInfoHbn where signalId = :signal_id")
+							.setParameter("signal_id", signalInfoHbn.getId()).uniqueResult();
+					if(null != systemSignalInfoHbn) {
+						if(!systemSignalInfoHbn.getIfConfigDef()) {
+							SysSigInfo sysSigInfo = BPSysSigTable.getSysSigTableInstance().getSysSigInfoLst().get(signalInfoHbn.getSignalId() - BPPacket.SYS_SIG_START_ID);
+							if(null != sysSigInfo) {
+								short sigType = sysSigInfo.getValType();
+								switch(sigType) {
+								case BPPacket.VAL_TYPE_UINT32: {
+									SystemSignalU32InfoHbn systemSignalU32InfoHbn = (SystemSignalU32InfoHbn) session
+									.createQuery("from SystemSignalU32InfoHbn where systemSignalId = :system_signal_id")
+									.setParameter("custom_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
+									if(null != systemSignalU32InfoHbn) {
+										session.delete(systemSignalU32InfoHbn);
+									}
+									break;
+								}
+								case BPPacket.VAL_TYPE_UINT16: {
+									SystemSignalU16InfoHbn systemSignalU16InfoHbn = (SystemSignalU16InfoHbn) session
+									.createQuery("from SystemSignalU16InfoHbn where systemSignalId = :system_signal_id")
+									.setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
+									if(null != systemSignalU16InfoHbn) {
+										session.delete(systemSignalU16InfoHbn);
+									}
+									break;
+								}
+								case BPPacket.VAL_TYPE_IINT32: {
+									SystemSignalI32InfoHbn systemSignalI32InfoHbn = (SystemSignalI32InfoHbn) session
+									.createQuery("from SystemSignalI32InfoHbn where systemSignalId = :system_signal_id")
+									.setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
+									if(null != systemSignalInfoHbn) {
+										session.delete(systemSignalInfoHbn);
+									}
+									break;
+								}
+								case BPPacket.VAL_TYPE_IINT16: {
+									SystemSignalI16InfoHbn systemSignalI16InfoHbn = (SystemSignalI16InfoHbn) session
+									.createQuery("from SystemSignalI16InfoHbn where systemSignalId = :system_signal_id")
+									.setParameter("custom_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
+									if(null != systemSignalI16InfoHbn) {
+										session.delete(systemSignalI16InfoHbn);
+									}
+									break;
+								}
+								case BPPacket.VAL_TYPE_ENUM: {
+									SystemSignalEnumInfoHbn systemSignalEnumInfoHbn = (SystemSignalEnumInfoHbn) session
+									.createQuery("from SystemSignalEnumInfoHbn where systemSignalId = :system_signal_id")
+									.setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
+									if(null != systemSignalEnumInfoHbn) {
+										List<SystemSignalEnumLangInfoHbn> systemSignalEnumLangInfoHbnList = session
+												.createQuery("from SystemSignalEnumLangInfoHbn where sysSigEnmId = :sys_sig_enm_id")
+												.setParameter("cus_sig_enm_id", systemSignalEnumInfoHbn.getId()).list();
+										if(null != systemSignalEnumLangInfoHbnList) {
+											Iterator<SystemSignalEnumLangInfoHbn> itSystemSignalEnumLangInfoHbn = systemSignalEnumLangInfoHbnList.iterator();
+											while(itSystemSignalEnumLangInfoHbn.hasNext()) {
+												SystemSignalEnumLangInfoHbn systemSignalEnumLangInfoHbn = itSystemSignalEnumLangInfoHbn.next();
+												session.delete(systemSignalEnumLangInfoHbn);
+											}
+										
+										}
+											
+										session.delete(systemSignalEnumInfoHbn);
+									}
+									break;
+								}
+								case BPPacket.VAL_TYPE_FLOAT: {
+									SystemSignalFloatInfoHbn systemSignalFloatInfoHbn = (SystemSignalFloatInfoHbn) session
+									.createQuery("from SystemSignalFloatInfoHbn where systemSignalId = :system_signal_id")
+									.setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
+									if(null != systemSignalFloatInfoHbn) {
+										session.delete(systemSignalFloatInfoHbn);
+									}
+									break;
+								}
+								case BPPacket.VAL_TYPE_STRING: {
+									SystemSignalStringInfoHbn systemSignalStringInfoHbn = (SystemSignalStringInfoHbn) session
+									.createQuery("from SystemSignalStringInfoHbn where systemSignalId = :system_signal_id")
+									.setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
+									if(null != systemSignalStringInfoHbn) {
+										session.delete(systemSignalStringInfoHbn);
+									}
+									break;
+								}
+								case BPPacket.VAL_TYPE_BOOLEAN: {
+									SystemSignalBooleanInfoHbn systemSignalBooleanInfoHbn = (SystemSignalBooleanInfoHbn) session
+									.createQuery("from SystemSignalBooleanInfoHbn where systemSignalId = :system_signal_id")
+									.setParameter("custom_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
+									if(null != systemSignalBooleanInfoHbn) {
+										session.delete(systemSignalBooleanInfoHbn);
+									}
+									break;
+								}
+								default:
+									// do nothing
+								}
+							}
+							
+							
+						}
+						session.delete(systemSignalInfoHbn);
+					}
+				}
+				session.delete(signalInfoHbn);
+				
+			}
+
+			devInfoHbn.setSigMapChksum(INVALID_SIG_MAP_CHECKSUM);
+			session.saveOrUpdate(devInfoHbn);
+			tx.commit();
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+		}
+    }
+    
+    private boolean saveLanguageLang(Map<Integer, String> langMap) {
+    	return false;
+    }
+	
 	/*
 	public List<SystemSignalInfoUnit> getSysSigInfoMap(List<SystemSignalInfoHbn> systemSignalInfoHbnLst) {
 		List<SystemSignalInfoUnit> systemSignalInfoUnitLst = new ArrayList<SystemSignalInfoUnit>();
@@ -2440,6 +2871,7 @@ public class BeecomDB {
     private boolean ifSnFormal(String sn) {
     	return sn != null && sn.length() > 0 && sn.length() <=64;
     }
+
 	
 
 }

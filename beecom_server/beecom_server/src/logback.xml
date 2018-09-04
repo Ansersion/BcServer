@@ -8,7 +8,7 @@
         </rollingPolicy>
 
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <Pattern>%d [%thread] %-5level %40logger{40} - %msg%n</Pattern>
+            <Pattern>%d [%thread] %-5level %40logger{40} - %l %msg %n</Pattern>
         </layout>
     </appender>
 

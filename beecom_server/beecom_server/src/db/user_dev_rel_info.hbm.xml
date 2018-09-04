@@ -9,7 +9,7 @@
             <generator class="native" />
         </id>  
         <property name="userId" column="user_id" />  
-        <property name="devId" column="dev_id" />  
+        <property name="snId" column="sn_id" />  
         <property name="auth" column="auth" />  
     </class>    
 </hibernate-mapping>
