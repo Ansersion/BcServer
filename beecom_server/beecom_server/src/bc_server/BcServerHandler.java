@@ -50,6 +50,7 @@ import db.DeviceInfoUnit;
 import db.SystemSignalCustomInfoUnit;
 import db.UserInfoUnit;
 import db.BeecomDB.GetSnErrorEnum;
+import db.BeecomDB.LoginErrorEnum;
 import javafx.util.Pair;
 import other.BPError;
 
@@ -178,7 +179,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 					case USER_INVALID:
 						logger.warn("Invalid user name:{}", userName);
 						packAck.getVrbHead().setRetCode(
-								BPPacketCONNACK.RET_CODE_USER_INVALID);
+								BPPacketCONNACK.RET_CODE_USER_OR_PASSWORD_INVALID);
 						session.write(packAck);
 						session.closeOnFlush();
 						break;
@@ -207,12 +208,23 @@ public class BcServerHandler extends IoHandlerAdapter {
 				
 			} 
 			if(devClntFlag) {
-				BeecomDB.LoginErrorEnum loginErrorEnum;
+				BeecomDB.LoginErrorEnum loginErrorEnum = LoginErrorEnum.USER_OR_PASSWORD_INVALID;
 				try {
 					// devUniqId = Integer.valueOf(userName).intValue();
-					devUniqId = BeecomDB.getInstance().getDeviceUniqId(userName);
 					DeviceInfoUnit deviceInfoUnit = new DeviceInfoUnit();
-					loginErrorEnum = BeecomDB.getInstance().checkDevicePassword(devUniqId, password, deviceInfoUnit);
+					devUniqId = BeecomDB.getInstance().getDeviceUniqId(userName, deviceInfoUnit);
+					if(devUniqId > 0) {
+						if(deviceInfoUnit.getDevInfoHbn().getPassword().equals(password)) {
+							loginErrorEnum = LoginErrorEnum.LOGIN_OK;
+						}
+					}
+					// loginErrorEnum = BeecomDB.getInstance().checkDevicePassword(devUniqId, password, deviceInfoUnit);
+					if(loginErrorEnum != LoginErrorEnum.LOGIN_OK) {
+						packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_USER_OR_PASSWORD_INVALID);
+						session.write(packAck);
+						session.closeOnFlush();
+					}
+					/*
 					switch (loginErrorEnum) {
 					case USER_INVALID:
 						logger.warn("Invalid user name:{}", userName);
@@ -232,11 +244,11 @@ public class BcServerHandler extends IoHandlerAdapter {
 						}
 						break;
 					}
+					*/
 
 				} catch (NumberFormatException e) {
-					loginErrorEnum = BeecomDB.LoginErrorEnum.USER_INVALID;
 					packAck.getVrbHead().setRetCode(
-							BPPacketCONNACK.RET_CODE_USER_INVALID);
+							BPPacketCONNACK.RET_CODE_USER_OR_PASSWORD_INVALID);
 					session.write(packAck);
 					session.closeOnFlush();
 				}
@@ -305,7 +317,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 					return;
 				}
 				String sn = pld.getDeviceSn();
-				long devUniqIdTmp = BeecomDB.getInstance().getDeviceUniqId(sn);
+				long devUniqIdTmp = BeecomDB.getInstance().getDeviceUniqId(sn, null);
 				BeecomDB.GetSnErrorEnum getSnErrorEnum = BeecomDB.getInstance().checkGetSNPermission(bpUserSession.getUserInfoUnit().getUserInfoHbn().getId(), sn);
 				if(getSnErrorEnum != BeecomDB.GetSnErrorEnum.GET_SN_OK) {
 					packAck.getVrbHead().setRetCode(BPPacketGET.RET_CODE_GET_SN_PERMISSION_DENY_ERR);

@@ -59,6 +59,7 @@ public class Payload {
 	private List<Integer> systemSignalEnabledList;
 	private Map<Integer, Object> sysSigValMap;
 	private Map<Integer, Pair<Byte, Object>> cusSigValMap;
+	private Map<Integer, Pair<Byte, Object>> sigValMap;
 	private List<Long> deviceIdList;
 	private int customSignalLangSupportMask;
 	private long sigMapCheckSum;
@@ -445,7 +446,25 @@ public class Payload {
 		this.sigMapCheckSum = sigMapCheckSum;
 	}
 
+	public Map<Integer, Pair<Byte, Object> > putSigValMap(Integer sigId, Byte sigType, Object value) {
+		if(null == sigId || null == sigType || null == value) {
+			return sigValMap;
+		}
+		sigValMap.put(sigId, new Pair<Byte, Object>(sigType, value));
+		return sigValMap;
+	}
+	
+	public void initSigValMap() {
+		if(null == sigValMap) {
+			sigValMap = new HashMap<Integer, Pair<Byte, Object>>();
+		}
+		sigValMap.clear();
+	}
 
+	public Map<Integer, Pair<Byte, Object>> getSigValMap() {
+		return sigValMap;
+	}
+		
 	
 	
 	

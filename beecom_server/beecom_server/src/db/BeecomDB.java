@@ -69,6 +69,7 @@ public class BeecomDB {
 		LOGIN_OK,
 		USER_INVALID,
 		PASSWORD_INVALID,
+		USER_OR_PASSWORD_INVALID,
 	}
 	
 	public static enum GetSnErrorEnum {
@@ -1028,20 +1029,23 @@ public class BeecomDB {
 		return userName2SessionMap;
 	}
 
-	public long getDeviceUniqId(String sn) {
+	public long getDeviceUniqId(String sn, DeviceInfoUnit deviceInfoUnit) {
 		if(!ifSnFormal(sn)) {
 			return 0;
 		}
+
 		long deviceUniqId = 0;
+		SnInfoHbn snInfoHbn = null;
+		DevInfoHbn devInfoHbn = null;
 		Transaction tx = null;
 		try (Session session = sessionFactory.openSession()) {
 			tx = session.beginTransaction();
-		    SnInfoHbn snInfoHbn = (SnInfoHbn)session  
+		    snInfoHbn = (SnInfoHbn)session  
 		            .createQuery(" from SnInfoHbn where sn = ? ")
 		            .setParameter(0, sn)
 		            .uniqueResult();  
 		    if(snInfoHbn != null) {
-			    DevInfoHbn devInfoHbn = (DevInfoHbn)session  
+			    devInfoHbn = (DevInfoHbn)session  
 			            .createQuery(" from DevInfoHbn where snId = :sn_id ")
 			            .setParameter("sn_id", snInfoHbn.getId())
 			            .uniqueResult();  
@@ -1057,6 +1061,11 @@ public class BeecomDB {
 			String str = sw.toString();
 			logger.error(str);
 			deviceUniqId = 0;
+		}
+		if(null != deviceInfoUnit && deviceUniqId > 0) {
+			deviceInfoUnit.setDevInfoHbn(devInfoHbn);
+			deviceInfoUnit.setSnInfoHbn(snInfoHbn);
+			
 		}
 		return deviceUniqId;
 	}

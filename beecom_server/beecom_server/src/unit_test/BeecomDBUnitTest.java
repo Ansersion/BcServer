@@ -73,7 +73,7 @@ public class BeecomDBUnitTest {
 	@Test
 	public void test() {
 		BeecomDB beecomDB = BeecomDB.getInstance();
-		long n = beecomDB.getDeviceUniqId("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2");
+		long n = beecomDB.getDeviceUniqId("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2", null);
 		assertEquals(n,2);
 		
 		List<SystemSignalCustomInfoUnit> systemSignalCustomInfoUnit = new ArrayList<SystemSignalCustomInfoUnit>();

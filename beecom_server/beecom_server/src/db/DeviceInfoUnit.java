@@ -2,15 +2,7 @@ package db;
 
 public class DeviceInfoUnit {
 	private DevInfoHbn devInfoHbn;
-	
-	public DeviceInfoUnit() {
-		this.devInfoHbn = null;
-	}
-
-	public DeviceInfoUnit(DevInfoHbn devInfoHbn) {
-		super();
-		this.devInfoHbn = devInfoHbn;
-	}
+	private SnInfoHbn snInfoHbn;
 
 	public DevInfoHbn getDevInfoHbn() {
 		return devInfoHbn;
@@ -18,6 +10,14 @@ public class DeviceInfoUnit {
 
 	public void setDevInfoHbn(DevInfoHbn devInfoHbn) {
 		this.devInfoHbn = devInfoHbn;
+	}
+
+	public SnInfoHbn getSnInfoHbn() {
+		return snInfoHbn;
+	}
+
+	public void setSnInfoHbn(SnInfoHbn snInfoHbn) {
+		this.snInfoHbn = snInfoHbn;
 	}
 
 	@Override

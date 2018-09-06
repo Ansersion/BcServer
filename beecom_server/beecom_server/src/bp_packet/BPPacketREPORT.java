@@ -193,53 +193,29 @@ public class BPPacketREPORT extends BPPacket {
 			IoBuffer ioBuffer = getIoBuffer();
 			
 			if (vrb.getSigValFlag()) {
+				pld.initSigValMap();
 				final int sigNum = ioBuffer.get();
 				for(int i = 0; i < sigNum; i++) {
 					int sigId = ioBuffer.getUnsignedShort();
 					byte sigType = ioBuffer.get();
 					switch(sigType) {
 					case VAL_TYPE_UINT32:
-						if(sigId < BPPacket.SYS_SIG_START_ID) {
-							pld.putCusSigValMap(sigId, sigType, ioBuffer.getUnsignedInt());
-						} else {
-							pld.putSysSigValMap(sigId, ioBuffer.getUnsignedInt());
-						}
+						pld.putSigValMap(sigId, sigType, ioBuffer.getUnsignedInt());
 						break;
 					case VAL_TYPE_UINT16:
-						if(sigId < BPPacket.SYS_SIG_START_ID) {
-							pld.putCusSigValMap(sigId, sigType, ioBuffer.getUnsignedShort());
-						} else {
-							pld.putSysSigValMap(sigId, ioBuffer.getUnsignedShort());
-						}
+						pld.putSigValMap(sigId, sigType, ioBuffer.getUnsignedShort());
 						break;
 					case VAL_TYPE_IINT32:
-						if(sigId < BPPacket.SYS_SIG_START_ID) {
-							pld.putCusSigValMap(sigId, sigType, ioBuffer.getInt());
-						} else {
-							pld.putSysSigValMap(sigId, ioBuffer.getInt());
-						}
+						pld.putSigValMap(sigId, sigType, ioBuffer.getInt());
 						break;
 					case VAL_TYPE_IINT16:
-						if(sigId < BPPacket.SYS_SIG_START_ID) {
-							pld.putCusSigValMap(sigId, sigType, ioBuffer.getShort());
-						} else {
-							pld.putSysSigValMap(sigId, ioBuffer.getShort());
-						}
+						pld.putSigValMap(sigId, sigType, ioBuffer.getShort());
 						break;
 					case VAL_TYPE_ENUM:
-						if(sigId < BPPacket.SYS_SIG_START_ID) {
-							pld.putCusSigValMap(sigId, sigType, ioBuffer.getUnsignedShort());
-						} else {
-							pld.putSysSigValMap(sigId, ioBuffer.getUnsignedShort());
-						}
+						pld.putSigValMap(sigId, sigType, ioBuffer.getUnsignedShort());
 						break;
 					case VAL_TYPE_FLOAT:
-						if(sigId < BPPacket.SYS_SIG_START_ID) {
-							pld.putCusSigValMap(sigId, sigType, ioBuffer.getFloat());
-						} else {
-							
-							pld.putSysSigValMap(sigId, ioBuffer.getFloat());
-						}
+						pld.putSigValMap(sigId, sigType, ioBuffer.getFloat());
 						break;
 					case VAL_TYPE_STRING:
 					{
@@ -247,11 +223,7 @@ public class BPPacketREPORT extends BPPacket {
 						byte[] strBytes = new byte[strLen];
 						ioBuffer.get(strBytes);
 						String value = new String(strBytes, "UTF-8");
-						if(sigId < BPPacket.SYS_SIG_START_ID) {
-							pld.putCusSigValMap(sigId, sigType, value);
-						} else {
-							pld.putSysSigValMap(sigId, value);
-						}
+						pld.putSigValMap(sigId, sigType, value);
 						break;
 					}
 					case VAL_TYPE_BOOLEAN:
@@ -262,11 +234,7 @@ public class BPPacketREPORT extends BPPacket {
 						} else {
 							value = true;
 						}
-						if(sigId < BPPacket.SYS_SIG_START_ID) {
-							pld.putCusSigValMap(sigId, sigType, value);
-						} else {
-							pld.putSysSigValMap(sigId, value);
-						}
+						pld.putSigValMap(sigId, sigType, value);
 						break;
 					}
 					default:
@@ -275,8 +243,6 @@ public class BPPacketREPORT extends BPPacket {
 				}
 			
 			} else {
-
-
 				if (vrb.getSysSigMapFlag()) {
 					byte distAndClass;
 					int dist;
