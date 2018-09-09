@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import db.RelayData;
+import db.SignalInfoUnitInterface;
 
 public class BPDeviceSession extends BPSession {
 	private static final Logger logger = LoggerFactory.getLogger(BPDeviceSession.class); 
@@ -23,7 +24,7 @@ public class BPDeviceSession extends BPSession {
 	private Long uniqDeviceId;
 	private String password;
 	private Map<Integer, List<Object> > signalValueMap;
-
+	private Map<Integer, SignalInfoUnitInterface> signalId2InfoUnitMap;
 	
 	public BPDeviceSession(IoSession session) {
 		super(session);
@@ -105,4 +106,14 @@ public class BPDeviceSession extends BPSession {
 	public long getUniqDevId() {
 		return uniqDeviceId;
 	}
+
+	public Map<Integer, SignalInfoUnitInterface> getSignalId2InfoUnitMap() {
+		return signalId2InfoUnitMap;
+	}
+
+	public void setSignalId2InfoUnitMap(Map<Integer, SignalInfoUnitInterface> signalId2InfoUnitMap) {
+		this.signalId2InfoUnitMap = signalId2InfoUnitMap;
+	}
+	
+	
 }

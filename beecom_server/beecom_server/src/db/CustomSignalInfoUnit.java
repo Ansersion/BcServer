@@ -2,7 +2,7 @@ package db;
 
 import java.util.Map;
 
-public class CustomSignalInfoUnit {
+public class CustomSignalInfoUnit implements SignalInfoUnitInterface {
 	private int cusSigId;
 	private boolean ifNotifing;
 	private boolean ifAlarm;

@@ -1,6 +1,6 @@
 package db;
 
-public class SystemSignalInfoUnit {
+public class SystemSignalInfoUnit implements SignalInfoUnitInterface {
 
 	private int sysSigId;
 	private boolean ifNotifing;

@@ -28,6 +28,8 @@ public class BPPacketRPRTACK extends BPPacket {
 	@Override
 	public boolean assembleVariableHeader() throws BPAssembleVrbHeaderException {
 		super.assembleVariableHeader();
+		byte flags = (byte)getVrbHead().getFlags();
+		getIoBuffer().put(flags);
 		int packSeq = (byte)getVrbHead().getPackSeq();
 		getIoBuffer().putUnsignedShort(packSeq);	
 		byte retCode = (byte)getVrbHead().getRetCode();

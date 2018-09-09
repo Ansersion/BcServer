@@ -628,6 +628,8 @@ public class BcServerHandler extends IoHandlerAdapter {
 			}
 			
 			if(sigValFlag) {
+				
+				/*
 				Map<Integer, Object> systemSignalValuesSessoin = bpDeviceSession.getSystemSignalValueMap();
 				Map<Integer, Object> systemSignalValues = pld.getSysSigValMap();
 				  
@@ -671,7 +673,9 @@ public class BcServerHandler extends IoHandlerAdapter {
 				    customSignalValuesSessoin.put(entry.getKey(), entry.getValue());
 				  
 				}  
+				*/
 			}
+
 
 			
 			session.write(packAck);
@@ -679,7 +683,9 @@ public class BcServerHandler extends IoHandlerAdapter {
 			/* NOT SUPPORTED */
 		} else if (BPPacketType.DISCONN == packType) {
 			bpSession = (BPSession)session.getAttribute(SESS_ATTR_BP_SESSION);
-			logger.info("Disconn, {}", bpSession.toString());
+			if(bpSession != null) {
+				logger.info("Disconn, {}", bpSession.toString());
+			}
 			session.closeOnFlush();
 		} else {
 			logger.info("Error: messageRecevied: Not supported packet type");
