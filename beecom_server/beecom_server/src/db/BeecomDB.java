@@ -25,6 +25,7 @@ import org.hibernate.procedure.internal.Util.ResultClassesResolutionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import bp_packet.BPDeviceSession;
 import bp_packet.BPPacket;
 import bp_packet.BPSession;
 import bp_packet.BPUserSession;
@@ -2885,6 +2886,78 @@ public class BeecomDB {
     	return sn != null && sn.length() > 0 && sn.length() <=64;
     }
 
-	
+    public boolean getSignalInfoUnitInterfaceMap(BPDeviceSession bpDeviceSession) {
+    	boolean ret = false;
+    	if(null == bpDeviceSession) {
+			return ret;
+		}
+    	long devUniqId = bpDeviceSession.getUniqDevId();
+    	if(devUniqId <= 0) {
+    		return ret;
+    	}
+    	Map<Integer, SignalInfoUnitInterface> signalId2InfoUnitMap;
+
+		Transaction tx = null;
+		try (Session session = sessionFactory.openSession()) {
+			tx = session.beginTransaction();
+
+			List<SignalInfoHbn> signalInfoHbnList = session
+					.createQuery("from SignalInfoHbn where devId = :dev_id")
+					.setParameter("dev_id", devUniqId).list();
+			
+			Iterator<SignalInfoHbn> itSih = signalInfoHbnList.iterator();
+			List<SysSigInfo> sysSigInfoLst = BPSysSigTable.getSysSigTableInstance().getSysSigInfoLst();
+			int signalIdTmp;
+			SysSigInfo sysSigInfoTmp;
+			short valueType;
+			while(itSih.hasNext()) {
+				SignalInfoHbn signalInfoHbn = itSih.next();
+				signalIdTmp = signalInfoHbn.getSignalId();
+				if(signalIdTmp < BPPacket.SYS_SIG_START_ID) {
+					
+				} else {
+					SystemSignalInfoHbn systemSignalInfoHbn = (SystemSignalInfoHbn)session
+							.createQuery("from SystemSignalInfoHbn where signalId = :signal_id")
+							.setParameter("signal_id", signalInfoHbn.getId()).uniqueResult();
+					if(!systemSignalInfoHbn.getIfConfigDef()) {
+						sysSigInfoTmp = sysSigInfoLst.get(signalIdTmp - BPPacket.SYS_SIG_START_ID);
+						valueType = sysSigInfoTmp.getValType();
+						switch(valueType) {
+						case BPPacket.VAL_TYPE_UINT32:
+							break;
+						case BPPacket.VAL_TYPE_UINT16:
+							break;
+						case BPPacket.VAL_TYPE_IINT32:
+							break;
+						case BPPacket.VAL_TYPE_IINT16:
+							break;
+						case BPPacket.VAL_TYPE_ENUM:
+							break;
+						case BPPacket.VAL_TYPE_FLOAT:
+							break;
+						case BPPacket.VAL_TYPE_STRING:
+							break;
+						case BPPacket.VAL_TYPE_BOOLEAN:
+							break;
+							default:
+								logger.error("Inner error: invalid value type");
+								return ret;
+						}
+					}
+				}
+			}
+
+			ret = true;
+			tx.commit();
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+			ret = false;
+		}
+
+    	return ret;
+    }
 
 }

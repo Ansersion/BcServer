@@ -583,8 +583,16 @@ public class BcServerHandler extends IoHandlerAdapter {
 			vrbAck = packAck.getVrbHead();
 			
 			if(sigMapChecksumFlagOnly) {
+				bpDeviceSession.setSigMapCheckOK(false);
 				if (!BeecomDB.getInstance().checkSignalMapChksum(uniqDevId, pld.getSigMapCheckSum())) {
 					packAck.getVrbHead().setRetCode(BPPacketREPORT.RET_CODE_SIGNAL_MAP_CHECKSUM_ERR);
+				} else {
+					if(BeecomDB.getInstance().getSignalInfoUnitInterfaceMap(bpDeviceSession)) {
+						bpDeviceSession.setSigMapCheckOK(true);
+					} else {
+						packAck.getVrbHead().setRetCode(BPPacketREPORT.RET_CODE_SIGNAL_MAP_CHECKSUM_ERR);
+					}
+					
 				}
 				session.write(packAck);
 				return;
@@ -592,6 +600,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 			
 			if(sysSigMapFlag || sysSigCusInfoFlag || cusSigMapFlag) {
 				BeecomDB.getInstance().clearDeviceSignalInfo(uniqDevId);
+				bpDeviceSession.setSigMapCheckOK(false);
 			}
 			
 
@@ -599,6 +608,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 			
 			if(newSigMapFlagOk && sysSigMapFlag) {			
 				List<Integer> systemSignalEnabledList = pld.getSystemSignalEnabledList();
+				/* input the session of the signal map */
 				if(!BeecomDB.getInstance().putSystemSignalEnabledMap(uniqDevId, systemSignalEnabledList)) {
 					newSigMapFlagOk = false;
 				}
@@ -606,12 +616,14 @@ public class BcServerHandler extends IoHandlerAdapter {
 			
 			if(newSigMapFlagOk && sysSigCusInfoFlag) {
 				List<SystemSignalCustomInfoUnit> systemSignalCustomInfoUnit = pld.getSystemSignalCustomInfoUnitLst();
+				packAck.getVrbHead().setRetCode(BPPacketREPORT.RET_CODE_SIGNAL_MAP_CHECKSUM_ERR);
 				if(!BeecomDB.getInstance().putSystemCustomSignalInfoMap(uniqDevId, systemSignalCustomInfoUnit)) {
 					newSigMapFlagOk = false;
 				}
 			}
 			if(newSigMapFlagOk && cusSigMapFlag) {
 				List<CustomSignalInfoUnit> customSignalInfoUnitList = pld.getCustomSignalInfoUnitLst();
+				packAck.getVrbHead().setRetCode(BPPacketREPORT.RET_CODE_SIGNAL_MAP_CHECKSUM_ERR);
 				if(!BeecomDB.getInstance().putCustomSignalMap(uniqDevId, customSignalInfoUnitList)) {
 					newSigMapFlagOk = false;
 				}
@@ -624,6 +636,8 @@ public class BcServerHandler extends IoHandlerAdapter {
 			if(newSigMapFlagOk && (sysSigMapFlag || cusSigMapFlag || sysSigCusInfoFlag)) {
 				if(!BeecomDB.getInstance().putSignalMapChksum(uniqDevId, pld.getSigMapCheckSum())) {
 					logger.error("Internal error: !BeecomDB.getInstance().putSignalMapChksum(uniqDevId, pld.getSigMapChecksum())");
+				} else {
+					bpDeviceSession.setSigMapCheckOK(true);
 				}
 			}
 			

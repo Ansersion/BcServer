@@ -1,5 +1,7 @@
 package db;
 
+import java.util.Map;
+
 public class SystemSignalInfoUnit implements SignalInfoUnitInterface {
 
 	private int sysSigId;
@@ -36,6 +38,66 @@ public class SystemSignalInfoUnit implements SignalInfoUnitInterface {
 	public String toString() {
 		return "SystemSignalInfoUnit [sysSigId=" + sysSigId + ", ifNotifing=" + ifNotifing + ", ifConfigDef="
 				+ ifConfigDef + ", systemSignalInterface=" + systemSignalInterface + "]";
+	}
+
+	@Override
+	public boolean ifNotifying() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public int getSignalId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public SignalInterface getSignalInterface() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean ifConfigDef() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean ifAlarm() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean ifDisplay() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Map<Integer, String> getSignalNameLangMap() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Map<Integer, String> getGignalUnitLangMap() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Map<Integer, String> getGroupLangMap() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Map<Integer, Map<Integer, String>> getSignalEnumLangMap() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	

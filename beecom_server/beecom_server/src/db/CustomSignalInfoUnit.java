@@ -81,6 +81,41 @@ public class CustomSignalInfoUnit implements SignalInfoUnitInterface {
 				+ ", signalEnumLangMap=" + signalEnumLangMap + ", customAlarmInfoUnit=" + customAlarmInfoUnit
 				+ ", customSignalInterface=" + customSignalInterface + "]";
 	}
+	@Override
+	public boolean ifNotifying() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public int getSignalId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public SignalInterface getSignalInterface() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public boolean ifConfigDef() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public boolean ifAlarm() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public boolean ifDisplay() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public Map<Integer, String> getGignalUnitLangMap() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	
 
