@@ -24,6 +24,8 @@ public abstract class SignalInterface {
 	}
 	public void setEnStatistics(Boolean enStatistics) {
 	}
+	
+	public abstract Long getId();
 
 	public abstract int getValType();
 

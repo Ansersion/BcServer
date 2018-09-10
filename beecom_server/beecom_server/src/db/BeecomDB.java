@@ -629,6 +629,70 @@ public class BeecomDB {
 
 		return customSignalInterface;
 	}
+	
+    /* for system signal info */
+    private SignalInterface getSignalInterface(short valueType, SystemSignalInfoHbn systemSignalInfoHbn) {
+    	SignalInterface signalInterface = null;
+    	if(null == systemSignalInfoHbn) {
+    		return signalInterface;
+    	}
+    	if(!BPPacket.ifSigTypeValid(valueType)) {
+    		return signalInterface;
+    	}
+    	/* construct a hql like "from <table> where systemSignalId =: system_signal_id"*/
+    	StringBuilder hql = new StringBuilder();
+    	hql.append("from ");
+		String tableName;
+		switch(valueType) {
+		case BPPacket.VAL_TYPE_UINT32:
+			tableName = "SystemSignalU32InfoHbn";
+			break;
+		case BPPacket.VAL_TYPE_UINT16:
+			tableName = "SystemSignalU16InfoHbn";
+			break;
+		case BPPacket.VAL_TYPE_IINT32:
+			tableName = "SystemSignalI32InfoHbn";
+			break;
+		case BPPacket.VAL_TYPE_IINT16:
+			tableName = "SystemSignalI16InfoHbn";
+			break;
+		case BPPacket.VAL_TYPE_ENUM:
+			tableName = "SystemSignalEnumInfoHbn";
+			break;
+		case BPPacket.VAL_TYPE_FLOAT:
+			tableName = "SystemSignalFloatInfoHbn";
+			break;
+		case BPPacket.VAL_TYPE_STRING:
+			tableName = "SystemSignalStringInfoHbn";
+			break;
+		case BPPacket.VAL_TYPE_BOOLEAN:
+			tableName = "SystemSignalBooleanInfoHbn";
+			break;
+		default:
+			logger.error("Inner error: invalid value type");
+			return signalInterface;
+		}
+		hql.append(tableName);
+		hql.append(" where systemSignalId =: system_signal_id");
+		
+		Transaction tx = null;
+		try (Session session = sessionFactory.openSession()) {
+			tx = session.beginTransaction();
+			signalInterface = (SignalInterface)session.createQuery(hql.toString())
+		            .setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
+		    
+			// tx.commit();
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+			signalInterface = null;
+		}
+		
+		return signalInterface;
+		
+    }
 
 	
 	protected List<Integer> getCustomSignalEnumLangInfoEnumKeysLst(CustomSignalEnumInfoHbn customSignalEnumInfoHbn) {
@@ -2895,7 +2959,7 @@ public class BeecomDB {
     	if(devUniqId <= 0) {
     		return ret;
     	}
-    	Map<Integer, SignalInfoUnitInterface> signalId2InfoUnitMap;
+    	Map<Integer, SignalInfoUnitInterface> signalId2InfoUnitMap = new HashMap<>();
 
 		Transaction tx = null;
 		try (Session session = sessionFactory.openSession()) {
@@ -2910,38 +2974,92 @@ public class BeecomDB {
 			int signalIdTmp;
 			SysSigInfo sysSigInfoTmp;
 			short valueType;
+			SignalInterface signalInterfaceTmp;
+			String tableName;
+	    	StringBuilder hql = new StringBuilder();
+	    	String tag;
+	    	List<SystemSignalEnumLangInfoHbn> systemSignalEnumLangInfoList;
 			while(itSih.hasNext()) {
 				SignalInfoHbn signalInfoHbn = itSih.next();
 				signalIdTmp = signalInfoHbn.getSignalId();
 				if(signalIdTmp < BPPacket.SYS_SIG_START_ID) {
 					
 				} else {
+					systemSignalEnumLangInfoList = null;
+					/* "from SystemSignalInfoHbn where signalId=:signal_id" */
+					hql.setLength(0);
+					hql.append("from ");
+					tableName = "SystemSignalInfoHbn";
+					hql.append(tableName);
+					tag = "signal_id";
+					hql.append(" where signalId=:");
+					hql.append(tag);
 					SystemSignalInfoHbn systemSignalInfoHbn = (SystemSignalInfoHbn)session
-							.createQuery("from SystemSignalInfoHbn where signalId = :signal_id")
-							.setParameter("signal_id", signalInfoHbn.getId()).uniqueResult();
+							.createQuery(hql.toString())
+							.setParameter(tag, signalInfoHbn.getId()).uniqueResult();
 					if(!systemSignalInfoHbn.getIfConfigDef()) {
 						sysSigInfoTmp = sysSigInfoLst.get(signalIdTmp - BPPacket.SYS_SIG_START_ID);
 						valueType = sysSigInfoTmp.getValType();
+						
+						signalInterfaceTmp = null;
+				    	if(!BPPacket.ifSigTypeValid(valueType)) {
+				    		return ret;
+				    	}
+				    	
+				    	/* construct a hql like "from <table> where systemSignalId=:system_signal_id"*/
+						hql.setLength(0);
+						hql.append("from ");
 						switch(valueType) {
 						case BPPacket.VAL_TYPE_UINT32:
+							tableName = "SystemSignalU32InfoHbn";
 							break;
 						case BPPacket.VAL_TYPE_UINT16:
+							tableName = "SystemSignalU16InfoHbn";
 							break;
 						case BPPacket.VAL_TYPE_IINT32:
+							tableName = "SystemSignalI32InfoHbn";
 							break;
 						case BPPacket.VAL_TYPE_IINT16:
+							tableName = "SystemSignalI16InfoHbn";
 							break;
 						case BPPacket.VAL_TYPE_ENUM:
+							tableName = "SystemSignalEnumInfoHbn";
 							break;
 						case BPPacket.VAL_TYPE_FLOAT:
+							tableName = "SystemSignalFloatInfoHbn";
 							break;
 						case BPPacket.VAL_TYPE_STRING:
+							tableName = "SystemSignalStringInfoHbn";
 							break;
 						case BPPacket.VAL_TYPE_BOOLEAN:
+							tableName = "SystemSignalBooleanInfoHbn";
 							break;
-							default:
-								logger.error("Inner error: invalid value type");
-								return ret;
+						default:
+							logger.error("Inner error: invalid value type");
+							return ret;
+						}
+						hql.append(tableName);
+						tag = "system_signal_id";
+						hql.append(" where systemSignalId=:");
+						hql.append(tag);
+
+						signalInterfaceTmp = (SignalInterface)session.createQuery(hql.toString())
+						            .setParameter(tag, systemSignalInfoHbn.getId()).uniqueResult();
+						if(null == signalInterfaceTmp) {
+							logger.error("Inner error: null == signalInterfaceTmp");
+							return ret;
+						}
+						
+						if(BPPacket.VAL_TYPE_ENUM == valueType) {
+							hql.setLength(0);
+							hql.append("from ");
+							tableName = "SystemSignalEnumLangInfoHbn";
+							hql.append(tableName);
+							tag = "sys_sig_enm_id";
+							hql.append(" where SysSigEnmId=:");
+							hql.append(tag);
+							systemSignalEnumLangInfoList = session.createQuery(hql.toString())
+						            .setParameter(tag, signalInterfaceTmp.getId()).list();
 						}
 					}
 				}
@@ -2959,5 +3077,7 @@ public class BeecomDB {
 
     	return ret;
     }
+    
+
 
 }
