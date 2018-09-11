@@ -2982,6 +2982,10 @@ public class BeecomDB {
 	    	StringBuilder hql = new StringBuilder();
 	    	String tag;
 	    	List<SystemSignalEnumLangInfoHbn> systemSignalEnumLangInfoList;
+			CustomSignalNameLangInfoHbn customSignalNameLangInfoHbn = null;
+			CustomGroupLangInfoHbn customGroupLangInfoHbn = null;
+			CustomUnitLangInfoHbn customUnitLangInfoHbn = null;
+			CustomSignalEnumInfoHbn customSignalEnumInfoHbn = null;
 			while(itSih.hasNext()) {
 				signalInterfaceTmp = null;
 				SignalInfoHbn signalInfoHbn = itSih.next();
@@ -3051,22 +3055,48 @@ public class BeecomDB {
 						logger.error("Inner error: null == signalInterfaceTmp");
 						return ret;
 					}
-				
-					/* TODO: add signal language resources */
 					/*
-					if(BPPacket.VAL_TYPE_ENUM == valueType) {
-						hql.setLength(0);
-						hql.append("from ");
-						tableName = "SystemSignalEnumLangInfoHbn";
-						hql.append(tableName);
-						tag = "sys_sig_enm_id";
-						hql.append(" where SysSigEnmId=:");
-						hql.append(tag);
-						systemSignalEnumLangInfoList = session.createQuery(hql.toString())
-								.setParameter(tag, signalInterfaceTmp.getId()).list();
+					customSignalNameLangInfoHbn = null;
+					customGroupLangInfoHbn = null;
+					customUnitLangInfoHbn = null;
+					customSignalEnumInfoHbn = null;
+				
+					if(0 != customSignalInfoHbn.getCusSigNameLangId()) {
+						customSignalNameLangInfoHbn = session.get(CustomSignalNameLangInfoHbn.class,  customSignalInfoHbn.getCusSigNameLangId());
+					}
+					if(0 != customSignalInfoHbn.getCusGroupLangId()) {
+						customGroupLangInfoHbn = session.get(CustomGroupLangInfoHbn.class,  customSignalInfoHbn.getCusGroupLangId());
+					}
+					if(0 != customSignalInfoHbn.getCusSigUnitLangId()) {
+						customUnitLangInfoHbn = session.get(CustomUnitLangInfoHbn.class,  customSignalInfoHbn.getCusSigUnitLangId());
+					}
+					if (valueType == BPPacket.VAL_TYPE_ENUM) {
+						customSignalEnumInfoHbn = (CustomSignalEnumInfoHbn) session
+								.createQuery("from CustomSignalEnumInfoHbn where customSignalId = :custom_signal_id")
+								.setParameter("custom_signal_id", customSignalInfoHbn.getId()).uniqueResult();
+						if (null != customSignalEnumInfoHbn) {
+							List<CustomSignalEnumLangInfoHbn> customSignalEnumLangInfoHbnList = session
+									.createQuery("from CustomSignalEnumLangInfoHbn where cusSigEnmId = :cus_sig_enm_id")
+									.setParameter("cus_sig_enm_id", customSignalEnumInfoHbn.getId()).list();
+							if (null != customSignalEnumLangInfoHbnList) {
+								Iterator<CustomSignalEnumLangInfoHbn> itCustomSignalEnumLangInfoHbn = customSignalEnumLangInfoHbnList
+										.iterator();
+								while (itCustomSignalEnumLangInfoHbn.hasNext()) {
+									CustomSignalEnumLangInfoHbn customSignalEnumLangInfoHbn = itCustomSignalEnumLangInfoHbn
+											.next();
+									CustomSignalEnumLangEntityInfoHbn customSignalEnumLangEntityInfoHbn = session.get(
+											CustomSignalEnumLangEntityInfoHbn.class,
+											customSignalEnumLangInfoHbn.getCusSigEnmId());
+								}
+							}
+						}
 					}
 					*/
-					
+					// TODO: re-construct alarm data
+					// 			re-construct language resources
+		
+					CustomSignalInfoUnit customSignalInfoUnit = new CustomSignalInfoUnit(signalIdTmp, signalInfoHbn.getNotifying(), false, signalInfoHbn.getDisplay(), 0, null, null, null, null, null, signalInterfaceTmp);
+					signalId2InfoUnitMap.put(signalIdTmp, customSignalInfoUnit);
 				} else {
 					systemSignalEnumLangInfoList = null;
 					/* "from SystemSignalInfoHbn where signalId=:signal_id" */
@@ -3152,11 +3182,12 @@ public class BeecomDB {
 							
 					}
 					SystemSignalInfoUnit systemSignalInfoUnit = new SystemSignalInfoUnit(signalIdTmp, signalInfoHbn.getNotifying(), systemSignalInfoHbn.getIfConfigDef(), systemSignalEnumLangInfoList, signalInterfaceTmp);
-					
+					signalId2InfoUnitMap.put(signalIdTmp, systemSignalInfoUnit);
 				}
 			}
 
 			ret = true;
+			bpDeviceSession.setSignalId2InfoUnitMap(signalId2InfoUnitMap);
 			tx.commit();
 		} catch (Exception e) {
 			StringWriter sw = new StringWriter();
