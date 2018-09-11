@@ -1,5 +1,6 @@
 package db;
 
+import java.util.List;
 import java.util.Map;
 
 public class SystemSignalInfoUnit implements SignalInfoUnitInterface {
@@ -7,14 +8,16 @@ public class SystemSignalInfoUnit implements SignalInfoUnitInterface {
 	private int sysSigId;
 	private boolean ifNotifing;
 	private boolean ifConfigDef;
+	private List<SystemSignalEnumLangInfoHbn> systemSignalEnumLangInfoList;
 	private SignalInterface systemSignalInterface;
 
 	public SystemSignalInfoUnit(int sysSigId, boolean ifNotifing, boolean ifConfigDef,
-			SignalInterface systemSignalInterface) {
+			List<SystemSignalEnumLangInfoHbn> systemSignalEnumLangInfoList, SignalInterface systemSignalInterface) {
 		super();
 		this.sysSigId = sysSigId;
 		this.ifNotifing = ifNotifing;
 		this.ifConfigDef = ifConfigDef;
+		this.systemSignalEnumLangInfoList = systemSignalEnumLangInfoList;
 		this.systemSignalInterface = systemSignalInterface;
 	}
 
@@ -30,14 +33,20 @@ public class SystemSignalInfoUnit implements SignalInfoUnitInterface {
 		return ifConfigDef;
 	}
 
+	public List<SystemSignalEnumLangInfoHbn> getSystemSignalEnumLangInfoList() {
+		return systemSignalEnumLangInfoList;
+	}
+
 	public SignalInterface getSystemSignalInterface() {
 		return systemSignalInterface;
 	}
 
+
 	@Override
 	public String toString() {
 		return "SystemSignalInfoUnit [sysSigId=" + sysSigId + ", ifNotifing=" + ifNotifing + ", ifConfigDef="
-				+ ifConfigDef + ", systemSignalInterface=" + systemSignalInterface + "]";
+				+ ifConfigDef + ", systemSignalEnumLangInfoList=" + systemSignalEnumLangInfoList
+				+ ", systemSignalInterface=" + systemSignalInterface + "]";
 	}
 
 	@Override

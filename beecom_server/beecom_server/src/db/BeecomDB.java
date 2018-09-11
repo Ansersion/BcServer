@@ -1179,7 +1179,9 @@ public class BeecomDB {
 		int signalId;
 		boolean ifNotifying;
 		boolean ifConfigDef;
+		List<SystemSignalEnumLangInfoHbn> systemSignalEnumLangInfoList;
 		while(itSI.hasNext()) {
+			systemSignalEnumLangInfoList = null;
 			SignalInfoHbn signalInfoHbn = itSI.next();
 			itSSI = systemSignalInfoHbnLst.iterator();
 			while(itSSI.hasNext()) {
@@ -1329,7 +1331,8 @@ public class BeecomDB {
 
 						
 					}
-					systemSignalInfoUnitLst.add(new SystemSignalInfoUnit(signalId, ifNotifying, ifConfigDef, systemSignalInterface));
+					/* TODO: set the systemSignalEnumLangInfoList */
+					systemSignalInfoUnitLst.add(new SystemSignalInfoUnit(signalId, ifNotifying, ifConfigDef, systemSignalEnumLangInfoList, systemSignalInterface));
 					break;
 				}
 			}
@@ -2980,9 +2983,89 @@ public class BeecomDB {
 	    	String tag;
 	    	List<SystemSignalEnumLangInfoHbn> systemSignalEnumLangInfoList;
 			while(itSih.hasNext()) {
+				signalInterfaceTmp = null;
 				SignalInfoHbn signalInfoHbn = itSih.next();
 				signalIdTmp = signalInfoHbn.getSignalId();
 				if(signalIdTmp < BPPacket.SYS_SIG_START_ID) {
+					/* "from CustomSignalInfoHbn where signalId=:signal_id" */
+					hql.setLength(0);
+					hql.append("from ");
+					tableName = "CustomSignalInfoHbn";
+					hql.append(tableName);
+					tag = "signal_id";
+					hql.append(" where signalId=:");
+					hql.append(tag);
+					CustomSignalInfoHbn customSignalInfoHbn = (CustomSignalInfoHbn)session
+							.createQuery(hql.toString())
+							.setParameter(tag, signalInfoHbn.getId()).uniqueResult();
+					if(null == customSignalInfoHbn) {
+						logger.error("Inner error: null == customSignalInfoHbn");
+						return ret;
+					}
+					valueType = customSignalInfoHbn.getValType();
+					signalInterfaceTmp = null;
+			    	if(!BPPacket.ifSigTypeValid(valueType)) {
+			    		logger.error("Inner error: !BPPacket.ifSigTypeValid(valueType)");
+			    		return ret;
+			    	}
+			    	/* construct a hql like "from <table> where customSignalId=:custom_signal_id"*/
+					hql.setLength(0);
+					hql.append("from ");
+					switch(valueType) {
+					case BPPacket.VAL_TYPE_UINT32:
+						tableName = "CustomSignalU32InfoHbn";
+						break;
+					case BPPacket.VAL_TYPE_UINT16:
+						tableName = "CustomSignalU16InfoHbn";
+						break;
+					case BPPacket.VAL_TYPE_IINT32:
+						tableName = "CustomSignalI32InfoHbn";
+						break;
+					case BPPacket.VAL_TYPE_IINT16:
+						tableName = "CustomSignalI16InfoHbn";
+						break;
+					case BPPacket.VAL_TYPE_ENUM:
+						tableName = "CustomSignalEnumInfoHbn";
+						break;
+					case BPPacket.VAL_TYPE_FLOAT:
+						tableName = "CustomSignalFloatInfoHbn";
+						break;
+					case BPPacket.VAL_TYPE_STRING:
+						tableName = "CustomSignalStringInfoHbn";
+						break;
+					case BPPacket.VAL_TYPE_BOOLEAN:
+						tableName = "CustomSignalBooleanInfoHbn";
+						break;
+					default:
+						logger.error("Inner error: invalid value type");
+						return ret;
+					}
+					hql.append(tableName);
+					tag = "custom_signal_id";
+					hql.append(" where customSignalId=:");
+					hql.append(tag);
+					
+					signalInterfaceTmp = (SignalInterface)session.createQuery(hql.toString())
+				            .setParameter(tag, customSignalInfoHbn.getId()).uniqueResult();
+					if(null == signalInterfaceTmp) {
+						logger.error("Inner error: null == signalInterfaceTmp");
+						return ret;
+					}
+				
+					/* TODO: add signal language resources */
+					/*
+					if(BPPacket.VAL_TYPE_ENUM == valueType) {
+						hql.setLength(0);
+						hql.append("from ");
+						tableName = "SystemSignalEnumLangInfoHbn";
+						hql.append(tableName);
+						tag = "sys_sig_enm_id";
+						hql.append(" where SysSigEnmId=:");
+						hql.append(tag);
+						systemSignalEnumLangInfoList = session.createQuery(hql.toString())
+								.setParameter(tag, signalInterfaceTmp.getId()).list();
+					}
+					*/
 					
 				} else {
 					systemSignalEnumLangInfoList = null;
@@ -2997,12 +3080,17 @@ public class BeecomDB {
 					SystemSignalInfoHbn systemSignalInfoHbn = (SystemSignalInfoHbn)session
 							.createQuery(hql.toString())
 							.setParameter(tag, signalInfoHbn.getId()).uniqueResult();
+					if(null == systemSignalInfoHbn) {
+						logger.error("Inner error: null == systemSignalInfoHbn");
+						return ret;
+					}
 					if(!systemSignalInfoHbn.getIfConfigDef()) {
 						sysSigInfoTmp = sysSigInfoLst.get(signalIdTmp - BPPacket.SYS_SIG_START_ID);
 						valueType = sysSigInfoTmp.getValType();
 						
 						signalInterfaceTmp = null;
 				    	if(!BPPacket.ifSigTypeValid(valueType)) {
+				    		logger.error("Inner error: !BPPacket.ifSigTypeValid(valueType)");
 				    		return ret;
 				    	}
 				    	
@@ -3061,7 +3149,10 @@ public class BeecomDB {
 							systemSignalEnumLangInfoList = session.createQuery(hql.toString())
 						            .setParameter(tag, signalInterfaceTmp.getId()).list();
 						}
+							
 					}
+					SystemSignalInfoUnit systemSignalInfoUnit = new SystemSignalInfoUnit(signalIdTmp, signalInfoHbn.getNotifying(), systemSignalInfoHbn.getIfConfigDef(), systemSignalEnumLangInfoList, signalInterfaceTmp);
+					
 				}
 			}
 
