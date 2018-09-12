@@ -2,6 +2,9 @@ package db;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import javafx.util.Pair;
 
 public class SystemSignalInfoUnit implements SignalInfoUnitInterface {
 
@@ -10,6 +13,7 @@ public class SystemSignalInfoUnit implements SignalInfoUnitInterface {
 	private boolean ifConfigDef;
 	private List<SystemSignalEnumLangInfoHbn> systemSignalEnumLangInfoList;
 	private SignalInterface systemSignalInterface;
+	private Object signalValue;
 
 	public SystemSignalInfoUnit(int sysSigId, boolean ifNotifing, boolean ifConfigDef,
 			List<SystemSignalEnumLangInfoHbn> systemSignalEnumLangInfoList, SignalInterface systemSignalInterface) {
@@ -107,6 +111,34 @@ public class SystemSignalInfoUnit implements SignalInfoUnitInterface {
 	public Map<Integer, Map<Integer, String>> getSignalEnumLangMap() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+
+	@Override
+	public boolean putSignalValue(Entry<Integer, Pair<Byte, Object>> entry) {
+		boolean ret = false;
+		try {
+			signalValue = entry.getValue().getValue();
+			ret = true;
+		} catch(Exception e) {
+			e.printStackTrace();
+			ret = false;
+		}
+		return ret;
+	}
+
+	@Override
+	public boolean checkSignalValueUnformed(Byte valueType, Object value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public Object getSignalValue() {
+		return signalValue;
+	}
+
+	public void setSignalValue(Object signalValue) {
+		this.signalValue = signalValue;
 	}
 
 	

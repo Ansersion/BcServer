@@ -493,7 +493,7 @@ public class BPPacketREPORT extends BPPacket {
 							delayBeforeAlarm = ioBuffer.getUnsigned();
 							delayAfterAlarm = ioBuffer.getUnsigned();
 						}
-						systemSignalCustomInfoUnitList.add(new SystemSignalCustomInfoUnit(signalId, alarmClass, delayBeforeAlarm, delayAfterAlarm, signalInterface));
+						systemSignalCustomInfoUnitList.add(new SystemSignalCustomInfoUnit(signalId, alarmClass, delayBeforeAlarm, delayAfterAlarm, (basicCustomInfoByte & 0xFF) | ((alarmCustomInfoByte & 0xFF) << 8), signalInterface));
 
 					}
 					

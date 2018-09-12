@@ -390,7 +390,7 @@ CREATE TABLE `custom_signal_info` (
   `cus_group_lang_id` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `i_signal_id` (`signal_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -399,7 +399,7 @@ CREATE TABLE `custom_signal_info` (
 
 LOCK TABLES `custom_signal_info` WRITE;
 /*!40000 ALTER TABLE `custom_signal_info` DISABLE KEYS */;
-INSERT INTO `custom_signal_info` VALUES (1,'2018-09-03 07:31:55','2018-09-03 07:31:55',0,6,1,1,0,0),(2,'2018-09-03 07:31:55','2018-09-03 07:31:55',0,6,4,2,0,0),(3,'2018-09-03 07:31:55','2018-09-03 07:31:55',0,6,7,3,0,0),(4,'2018-09-03 07:31:55','2018-09-03 07:31:55',0,4,8,4,0,0),(5,'2018-09-03 07:31:55','2018-09-03 07:31:55',0,4,9,5,0,0);
+INSERT INTO `custom_signal_info` VALUES (1,'2018-09-03 07:31:55','2018-09-03 07:31:55',0,6,1,1,0,0),(2,'2018-09-03 07:31:55','2018-09-03 07:31:55',0,6,4,2,0,0),(9,'2018-09-12 03:44:34','2018-09-12 03:44:34',0,6,27,9,0,0);
 /*!40000 ALTER TABLE `custom_signal_info` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -421,7 +421,7 @@ CREATE TABLE `custom_signal_name_lang_entity_info` (
   `arabic` varchar(128) NOT NULL DEFAULT '',
   `spanish` varchar(128) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -430,7 +430,7 @@ CREATE TABLE `custom_signal_name_lang_entity_info` (
 
 LOCK TABLES `custom_signal_name_lang_entity_info` WRITE;
 /*!40000 ALTER TABLE `custom_signal_name_lang_entity_info` DISABLE KEYS */;
-INSERT INTO `custom_signal_name_lang_entity_info` VALUES (1,'2018-09-03 07:30:30','2018-09-03 07:30:30','BC灯','BC Light','','','',''),(2,'2018-09-03 07:30:30','2018-09-03 07:30:30','BC温度计','BC Thermometer','','','',''),(3,'2018-09-03 07:30:30','2018-09-03 07:30:30','BC自定义设备','BC Custom Device','','','',''),(4,'2018-09-03 07:30:30','2018-09-03 07:30:30','宇宙背景辐射','Universe background radio','','','',''),(5,'2018-09-03 07:30:30','2018-09-03 07:30:30','看我的辐射仪','Universe background radio-meter','','','','');
+INSERT INTO `custom_signal_name_lang_entity_info` VALUES (1,'2018-09-03 07:30:30','2018-09-03 07:30:30','BC灯','BC Light','','','',''),(2,'2018-09-03 07:30:30','2018-09-03 07:30:30','BC温度计','BC Thermometer','','','',''),(9,'2018-09-12 03:44:34','2018-09-12 03:44:34','BC灯','BC Light','','','','');
 /*!40000 ALTER TABLE `custom_signal_name_lang_entity_info` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -448,7 +448,7 @@ CREATE TABLE `custom_signal_name_lang_info` (
   `custom_signal_name` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `i_custom_signal_name` (`custom_signal_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -457,7 +457,7 @@ CREATE TABLE `custom_signal_name_lang_info` (
 
 LOCK TABLES `custom_signal_name_lang_info` WRITE;
 /*!40000 ALTER TABLE `custom_signal_name_lang_info` DISABLE KEYS */;
-INSERT INTO `custom_signal_name_lang_info` VALUES (1,'2018-09-03 07:30:10','2018-09-03 07:30:10',1),(2,'2018-09-03 07:30:10','2018-09-03 07:30:10',2),(3,'2018-09-03 07:30:10','2018-09-03 07:30:10',3),(4,'2018-09-03 07:30:10','2018-09-03 07:30:10',4),(5,'2018-09-03 07:30:10','2018-09-03 07:30:10',5);
+INSERT INTO `custom_signal_name_lang_info` VALUES (1,'2018-09-03 07:30:10','2018-09-03 07:30:10',1),(2,'2018-09-03 07:30:10','2018-09-03 07:30:10',2),(9,'2018-09-12 03:44:34','2018-09-12 03:44:34',9);
 /*!40000 ALTER TABLE `custom_signal_name_lang_info` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -478,7 +478,7 @@ CREATE TABLE `custom_signal_string_info` (
   `custom_signal_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `i_custom_signal_id` (`custom_signal_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -487,6 +487,7 @@ CREATE TABLE `custom_signal_string_info` (
 
 LOCK TABLES `custom_signal_string_info` WRITE;
 /*!40000 ALTER TABLE `custom_signal_string_info` DISABLE KEYS */;
+INSERT INTO `custom_signal_string_info` VALUES (4,'2018-09-12 03:44:34','2018-09-12 03:44:34',4,'',0,9);
 /*!40000 ALTER TABLE `custom_signal_string_info` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -637,7 +638,7 @@ CREATE TABLE `dev_info` (
 
 LOCK TABLES `dev_info` WRITE;
 /*!40000 ALTER TABLE `dev_info` DISABLE KEYS */;
-INSERT INTO `dev_info` VALUES (1,'2018-08-14 08:14:56','2018-08-14 08:14:56',1,1,'1111111111111111111111111111111111111111111111111111111111111111',9223372036854775807,3,192),(2,'2018-08-14 08:14:56','2018-08-14 08:14:56',2,2,'2222222222222222222222222222222222222222222222222222222222222222',9223372036854775807,3,192),(3,'2018-08-14 08:14:56','2018-08-14 08:14:56',3,3,'3333333333333333333333333333333333333333333333333333333333333333',9223372036854775807,3,192);
+INSERT INTO `dev_info` VALUES (1,'2018-08-14 08:14:56','2018-08-14 08:14:56',1,1,'1111111111111111111111111111111111111111111111111111111111111111',9223372036854775807,3,192),(2,'2018-08-14 08:14:56','2018-08-14 08:14:56',2,2,'2222222222222222222222222222222222222222222222222222222222222222',9223372036854775807,3,192),(3,'2018-08-14 08:14:56','2018-09-12 03:44:34',3,3,'3333333333333333333333333333333333333333333333333333333333333333',2981696489,3,192);
 /*!40000 ALTER TABLE `dev_info` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -661,7 +662,7 @@ CREATE TABLE `signal_info` (
   `alm_dly_aft` tinyint(3) unsigned NOT NULL DEFAULT '5',
   PRIMARY KEY (`id`),
   KEY `i_dev_id` (`dev_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -670,7 +671,7 @@ CREATE TABLE `signal_info` (
 
 LOCK TABLES `signal_info` WRITE;
 /*!40000 ALTER TABLE `signal_info` DISABLE KEYS */;
-INSERT INTO `signal_info` VALUES (1,'2018-09-03 02:00:01','2018-09-03 02:00:01',0,1,0,1,127,5,5),(2,'2018-09-03 02:00:01','2018-09-03 02:00:01',57344,1,0,1,127,5,5),(3,'2018-09-03 02:00:01','2018-09-03 02:00:01',57345,1,0,1,127,5,5),(4,'2018-09-03 02:00:01','2018-09-03 02:00:01',0,2,0,1,127,5,5),(5,'2018-09-03 02:00:01','2018-09-03 02:00:01',57344,2,0,1,127,5,5),(6,'2018-09-03 02:00:01','2018-09-03 02:00:01',57345,2,0,1,127,5,5),(7,'2018-09-03 02:00:01','2018-09-03 02:00:01',0,3,0,1,127,5,5),(8,'2018-09-03 02:00:01','2018-09-03 02:00:01',1,3,0,1,127,5,5),(9,'2018-09-03 02:00:01','2018-09-03 02:00:01',2,3,0,1,127,5,5),(10,'2018-09-03 02:00:01','2018-09-03 02:00:01',57344,3,0,1,127,5,5),(11,'2018-09-03 02:00:01','2018-09-03 02:00:01',57345,3,0,1,127,5,5);
+INSERT INTO `signal_info` VALUES (1,'2018-09-03 02:00:01','2018-09-03 02:00:01',0,1,0,1,127,5,5),(2,'2018-09-03 02:00:01','2018-09-03 02:00:01',57344,1,0,1,127,5,5),(3,'2018-09-03 02:00:01','2018-09-03 02:00:01',57345,1,0,1,127,5,5),(4,'2018-09-03 02:00:01','2018-09-03 02:00:01',0,2,0,1,127,5,5),(5,'2018-09-03 02:00:01','2018-09-03 02:00:01',57344,2,0,1,127,5,5),(6,'2018-09-03 02:00:01','2018-09-03 02:00:01',57345,2,0,1,127,5,5),(24,'2018-09-12 03:44:34','2018-09-12 03:44:34',57344,3,0,1,255,5,5),(25,'2018-09-12 03:44:34','2018-09-12 03:44:34',57345,3,0,1,255,5,5),(26,'2018-09-12 03:44:34','2018-09-12 03:44:34',57346,3,0,1,255,5,5),(27,'2018-09-12 03:44:34','2018-09-12 03:44:34',0,3,0,1,255,5,5);
 /*!40000 ALTER TABLE `signal_info` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -930,11 +931,11 @@ CREATE TABLE `system_signal_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ctime` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `mtime` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `config_def` tinyint(1) NOT NULL DEFAULT '1',
+  `custom_flags` smallint(5) unsigned NOT NULL DEFAULT '0',
   `signal_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `i_signal_id` (`signal_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -943,7 +944,7 @@ CREATE TABLE `system_signal_info` (
 
 LOCK TABLES `system_signal_info` WRITE;
 /*!40000 ALTER TABLE `system_signal_info` DISABLE KEYS */;
-INSERT INTO `system_signal_info` VALUES (1,'2018-09-03 07:49:47','2018-09-03 07:49:47',1,2),(2,'2018-09-03 07:49:47','2018-09-03 07:49:47',1,3),(3,'2018-09-03 07:49:47','2018-09-03 07:49:47',1,5),(4,'2018-09-03 07:49:47','2018-09-03 07:49:47',1,6),(5,'2018-09-03 07:49:47','2018-09-03 07:49:47',1,10),(6,'2018-09-03 07:49:47','2018-09-03 07:49:47',1,11);
+INSERT INTO `system_signal_info` VALUES (1,'2018-09-12 02:47:55','2018-09-12 02:47:55',0,2),(2,'2018-09-12 02:47:55','2018-09-12 02:47:55',0,3),(3,'2018-09-12 02:47:55','2018-09-12 02:47:55',0,5),(4,'2018-09-12 02:47:55','2018-09-12 02:47:55',0,6),(16,'2018-09-12 03:44:34','2018-09-12 03:44:34',64,24),(17,'2018-09-12 03:44:34','2018-09-12 03:44:34',0,25),(18,'2018-09-12 03:44:34','2018-09-12 03:44:34',0,26);
 /*!40000 ALTER TABLE `system_signal_info` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -965,7 +966,7 @@ CREATE TABLE `system_signal_string_info` (
   `system_signal_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `i_system_signal_id` (`system_signal_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -974,6 +975,7 @@ CREATE TABLE `system_signal_string_info` (
 
 LOCK TABLES `system_signal_string_info` WRITE;
 /*!40000 ALTER TABLE `system_signal_string_info` DISABLE KEYS */;
+INSERT INTO `system_signal_string_info` VALUES (1,'2018-09-12 03:26:24','2018-09-12 03:26:24',4,'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1',0,1,7),(2,'2018-09-12 03:33:35','2018-09-12 03:33:35',4,'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1',0,1,10),(4,'2018-09-12 03:44:34','2018-09-12 03:44:34',4,'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1',0,1,16);
 /*!40000 ALTER TABLE `system_signal_string_info` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1114,4 +1116,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-09-03 15:50:28
+-- Dump completed on 2018-09-12 19:51:00

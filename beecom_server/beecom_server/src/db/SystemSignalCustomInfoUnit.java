@@ -6,15 +6,17 @@ public class SystemSignalCustomInfoUnit {
 	private Short alarmClass;
 	private Short delayBeforeAlarm;
 	private Short delayAfterAlarm;
+	private int customFlags;
 	private SignalInterface signalInterface;
 
 	public SystemSignalCustomInfoUnit(int sysSigId, Short alarmClass, Short delayBeforeAlarm, Short delayAfterAlarm,
-			SignalInterface signalInterface) {
+			int customFlags, SignalInterface signalInterface) {
 		super();
 		this.sysSigId = sysSigId;
 		this.alarmClass = alarmClass;
 		this.delayBeforeAlarm = delayBeforeAlarm;
 		this.delayAfterAlarm = delayAfterAlarm;
+		this.customFlags = customFlags;
 		this.signalInterface = signalInterface;
 	}
 
@@ -58,12 +60,22 @@ public class SystemSignalCustomInfoUnit {
 		this.delayAfterAlarm = delayAfterAlarm;
 	}
 
+	public int getCustomFlags() {
+		return customFlags;
+	}
+
+	public void setCustomFlags(int customFlags) {
+		this.customFlags = customFlags;
+	}
+
 	@Override
 	public String toString() {
 		return "SystemSignalCustomInfoUnit [sysSigId=" + sysSigId + ", alarmClass=" + alarmClass + ", delayBeforeAlarm="
-				+ delayBeforeAlarm + ", delayAfterAlarm=" + delayAfterAlarm + ", signalInterface=" + signalInterface
-				+ "]";
+				+ delayBeforeAlarm + ", delayAfterAlarm=" + delayAfterAlarm + ", customFlags=" + customFlags
+				+ ", signalInterface=" + signalInterface + "]";
 	}
+
+
 
 
 

@@ -13,7 +13,7 @@ public class BPPacketRPRTACK extends BPPacket {
 	
 	public static final int RET_CODE_OK = 0x00;
 	public static final int RET_CODE_FLAGS_INVALID = 0x01;
-	public static final int RET_CODE_CLNT_ID_INVALID = 0x02;
+	public static final int RET_CODE_SIG_MAP_UNCHECK = 0x02;
 	public static final int RET_CODE_SIG_ID_INVALID = 0x03;
 	public static final int RET_CODE_SIG_VAL_INVALID = 0x04;
 	

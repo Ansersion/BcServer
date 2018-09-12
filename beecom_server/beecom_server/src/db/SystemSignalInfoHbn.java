@@ -3,15 +3,14 @@ package db;
 
 public class SystemSignalInfoHbn {
     private Long id;
-    private Boolean ifConfigDef;
-    
+    private Integer customFlags;
     private Long signalId;
     
     public SystemSignalInfoHbn() {
     	
     }
     public SystemSignalInfoHbn(Long signalId) {
-    	ifConfigDef = true;
+    	customFlags = 0;
     	this.signalId = signalId;
     }
 	public Long getId() {
@@ -20,11 +19,11 @@ public class SystemSignalInfoHbn {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public Boolean getIfConfigDef() {
-		return ifConfigDef;
+	public Integer getCustomFlags() {
+		return customFlags;
 	}
-	public void setIfConfigDef(Boolean ifConfigDef) {
-		this.ifConfigDef = ifConfigDef;
+	public void setCustomFlags(Integer customFlags) {
+		this.customFlags = customFlags;
 	}
 	public Long getSignalId() {
 		return signalId;
@@ -34,8 +33,9 @@ public class SystemSignalInfoHbn {
 	}
 	@Override
 	public String toString() {
-		return "SystemSignalInfoHbn [id=" + id + ", ifConfigDef=" + ifConfigDef + ", signalId=" + signalId + "]";
+		return "SystemSignalInfoHbn [id=" + id + ", customFlags=" + customFlags + ", signalId=" + signalId + "]";
 	}
+	
     
     
 }

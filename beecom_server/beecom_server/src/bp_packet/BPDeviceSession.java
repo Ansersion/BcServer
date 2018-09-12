@@ -34,6 +34,7 @@ public class BPDeviceSession extends BPSession {
 		signalValueMap = new HashMap<>();
 		super.setSystemSignalValueMap(new HashMap<Integer, Object>());
 		sigMapCheckOK = false;
+		signalId2InfoUnitMap = null;
 	}
 	
 	public BPDeviceSession(IoSession session, Long uniqDeviceId, String password) {
@@ -43,6 +44,7 @@ public class BPDeviceSession extends BPSession {
 		this.signalValueMap = new HashMap<>();
 		super.setSystemSignalValueMap(new HashMap<Integer, Object>());
 		sigMapCheckOK = false;
+		signalId2InfoUnitMap = null;
 	}
 	
 	public boolean putRelayList(IoSession iosession, BPPacket bppacket, int timeout) {

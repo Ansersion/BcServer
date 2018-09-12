@@ -37,6 +37,8 @@ public class BPPacket implements BPPacketInterface {
 	public static final int VAL_TYPE_FLOAT = 5;
 	public static final int VAL_TYPE_STRING = 6;
 	public static final int VAL_TYPE_BOOLEAN = 7;
+	public static final int VAL_TYPE_MASK = 0x0F;
+	public static final int VAL_ALARM_FLAG = 0x80;
 	public static final int VAL_TYPE_INVALID = 0x7F;
 	
 	/* unlimit value */

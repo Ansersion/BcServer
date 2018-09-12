@@ -6,9 +6,9 @@ CREATE TABLE system_signal_info
 	ctime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	mtime TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	
-	/* if(config_def) no custom info 
+	/* if(custom_flags == 0) no custom info 
 	else search for customized info */
-	config_def BOOLEAN NOT NULL DEFAULT TRUE,
+	custom_flags SMALLINT UNSIGNED NOT NULL DEFAULT 0,
 	
 	/* ID in signal_info table */
 	signal_id INT UNSIGNED NOT NULL, 

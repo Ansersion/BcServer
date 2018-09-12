@@ -1025,7 +1025,7 @@ public class BeecomDB {
 		if(systemSignalInfoHbnLst.size() != 1) {
 			logger.error("Inner error: systemSignalInfoHbnLst.size() != 1");
 		}
-		if(systemSignalInfoHbnLst.get(0).getIfConfigDef()) {
+		if(systemSignalInfoHbnLst.get(0).getCustomFlags() == 0) {
 			BPSysSigTable bpSysSigTable = BPSysSigTable.getSysSigTableInstance();
 			int systemSignalIdOffset = signalId - BPPacket.SYS_SIG_START_ID;
 			final List<SysSigInfo> sysSigInfoLst = bpSysSigTable.getSysSigInfoLst();
@@ -1193,7 +1193,7 @@ public class BeecomDB {
 						return null;
 					}
 					ifNotifying = signalInfoHbn.getNotifying();
-					ifConfigDef = systemSignalInfoHbn.getIfConfigDef();
+					ifConfigDef = systemSignalInfoHbn.getCustomFlags() == 0;
 					SignalInterface systemSignalInterface = null;
 					if(!ifConfigDef) {
 						BPSysSigTable sysSigTab = BPSysSigTable.getSysSigTableInstance();
@@ -2008,7 +2008,7 @@ public class BeecomDB {
 					default:
 						return null;
 					}
-					systemSignalCustomInfoUnitLst.add(new SystemSignalCustomInfoUnit(signalId, signalInfoHbn.getAlmClass(), signalInfoHbn.getAlmDlyBef(), signalInfoHbn.getAlmDlyAft(), systemSignalInterface));
+					systemSignalCustomInfoUnitLst.add(new SystemSignalCustomInfoUnit(signalId, signalInfoHbn.getAlmClass(), signalInfoHbn.getAlmDlyBef(), signalInfoHbn.getAlmDlyAft(), systemSignalInfoHbn.getCustomFlags(), systemSignalInterface));
 					break;
 				}
 			}
@@ -2529,20 +2529,21 @@ public class BeecomDB {
     	return ret;
     }
     
-    public boolean putSystemCustomSignalInfoMap(long uniqDevId, List<SystemSignalCustomInfoUnit> systemSignalCustomInfoUnit) {
+    public boolean putSystemCustomSignalInfoMap(long uniqDevId, List<SystemSignalCustomInfoUnit> systemSignalCustomInfoUnitList) {
     	boolean ret = false;
-    	if(null == systemSignalCustomInfoUnit) {
+    	if(null == systemSignalCustomInfoUnitList) {
     		return ret;
     	}
     	
 		Transaction tx = null;
 		try (Session session = sessionFactory.openSession()) {
 			tx = session.beginTransaction();
-
-			for(int i = 0; i < systemSignalCustomInfoUnit.size(); i++) {
+			SystemSignalCustomInfoUnit systemSignalCustomInfoUnitTmp;
+			for(int i = 0; i < systemSignalCustomInfoUnitList.size(); i++) {
+				systemSignalCustomInfoUnitTmp = systemSignalCustomInfoUnitList.get(i);
 				SignalInfoHbn signalInfoHbn = (SignalInfoHbn) session
 						.createQuery("from SignalInfoHbn where signalId = :signal_id and devId = :dev_id")
-						.setParameter("signal_id", systemSignalCustomInfoUnit.get(i).getSysSigId())
+						.setParameter("signal_id", systemSignalCustomInfoUnitTmp.getSysSigId())
 						.setParameter("dev_id", uniqDevId).uniqueResult();
 				if (null == signalInfoHbn) {
 					logger.error("Internal error: null == signalInfoHbn");
@@ -2558,11 +2559,11 @@ public class BeecomDB {
 					return ret;
 				}
 
-				systemSignalInfoHbn.setIfConfigDef(false);
+				systemSignalInfoHbn.setCustomFlags(systemSignalCustomInfoUnitTmp.getCustomFlags());
 				
 				session.update(systemSignalInfoHbn);
 				
-				SignalInterface signalInterface = systemSignalCustomInfoUnit.get(i).getSignalInterface();
+				SignalInterface signalInterface = systemSignalCustomInfoUnitTmp.getSignalInterface();
 				signalInterface.setSystemSignalId(systemSignalInfoHbn.getId());
 				if(signalInterface.saveToDb(session) < 0) {
 					logger.error("Internal error: null == devInfoHbn");
@@ -2788,7 +2789,7 @@ public class BeecomDB {
 							.createQuery("from SystemSignalInfoHbn where signalId = :signal_id")
 							.setParameter("signal_id", signalInfoHbn.getId()).uniqueResult();
 					if(null != systemSignalInfoHbn) {
-						if(!systemSignalInfoHbn.getIfConfigDef()) {
+						if(systemSignalInfoHbn.getCustomFlags() != 0) {
 							SysSigInfo sysSigInfo = BPSysSigTable.getSysSigTableInstance().getSysSigInfoLst().get(signalInfoHbn.getSignalId() - BPPacket.SYS_SIG_START_ID);
 							if(null != sysSigInfo) {
 								short sigType = sysSigInfo.getValType();
@@ -3114,7 +3115,7 @@ public class BeecomDB {
 						logger.error("Inner error: null == systemSignalInfoHbn");
 						return ret;
 					}
-					if(!systemSignalInfoHbn.getIfConfigDef()) {
+					if(systemSignalInfoHbn.getCustomFlags() != 0) {
 						sysSigInfoTmp = sysSigInfoLst.get(signalIdTmp - BPPacket.SYS_SIG_START_ID);
 						valueType = sysSigInfoTmp.getValType();
 						
@@ -3181,7 +3182,7 @@ public class BeecomDB {
 						}
 							
 					}
-					SystemSignalInfoUnit systemSignalInfoUnit = new SystemSignalInfoUnit(signalIdTmp, signalInfoHbn.getNotifying(), systemSignalInfoHbn.getIfConfigDef(), systemSignalEnumLangInfoList, signalInterfaceTmp);
+					SystemSignalInfoUnit systemSignalInfoUnit = new SystemSignalInfoUnit(signalIdTmp, signalInfoHbn.getNotifying(), systemSignalInfoHbn.getCustomFlags() != 0, systemSignalEnumLangInfoList, signalInterfaceTmp);
 					signalId2InfoUnitMap.put(signalIdTmp, systemSignalInfoUnit);
 				}
 			}

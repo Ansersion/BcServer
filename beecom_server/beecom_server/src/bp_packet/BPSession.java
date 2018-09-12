@@ -439,6 +439,7 @@ public abstract class BPSession {
         return ret;
 	}
 	
+	/* used for reply to user client */
 	public boolean startRelay(int seqId) {
 		boolean ret = false;
 		relayMaplock.lock();

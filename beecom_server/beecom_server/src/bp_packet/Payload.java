@@ -244,7 +244,7 @@ public class Payload {
 					// TODO: 
 					// systemSignalCustomInfoUnitLst.add(new SystemSignalCustomInfoUnit(systemSignalInfoUnit.getSysSigId(), systemSignalInfoUnit.getSystemSignalInterface()));
 				}
-				systemSignalCustomInfoUnitLst.add(new SystemSignalCustomInfoUnit(systemSignalInfoUnit.getSysSigId(), BPPacket.ALARM_CLASS_NONE, BPPacket.ALARM_DELAY_DEFAULT, BPPacket.ALARM_DELAY_DEFAULT, systemSignalInfoUnit.getSystemSignalInterface()));
+				systemSignalCustomInfoUnitLst.add(new SystemSignalCustomInfoUnit(systemSignalInfoUnit.getSysSigId(), BPPacket.ALARM_CLASS_NONE, BPPacket.ALARM_DELAY_DEFAULT, BPPacket.ALARM_DELAY_DEFAULT, 0, systemSignalInfoUnit.getSystemSignalInterface()));
 			}
 		} else {
 			systemSignalCustomInfoUnitLst = beecomDB.getSystemSignalCustomInfoUnitLst(uniqDevId, systemSignalCustomInfoUnitLst);

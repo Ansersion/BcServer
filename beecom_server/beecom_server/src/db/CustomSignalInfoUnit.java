@@ -1,6 +1,11 @@
 package db;
 
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import bp_packet.BPPacket;
+import javafx.util.Pair;
 
 public class CustomSignalInfoUnit implements SignalInfoUnitInterface {
 	private int cusSigId;
@@ -21,6 +26,7 @@ public class CustomSignalInfoUnit implements SignalInfoUnitInterface {
 	private CustomAlarmInfoUnit customAlarmInfoUnit;
 	
 	private SignalInterface customSignalInterface;
+	private Object signalValue;
 	
 	public CustomSignalInfoUnit(int cusSigId, boolean ifNotifing, boolean ifAlarm, boolean ifDisplay, int groupLangId,
 			Map<Integer, String> signalNameLangMap, Map<Integer, String> signalUnitLangMap,
@@ -115,6 +121,112 @@ public class CustomSignalInfoUnit implements SignalInfoUnitInterface {
 	public Map<Integer, String> getGignalUnitLangMap() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	@Override
+	public boolean putSignalValue(Entry<Integer, Pair<Byte, Object>> entry) {
+		boolean ret = false;
+		try {
+			signalValue = entry.getValue().getValue();
+		} catch(Exception e) {
+			e.printStackTrace();
+			ret = false;
+		}
+		return ret;
+	}
+	
+	@Override
+	public boolean checkSignalValueUnformed(Byte valueType, Object value) {
+		boolean ret = true;
+		/* check if signal info exist */
+		if(null == customSignalInterface) {
+			return ret;
+		}
+		/* check if a alarm signal */
+		if(!ifAlarm && (valueType & BPPacket.VAL_ALARM_FLAG) != 0) {
+			return ret;
+		}
+		try {
+			switch (valueType & BPPacket.VAL_TYPE_MASK) {
+			case BPPacket.VAL_TYPE_UINT32: {
+				CustomSignalU32InfoHbn customSignalU32InfoHbn = (CustomSignalU32InfoHbn)customSignalInterface;
+				Long v = (Long)value;
+				if(v >= customSignalU32InfoHbn.getMinVal() && v <= customSignalU32InfoHbn.getMaxVal()) {
+					ret =false;
+				}
+				break;
+			}
+			case BPPacket.VAL_TYPE_UINT16: {
+				CustomSignalU16InfoHbn customSignalU16InfoHbn = (CustomSignalU16InfoHbn)customSignalInterface;
+				Integer v = (Integer)value;
+				if(v >= customSignalU16InfoHbn.getMinVal() && v <= customSignalU16InfoHbn.getMaxVal()) {
+					ret =false;
+				}
+				break;
+			}
+			case BPPacket.VAL_TYPE_IINT32: {
+				CustomSignalI32InfoHbn customSignalI32InfoHbn = (CustomSignalI32InfoHbn)customSignalInterface;
+				Integer v = (Integer)value;
+				if(v >= customSignalI32InfoHbn.getMinVal() && v <= customSignalI32InfoHbn.getMaxVal()) {
+					ret =false;
+				}
+				break;
+			}
+			case BPPacket.VAL_TYPE_IINT16: {
+				CustomSignalI16InfoHbn customSignalI16InfoHbn = (CustomSignalI16InfoHbn)customSignalInterface;
+				Short v = (Short)value;
+				if(v >= customSignalI16InfoHbn.getMinVal() && v <= customSignalI16InfoHbn.getMaxVal()) {
+					ret =false;
+				}
+				break;
+			}
+			case BPPacket.VAL_TYPE_ENUM: {
+				CustomSignalEnumInfoHbn customSignalEnumInfoHbn = (CustomSignalEnumInfoHbn)customSignalInterface;
+				Integer v = (Integer)value;
+				Iterator<Map.Entry<Integer, Map<Integer, String> > > it = signalEnumLangMap.entrySet().iterator();
+				if(it.hasNext()) {
+					Map<Integer, String> signalEnumValueMap = it.next().getValue();
+					if(null != signalEnumValueMap && signalEnumValueMap.containsKey(v)) {
+						ret = false;
+					}
+				}
+				
+				break;
+			}
+			case BPPacket.VAL_TYPE_FLOAT: {
+				CustomSignalFloatInfoHbn customSignalFloatInfoHbn = (CustomSignalFloatInfoHbn)customSignalInterface;
+				Float v = (Float)value;
+				if(v >= customSignalFloatInfoHbn.getMinVal() && v <= customSignalFloatInfoHbn.getMaxVal()) {
+					ret =false;
+				}
+				break;
+			}
+			case BPPacket.VAL_TYPE_STRING: {
+				String v = (String)value;
+				if(v.length() <= BPPacket.MAX_CUSTOM_SIGNAL_STRING_LENGTH) {
+					ret = false;
+				}
+				break;
+			}
+			case BPPacket.VAL_TYPE_BOOLEAN: {
+				Boolean v = (Boolean)value;
+				ret = false;
+				break;
+			}
+			default:
+				/* do nothing */
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			ret = true;
+		}
+		return ret;
+	}
+	public Object getSignalValue() {
+		return signalValue;
+	}
+	public void setSignalValue(Object signalValue) {
+		this.signalValue = signalValue;
 	}
 
 	
