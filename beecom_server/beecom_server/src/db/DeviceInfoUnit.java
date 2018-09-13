@@ -7,7 +7,7 @@ public class DeviceInfoUnit {
 	public DevInfoHbn getDevInfoHbn() {
 		return devInfoHbn;
 	}
-
+ 
 	public void setDevInfoHbn(DevInfoHbn devInfoHbn) {
 		this.devInfoHbn = devInfoHbn;
 	}

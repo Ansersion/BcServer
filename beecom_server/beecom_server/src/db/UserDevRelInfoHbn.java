@@ -1,6 +1,6 @@
 package db;
 
-public class UserDevRelInfoHbn {
+public class UserDevRelInfoHbn implements UserDevRelInfoInterface {
 	private Long id;
     private Long userId;
     private Long snId;
@@ -33,6 +33,10 @@ public class UserDevRelInfoHbn {
 	@Override
 	public String toString() {
 		return "UserDevRelInfoHbn [id=" + id + ", userId=" + userId + ", snId=" + snId + ", auth=" + auth + "]";
+	}
+	@Override
+	public boolean ifAdminRelationship() {
+		return false;
 	}
 
     

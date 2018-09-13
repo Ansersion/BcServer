@@ -146,8 +146,9 @@ public class BcServerHandler extends IoHandlerAdapter {
 		Payload pld, pldAck;
 		long devUniqId = 0;
 		BPSession bpSession = null;
-
 		BPPacketType packType = decodedPack.getPackTypeFxHead();
+		BeecomDB beecomDb = BeecomDB.getInstance();
+		
 		if (BPPacketType.CONNECT == packType) {
 			vrb = decodedPack.getVrbHead();
 			pld = decodedPack.getPld();
@@ -206,7 +207,10 @@ public class BcServerHandler extends IoHandlerAdapter {
 				bpSession = new BPUserSession(session, userInfoUnit);
 				BeecomDB.getInstance().getUserName2SessionMap().put(userName, bpSession);
 				session.setAttribute(SESS_ATTR_BP_SESSION, bpSession);
-				
+				if(userInfoUnit != null) {
+					beecomDb.updateUserDevRel(userInfoUnit.getUserInfoHbn());
+				}
+
 			} 
 			if(devClntFlag) {
 				BeecomDB.LoginErrorEnum loginErrorEnum = LoginErrorEnum.USER_OR_PASSWORD_INVALID;
@@ -225,32 +229,15 @@ public class BcServerHandler extends IoHandlerAdapter {
 						session.write(packAck);
 						session.closeOnFlush();
 					}
-					/*
-					switch (loginErrorEnum) {
-					case USER_INVALID:
-						logger.warn("Invalid user name:{}", userName);
-						packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_USER_INVALID);
-						session.write(packAck);
-						session.closeOnFlush();
-						break;
-					case PASSWORD_INVALID:
-						logger.info("{}: Incorrect password '{}'", userName, password);
-						packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_PWD_INVALID);
-						session.write(packAck);
-						session.closeOnFlush();
-						break;
-					default:
-						if(null == deviceInfoUnit.getDevInfoHbn()) {
-							throw new Exception("Inner error: null == deviceInfoUnit.getDeviceInfoHbn()");
-						}
-						break;
-					}
-					*/
 					if (loginErrorEnum != BeecomDB.LoginErrorEnum.LOGIN_OK) {
 						return;
 					}
 					bpSession = new BPDeviceSession(session, devUniqId, password, deviceInfoUnit.getDevInfoHbn().getAdminId());
 					BeecomDB.getInstance().getDevUniqId2SessionMap().put(devUniqId, bpSession);
+					session.setAttribute(SESS_ATTR_BP_SESSION, bpSession);
+					if(deviceInfoUnit != null) {
+						beecomDb.updateUserDevRel(deviceInfoUnit.getDevInfoHbn());
+					}
 					
 				} catch (NumberFormatException e) {
 					packAck.getVrbHead().setRetCode(
@@ -267,7 +254,10 @@ public class BcServerHandler extends IoHandlerAdapter {
 					bpSession = BeecomDB.getInstance().getDevUniqId2SessionMap().get(devUniqId);
 				}
 				*/
-				session.setAttribute(SESS_ATTR_BP_SESSION, bpSession);
+
+				
+
+				
 			}
 
 			int aliveTime = vrb.getAliveTime();

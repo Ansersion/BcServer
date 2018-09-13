@@ -15,6 +15,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 
 import org.hibernate.Session;
@@ -64,8 +65,9 @@ public class BeecomDB {
 	
 	private Map<Long, BPSession> devUniqId2SessionMap;
 	private Map<String, BPSession> userName2SessionMap;
-	private Map<Long, List<UserDevRelInfoHbn> > userId2UserDevRelInfoList;
-	private Map<Long, List<UserDevRelInfoHbn> > snId2UserDevRelInfoList;
+	private Map<Long, List<UserDevRelInfoInterface> > userId2UserDevRelInfoListMap;
+	private Map<Long, List<UserDevRelInfoInterface> > snId2UserDevRelInfoListMap;
+	private List<UserDevRelInfoInterface> userDevRelInfoHbnList;
 	
 	private SessionFactory sessionFactory;
 	
@@ -101,8 +103,9 @@ public class BeecomDB {
 		devUniqId2SessionMap = new HashMap<Long, BPSession>();
 		userName2SessionMap = new HashMap<String, BPSession>();
 
-		userId2UserDevRelInfoList = new HashMap<>();
-		snId2UserDevRelInfoList = new HashMap<>();
+		userId2UserDevRelInfoListMap = new HashMap<>();
+		snId2UserDevRelInfoListMap = new HashMap<>();
+		userDevRelInfoHbnList = new LinkedList<>();
 	}
 
 	public Map<String, Long> getName2IDMap() {
@@ -990,20 +993,20 @@ public class BeecomDB {
 		return userName2SessionMap;
 	}
 
-	public Map<Long, List<UserDevRelInfoHbn>> getUserId2UserDevRelInfoList() {
-		return userId2UserDevRelInfoList;
+	public Map<Long, List<UserDevRelInfoInterface>> getUserId2UserDevRelInfoListMap() {
+		return userId2UserDevRelInfoListMap;
 	}
 	
-	public List<UserDevRelInfoHbn> getUserId2UserDevRelInfoList(Long userId) {
+	public List<UserDevRelInfoInterface> getUserId2UserDevRelInfoList(Long userId) {
 		// TODO:
 		return null;
 	}
 
-	public Map<Long, List<UserDevRelInfoHbn>> getSnId2UserDevRelInfoList() {
-		return snId2UserDevRelInfoList;
+	public Map<Long, List<UserDevRelInfoInterface>> getSnId2UserDevRelInfoListMap() {
+		return snId2UserDevRelInfoListMap;
 	}
 	
-	public List<UserDevRelInfoHbn> getSn2UserDevRelInfoList(Long snId) {
+	public List<UserDevRelInfoInterface> getSn2UserDevRelInfoList(Long snId) {
 		// TODO:
 		return null;
 	}
@@ -3115,6 +3118,78 @@ public class BeecomDB {
     	return ret;
     }
     
+    /* update 'userId2UserDevRelInfoListMap' */
+    public void updateUserDevRel(UserInfoHbn userInfoHbn) {
+    	if(null == userInfoHbn) {
+    		return;
+    	}
+    	if(userId2UserDevRelInfoListMap.containsKey(userInfoHbn.getId())) {
+    		return;
+    	}
+    	
+    	Transaction tx = null;
+	    try (Session session = sessionFactory.openSession()) {
+			tx = session.beginTransaction();
+			
+			List<UserDevRelInfoInterface> userDevRelInfoInterfaceList = session.createQuery("from UserDevRelInfoHbn where userId = :user_id")
+			.setParameter("user_id", userInfoHbn.getId())
+			.list();
+			if(null == userDevRelInfoInterfaceList) {
+				return;
+			}
+			userId2UserDevRelInfoListMap.put(userInfoHbn.getId(), userDevRelInfoInterfaceList);
+			
+			List<DevInfoHbn> devInfoHbnList = session.createQuery("from DevInfoHbn where adminId = :admin_id")
+			.setParameter("admin_id", userInfoHbn.getId())
+			.list();
+			if(null != devInfoHbnList) {
+				int size = devInfoHbnList.size();
+				for(int i = 0; i < size; i++) {
+					DevInfoHbn devInfoHbn = devInfoHbnList.get(i);
+					userDevRelInfoInterfaceList.add(new AdminDevRelInfoUnit(userInfoHbn.getId(), devInfoHbn.getSnId(), BPPacket.USER_AUTH_ALL));
+				}
+				
+			}
+			
+			tx.commit();
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+		}
+	    
+    }
 
-
+    public void updateUserDevRel(DevInfoHbn devInfoHbn) {
+    	if(null == devInfoHbn) {
+    		return;
+    	}
+    	if(snId2UserDevRelInfoListMap.containsKey(devInfoHbn.getSnId())) {
+    		return;
+    	}
+    	
+    	Transaction tx = null;
+	    try (Session session = sessionFactory.openSession()) {
+			tx = session.beginTransaction();
+			
+			List<UserDevRelInfoInterface> userDevRelInfoList = session.createQuery("from UserDevRelInfoHbn where snId = :sn_id")
+			.setParameter("sn_id", devInfoHbn.getSnId())
+			.list();
+			if(null == userDevRelInfoList) {
+				userDevRelInfoList = new ArrayList<>();
+			}
+			
+			userDevRelInfoList.add(new AdminDevRelInfoUnit(devInfoHbn.getAdminId(), devInfoHbn.getSnId(), BPPacket.USER_AUTH_ALL));
+			snId2UserDevRelInfoListMap.put(devInfoHbn.getSnId(), userDevRelInfoList);
+			
+			tx.commit();
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+		}
+	    
+    }
 }
