@@ -64,6 +64,9 @@ public class BeecomDB {
 	
 	private Map<Long, BPSession> devUniqId2SessionMap;
 	private Map<String, BPSession> userName2SessionMap;
+	private Map<Long, List<UserDevRelInfoHbn> > userId2UserDevRelInfoList;
+	private Map<Long, List<UserDevRelInfoHbn> > snId2UserDevRelInfoList;
+	
 	private SessionFactory sessionFactory;
 	
 	public static enum LoginErrorEnum {
@@ -98,115 +101,8 @@ public class BeecomDB {
 		devUniqId2SessionMap = new HashMap<Long, BPSession>();
 		userName2SessionMap = new HashMap<String, BPSession>();
 
-		/*
-		try (Statement statement = con.createStatement()) {
-			Class.forName(driver);
-			con = DriverManager.getConnection(url, user, password);
-			
-			sql = "select * from user_info";
-			try (ResultSet rs = statement.executeQuery(sql)){
-				long id;
-				String name;
-				String eMail;
-				String phone;
-				String passwordTmp;
-
-				while (rs.next()) {
-					id = rs.getInt("ID");
-					name = rs.getString("name");
-					eMail = rs.getString("eMail");
-					phone = rs.getString("phone");
-					passwordTmp = rs.getString("password");
-					userInfoRecLst.add(new DBUserInfoRec(id, name, eMail, phone, passwordTmp));
-					name2IDMap.put(name, id);
-				}
-			}
-
-			sql = "select * from dev_info";
-			try (ResultSet rs = statement.executeQuery(sql)){
-				long devUniqId;
-				int userId;
-				byte[] devPwd = new byte[32];
-				int devId;
-				long sysSigTabId;
-				String devName;
-
-				while (rs.next()) {
-					devUniqId = rs.getLong("devUniqId");
-					userId = rs.getInt("userId");
-					devPwd = rs.getBytes("dev_password");
-					devId = rs.getInt("devId");
-					sysSigTabId = rs.getInt("sysSigTabId");
-					devName = rs.getString("devName");
-					devInfoRecLst.add(new DBDevInfoRec(devUniqId, userId, devPwd, devId, sysSigTabId, devName));
-				}
-			}
-
-			sql = "select * from dev_auth";
-			
-			try  (ResultSet rs = statement.executeQuery(sql)){
-				long devUniqId;
-				int adminUserId;
-				byte adminUserAuth;
-				int userId1;
-				byte userAuth1;
-				int userId2;
-				byte userAuth2;
-				int userId3;
-				byte userAuth3;
-				int userId4;
-				byte userAuth4;
-
-				while (rs.next()) {
-					devUniqId = rs.getLong("devUniqId");
-					adminUserId = rs.getInt("admin_user");
-					adminUserAuth = (byte) rs.getShort("admin_auth");
-					userId1 = rs.getInt("user_id1");
-					userAuth1 = (byte) rs.getShort("user_id1_auth");
-					userId2 = rs.getInt("user_id2");
-					userAuth2 = (byte) rs.getShort("user_id2_auth");
-					userId3 = rs.getInt("user_id3");
-					userAuth3 = (byte) rs.getShort("user_id3_auth");
-					userId4 = rs.getInt("user_id4");
-					userAuth4 = (byte) rs.getShort("user_id4_auth");
-					devAuthRecLst.add(new DBDevAuthRec(devUniqId,
-							adminUserId, adminUserAuth, userId1,
-							userAuth1, userId2, userAuth2, userId3,
-							userAuth3, userId4, userAuth4));
-				}
-			}
-
-			sql = "select * from sysSigTab";
-			try  (ResultSet rs = statement.executeQuery(sql)){
-				int sysSigTabId;
-
-				while (rs.next()) {
-					sysSigTabId = rs.getInt("sysSigTabId");
-					List<Byte[]> sysSigEnableLst = new ArrayList<>();
-					for(int i = 0; i < BPPacket.MAX_SYS_SIG_DIST_NUM; i++) {
-						byte[] tmpB1 = rs.getBytes(i+2);
-						if(null != tmpB1) {
-							Byte[] tmpB2 = new Byte[tmpB1.length];
-							for(int j = 0; j < tmpB2.length; j++) {
-								tmpB2[j] = tmpB1[j];
-							}
-							sysSigEnableLst.add(tmpB2);
-						} else {
-							sysSigEnableLst.add(null);
-						}
-					}					
-					sysSigRecLst.add(new DBSysSigRec(sysSigTabId, sysSigEnableLst));
-				}
-
-				for (int i = 0; i < sysSigRecLst.size(); i++) {
-					sysSigRecLst.get(i).dumpRec();
-				}
-			}
-
-		} catch (SQLException|ClassNotFoundException e) {
-			Util.bcLog(e, logger);
-		} 
-		*/
+		userId2UserDevRelInfoList = new HashMap<>();
+		snId2UserDevRelInfoList = new HashMap<>();
 	}
 
 	public Map<String, Long> getName2IDMap() {
@@ -1092,6 +988,24 @@ public class BeecomDB {
 
 	public Map<String, BPSession> getUserName2SessionMap() {
 		return userName2SessionMap;
+	}
+
+	public Map<Long, List<UserDevRelInfoHbn>> getUserId2UserDevRelInfoList() {
+		return userId2UserDevRelInfoList;
+	}
+	
+	public List<UserDevRelInfoHbn> getUserId2UserDevRelInfoList(Long userId) {
+		// TODO:
+		return null;
+	}
+
+	public Map<Long, List<UserDevRelInfoHbn>> getSnId2UserDevRelInfoList() {
+		return snId2UserDevRelInfoList;
+	}
+	
+	public List<UserDevRelInfoHbn> getSn2UserDevRelInfoList(Long snId) {
+		// TODO:
+		return null;
 	}
 
 	public long getDeviceUniqId(String sn, DeviceInfoUnit deviceInfoUnit) {

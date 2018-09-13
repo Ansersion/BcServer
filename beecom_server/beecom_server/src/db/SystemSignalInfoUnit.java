@@ -11,9 +11,22 @@ public class SystemSignalInfoUnit implements SignalInfoUnitInterface {
 	private int sysSigId;
 	private boolean ifNotifing;
 	private boolean ifConfigDef;
+	private int customFlags;
+	private short alarmClass;
+	private short alarmDelayBef;
+	private short alarmDelayAft;
 	private List<SystemSignalEnumLangInfoHbn> systemSignalEnumLangInfoList;
 	private SignalInterface systemSignalInterface;
 	private Object signalValue;
+	
+	public SystemSignalInfoUnit(int sysSigId) {
+		super();
+		this.sysSigId = sysSigId;
+		this.ifNotifing = true;
+		this.ifConfigDef = false;
+		this.systemSignalEnumLangInfoList = null;
+		this.systemSignalInterface = null;
+	}
 
 	public SystemSignalInfoUnit(int sysSigId, boolean ifNotifing, boolean ifConfigDef,
 			List<SystemSignalEnumLangInfoHbn> systemSignalEnumLangInfoList, SignalInterface systemSignalInterface) {
@@ -139,6 +152,66 @@ public class SystemSignalInfoUnit implements SignalInfoUnitInterface {
 
 	public void setSignalValue(Object signalValue) {
 		this.signalValue = signalValue;
+	}
+
+	public void setSysSigId(int sysSigId) {
+		this.sysSigId = sysSigId;
+	}
+
+	public void setIfNotifing(boolean ifNotifing) {
+		this.ifNotifing = ifNotifing;
+	}
+
+	public void setIfConfigDef(boolean ifConfigDef) {
+		this.ifConfigDef = ifConfigDef;
+	}
+
+	public void setSystemSignalEnumLangInfoList(List<SystemSignalEnumLangInfoHbn> systemSignalEnumLangInfoList) {
+		this.systemSignalEnumLangInfoList = systemSignalEnumLangInfoList;
+	}
+
+	public void setSystemSignalInterface(SignalInterface systemSignalInterface) {
+		this.systemSignalInterface = systemSignalInterface;
+	}
+	
+	
+
+	public int getCustomFlags() {
+		return customFlags;
+	}
+
+	public void setCustomFlags(int customFlags) {
+		this.customFlags = customFlags;
+	}
+
+	public void setAlarmClass(short alarmClass) {
+		this.alarmClass = alarmClass;
+	}
+
+	public void setAlarmDelayBef(short alarmDelayBef) {
+		this.alarmDelayBef = alarmDelayBef;
+	}
+
+	public void setAlarmDelayAft(short alarmDelayAft) {
+		this.alarmDelayAft = alarmDelayAft;
+	}
+
+	@Override
+	public short getAlarmClass() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public short getAlarmDelayBef() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public short getAlarmDelayAft() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 	

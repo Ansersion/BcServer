@@ -55,6 +55,7 @@ public class BPPacketREPORT extends BPPacket {
 	int devNameLen;
 	Vector<BPPartitation> partitation;
 	byte[] devName;
+	private byte[] signalValueRelay;
 
 	private static final Logger logger = LoggerFactory.getLogger(BcDecoder.class); 
 	
@@ -193,7 +194,9 @@ public class BPPacketREPORT extends BPPacket {
 			IoBuffer ioBuffer = getIoBuffer();
 			
 			if (vrb.getSigValFlag()) {
+				signalValueRelay = null;
 				pld.initSigValMap();
+				int signalValuePositionStart = ioBuffer.position();
 				final int sigNum = ioBuffer.get();
 				for(int i = 0; i < sigNum; i++) {
 					int sigId = ioBuffer.getUnsignedShort();
@@ -241,7 +244,11 @@ public class BPPacketREPORT extends BPPacket {
 						break;
 					}
 				}
-			
+				int signalValuePositionEnd = ioBuffer.position();
+				ioBuffer.rewind();
+				ioBuffer.position(signalValuePositionStart);
+				signalValueRelay = new byte[signalValuePositionEnd - signalValuePositionStart];
+				ioBuffer.get(signalValueRelay);
 			} else {
 				if (vrb.getSysSigMapFlag()) {
 					byte distAndClass;
@@ -691,6 +698,10 @@ public class BPPacketREPORT extends BPPacket {
 	
 	public Vector<BPPartitation> getPartitation() {
 		return partitation;
+	}
+
+	public byte[] getSignalValueRelay() {
+		return signalValueRelay;
 	}
 	
 	

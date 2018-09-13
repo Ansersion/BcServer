@@ -228,6 +228,21 @@ public class CustomSignalInfoUnit implements SignalInfoUnitInterface {
 	public void setSignalValue(Object signalValue) {
 		this.signalValue = signalValue;
 	}
+	@Override
+	public short getAlarmClass() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public short getAlarmDelayBef() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public short getAlarmDelayAft() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
 	
 

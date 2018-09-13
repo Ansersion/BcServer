@@ -246,18 +246,19 @@ public class BcServerHandler extends IoHandlerAdapter {
 						break;
 					}
 					*/
-
+					if (loginErrorEnum != BeecomDB.LoginErrorEnum.LOGIN_OK) {
+						return;
+					}
+					bpSession = new BPDeviceSession(session, devUniqId, password, deviceInfoUnit.getDevInfoHbn().getAdminId());
+					BeecomDB.getInstance().getDevUniqId2SessionMap().put(devUniqId, bpSession);
+					
 				} catch (NumberFormatException e) {
 					packAck.getVrbHead().setRetCode(
 							BPPacketCONNACK.RET_CODE_USER_OR_PASSWORD_INVALID);
 					session.write(packAck);
 					session.closeOnFlush();
 				}
-				if (loginErrorEnum != BeecomDB.LoginErrorEnum.LOGIN_OK) {
-					return;
-				}
-				bpSession = new BPDeviceSession(session, devUniqId, password);
-				BeecomDB.getInstance().getDevUniqId2SessionMap().put(devUniqId, bpSession);
+
 			/*
 				if(!BeecomDB.getInstance().getDevUniqId2SessionMap().containsKey(devUniqId)) {
 					bpSession = new BPDeviceSession(session, devUniqId, password);
@@ -604,7 +605,6 @@ public class BcServerHandler extends IoHandlerAdapter {
 				bpDeviceSession.setSigMapCheckOK(false);
 			}
 			
-
 			boolean newSigMapFlagOk = true;
 			
 			if(newSigMapFlagOk && sysSigMapFlag) {			
@@ -638,8 +638,12 @@ public class BcServerHandler extends IoHandlerAdapter {
 				if(!BeecomDB.getInstance().putSignalMapChksum(uniqDevId, pld.getSigMapCheckSum())) {
 					logger.error("Internal error: !BeecomDB.getInstance().putSignalMapChksum(uniqDevId, pld.getSigMapChecksum())");
 				} else {
-					// TODO: set value map
+					List<Integer> systemSignalEnabledList = pld.getSystemSignalEnabledList();
+					List<SystemSignalCustomInfoUnit> systemSignalCustomInfoUnit = pld.getSystemSignalCustomInfoUnitLst();
+					List<CustomSignalInfoUnit> customSignalInfoUnitList = pld.getCustomSignalInfoUnitLst();
+					bpDeviceSession.parseSignalInfoUnitInterfaceMap(systemSignalEnabledList, systemSignalCustomInfoUnit, customSignalInfoUnitList);
 					bpDeviceSession.setSigMapCheckOK(true);
+
 				}
 			}
 			
@@ -681,12 +685,14 @@ public class BcServerHandler extends IoHandlerAdapter {
 				    signalInfoUnitInterface.putSignalValue(entry);
 				}  
 				// bpDeviceSession.startNotify(decodedPack);
+				BPPacketREPORT report = (BPPacketREPORT)decodedPack;
+				byte[] relayData = report.getSignalValueRelay();
+				bpDeviceSession.reportSignalValue2UserClient(relayData);
+
 			}
 			
 			session.write(packAck);
-			
-			/* TODO: push the signal value to the device
-			 * and put a callback when get the response if notifying flag set */
+
 		} else if(BPPacketType.RPRTACK == packType) {
 			/* NOT SUPPORTED */
 		} else if (BPPacketType.DISCONN == packType) {

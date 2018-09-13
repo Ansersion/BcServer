@@ -68,6 +68,19 @@ public class BPPacket implements BPPacketInterface {
 	public static final short ALARM_CLASS_NONE = 0xFF;
 	public static final short ALARM_DELAY_DEFAULT = 0x05;
 	
+	/* system signal custom flgs */
+	public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_STATISTICS = 0x0001;
+	public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_ENUM_LANG = 0x0002;
+	public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_GROUP_LANG = 0x0004;
+	public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_ACCURACY = 0x0008;
+	public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_VALUE_MIN = 0x0010;
+	public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_VALUE_MAX = 0x0020;
+	public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_VALUE_DEF = 0x0040;
+	public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM = 0x0080;
+	public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM_CLASS = 0x0100;
+	public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM_DELAY_BEF = 0x0200;
+	public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM_DELAY_AFT = 0x0400;
+	
 	public static boolean inDist(int distIndex, int signalId) {
 		return (signalId >= SYS_SIG_START_ID + distIndex * SYS_SIG_DIST_STEP) && (signalId < SYS_SIG_START_ID + (distIndex + 1) * SYS_SIG_DIST_STEP);
 	}

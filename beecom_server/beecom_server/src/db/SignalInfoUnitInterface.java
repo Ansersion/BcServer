@@ -23,6 +23,9 @@ public interface SignalInfoUnitInterface {
 	/* only for custom signal */
 	boolean ifAlarm();
 	boolean ifDisplay();
+	short getAlarmClass();
+	short getAlarmDelayBef();
+	short getAlarmDelayAft();
 	Map<Integer, String> getSignalNameLangMap();
 	Map<Integer, String> getGignalUnitLangMap();
 	Map<Integer, String> getGroupLangMap();
