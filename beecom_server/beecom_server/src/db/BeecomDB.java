@@ -65,7 +65,10 @@ public class BeecomDB {
 	
 	private Map<Long, BPSession> devUniqId2SessionMap;
 	private Map<String, BPSession> userName2SessionMap;
+	private Map<Long, BPSession> userId2SessionMap;
+	/* maybe not always be updated, dynamically updated */
 	private Map<Long, List<UserDevRelInfoInterface> > userId2UserDevRelInfoListMap;
+	/* must always be updated */
 	private Map<Long, List<UserDevRelInfoInterface> > snId2UserDevRelInfoListMap;
 	private List<UserDevRelInfoInterface> userDevRelInfoHbnList;
 	
@@ -102,6 +105,7 @@ public class BeecomDB {
 		
 		devUniqId2SessionMap = new HashMap<Long, BPSession>();
 		userName2SessionMap = new HashMap<String, BPSession>();
+		userId2SessionMap = new HashMap<>();
 
 		userId2UserDevRelInfoListMap = new HashMap<>();
 		snId2UserDevRelInfoListMap = new HashMap<>();
@@ -993,6 +997,10 @@ public class BeecomDB {
 		return userName2SessionMap;
 	}
 
+	public Map<Long, BPSession> getUserId2SessionMap() {
+		return userId2SessionMap;
+	}
+
 	public Map<Long, List<UserDevRelInfoInterface>> getUserId2UserDevRelInfoListMap() {
 		return userId2UserDevRelInfoListMap;
 	}
@@ -1007,8 +1015,7 @@ public class BeecomDB {
 	}
 	
 	public List<UserDevRelInfoInterface> getSn2UserDevRelInfoList(Long snId) {
-		// TODO:
-		return null;
+		return snId2UserDevRelInfoListMap.get(snId);
 	}
 
 	public long getDeviceUniqId(String sn, DeviceInfoUnit deviceInfoUnit) {
@@ -3166,7 +3173,16 @@ public class BeecomDB {
     		return;
     	}
     	if(snId2UserDevRelInfoListMap.containsKey(devInfoHbn.getSnId())) {
-    		return;
+    		List<UserDevRelInfoInterface> udriiList = snId2UserDevRelInfoListMap.get(devInfoHbn.getSnId());
+    		int size = udriiList.size();
+    		long adminId = devInfoHbn.getAdminId();
+    		for(int i = 0; i < size; i++) {
+    			if(udriiList.get(i).getUserId() == adminId) {
+    				return;
+    			}
+    		}
+    		udriiList.add(new AdminDevRelInfoUnit(adminId, devInfoHbn.getSnId(), BPPacket.USER_AUTH_ALL));
+			return;
     	}
     	
     	Transaction tx = null;

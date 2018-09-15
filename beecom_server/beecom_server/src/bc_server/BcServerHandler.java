@@ -67,64 +67,9 @@ public class BcServerHandler extends IoHandlerAdapter {
 	
 	static enum ProductType {
 		PUSH_DEVICE_ID_LIST,
+		PUSH_SIGNAL_VALUE,
 	}
 	
-	static class PushPacketDeviceIDProduct extends Product {
-		private BPUserSession bpUserSession;
-		private BPPacket bpPacket;
-		
-		public PushPacketDeviceIDProduct(BPUserSession bpSession) {
-			super();
-			this.bpUserSession = bpSession;
-			bpPacket = null;
-		}
-		
-		@Override
-		public boolean consume() {
-			boolean ret = false; 
-			try {
-				logger.info("PushPacketDeviceIDProduct consumed");
-				IoSession session = bpUserSession.getSession();
-				session.write(bpPacket);
-				ret = true;
-			} catch(Exception e) {
-				StringWriter sw = new StringWriter();
-				e.printStackTrace(new PrintWriter(sw, true));
-				String str = sw.toString();
-				logger.error(str);
-			}
-			return ret;
-		}
-
-		@Override
-		public boolean product() {
-			boolean ret = false;
-			if(null == bpUserSession) {
-				return ret;
-			}
-			try {
-				logger.info("PushPacketDeviceIDProduct producting");
-				// IoSession session = bpUserSession.getSession();
-				bpPacket = BPPackFactory.createBPPack(BPPacketType.PUSH);
-				bpPacket.getVrbHead().setReqAllDeviceIdFlag(true);
-				String userName = bpUserSession.getUserName();
-				Payload pld = bpPacket.getPld();
-				BeecomDB beecomDb = BeecomDB.getInstance();
-				List<Long> deviceIDList = beecomDb.getDeviceIDList(bpUserSession.getUserName());
-				pld.setDeviceIdList(deviceIDList);
-				// session.write(bpPacket);
-				ret = true;
-			} catch(Exception e) {
-				StringWriter sw = new StringWriter();
-				e.printStackTrace(new PrintWriter(sw, true));
-				String str = sw.toString();
-				logger.error(str);
-			}
-			return ret;
-		}
-		
-	}
-
 	// 捕获异常
 	@Override
 	public void exceptionCaught(IoSession session, Throwable cause)
@@ -205,11 +150,10 @@ public class BcServerHandler extends IoHandlerAdapter {
 					return;
 				}
 				bpSession = new BPUserSession(session, userInfoUnit);
-				BeecomDB.getInstance().getUserName2SessionMap().put(userName, bpSession);
 				session.setAttribute(SESS_ATTR_BP_SESSION, bpSession);
-				if(userInfoUnit != null) {
-					beecomDb.updateUserDevRel(userInfoUnit.getUserInfoHbn());
-				}
+				beecomDb.getUserName2SessionMap().put(userName, bpSession);
+				beecomDb.getUserId2SessionMap().put(userInfoUnit.getUserInfoHbn().getId(), bpSession);
+				beecomDb.updateUserDevRel(userInfoUnit.getUserInfoHbn());
 
 			} 
 			if(devClntFlag) {
@@ -232,7 +176,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 					if (loginErrorEnum != BeecomDB.LoginErrorEnum.LOGIN_OK) {
 						return;
 					}
-					bpSession = new BPDeviceSession(session, devUniqId, password, deviceInfoUnit.getDevInfoHbn().getAdminId());
+					bpSession = new BPDeviceSession(session, devUniqId, password, deviceInfoUnit.getDevInfoHbn().getAdminId(), deviceInfoUnit.getDevInfoHbn().getSnId());
 					BeecomDB.getInstance().getDevUniqId2SessionMap().put(devUniqId, bpSession);
 					session.setAttribute(SESS_ATTR_BP_SESSION, bpSession);
 					if(deviceInfoUnit != null) {
@@ -329,7 +273,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 				}
 				packAck.getVrbHead().setReqAllDeviceIdFlag(true);
 				session.write(packAck);
-				pushMessage(bpUserSession, ProductType.PUSH_DEVICE_ID_LIST);
+				pushMessage(bpUserSession, ProductType.PUSH_DEVICE_ID_LIST, null);
 				return;
 			}
 			long uniqDevId = pld.getUniqDevId();
@@ -677,8 +621,8 @@ public class BcServerHandler extends IoHandlerAdapter {
 				// bpDeviceSession.startNotify(decodedPack);
 				BPPacketREPORT report = (BPPacketREPORT)decodedPack;
 				byte[] relayData = report.getSignalValueRelay();
-				bpDeviceSession.reportSignalValue2UserClient(relayData);
-
+				// bpDeviceSession.reportSignalValue2UserClient(relayData);
+				pushMessage(bpDeviceSession, ProductType.PUSH_DEVICE_ID_LIST, relayData);
 			}
 			
 			session.write(packAck);
@@ -708,16 +652,25 @@ public class BcServerHandler extends IoHandlerAdapter {
 
 	}
 	
-	private void pushMessage(BPSession bpSession, ProductType productType) {
+	private void pushMessage(BPSession bpSession, ProductType productType, byte[] para) {
 		Product product = null;
-		switch(productType) {
+		try {
+			switch (productType) {
 			case PUSH_DEVICE_ID_LIST:
-				product = new PushPacketDeviceIDProduct((BPUserSession)bpSession);
+				product = new PushPacketDeviceIDProduct((BPUserSession) bpSession);
 				break;
-		}
-		if(product != null) {
-			product.product();
-			BcServerMain.consumerTask.produce(product);
+			case PUSH_SIGNAL_VALUE:
+				product = new PushSignalValuesProduct((BPDeviceSession) bpSession, para);
+			}
+			if (product != null) {
+				product.produce();
+				BcServerMain.consumerTask.produce(product);
+			}
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
 		}
 	}
 

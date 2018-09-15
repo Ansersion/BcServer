@@ -280,6 +280,10 @@ public class VariableHeader {
 		return bit4;
 	}
 	
+	public void setSigValFlag(boolean sigValFlag) {
+		bit4 = true;
+	}
+	
 	public boolean getSysCusFlag() {
 		return bit2;
 	}

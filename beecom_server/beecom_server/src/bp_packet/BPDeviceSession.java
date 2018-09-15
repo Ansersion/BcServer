@@ -31,6 +31,7 @@ public class BPDeviceSession extends BPSession {
 	private Map<Integer, List<Object> > signalValueMap;
 	private Map<Integer, SignalInfoUnitInterface> signalId2InfoUnitMap;
 	private boolean sigMapCheckOK;
+	private long snId;
 	
 	public BPDeviceSession(IoSession session) {
 		super(session);
@@ -40,9 +41,10 @@ public class BPDeviceSession extends BPSession {
 		super.setSystemSignalValueMap(new HashMap<Integer, Object>());
 		sigMapCheckOK = false;
 		signalId2InfoUnitMap = null;
+		snId = 0L;
 	}
 	
-	public BPDeviceSession(IoSession session, Long uniqDeviceId, String password, Long adminId) {
+	public BPDeviceSession(IoSession session, Long uniqDeviceId, String password, Long adminId, long snId) {
 		super(session);
 		this.uniqDeviceId = uniqDeviceId;
 		this.password = password;
@@ -51,6 +53,7 @@ public class BPDeviceSession extends BPSession {
 		super.setSystemSignalValueMap(new HashMap<Integer, Object>());
 		sigMapCheckOK = false;
 		signalId2InfoUnitMap = null;
+		this.snId = snId;
 	}
 	
 	public boolean putRelayList(IoSession iosession, BPPacket bppacket, int timeout) {
@@ -212,4 +215,14 @@ public class BPDeviceSession extends BPSession {
 		/* TODO: push the signal value to the device
 		 * and put a callback when get the response if notifying flag set */
 	}
+
+	public long getSnId() {
+		return snId;
+	}
+
+	public void setSnId(long snId) {
+		this.snId = snId;
+	}
+	
+	
 }

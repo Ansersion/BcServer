@@ -80,6 +80,15 @@ public class BPPacketPUSH extends BPPacket {
 			for(int i = 0; i < deviceIdList.size(); i++) {
 				buffer.putUnsignedInt(deviceIdList.get(i));
 			}
+		} else if(vrb.getSigValFlag()) {
+			byte[] data = pld.getPushSigValData();
+			long uniqDevId = pld.getUniqDevId();
+			buffer.putUnsignedInt(uniqDevId);
+			if(null == data) {
+				buffer.putUnsigned(0);
+				return false;
+			}
+			buffer.put(data);
 		} else {
 			buffer.putUnsignedShort(pld.getUniqDevId());
 			if(vrb.getSysSigFlag()) {

@@ -63,6 +63,7 @@ public class Payload {
 	private List<Long> deviceIdList;
 	private int customSignalLangSupportMask;
 	private long sigMapCheckSum;
+	private byte[] pushSigValData;
 	
 	public BPError getError() {
 		return error;
@@ -463,6 +464,14 @@ public class Payload {
 
 	public Map<Integer, Pair<Byte, Object>> getSigValMap() {
 		return sigValMap;
+	}
+
+	public byte[] getPushSigValData() {
+		return pushSigValData;
+	}
+
+	public void setPushSigValData(byte[] pushSigValData) {
+		this.pushSigValData = pushSigValData;
 	}
 		
 	

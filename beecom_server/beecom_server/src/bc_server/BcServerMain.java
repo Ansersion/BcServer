@@ -87,6 +87,7 @@ public class BcServerMain {
 		consumerTask = new ConsumerTask();
 		consumerTask.start();
 		
+		/* initialize database */
 		BeecomDB.getInstance();
 
 		NioSocketAcceptor bcAcceptor = new NioSocketAcceptor();
