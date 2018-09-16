@@ -61,6 +61,10 @@ public class PushSignalValuesProduct extends Product {
 				}
 				userId = userDevRelInfoInterface.getUserId();
 				userSession = (BPUserSession)userId2SessionMap.get(userId);
+				if(null == userSession) {
+					/* not logined yet */
+					continue;
+				}
 				ioSession = userSession.getSession();
 				if(null == ioSession || !ioSession.isConnected()) {
 					/* session is not active */

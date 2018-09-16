@@ -342,28 +342,69 @@ public class BcServerHandler extends IoHandlerAdapter {
 			pld = decodedPack.getPld();
 			long uniqDevId = pld.getUniqDevId();
 			
+			vrbAck = packAck.getVrbHead();
+			pldAck = packAck.getPld();
 			
 			boolean sysSigFlag = vrb.getSysSigFlag();
 			boolean cusSigFlag = vrb.getCusSigFlag();
 			boolean sysSigAttrFlag = vrb.getSysSigAttrFlag();
 			boolean cusSigAttrFlag = vrb.getCusSigAttrFlag();
+			boolean sigValFlag = vrb.getSigValFlag();
 			if((sysSigFlag || cusSigFlag) && (sysSigAttrFlag || cusSigAttrFlag)) {
 				packAck.getVrbHead().setRetCode(BPPacketPOST.RET_CODE_INVALID_FLAGS_ERR);
 				session.write(packAck);
 				return;
 			}
 			
-			// TODO: 
-			// 1. check if attribute packet / control packet
-			if(sysSigFlag || cusSigFlag) {
-				if(!BeecomDB.getInstance().getDevUniqId2SessionMap().containsKey(devUniqId)) {
+			if(sigValFlag) {
+				BPDeviceSession bpDeviceSession = (BPDeviceSession)beecomDb.getDevUniqId2SessionMap().get(devUniqId);
+				if(null == bpDeviceSession) {
 					packAck.getVrbHead().setRetCode(BPPacketPOST.RET_CODE_OFF_LINE_ERR);
 					session.write(packAck);
 					return;
 				}
-				BPDeviceSession bpDeviceSession = (BPDeviceSession)BeecomDB.getInstance().getDevUniqId2SessionMap().get(devUniqId);
-				// 2. relay the packet when it is a control packet
-  
+				Map<Integer, SignalInfoUnitInterface> signalId2InfoUnitMap = bpDeviceSession.getSignalId2InfoUnitMap();
+				if(null == signalId2InfoUnitMap) {
+			    	vrbAck.setRetCode(BPPacketPOST.RET_CODE_OFF_LINE_ERR);
+			    	session.write(packAck);
+			    	return;
+				}
+				Map<Integer, Pair<Byte, Object> > sigValMap = pld.getSigValMap();
+				Iterator<Map.Entry<Integer, Pair<Byte, Object>>> entriesSigVals = sigValMap.entrySet().iterator();
+				SignalInfoUnitInterface signalInfoUnitInterface;
+				Map.Entry<Integer, Pair<Byte, Object>> entry;
+				/* check error */
+				while (entriesSigVals.hasNext()) {  
+				    entry = entriesSigVals.next();  
+				    signalInfoUnitInterface = signalId2InfoUnitMap.get(entry.getKey());
+				    if(null == signalInfoUnitInterface) {
+				    	vrbAck.setRetCode(BPPacketRPRTACK.RET_CODE_SIG_ID_INVALID);
+				    	pldAck.setUnsupportedSignalId(entry.getKey());
+				    	session.write(packAck);
+				    	return;
+				    }
+				    
+				    if(signalInfoUnitInterface.checkSignalValueUnformed(entry.getValue().getKey(), entry.getValue().getValue())) {
+				    	vrbAck.setRetCode(BPPacketRPRTACK.RET_CODE_SIG_VAL_INVALID);
+				    	pldAck.setUnsupportedSignalId(entry.getKey());
+				    	session.write(packAck);
+				    	return;
+				    }
+				} 
+				
+				
+				/*
+				entriesSigVals = sigValMap.entrySet().iterator();
+				while (entriesSigVals.hasNext()) {  
+				    entry = entriesSigVals.next();  
+				    signalInfoUnitInterface = signalId2InfoUnitMap.get(entry.getKey());
+				    signalInfoUnitInterface.putSignalValue(entry);
+				} 
+				*/
+				
+				byte[] relayData = decodedPack.getSignalValueRelay();
+				pushMessage(bpDeviceSession, ProductType.PUSH_SIGNAL_VALUE, relayData);
+				
 				bpDeviceSession.getSession().write(decodedPack);
 				if(!bpDeviceSession.putRelayList(session, BPPackFactory.createBPPackAck(decodedPack), bpDeviceSession.getTimeout())) {
 					packAck.getVrbHead().setRetCode(BPPacketPOST.RET_CODE_BUFFER_FILLED_ERR);
@@ -584,7 +625,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 			if(sigValFlag) {
 				Map<Integer, SignalInfoUnitInterface> signalId2InfoUnitMap = bpDeviceSession.getSignalId2InfoUnitMap();
 				if(null == signalId2InfoUnitMap) {
-			    	vrbAck.setRetCode(BPPacketRPRTACK.RET_CODE_SIG_ID_INVALID);
+			    	vrbAck.setRetCode(BPPacketRPRTACK.RET_CODE_SIG_MAP_UNCHECK);
 			    	session.write(packAck);
 			    	return;
 				}
@@ -619,10 +660,11 @@ public class BcServerHandler extends IoHandlerAdapter {
 				    signalInfoUnitInterface.putSignalValue(entry);
 				}  
 				// bpDeviceSession.startNotify(decodedPack);
-				BPPacketREPORT report = (BPPacketREPORT)decodedPack;
-				byte[] relayData = report.getSignalValueRelay();
+				// BPPacketREPORT report = (BPPacketREPORT)decodedPack;
+				byte[] relayData = decodedPack.getSignalValueRelay();
+				// TODO: strip(relayData), to avoid pushing no-notifying signals
 				// bpDeviceSession.reportSignalValue2UserClient(relayData);
-				pushMessage(bpDeviceSession, ProductType.PUSH_DEVICE_ID_LIST, relayData);
+				pushMessage(bpDeviceSession, ProductType.PUSH_SIGNAL_VALUE, relayData);
 			}
 			
 			session.write(packAck);

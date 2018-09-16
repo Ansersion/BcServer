@@ -201,7 +201,7 @@ public class BPPacketREPORT extends BPPacket {
 				for(int i = 0; i < sigNum; i++) {
 					int sigId = ioBuffer.getUnsignedShort();
 					byte sigType = ioBuffer.get();
-					switch(sigType) {
+					switch(sigType & BPPacket.VAL_TYPE_MASK) {
 					case VAL_TYPE_UINT32:
 						pld.putSigValMap(sigId, sigType, ioBuffer.getUnsignedInt());
 						break;

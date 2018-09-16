@@ -20,6 +20,7 @@ public class BPPacketPOST extends BPPacket {
 	
 	public static final int RET_CODE_INVALID_FLAGS_ERR = 0x01;
 	public static final int RET_CODE_INVALID_DEVICE_ID_ERR = 0x02;
+	public static final int RET_CODE_NOT_LOGIN_ERR = 0x03;
 	public static final int RET_CODE_OFF_LINE_ERR = 0x06;
 	public static final int RET_CODE_ACCESS_DEV_PERMISSION_DENY_ERR = 0x07;
 	public static final int RET_CODE_TIMEOUT_ERR = 0x09;
@@ -30,6 +31,7 @@ public class BPPacketPOST extends BPPacket {
 	int packSeq;
 	DevSigData[] sigDatas = null; 
 	int deviceNum;
+	private byte[] signalValueRelay;
 	
 	@Override
 	public boolean parseVariableHeader(IoBuffer ioBuf) {
@@ -118,6 +120,74 @@ public class BPPacketPOST extends BPPacket {
 
 	@Override
 	public int parsePayload() {
+
+		try {
+			VariableHeader vrb = getVrbHead();
+			Payload pld = getPld();
+			IoBuffer ioBuffer = getIoBuffer();
+
+			if (vrb.getSigValFlag()) {
+				signalValueRelay = null;
+				pld.initSigValMap();
+				int signalValuePositionStart = ioBuffer.position();
+				final int sigNum = ioBuffer.get();
+				for (int i = 0; i < sigNum; i++) {
+					int sigId = ioBuffer.getUnsignedShort();
+					byte sigType = (byte) (ioBuffer.get() & BPPacket.VAL_TYPE_MASK);
+					switch (sigType) {
+					case VAL_TYPE_UINT32:
+						pld.putSigValMap(sigId, sigType, ioBuffer.getUnsignedInt());
+						break;
+					case VAL_TYPE_UINT16:
+						pld.putSigValMap(sigId, sigType, ioBuffer.getUnsignedShort());
+						break;
+					case VAL_TYPE_IINT32:
+						pld.putSigValMap(sigId, sigType, ioBuffer.getInt());
+						break;
+					case VAL_TYPE_IINT16:
+						pld.putSigValMap(sigId, sigType, ioBuffer.getShort());
+						break;
+					case VAL_TYPE_ENUM:
+						pld.putSigValMap(sigId, sigType, ioBuffer.getUnsignedShort());
+						break;
+					case VAL_TYPE_FLOAT:
+						pld.putSigValMap(sigId, sigType, ioBuffer.getFloat());
+						break;
+					case VAL_TYPE_STRING: {
+						int strLen = ioBuffer.get();
+						byte[] strBytes = new byte[strLen];
+						ioBuffer.get(strBytes);
+						String value = new String(strBytes, "UTF-8");
+						pld.putSigValMap(sigId, sigType, value);
+						break;
+					}
+					case VAL_TYPE_BOOLEAN: {
+						Boolean value;
+						if (ioBuffer.get() == 0) {
+							value = false;
+						} else {
+							value = true;
+						}
+						pld.putSigValMap(sigId, sigType, value);
+						break;
+					}
+					default:
+						break;
+					}
+				}
+				int signalValuePositionEnd = ioBuffer.position();
+				ioBuffer.rewind();
+				ioBuffer.position(signalValuePositionStart);
+				signalValueRelay = new byte[signalValuePositionEnd - signalValuePositionStart];
+				ioBuffer.get(signalValueRelay);
+
+			}
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+		}
 		return 0;
 	}
 	
@@ -182,4 +252,10 @@ public class BPPacketPOST extends BPPacket {
 		
 		return false;
 	}
+
+	public byte[] getSignalValueRelay() {
+		return signalValueRelay;
+	}
+	
+	
 }

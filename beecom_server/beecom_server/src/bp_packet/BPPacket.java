@@ -516,5 +516,9 @@ public class BPPacket implements BPPacketInterface {
 	public static boolean ifSigTypeValid(int sigType) {
 		return sigType >= VAL_TYPE_UINT32 && sigType <= VAL_TYPE_BOOLEAN;
 	}
+	
+	public byte[] getSignalValueRelay() {
+		return null;
+	}
 
 }
