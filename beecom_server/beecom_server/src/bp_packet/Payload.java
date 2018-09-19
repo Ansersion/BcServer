@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import db.BeecomDB;
 import db.CustomSignalInfoUnit;
 import db.SignalInfoHbn;
+import db.SignalInfoUnitInterface;
 import db.SystemSignalCustomInfoUnit;
 import db.SystemSignalInfoUnit;
 import javafx.util.Pair;
@@ -269,53 +270,80 @@ public class Payload {
 		return true;
 	}
 	
-	public boolean packSysSignalValues(List<Integer> sysSigLst, BPSession bpSession, BPError bpError) {
-		if(null == sysSigLst || null == bpSession) {
-			return false;
+	public boolean packSysSignalValues(List<Integer> sysSigLst, BPDeviceSession bpDeviceSession, BPError bpError) {
+		boolean ret = false;
+		if (null == sysSigLst || null == bpDeviceSession) {
+			return ret;
 		}
-		sysSigValMap = new HashMap<Integer, Object>();
-		
-		Iterator<Integer> it = sysSigLst.iterator();
-		Map<Integer, Object> systemSignalValueMap;
-		systemSignalValueMap = bpSession.getSystemSignalValueMap();
-		while(it.hasNext()) {
-			int sysSigId = it.next();
-			if(sysSigId < BPPacket.SYS_SIG_START_ID || sysSigId > BPPacket.MAX_SIG_ID) {
-				if(null != bpError) {
-					bpError.setErrorCode(BPPacketGET.RET_CODE_SIGNAL_NOT_SUPPORT_ERR);
-					bpError.setSigId(sysSigId);
+
+		try {
+			sysSigValMap = new HashMap<Integer, Object>();
+			Iterator<Integer> it = sysSigLst.iterator();
+			Map<Integer, SignalInfoUnitInterface> signalInfoUnitInterfaceMap = bpDeviceSession
+					.getSignalId2InfoUnitMap();
+			SignalInfoUnitInterface signalInfoUnitInterfaceTmp;
+			if (null == signalInfoUnitInterfaceMap) {
+				if (null != bpError) {
+					bpError.setErrorCode(BPPacketGET.RET_CODE_INNER_ERR);
 				}
-				return false;
+				return ret;
 			}
-			
-			if(!systemSignalValueMap.containsKey(sysSigId)) {
-				if(null != bpError) {
-					bpError.setErrorCode(BPPacketGET.RET_CODE_SIGNAL_NOT_SUPPORT_ERR);
-					bpError.setSigId(sysSigId);
+
+			while (it.hasNext()) {
+				int sysSigId = it.next();
+				if (sysSigId < BPPacket.SYS_SIG_START_ID || sysSigId > BPPacket.MAX_SIG_ID) {
+					if (null != bpError) {
+						bpError.setErrorCode(BPPacketGET.RET_CODE_SIGNAL_NOT_SUPPORT_ERR);
+						bpError.setSigId(sysSigId);
+					}
+					return ret;
 				}
-				return false;
-			}
-			if(sysSigValMap.containsKey(sysSigId)) {
-				if(null != bpError) {
-					bpError.setErrorCode(BPPacketGET.RET_CODE_SIGNAL_REPEAT_ERR);
-					bpError.setSigId(sysSigId);
+
+				if (!signalInfoUnitInterfaceMap.containsKey(sysSigId)) {
+					if (null != bpError) {
+						bpError.setErrorCode(BPPacketGET.RET_CODE_SIGNAL_NOT_SUPPORT_ERR);
+						bpError.setSigId(sysSigId);
+					}
+					return ret;
 				}
-				return false;
+				if (sysSigValMap.containsKey(sysSigId)) {
+					if (null != bpError) {
+						bpError.setErrorCode(BPPacketGET.RET_CODE_SIGNAL_REPEAT_ERR);
+						bpError.setSigId(sysSigId);
+					}
+					return ret;
+				}
+				signalInfoUnitInterfaceTmp = signalInfoUnitInterfaceMap.get(sysSigId);
+				if(signalInfoUnitInterfaceTmp.getSignalInterface().getEnStatistics()) {
+					sysSigValMap.put(sysSigId, signalInfoUnitInterfaceTmp.getSignalValue());
+				} else {
+					bpError.setErrorCode(BPError.BP_ERROR_STATISTICS_NONE_SIGNAL);
+					bpError.putStatisticsNoneSignalId(sysSigId);
+				}
 			}
-			sysSigValMap.put(sysSigId, systemSignalValueMap.get(sysSigId));
+			ret = true;
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+			ret = false;
+			if(null != bpError) {
+				bpError.setErrorCode(BPPacketGET.RET_CODE_INNER_ERR);
+			}
 		}
-		return true;
+		return ret;
 	}
 	
-	public boolean packCusSignalValues(List<Integer> cusSigLst, BPSession bpSession, BPError bpError) {
-		if(null == cusSigLst || null == bpSession) {
+	public boolean packCusSignalValues(List<Integer> cusSigLst, BPDeviceSession bpDeviceSession, BPError bpError) {
+		if(null == cusSigLst || null == bpDeviceSession) {
 			return false;
 		}
 		cusSigValMap = new HashMap<Integer, Pair<Byte, Object>>();
 		
 		Iterator<Integer> it = cusSigLst.iterator();
 		Map<Integer, Pair<Byte, Object> > customSignalValueMap;
-		customSignalValueMap = bpSession.getCustomSignalValueMap();
+		customSignalValueMap = bpDeviceSession.getCustomSignalValueMap();
 		while(it.hasNext()) {
 			int cusSigId = it.next();
 			if(cusSigId < BPPacket.CUS_SIG_START_ID || cusSigId > BPPacket.CUS_SIG_END_ID) {

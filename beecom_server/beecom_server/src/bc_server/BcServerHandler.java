@@ -246,6 +246,9 @@ public class BcServerHandler extends IoHandlerAdapter {
 			boolean sysSigCusInfoFlag = vrb.getSysCusFlag();
 			boolean pushDeviceIdFlag = vrb.getReqAllDeviceId();
 			
+			pldAck = packAck.getPld();
+			vrbAck = packAck.getVrbHead();
+			
 			if(devIdFlag) {
 				if(sysSigMapFlag || cusSigMapFlag || sysSigFlag || cusSigFlag || sysSigCusInfoFlag || pushDeviceIdFlag) {
 					packAck.getVrbHead().setRetCode(BPPacketGET.RET_CODE_VRB_HEADER_FLAG_ERR);
@@ -277,7 +280,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 				return;
 			}
 			long uniqDevId = pld.getUniqDevId();
-			pldAck = packAck.getPld();
+			
 			pldAck.setDevUniqId(uniqDevId);
 			if(!BeecomDB.getInstance().checkGetDeviceSignalMapPermission(bpUserSession.getUserInfoUnit().getUserInfoHbn().getId(), uniqDevId)) {
 				packAck.getVrbHead().setRetCode(BPPacketGET.RET_CODE_ACCESS_DEV_PERMISSION_DENY_ERR);
@@ -299,25 +302,59 @@ public class BcServerHandler extends IoHandlerAdapter {
 				pldAck.packCusSigMap(uniqDevId);
 				
 			}
-			if(sysSigFlag) {
-				bpSession = (BPSession)session.getAttribute(SESS_ATTR_BP_SESSION);
+			BPError bpError = new BPError();
+			BPDeviceSession bpDeviceSession = (BPDeviceSession)beecomDb.getDevUniqId2SessionMap().get(devUniqId);
+			
+			boolean signalValuePackOk = true;
+			if(sysSigFlag && signalValuePackOk) {
 				List<Integer> sysSigLst = pld.getSysSig();
-				BPError bpError = new BPError();
-				pldAck.packSysSignalValues(sysSigLst, bpSession, bpError);
+				signalValuePackOk = pldAck.packSysSignalValues(sysSigLst, bpDeviceSession, bpError);
 			}
-			if(cusSigFlag) {
-				bpSession = (BPSession)session.getAttribute(SESS_ATTR_BP_SESSION);
+			if(cusSigFlag && signalValuePackOk) {
 				List<Integer> cusSigLst = pld.getCusSig();
-				BPError bpError = new BPError();
-				pldAck.packCusSignalValues(cusSigLst, bpSession, bpError);
+				signalValuePackOk = pldAck.packCusSignalValues(cusSigLst, bpDeviceSession, bpError);
 			}
 			if(sysSigCusInfoFlag) {
 				pldAck.packSysSigCusInfo(uniqDevId);
 			}
 			
-			session.write(packAck);
+			if(!signalValuePackOk) {
+				vrbAck.setRetCode(bpError.getErrorCode());
+				session.write(packAck);
+			} else if(bpError.getErrorCode() == BPError.BP_ERROR_STATISTICS_NONE_SIGNAL) {
+				List<Integer> statisticsNoneSignalList = bpError.getStatisticsNoneSignalList();
+				if(null == statisticsNoneSignalList || statisticsNoneSignalList.isEmpty()) {
+					logger.error("Inner error: null == statisticsNoneSignalList || statisticsNoneSignalList.isEmpty()");
+					vrbAck.setRetCode(BPPacketGET.RET_CODE_INNER_ERR);
+					session.write(packAck);
+				} else {
+					bpDeviceSession.getSession().write(decodedPack);
+					if(!bpDeviceSession.putRelayList(session, BPPackFactory.createBPPackAck(decodedPack), bpDeviceSession.getTimeout())) {
+						packAck.getVrbHead().setRetCode(BPPacketPOST.RET_CODE_BUFFER_FILLED_ERR);
+						session.write(packAck);
+						return;
+					}
+				}
+			} else {
+				session.write(packAck);
+			}
 		} else if (BPPacketType.GETACK == packType) {
-			/* NOT SUPPORTED */
+			BPDeviceSession bpDeviceSession = null;
+			try {
+				bpDeviceSession = (BPDeviceSession)session.getAttribute(SESS_ATTR_BP_SESSION);
+			} catch(Exception e) {
+				StringWriter sw = new StringWriter();
+				e.printStackTrace(new PrintWriter(sw, true));
+				String str = sw.toString();
+				logger.error(str);
+			}
+			if(null == bpDeviceSession) {
+				return;
+			}
+			
+			vrb = decodedPack.getVrbHead();
+			bpDeviceSession.startRelay(vrb.getPackSeq());
+			return;
 
 		} else if (BPPacketType.POST == packType) {
 			BPPacket packAck = BPPackFactory.createBPPackAck(decodedPack);
@@ -402,8 +439,8 @@ public class BcServerHandler extends IoHandlerAdapter {
 				} 
 				*/
 				
-				byte[] relayData = decodedPack.getSignalValueRelay();
-				pushMessage(bpDeviceSession, ProductType.PUSH_SIGNAL_VALUE, relayData);
+				//byte[] relayData = decodedPack.getSignalValueRelay();
+				//pushMessage(bpDeviceSession, ProductType.PUSH_SIGNAL_VALUE, relayData);
 				
 				bpDeviceSession.getSession().write(decodedPack);
 				if(!bpDeviceSession.putRelayList(session, BPPackFactory.createBPPackAck(decodedPack), bpDeviceSession.getTimeout())) {
