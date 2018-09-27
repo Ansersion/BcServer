@@ -292,7 +292,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 				pldAck.packSysSigMap(uniqDevId);
 			}
 			if(cusSigMapFlag) {
-				int langSupportMask = BeecomDB.getInstance().getDeviceLangSupportMask(uniqDevId);
+				int langSupportMask = BeecomDB.getInstance().getDeviceLangSupportMask(uniqDevId) & vrb.getLangFlags();
 				if(langSupportMask <= 0 || (langSupportMask & 0xFF) == 0) {
 					packAck.getVrbHead().setRetCode(BPPacketGET.RET_CODE_INNER_ERR);
 					session.write(packAck);

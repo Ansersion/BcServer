@@ -201,8 +201,6 @@ public class BPPacketGET extends BPPacket {
 		vrb.initPackSeq();
 		byte flags = vrb.getFlags();
 		getIoBuffer().put(flags);
-		int clntId = vrb.getClientId();
-		getIoBuffer().putUnsignedShort(clntId);
 		int packSeqTmp = vrb.getPackSeq();
 		getIoBuffer().putUnsignedShort(packSeqTmp);	
 		

@@ -337,7 +337,7 @@ public class VariableHeader {
 	}
 	
 	public byte getLangFlags() {
-		return 0;
+		return langFlags;
 	}
 	
 	public boolean getSysSigAttrFlag() {

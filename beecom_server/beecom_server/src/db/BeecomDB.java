@@ -272,15 +272,31 @@ public class BeecomDB {
 		Transaction tx = null;
 		try (Session session = sessionFactory.openSession()) {
 			tx = session.beginTransaction();
-
-			DevInfoHbn devInfoHbn = null;
+			/*
 			devInfoHbn = (DevInfoHbn)session.createQuery("from DevInfoHbn where id = :id_ and adminId = :admin_id")
 					.setParameter("id_", devUniqId)
 					.setParameter("admin_id", userId).uniqueResult();
 			if(null == devInfoHbn) {
 				UserDevRelInfoHbn userDevRelInfoHbn = null;
-				userDevRelInfoHbn = (UserDevRelInfoHbn)session.createQuery("from UserDevRelInfoHbn where devId = :dev_id and userId = :user_id")
-						.setParameter("dev_id", devUniqId)
+				userDevRelInfoHbn = (UserDevRelInfoHbn)session.createQuery("from UserDevRelInfoHbn where snId = :sn_id and userId = :user_id")
+						.setParameter("sn_id", devInfoHbn.getSnId())
+						.setParameter("user_id", userId).uniqueResult();
+				
+				if(null == userDevRelInfoHbn) {
+					return false;
+				}
+			}
+			*/
+			DevInfoHbn devInfoHbn = session.get(DevInfoHbn.class, devUniqId);
+			if(null == devInfoHbn) {
+				return false;
+			}
+			if(devInfoHbn.getAdminId() == userId) {
+				return true;
+			} else {
+				UserDevRelInfoHbn userDevRelInfoHbn = null;
+				userDevRelInfoHbn = (UserDevRelInfoHbn)session.createQuery("from UserDevRelInfoHbn where snId = :sn_id and userId = :user_id")
+						.setParameter("sn_id", devInfoHbn.getSnId())
 						.setParameter("user_id", userId).uniqueResult();
 				
 				if(null == userDevRelInfoHbn) {
@@ -2121,9 +2137,27 @@ public class BeecomDB {
 			List<Long> deviceIdListAdminTmp = (List<Long>)session  
 		            .createQuery("select id from DevInfoHbn where adminId = :user_id")
 		            .setParameter("user_id", userId).list();
-			List<Long> deviceIdListTmp = (List<Long>)session  
-		            .createQuery("select devId from UserDevRelInfoHbn where userId = :user_id")
+			List<Long> snIdListTmp = (List<Long>)session  
+		            .createQuery("select snId from UserDevRelInfoHbn where userId = :user_id")
 		            .setParameter("user_id", userId).list();
+			
+			List<Long> deviceIdListTmp = null;
+			Iterator<Long> itSn = snIdListTmp.iterator();
+			Long snTmp;
+			Long deviceIdTmp;
+			while(itSn.hasNext()) {
+				snTmp = itSn.next();
+				deviceIdTmp = (Long)session.createQuery("select id from DevInfoHbn where snId = :sn_id and adminId <> :admin_id")
+				.setParameter("sn_id", snTmp)
+				.setParameter("admin_id", userId).uniqueResult();
+				if(null != deviceIdTmp) {
+					if(null == deviceIdListTmp) {
+						deviceIdListTmp = new ArrayList<>();
+					}
+					deviceIdListTmp.add(deviceIdTmp);
+				}
+	
+			}
 			
 			if(null == deviceIdListAdminTmp && null == deviceIdListTmp) {
 				return null;
