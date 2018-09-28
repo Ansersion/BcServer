@@ -29,6 +29,14 @@ public class BcEncoder extends ProtocolEncoderAdapter {
 		packToEncode.assembleEnd();
 
 		IoBuffer buf = packToEncode.getIoBuffer();
+		int limit = buf.limit();
+		int position = buf.position();
+		String s = "send: ";
+		for(int i = 0; i < limit; i++) {
+			s += String.format("%02x", buf.getUnsigned()) + " ";
+		}
+		System.out.println(s);
+		buf.rewind();
 		
 		arg2.write(buf);
 

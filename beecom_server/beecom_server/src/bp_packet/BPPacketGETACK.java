@@ -124,6 +124,9 @@ public class BPPacketGETACK extends BPPacket {
 		super.assembleVariableHeader();
 		byte flags = getVrbHead().getFlags();
 		getIoBuffer().put(flags);
+		if(getVrbHead().getCusSigMapFlag()) {
+			getIoBuffer().put(getVrbHead().getLangFlags());
+		}
 		int packSeq = getVrbHead().getPackSeq();
 		getIoBuffer().putUnsignedShort(packSeq);
 		byte retCode = (byte)getVrbHead().getRetCode();

@@ -121,6 +121,7 @@ public class BPPackFactory {
 		if(ret != null) {
 			ret.getVrbHead().setPackSeq(packReq.getVrbHead().getPackSeq());
 			ret.getVrbHead().parseFlags(packReq.getVrbHead().getFlags());
+			ret.getVrbHead().setLangFlags(packReq.getVrbHead().getLangFlags());
 		}
 		
 		return ret;

@@ -19,6 +19,7 @@ public class VariableHeader {
     
 	public static final byte DIST_END_FLAG_MSK = 0x01; 
 	
+	private byte flags;
 	int level = 0;
 	int clientIDLen = 0;
 	int clientID = 0;
@@ -28,6 +29,7 @@ public class VariableHeader {
 	int packSeq = 0;
 	private byte langFlags;
 	
+	/*
 	Boolean bit0 = false;
 	Boolean bit1 = false;
 	Boolean bit2 = false;
@@ -36,6 +38,7 @@ public class VariableHeader {
 	Boolean bit5 = false;
 	Boolean bit6 = false;
 	Boolean bit7 = false;
+	*/
 	
 	/*
 	Boolean userFlag;
@@ -52,12 +55,16 @@ public class VariableHeader {
 	*/
 	
     private static int generatePackSeq() {
-        globalPackSeqLock.lock();
-        int ret = globalPackSeq++;
-        if(globalPackSeq >= MAX_GLOBAL_PACK_SEQ_PLUS_ONE) {
-            globalPackSeq = 0;
-        }
-        globalPackSeqLock.unlock();
+    	int ret = 0;
+    	try {
+    		globalPackSeqLock.lock();
+    		ret = globalPackSeq++;
+    		if(globalPackSeq >= MAX_GLOBAL_PACK_SEQ_PLUS_ONE) {
+    			globalPackSeq = 0;
+    		}
+    	} finally {
+    		globalPackSeqLock.unlock();
+    	}
         return ret;
     }
 	
@@ -86,10 +93,11 @@ public class VariableHeader {
 	}
 	
 	public void setSysSigMapFlag(boolean flag) {
-		bit7 = true;
+		flags |= 0x80;
 	}
 	
 	public void parseFlags(byte flags) {
+		/*
 		bit0 = (0x01 & flags) == 0x01;
 		bit1 = (0x02 & flags) == 0x02;
 		bit2 = (0x04 & flags) == 0x04;
@@ -98,6 +106,8 @@ public class VariableHeader {
 		bit5 = (0x20 & flags) == 0x20;
 		bit6 = (0x40 & flags) == 0x40;
 		bit7 = (0x80 & flags) == 0x80;
+		*/
+		this.flags = flags;
 	}
 	
 	public void parseClientId(byte idMsb, byte idLsb) {
@@ -143,11 +153,11 @@ public class VariableHeader {
 	}
 	
 	public boolean getUserNameFlag() {
-		return bit7;
+		return (flags & 0x80) != 0;
 	}
 	
 	public boolean getPwdFlag() {
-		return bit6;
+		return (flags & 0x40) != 0;
 	}
 	
 	public int getClientId() {
@@ -159,11 +169,11 @@ public class VariableHeader {
 	}
 	
 	public boolean getUserClntFlag() {
-		return bit2;
+		return (flags & 0x04) != 0;
 	}
 	
 	public boolean getDevClntFlag() {
-		return bit1;
+		return (flags & 0x02) != 0;
 	}
 	
 	public int getLevel() {
@@ -175,17 +185,7 @@ public class VariableHeader {
 	}
 	
 	public byte getFlags() {
-		byte ret = 0;
-		ret |= bit0 ? (0x01 << 0) : 0;
-		ret |= bit1 ? (0x01 << 1) : 0;
-		ret |= bit2 ? (0x01 << 2) : 0;
-		ret |= bit3 ? (0x01 << 3) : 0;
-		ret |= bit4 ? (0x01 << 4) : 0;
-		ret |= bit5 ? (0x01 << 5) : 0;
-		ret |= bit6 ? (0x01 << 6) : 0;
-		ret |= bit7 ? (0x01 << 7) : 0;
-		
-		return ret;
+		return flags;
 	}
 	
 	public int getRetCode() {
@@ -205,11 +205,11 @@ public class VariableHeader {
 	}
 	
 	public boolean getReportToken() {
-		return bit3;
+		return (flags & 0x08) != 0;
 	}
 	
 	public boolean getPushToken() {
-		return bit3;
+		return (flags & 0x08) != 0;
 	}
 	
 	public void setClientId(int id) {
@@ -217,79 +217,79 @@ public class VariableHeader {
 	}
 	
 	public boolean getDevNameFlag() {
-		return bit7;
+		return (flags & 0x80) != 0;
 	}
 	
 	   /* for GET */
     public boolean getSysSigMapCustomInfo() {
-        return bit2;
+    	return (flags & 0x04) != 0;
     }
 
     public VariableHeader setSysSigMapCustomInfo() {
-        bit2 = true;
+        flags |= 0x04;
         return this;
     }
 
     public VariableHeader clrSysSigMapCustomInfo() {
-        bit2 = false;
+    	flags &= (~0x04);
         return this;
     }
 
     public boolean getCusSigMapFlag() {
-        return bit6;
+    	return (flags & 0x40) != 0;
     }
 
     public VariableHeader setCusSigMapFlag() {
-        bit6 = true;
+    	flags |= 0x40;
         return this;
     }
 
     public VariableHeader clrCusSigMapFlag() {
-        bit6 = false;
+    	flags &= (~0x40);
         return this;
     }
 
     public boolean getSysSigMapFlag() {
-        return bit7;
+    	return (flags & 0x80) != 0;
     }
 
     public VariableHeader setSysSigMapFlag() {
-        bit7 = true;
+    	flags |= 0x80;
         return this;
     }
 
     public VariableHeader clrSysSigMapFlag() {
-        bit7 = false;
+    	flags &= (~0x80);
         return this;
     }
     /* for GET end */
 	
 	public boolean getSysSigFlag() {
-		return bit4;
+		return (flags & 0x10) != 0;
 	}
 	
 	public boolean getCusSigFlag() {
-		return bit3;
+		return (flags & 0x08) != 0;
 	}
 	
 	public boolean getDevIdFlag() {
-		return bit5;
+		return (flags & 0x20) != 0;
 	}
 	
 	public boolean getSigValFlag() {
-		return bit4;
+		return (flags & 0x10) != 0;
 	}
 	
 	public void setSigValFlag(boolean sigValFlag) {
-		bit4 = true;
+		flags |= 0x10;
 	}
 	
 	public boolean getSysCusFlag() {
-		return bit2;
+		return (flags & 0x04) != 0;
 	}
 	
 	public boolean getInfoLeftFlag() {
-		return bit1;
+		return (flags & 0x02) != 0;
 	}
 	
 	public void setAliveTime(int time) {
@@ -309,7 +309,7 @@ public class VariableHeader {
 	}
 	
 	public void setNewCliIdFlg() {
-		bit7 = true;
+		flags |= 0x80;
 	}
 	
 	public void setPackSeq(int packSeq) {
@@ -317,7 +317,7 @@ public class VariableHeader {
 	}
 	
 	public boolean getDebugMode() {
-		return bit0;
+		return (flags & 0x01) != 0;
 	}
 	
 	public byte getPerformanceClass() {
@@ -325,15 +325,19 @@ public class VariableHeader {
 	}
 	
 	public boolean getUserOnLine() {
-		return bit3;
+		return (flags & 0x08) != 0;
 	}
 	
 	public boolean getSigMapChecksumFlag() {
-		return bit1;
+		return (flags & 0x02) != 0;
 	}
 	
 	public void setDevIdFlag(boolean b) {
-		bit5 = b;
+		if(b) {
+			flags |= 0x80;
+		} else {
+			flags &= (~0x80);
+		}
 	}
 	
 	public byte getLangFlags() {
@@ -341,19 +345,23 @@ public class VariableHeader {
 	}
 	
 	public boolean getSysSigAttrFlag() {
-		return bit1;
+		return (flags & 0x02) != 0;
 	}
 	
 	public boolean getCusSigAttrFlag() {
-		return bit0;
+		return (flags & 0x01) != 0;
 	}
 	
 	public boolean getReqAllDeviceId() {
-		return bit1;
+		return (flags & 0x02) != 0;
 	}
 	
 	public void setReqAllDeviceIdFlag(boolean reqAllDeviceIdFlag) {
-		bit1 = reqAllDeviceIdFlag;
+		if(reqAllDeviceIdFlag) {
+			flags |= 0x02;
+		} else {
+			flags &= (~0x02);
+		}
 	}
 
 
@@ -362,7 +370,7 @@ public class VariableHeader {
 	}
 	
 	public boolean getSigMapChecksumOnly() {
-		return bit1;
+		return (flags & 0x02) != 0;
 	}
 	
 }
