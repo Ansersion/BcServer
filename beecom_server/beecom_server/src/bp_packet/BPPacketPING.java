@@ -83,13 +83,13 @@ public class BPPacketPING extends BPPacket {
 		int packSeq = vrb.getPackSeq();
 		getIoBuffer().putUnsignedShort(packSeq);	
 		
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean assemblePayload() {
 		
-		return false;
+		return true;
 	}
 
 }

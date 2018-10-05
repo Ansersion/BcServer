@@ -51,18 +51,6 @@ public class BPPacketCONNACK extends BPPacket {
 			vrbHead.setRetCode(0x00);
 		}
 	}
-	
-	@Override
-	public boolean assembleFixedHeader() {
-        int pack_type = getPackTypeIntFxHead();
-        byte pack_flags = getPackFlagsByteFxHead();
-        byte encoded_byte = (byte) (((pack_type & 0xf) << 4) | (pack_flags & 0xf));
-
-        getIoBuffer().put(encoded_byte);
-
-        getIoBuffer().putUnsignedShort(0);
-        return false;
-	}
 
 	@Override
 	public boolean assembleVariableHeader() throws BPAssembleVrbHeaderException {
@@ -76,7 +64,7 @@ public class BPPacketCONNACK extends BPPacket {
 		encodedByte = (byte)getVrbHead().getRetCode();
 		getIoBuffer().put(encodedByte);
 		
-		return false;
+		return true;
 	}
 
 	@Override

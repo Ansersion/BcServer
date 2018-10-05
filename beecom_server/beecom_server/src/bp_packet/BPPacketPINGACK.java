@@ -34,11 +34,11 @@ public class BPPacketPINGACK extends BPPacket {
 		byte retCode = (byte)getVrbHead().getRetCode();
 		getIoBuffer().put(retCode);
 		
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean assemblePayload() {		
-		return RET_CODE_OK == getVrbHead().getRetCode();
+		return true;
 	}
 }

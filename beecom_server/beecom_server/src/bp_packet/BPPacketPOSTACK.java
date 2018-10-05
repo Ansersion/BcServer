@@ -47,13 +47,13 @@ public class BPPacketPOSTACK extends BPPacket {
 		super.assembleVariableHeader();
 		getIoBuffer().putShort((short)packSeq);
 
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean assemblePayload() {
 
-		return false;
+		return true;
 	}
 	
 	@Override

@@ -62,5 +62,35 @@ public class Util {
 			}
 		}
 	}
+	
+    public static final int VERBOSE = 1;
+    public static final int DEBUG = 2;
+    public static final int INFO = 3;
+    public static final int WARN = 4;
+    public static final int ERROR = 5;
+    public static final int NOTHING = 6;
+    public static int level = VERBOSE;
+    public static void logger(Logger logger, int l, Exception e) {
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw, true));
+        String str = sw.toString();
+        switch(l) {
+            case VERBOSE:
+                logger.trace(str);
+                break;
+            case DEBUG:
+                logger.debug(str);
+                break;
+            case INFO:
+                logger.info(str);
+                break;
+            case WARN:
+                logger.warn(str);
+                break;
+            case ERROR:
+                logger.error(str);
+                break;
+        }
+    }
 
 }

@@ -2022,8 +2022,7 @@ public class BeecomDB {
 		StringBuilder hql = new StringBuilder();
 		hql.append("from SystemSignalInfoHbn where signalId = :signal_id");
 		if(null != ifDef) {
-			hql.append(" and ifConfigDef = ");
-			hql.append(ifDef.toString());
+			hql.append(" and customFlags <> 0");
 		}
 		
 		try (Session session = sessionFactory.openSession()) {
@@ -2116,12 +2115,13 @@ public class BeecomDB {
     	return ret;
     }
     
-    public List<Long> getDeviceIDList(String userName) {
+    public Map<Long, Long> getDeviceIDMap(String userName) {
 
 		if(null == userName) {
 			return null;
 		}
-		List<Long> deviceIdList = null;
+		List<DevInfoHbn> deviceInfoList = null;
+		Map<Long, Long> deviceInfoMap = null;
 		Transaction tx = null;
 		try (Session session = sessionFactory.openSession()) {
 			tx = session.beginTransaction();
@@ -2134,52 +2134,57 @@ public class BeecomDB {
 			}
 			long userId = userInfoHbn.getId();
 			
-			List<Long> deviceIdListAdminTmp = (List<Long>)session  
-		            .createQuery("select id from DevInfoHbn where adminId = :user_id")
+			List<DevInfoHbn> deviceIdListAdminTmp = session  
+		            .createQuery("from DevInfoHbn where adminId = :user_id")
 		            .setParameter("user_id", userId).list();
-			List<Long> snIdListTmp = (List<Long>)session  
+			List<Long> snIdListTmp = session  
 		            .createQuery("select snId from UserDevRelInfoHbn where userId = :user_id")
 		            .setParameter("user_id", userId).list();
 			
-			List<Long> deviceIdListTmp = null;
+			List<DevInfoHbn> deviceInfoListTmp = null;
 			Iterator<Long> itSn = snIdListTmp.iterator();
 			Long snTmp;
-			Long deviceIdTmp;
+			DevInfoHbn deviceInfoTmp;
 			while(itSn.hasNext()) {
 				snTmp = itSn.next();
-				deviceIdTmp = (Long)session.createQuery("select id from DevInfoHbn where snId = :sn_id and adminId <> :admin_id")
+				deviceInfoTmp = (DevInfoHbn)session.createQuery("from DevInfoHbn where snId = :sn_id and adminId <> :admin_id")
 				.setParameter("sn_id", snTmp)
 				.setParameter("admin_id", userId).uniqueResult();
-				if(null != deviceIdTmp) {
-					if(null == deviceIdListTmp) {
-						deviceIdListTmp = new ArrayList<>();
+				if(null != deviceInfoTmp) {
+					if(null == deviceInfoListTmp) {
+						deviceInfoListTmp = new ArrayList<>();
 					}
-					deviceIdListTmp.add(deviceIdTmp);
+					deviceInfoListTmp.add(deviceInfoTmp);
 				}
 	
 			}
 			
-			if(null == deviceIdListAdminTmp && null == deviceIdListTmp) {
+			if(null == deviceIdListAdminTmp && null == deviceInfoListTmp) {
 				return null;
 			} else if(null == deviceIdListAdminTmp) {
-				deviceIdList = deviceIdListTmp;
-			} else if(null == deviceIdListTmp) {
-				deviceIdList = deviceIdListAdminTmp;
+				deviceInfoList = deviceInfoListTmp;
+			} else if(null == deviceInfoListTmp) {
+				deviceInfoList = deviceIdListAdminTmp;
 			} else {
-				deviceIdListAdminTmp.addAll(deviceIdListTmp);
-				deviceIdList = deviceIdListAdminTmp;
+				deviceIdListAdminTmp.addAll(deviceInfoListTmp);
+				deviceInfoList = deviceIdListAdminTmp;
 			}
 			
-			
+			deviceInfoMap = new HashMap<>();
+			Iterator<DevInfoHbn> devInfoIt = deviceInfoList.iterator();
+			while(devInfoIt.hasNext()) {
+				deviceInfoTmp = devInfoIt.next();
+				deviceInfoMap.put(deviceInfoTmp.getId(), deviceInfoTmp.getSigMapChksum());
+			}
 			tx.commit();
 		} catch (Exception e) {
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw, true));
 			String str = sw.toString();
 			logger.error(str);
-			deviceIdList = null;
+			deviceInfoMap = null;
 		}
-    	return deviceIdList;
+    	return deviceInfoMap;
     }
     
     public int getDeviceLangSupportMask(long uniqDevId) {

@@ -71,14 +71,19 @@ public class BPPacketPUSH extends BPPacket {
 		Payload pld = getPld();
 		IoBuffer buffer = getIoBuffer();
 		if(vrb.getReqAllDeviceId()) {
-			List<Long> deviceIdList = pld.getDeviceIdList();
-			if(null == deviceIdList) {
+			Map<Long, Long> deviceIdMap = pld.getDeviceIdMap();
+			if(null == deviceIdMap) {
 				buffer.putUnsignedShort(0);
 				return false;
 			}
-			buffer.putUnsignedShort(deviceIdList.size());
-			for(int i = 0; i < deviceIdList.size(); i++) {
-				buffer.putUnsignedInt(deviceIdList.get(i));
+			buffer.putUnsignedShort(deviceIdMap.size());
+			Iterator<Map.Entry<Long, Long>> it = deviceIdMap.entrySet().iterator();
+			Map.Entry<Long, Long> entry;
+			while(it.hasNext()) {
+				entry = it.next();
+				buffer.putUnsignedInt(entry.getKey());
+				/* TODO: check the checksum type CRC16/32*/
+				buffer.putUnsignedInt(entry.getValue());
 			}
 		} else if(vrb.getSigValFlag()) {
 			byte[] data = pld.getPushSigValData();

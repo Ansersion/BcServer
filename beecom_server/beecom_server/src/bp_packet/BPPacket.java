@@ -390,7 +390,7 @@ public class BPPacket implements BPPacketInterface {
 
 	@Override
 	public boolean assemblePayload() throws BPAssemblePldException {
-		return false;
+		return true;
 	}
 	
 	@Override
@@ -401,25 +401,25 @@ public class BPPacket implements BPPacketInterface {
 	@Override
 	public boolean assembleStart() throws BPAssembleException {
 		bpPacketData.clear();
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean assembleEnd() throws BPAssembleException {
 		int crcLen = (getFxHead().getCrcChk() == CrcChecksum.CRC32 ? 4 : 2);
 		int packRmnLen = bpPacketData.position() - BPPacket.FIXED_HEADER_SIZE + crcLen;
-		
-			int posCrc = bpPacketData.position();
-			bpPacketData.rewind();
-			bpPacketData.get();
-			bpPacketData.putUnsignedShort(packRmnLen);
-			bpPacketData.position(posCrc);
-			byte[] buf = bpPacketData.array();
-			long crcTmp = CrcChecksum.calcCrc32(buf, 0, posCrc);
-			bpPacketData.putUnsignedInt(crcTmp);
-			bpPacketData.flip();
-			
-		return false;
+
+		int posCrc = bpPacketData.position();
+		bpPacketData.rewind();
+		bpPacketData.get();
+		bpPacketData.putUnsignedShort(packRmnLen);
+		bpPacketData.position(posCrc);
+		byte[] buf = bpPacketData.array();
+		long crcTmp = CrcChecksum.calcCrc32(buf, 0, posCrc);
+		bpPacketData.putUnsignedInt(crcTmp);
+		bpPacketData.flip();
+
+		return true;
 	}
 	
 	public FixedHeader getFxHead() {

@@ -36,7 +36,7 @@ public class BPPacketPUSHACK extends BPPacket {
 		encodedByte = (byte)vrb.getRetCode();
 		getIoBuffer().put(encodedByte);
 		
-		return false;
+		return true;
 	}
 
 	@Override
@@ -54,6 +54,6 @@ public class BPPacketPUSHACK extends BPPacket {
 		encodedByte = (byte)getPld().getSymSetVer();
 		getIoBuffer().put(encodedByte);
 		
-		return false;
+		return true;
 	}
 }

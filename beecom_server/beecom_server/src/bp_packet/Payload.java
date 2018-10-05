@@ -11,17 +11,29 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import db.BeecomDB;
+import db.CustomSignalBooleanInfoHbn;
+import db.CustomSignalEnumInfoHbn;
+import db.CustomSignalFloatInfoHbn;
+import db.CustomSignalI16InfoHbn;
+import db.CustomSignalI32InfoHbn;
 import db.CustomSignalInfoUnit;
+import db.CustomSignalStringInfoHbn;
+import db.CustomSignalU16InfoHbn;
+import db.CustomSignalU32InfoHbn;
 import db.SignalInfoHbn;
 import db.SignalInfoUnitInterface;
 import db.SystemSignalCustomInfoUnit;
 import db.SystemSignalInfoUnit;
 import javafx.util.Pair;
 import other.BPError;
+import other.Util;
+import sys_sig_table.BPSysSigTable;
+import sys_sig_table.SysSigInfo;
 
 
 /**
@@ -62,6 +74,7 @@ public class Payload {
 	private Map<Integer, Pair<Byte, Object>> cusSigValMap;
 	private Map<Integer, Pair<Byte, Object>> sigValMap;
 	private List<Long> deviceIdList;
+	private Map<Long, Long> deviceIdMap;
 	private int customSignalLangSupportMask;
 	private long sigMapCheckSum;
 	private byte[] pushSigValData;
@@ -235,27 +248,20 @@ public class Payload {
 	}
 	
 	public boolean packSysSigCusInfo(long uniqDevId) {
-		BeecomDB beecomDB = BeecomDB.getInstance();
-		systemSignalCustomInfoUnitLst = new ArrayList<SystemSignalCustomInfoUnit>();
-		if(null != systemSignalInfoUnitLst) {
-			Iterator<SystemSignalInfoUnit> it = systemSignalInfoUnitLst.iterator();
-			SystemSignalInfoUnit systemSignalInfoUnit;
-			while(it.hasNext()) {
-				systemSignalInfoUnit = it.next();
-				if(!systemSignalInfoUnit.isIfConfigDef()) {
-					// TODO: 
-					// systemSignalCustomInfoUnitLst.add(new SystemSignalCustomInfoUnit(systemSignalInfoUnit.getSysSigId(), systemSignalInfoUnit.getSystemSignalInterface()));
-				}
-				systemSignalCustomInfoUnitLst.add(new SystemSignalCustomInfoUnit(systemSignalInfoUnit.getSysSigId(), BPPacket.ALARM_CLASS_NONE, BPPacket.ALARM_DELAY_DEFAULT, BPPacket.ALARM_DELAY_DEFAULT, 0, systemSignalInfoUnit.getSystemSignalInterface()));
-			}
-		} else {
-			systemSignalCustomInfoUnitLst = beecomDB.getSystemSignalCustomInfoUnitLst(uniqDevId, systemSignalCustomInfoUnitLst);
+		boolean ret = false;
+		try {
+			BeecomDB beecomDB = BeecomDB.getInstance();
+			systemSignalCustomInfoUnitLst = new ArrayList<>();
+			systemSignalCustomInfoUnitLst = beecomDB.getSystemSignalCustomInfoUnitLst(uniqDevId,
+						systemSignalCustomInfoUnitLst);
+			if(null != systemSignalCustomInfoUnitLst && !systemSignalCustomInfoUnitLst.isEmpty()) {
+				ret = true;
+			} 
+		} catch (Exception e) {
+			Util.logger(logger, Util.ERROR, e);
 		}
-		if(null == systemSignalCustomInfoUnitLst || systemSignalCustomInfoUnitLst.isEmpty()) {
-			return false;
-		} else {
-		return true;
-		}
+
+		return ret;
 	}
 	
 	public List<Integer> getSysSig() {
@@ -453,6 +459,14 @@ public class Payload {
 
 	public void setDeviceIdList(List<Long> deviceIdList) {
 		this.deviceIdList = deviceIdList;
+	}
+
+	public Map<Long, Long> getDeviceIdMap() {
+		return deviceIdMap;
+	}
+
+	public void setDeviceIdMap(Map<Long, Long> deviceIdMap) {
+		this.deviceIdMap = deviceIdMap;
 	}
 
 	public List<SystemSignalInfoUnit> getSystemSignalInfoUnitLst() {

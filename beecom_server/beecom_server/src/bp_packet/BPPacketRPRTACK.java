@@ -35,7 +35,7 @@ public class BPPacketRPRTACK extends BPPacket {
 		byte retCode = (byte)getVrbHead().getRetCode();
 		getIoBuffer().put(retCode);
 		
-		return false;
+		return true;
 	}
 
 	@Override
@@ -47,6 +47,6 @@ public class BPPacketRPRTACK extends BPPacket {
 		}
 
 		
-		return false;
+		return true;
 	}
 }

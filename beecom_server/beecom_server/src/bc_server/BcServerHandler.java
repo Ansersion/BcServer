@@ -291,7 +291,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 			if(sysSigMapFlag) {			
 				pldAck.packSysSigMap(uniqDevId);
 			}
-			if(cusSigMapFlag) {
+			if(sysSigCusInfoFlag || cusSigMapFlag) {
 				int langSupportMask = BeecomDB.getInstance().getDeviceLangSupportMask(uniqDevId) & vrb.getLangFlags();
 				if(langSupportMask <= 0 || (langSupportMask & 0xFF) == 0) {
 					packAck.getVrbHead().setRetCode(BPPacketGET.RET_CODE_INNER_ERR);
@@ -299,6 +299,11 @@ public class BcServerHandler extends IoHandlerAdapter {
 					return;
 				}
 				pldAck.setCustomSignalLangSupportMask(langSupportMask);
+			}
+			if(sysSigCusInfoFlag) {
+				pldAck.packSysSigCusInfo(uniqDevId);
+			}
+			if(cusSigMapFlag) {
 				pldAck.packCusSigMap(uniqDevId);
 				
 			}
@@ -314,9 +319,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 				List<Integer> cusSigLst = pld.getCusSig();
 				signalValuePackOk = pldAck.packCusSignalValues(cusSigLst, bpDeviceSession, bpError);
 			}
-			if(sysSigCusInfoFlag) {
-				pldAck.packSysSigCusInfo(uniqDevId);
-			}
+
 			
 			if(!signalValuePackOk) {
 				vrbAck.setRetCode(bpError.getErrorCode());

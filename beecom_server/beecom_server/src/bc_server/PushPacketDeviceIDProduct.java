@@ -2,7 +2,9 @@ package bc_server;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
@@ -57,9 +59,8 @@ class PushPacketDeviceIDProduct extends Product {
 			String userName = bpUserSession.getUserName();
 			Payload pld = bpPacket.getPld();
 			BeecomDB beecomDb = BeecomDB.getInstance();
-			List<Long> deviceIDList = beecomDb.getDeviceIDList(bpUserSession.getUserName());
-			pld.setDeviceIdList(deviceIDList);
-			// session.write(bpPacket);
+			Map<Long, Long> deviceIdMap = beecomDb.getDeviceIDMap(bpUserSession.getUserName());
+			pld.setDeviceIdMap(deviceIdMap);
 			ret = true;
 		} catch(Exception e) {
 			StringWriter sw = new StringWriter();

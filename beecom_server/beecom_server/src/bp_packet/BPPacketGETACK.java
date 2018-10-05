@@ -19,7 +19,14 @@ import db.CustomSignalInfoUnit;
 import db.CustomSignalStringInfoHbn;
 import db.CustomSignalU16InfoHbn;
 import db.CustomSignalU32InfoHbn;
+import db.SignalInterface;
+import db.SystemSignalCustomInfoUnit;
+import db.SystemSignalFloatInfoHbn;
+import db.SystemSignalI16InfoHbn;
+import db.SystemSignalI32InfoHbn;
 import db.SystemSignalInfoUnit;
+import db.SystemSignalU16InfoHbn;
+import db.SystemSignalU32InfoHbn;
 import other.CrcChecksum;
 
 import java.util.Map;
@@ -132,16 +139,19 @@ public class BPPacketGETACK extends BPPacket {
 		byte retCode = (byte)getVrbHead().getRetCode();
 		getIoBuffer().put(retCode);
 
-		return false;
+		return true;	
 	}
 
 	@Override
 	public boolean assemblePayload() {
 		byte encodedByte;
+		boolean ret = false;
 		try {
-
 			VariableHeader vrb = getVrbHead();
 			if (vrb.getReqAllDeviceId()) {
+				return true;
+			}
+			if(vrb.getRetCode() != 0) {
 				return true;
 			}
 
@@ -196,8 +206,230 @@ public class BPPacketGETACK extends BPPacket {
 					}
 				}
 			}
+			int langSupportMask = pld.getCustomSignalLangSupportMask();
+			if(vrb.getSysSigMapCustomInfo()) {
+				List<SystemSignalCustomInfoUnit> systemSignalCustomInfoUnitList = pld.getSystemSignalCustomInfoUnitLst();
+				if(null == systemSignalCustomInfoUnitList || systemSignalCustomInfoUnitList.isEmpty()) {
+					buffer.putUnsignedShort(0);
+				} else {
+					Iterator<SystemSignalCustomInfoUnit> it = systemSignalCustomInfoUnitList.iterator();
+					buffer.putUnsignedShort(systemSignalCustomInfoUnitList.size());
+					SystemSignalCustomInfoUnit systemSignalCustomInfoUnitTmp;
+					while(it.hasNext()) {
+						systemSignalCustomInfoUnitTmp = it.next();
+						int customFlags = systemSignalCustomInfoUnitTmp.getCustomFlags();
+						SignalInterface signalInterfaceTmp = systemSignalCustomInfoUnitTmp.getSignalInterface();
+						buffer.putUnsignedShort(systemSignalCustomInfoUnitTmp.getSysSigId());
+						buffer.putUnsigned(customFlags & 0xFF);
+						buffer.putUnsigned((customFlags >> 8) & 0xFF);
+						if((customFlags & SYSTEM_SIGNAL_CUSTOM_FLAGS_STATISTICS) != 0) {
+							if(systemSignalCustomInfoUnitTmp.getSignalInterface().getEnStatistics()) {
+								buffer.putUnsigned(1);
+							} else {
+								buffer.putUnsigned(0);
+							}
+						}
+						if((customFlags & SYSTEM_SIGNAL_CUSTOM_FLAGS_ENUM_LANG) != 0) {
+							// TODO:
+						}
+						if((customFlags & SYSTEM_SIGNAL_CUSTOM_FLAGS_GROUP_LANG) != 0) {
+							if(signalInterfaceTmp != null) {
+								buffer.putUnsignedShort(signalInterfaceTmp.getGroupLangId());
+							} else {
+								// "0" default group language id
+								buffer.putUnsignedShort(0);
+							}
+						}
+						if((customFlags & SYSTEM_SIGNAL_CUSTOM_FLAGS_ACCURACY) != 0) {
+							if(signalInterfaceTmp != null) {
+								buffer.putUnsigned(signalInterfaceTmp.getAccuracy());
+							} else {
+								// "0" default accuracy
+								buffer.putUnsigned(0);
+							}
+						}
+						if((customFlags & SYSTEM_SIGNAL_CUSTOM_FLAGS_VALUE_MIN) != 0) {
+							if(null == signalInterfaceTmp) {
+								return ret;
+							} 
+							switch(signalInterfaceTmp.getValType()) {
+							case BPPacket.VAL_TYPE_UINT32:
+							{
+								SystemSignalU32InfoHbn systemSignalU32InfoHbnTmp = (SystemSignalU32InfoHbn)signalInterfaceTmp;
+								if(null == systemSignalU32InfoHbnTmp) {
+									return ret;
+								}
+								buffer.putUnsignedInt(systemSignalU32InfoHbnTmp.getMinVal());
+								break;
+							}
+							case BPPacket.VAL_TYPE_UINT16:
+							{
+								SystemSignalU16InfoHbn systemSignalU16InfoHbnTmp = (SystemSignalU16InfoHbn)signalInterfaceTmp;
+								if(null == systemSignalU16InfoHbnTmp) {
+									return ret;
+								}
+								buffer.putUnsignedShort(systemSignalU16InfoHbnTmp.getMinVal());
+								break;
+							}
+							case BPPacket.VAL_TYPE_IINT32:
+							{
+								SystemSignalI32InfoHbn systemSignalI32InfoHbnTmp = (SystemSignalI32InfoHbn)signalInterfaceTmp;
+								if(null == systemSignalI32InfoHbnTmp) {
+									return ret;
+								}
+								buffer.putInt(systemSignalI32InfoHbnTmp.getMinVal());
+								break;
+							}
+							case BPPacket.VAL_TYPE_IINT16:
+							{
+								SystemSignalI16InfoHbn systemSignalI16InfoHbnTmp = (SystemSignalI16InfoHbn)signalInterfaceTmp;
+								if(null == systemSignalI16InfoHbnTmp) {
+									return ret;
+								}
+								buffer.putShort(systemSignalI16InfoHbnTmp.getMinVal());
+								break;
+							}
+							case BPPacket.VAL_TYPE_FLOAT:
+							{
+								SystemSignalFloatInfoHbn systemSignalFloatInfoHbnTmp = (SystemSignalFloatInfoHbn)signalInterfaceTmp;
+								if(null == systemSignalFloatInfoHbnTmp) {
+									return ret;
+								}
+								buffer.putFloat(systemSignalFloatInfoHbnTmp.getMinVal());
+								break;
+							}
+							default:
+								return ret;
+							}
+						}
+						if((customFlags & SYSTEM_SIGNAL_CUSTOM_FLAGS_VALUE_MAX) != 0) {
+							if(null == signalInterfaceTmp) {
+								return ret;
+							} 
+							switch(signalInterfaceTmp.getValType()) {
+							case BPPacket.VAL_TYPE_UINT32:
+							{
+								SystemSignalU32InfoHbn systemSignalU32InfoHbnTmp = (SystemSignalU32InfoHbn)signalInterfaceTmp;
+								if(null == systemSignalU32InfoHbnTmp) {
+									return ret;
+								}
+								buffer.putUnsignedInt(systemSignalU32InfoHbnTmp.getMaxVal());
+								break;
+							}
+							case BPPacket.VAL_TYPE_UINT16:
+							{
+								SystemSignalU16InfoHbn systemSignalU16InfoHbnTmp = (SystemSignalU16InfoHbn)signalInterfaceTmp;
+								if(null == systemSignalU16InfoHbnTmp) {
+									return ret;
+								}
+								buffer.putUnsignedShort(systemSignalU16InfoHbnTmp.getMaxVal());
+								break;
+							}
+							case BPPacket.VAL_TYPE_IINT32:
+							{
+								SystemSignalI32InfoHbn systemSignalI32InfoHbnTmp = (SystemSignalI32InfoHbn)signalInterfaceTmp;
+								if(null == systemSignalI32InfoHbnTmp) {
+									return ret;
+								}
+								buffer.putInt(systemSignalI32InfoHbnTmp.getMaxVal());
+								break;
+							}
+							case BPPacket.VAL_TYPE_IINT16:
+							{
+								SystemSignalI16InfoHbn systemSignalI16InfoHbnTmp = (SystemSignalI16InfoHbn)signalInterfaceTmp;
+								if(null == systemSignalI16InfoHbnTmp) {
+									return ret;
+								}
+								buffer.putShort(systemSignalI16InfoHbnTmp.getMaxVal());
+								break;
+							}
+							case BPPacket.VAL_TYPE_FLOAT:
+							{
+								SystemSignalFloatInfoHbn systemSignalFloatInfoHbnTmp = (SystemSignalFloatInfoHbn)signalInterfaceTmp;
+								if(null == systemSignalFloatInfoHbnTmp) {
+									return ret;
+								}
+								buffer.putFloat(systemSignalFloatInfoHbnTmp.getMaxVal());
+								break;
+							}
+							default:
+								return ret;
+							}
+						}
+						if((customFlags & SYSTEM_SIGNAL_CUSTOM_FLAGS_VALUE_DEF) != 0) {
+							if(null == signalInterfaceTmp) {
+								return false;
+							} 
+							switch(signalInterfaceTmp.getValType()) {
+							case BPPacket.VAL_TYPE_UINT32:
+							{
+								buffer.putUnsignedInt((Long)signalInterfaceTmp.getDefaultValue());
+								break;
+							}
+							case BPPacket.VAL_TYPE_UINT16:
+							{
+								buffer.putUnsignedShort((Integer)signalInterfaceTmp.getDefaultValue());
+								break;
+							}
+							case BPPacket.VAL_TYPE_IINT32:
+							{
+								buffer.putUnsignedShort((Integer)signalInterfaceTmp.getDefaultValue());
+								break;
+							}
+							case BPPacket.VAL_TYPE_IINT16:
+							{
+								buffer.putShort((Short)signalInterfaceTmp.getDefaultValue());
+								break;
+							}
+							case BPPacket.VAL_TYPE_FLOAT:
+							{
+								buffer.putFloat((Float)signalInterfaceTmp.getDefaultValue());
+								break;
+							}
+							case BPPacket.VAL_TYPE_BOOLEAN:
+							{
+								buffer.putUnsigned((Boolean)signalInterfaceTmp.getDefaultValue() ? 1 : 0);
+								break;
+							}
+							case BPPacket.VAL_TYPE_STRING:
+							{
+								String stringTmp = (String)signalInterfaceTmp.getDefaultValue();
+								
+								
+								if(null != stringTmp) {
+									byte[] stringTmpBytes = stringTmp.getBytes();
+									int len = stringTmpBytes.length;
+									if(len > MAX_CUSTOM_SIGNAL_STRING_LENGTH) {
+										len = MAX_CUSTOM_SIGNAL_STRING_LENGTH;
+									}
+									buffer.putUnsigned(len);
+									if(len > 0) {
+										buffer.put(stringTmpBytes, 0, len);
+									}
+								} else {
+									buffer.putUnsigned(0);
+								}
+								break;
+							}
+							default:
+								return ret;
+							}
+						}
+						if((customFlags & SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM_CLASS) != 0) {
+							buffer.putUnsigned(systemSignalCustomInfoUnitTmp.getAlarmClass());
+						}
+						if((customFlags & SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM_DELAY_BEF) != 0) {
+							buffer.putUnsigned(systemSignalCustomInfoUnitTmp.getDelayBeforeAlarm());
+						}
+						if((customFlags & SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM_DELAY_AFT) != 0) {
+							buffer.putUnsigned(systemSignalCustomInfoUnitTmp.getDelayAfterAlarm());
+						}
+						
+					}
+				}
+				
+			}
 			if(vrb.getCusSigMapFlag()) {
-				int langSupportMask = pld.getCustomSignalLangSupportMask();
 				List<CustomSignalInfoUnit> customSignalInfoUnitList = pld.getCustomSignalInfoUnitLst();
 				if (null == customSignalInfoUnitList || customSignalInfoUnitList.isEmpty()) {
 					/* no custom signal */
@@ -476,105 +708,17 @@ public class BPPacketGETACK extends BPPacket {
 							}	
 						}
 					}
-					
-					
-
 				}
 			}
-			
-			if(vrb.getSysSigMapCustomInfo()) {
-				
-			}
+			ret = true;
 		} catch (Exception e) {
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw, true));
 			String str = sw.toString();
 			logger.error(str);
+			ret = false;
 		}
-
-
-		/*
-		int devNum = vctDevSigData.size() & 0x0000FFFF;
-		getIoBuffer().putUnsignedShort(devNum);
-		String s;
-
-		for (int i = 0; i < devNum; i++) {
-			DevSigData sigDataAck = vctDevSigData.get(i);
-			int sigNum;
-			sigNum = sigDataAck.get1ByteDataMap().size();
-
-			if (sigNum > 0) {
-				if (sigNum > 0x3F) {
-					s = "WARNING: too many signal of 1 byte";
-					logger.error(s);
-				} else {
-					encodedByte = (byte) (sigNum & 0x3F);
-					// clear bit6, bit7
-					encodedByte &= ~0xC0;
-					// set the value type of bit6, bit7 to '00b'
-					getIoBuffer().put(encodedByte);
-					Map<Integer, Byte> map = sigDataAck.get1ByteDataMap();
-
-					Iterator<Map.Entry<Integer, Byte>> it = map.entrySet().iterator();
-					while (it.hasNext()) {
-
-						Map.Entry<Integer, Byte> entry = it.next();
-						getIoBuffer().putUnsignedShort((Integer) entry.getKey());
-						getIoBuffer().put((Byte) entry.getValue());
-					}
-
-				}
-			}
-
-			sigNum = sigDataAck.get2ByteDataMap().size();
-			if (sigNum > 0) {
-				if (sigNum > 0x3F) {
-					s = "WARNING: too many signal of 2 byte";
-					logger.error(s);
-				} else {
-					encodedByte = (byte) (sigNum & 0x3F);
-					// clear bit6, bit7
-					encodedByte &= ~0xC0;
-					// set the value type of bit6, bit7 to '00b'
-					encodedByte |= 0x40;
-					getIoBuffer().put(encodedByte);
-					Map<Integer, Short> map = sigDataAck.get2ByteDataMap();
-					Iterator<Map.Entry<Integer, Short>> it = map.entrySet().iterator();
-					while (it.hasNext()) {
-						Map.Entry<Integer, Short> entry = it.next();
-						getIoBuffer().putUnsignedShort(entry.getKey());
-						getIoBuffer().putShort((Short) entry.getValue());
-					}
-
-				}
-			}
-
-			sigNum = sigDataAck.get4ByteDataMap().size();
-			if (sigNum > 0) {
-				if (sigNum > 0x3F) {
-					s = "WARNING: too many signal of 4 byte";
-					logger.error(s);
-				} else {
-					encodedByte = (byte) (sigNum & 0x3F);
-					// clear bit6, bit7
-					encodedByte &= ~0xC0;
-					// set the value type of bit6, bit7 to '00b'
-					encodedByte |= 0x80;
-					getIoBuffer().put(encodedByte);
-					Map<Integer, Integer> map = sigDataAck.get4ByteDataMap();
-					Iterator<Map.Entry<Integer, Integer>> it = map.entrySet().iterator();
-					while (it.hasNext()) {
-						Map.Entry<Integer, Integer> entry = it.next();
-						getIoBuffer().putUnsignedShort(entry.getKey());
-						getIoBuffer().putInt((Integer) entry.getValue());
-					}
-
-				}
-			}
-		}
-		*/
-
-		return false;
+		return ret;
 	}
 
 }

@@ -241,7 +241,7 @@ public class BPPacketPOST extends BPPacket {
 		int packSeqTmp = vrb.getPackSeq();
 		getIoBuffer().putUnsignedShort(packSeqTmp);	
 		
-		return false;
+		return true;
 	}
 
 	@Override
@@ -250,7 +250,7 @@ public class BPPacketPOST extends BPPacket {
 
 		sigData.assembleSigData(getIoBuffer());
 		
-		return false;
+		return true;
 	}
 
 	public byte[] getSignalValueRelay() {

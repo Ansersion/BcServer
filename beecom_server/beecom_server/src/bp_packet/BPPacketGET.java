@@ -204,7 +204,7 @@ public class BPPacketGET extends BPPacket {
 		int packSeqTmp = vrb.getPackSeq();
 		getIoBuffer().putUnsignedShort(packSeqTmp);	
 		
-		return false;
+		return true;
 	}
 
 	@Override
@@ -220,6 +220,6 @@ public class BPPacketGET extends BPPacket {
 			}
 		}
 		
-		return false;
+		return true;
 	}
 }

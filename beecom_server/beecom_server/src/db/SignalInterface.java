@@ -36,4 +36,12 @@ public abstract class SignalInterface {
 	public void setCustomSignalId(Long customSignalId) {
 		
 	}
+	
+	public Integer getGroupLangId() {
+		return 0;
+	}
+	
+	public Short getAccuracy() {
+		return 0;
+	}
 }
