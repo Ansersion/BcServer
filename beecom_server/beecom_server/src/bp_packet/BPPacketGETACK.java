@@ -433,9 +433,11 @@ public class BPPacketGETACK extends BPPacket {
 				List<CustomSignalInfoUnit> customSignalInfoUnitList = pld.getCustomSignalInfoUnitLst();
 				if (null == customSignalInfoUnitList || customSignalInfoUnitList.isEmpty()) {
 					/* no custom signal */
+					logger.info("no custom signal");
 					buffer.putUnsignedShort(0);
 				} else if(langSupportMask <= 0 || (langSupportMask & 0xFF) == 0) { 
 					/* no supported language */
+					logger.info("no supported language");
 					buffer.putUnsignedShort(0);
 				} else {
 					buffer.putUnsignedShort(customSignalInfoUnitList.size());
@@ -498,40 +500,40 @@ public class BPPacketGETACK extends BPPacket {
 								}
 							}
 							langSupportMaskTmp &= (~langSupportMaskByte);
-							buffer.put((byte) langSupportMaskByte);
+							buffer.putUnsigned(langSupportMaskByte);
 							String name = nameLangMap.get(i);
 							if (null == name || name.getBytes().length > BPPacket.MAX_CUSTOM_SIGNAL_NAME_LENGTH) {
 								logger.error("inner error: null == nameLangMap.get({})", i);
 								break;
 							}
-							buffer.put((byte) (name.getBytes().length & 0xFF));
+							buffer.putUnsigned(name.getBytes().length & 0xFF);
 							buffer.put(name.getBytes());
 							if (null == unitLangMap) {
 								/* 2 bytes */
 								/* TODO: temporary no support the system unit language unit */
 								// buffer.put(BPPacket.SYSTEM_UNIT_LANGUAGE_FLAG & 0x02);
-								buffer.put((byte) 0);
+								buffer.putUnsigned(0);
 							} else {
 								String unit = unitLangMap.get(i);
 								if (null == unit || unit.getBytes().length > BPPacket.MAX_CUSTOM_SIGNAL_UNIT_LENGTH) {
 									logger.error("inner error: null == nameLangMap.get({})", i);
 									break;
 								}
-								buffer.put((byte) (unit.getBytes().length & 0xFF));
+								buffer.putUnsigned(unit.getBytes().length & 0xFF);
 								buffer.put(unit.getBytes());
 							}
 							if (null == groupLangMap) {
 								/* 2 bytes */
 								/* TODO: temporary no support the system unit language unit */
 								// buffer.put(BPPacket.SYSTEM_UNIT_LANGUAGE_FLAG & 0x02);
-								buffer.put((byte) 0);
+								buffer.putUnsigned(0);
 							} else {
 								String group = groupLangMap.get(i);
 								if (null == group || group.getBytes().length > BPPacket.MAX_CUSTOM_SIGNAL_UNIT_LENGTH) {
 									logger.error("inner error: null == nameLangMap.get({})", i);
 									break;
 								}
-								buffer.put((byte) (group.getBytes().length & 0xFF));
+								buffer.putUnsigned(group.getBytes().length & 0xFF);
 								buffer.put(group.getBytes());
 							}
 							if (customSignalInfoUnit.isIfAlarm()) {
@@ -539,7 +541,7 @@ public class BPPacketGETACK extends BPPacket {
 									/* 2 bytes */
 									/* TODO: temporary no support the system unit language unit */
 									// buffer.put(BPPacket.SYSTEM_UNIT_LANGUAGE_FLAG & 0x02);
-									buffer.put((byte) 0);
+									buffer.putUnsigned(0);
 								} else {
 									String alarmLang = customAlarmInfoUnit.getCustomAlarmNameLangMap().get(i);
 									if (null == alarmLang || alarmLang.getBytes().length > BPPacket.MAX_CUSTOM_SIGNAL_UNIT_LENGTH) {
@@ -570,6 +572,8 @@ public class BPPacketGETACK extends BPPacket {
 									buffer.put(enumVal.getBytes());
 
 								}
+							} else {
+								buffer.putUnsigned(0);
 							}
 				
 						}
@@ -675,8 +679,10 @@ public class BPPacketGETACK extends BPPacket {
 							if (strlen > BPPacket.MAX_CUSTOM_SIGNAL_STRING_LENGTH) {
 								strlen = BPPacket.MAX_CUSTOM_SIGNAL_STRING_LENGTH;
 							}
-							buffer.put((byte) (strlen & 0xFF));
-							buffer.put(defVal.getBytes(), 0, strlen);
+							buffer.putUnsigned(strlen);
+							if(strlen > 0) {
+								buffer.put(defVal.getBytes(), 0, strlen);
+							}
 							break;
 						}
 						case BPPacket.VAL_TYPE_BOOLEAN:

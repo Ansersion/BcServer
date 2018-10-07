@@ -17,7 +17,7 @@ public class BPPacket implements BPPacketInterface {
     public static final int MAX_SYS_SIG_CLASS_NUM = 7;
 	public static final int BYTE_NUM_OF_A_DIST = 64;
 	public static final int SYS_SIG_START_ID = 0xE000;
-	public static final int CUS_SIG_START_ID = 0x0001;
+	public static final int CUS_SIG_START_ID = 0x0000;
 	public static final int CUS_SIG_END_ID = 0xDFFF;
 	public static final int SYS_SIG_DIST_STEP = 0x200;
 	public static final int MAX_SIG_ID = 0xFFFF;
