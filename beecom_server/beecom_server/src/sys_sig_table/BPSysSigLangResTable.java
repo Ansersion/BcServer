@@ -57,6 +57,7 @@ public class BPSysSigLangResTable {
 		try (BufferedReader sysSigLangIn = new BufferedReader(isr)){
 			String s;
 			s = sysSigLangIn.readLine();
+			s = sysSigLangIn.readLine();
 			for (int i = 0; i < 16; i++) {
 
 				List<List<String>> sigLangResTmp = new ArrayList<>();
