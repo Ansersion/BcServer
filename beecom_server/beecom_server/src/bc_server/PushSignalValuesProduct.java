@@ -93,7 +93,7 @@ public class PushSignalValuesProduct extends Product {
 			bpPacket = BPPackFactory.createBPPack(BPPacketType.PUSH);
 			bpPacket.getVrbHead().setSigValFlag(true);
 			Payload pld = bpPacket.getPld();
-			BeecomDB beecomDb = BeecomDB.getInstance();
+			pld.setDevUniqId(bpDeviceSession.getUniqDevId());
 			pld.setPushSigValData(reportData);
 			ret = true;
 		} catch(Exception e) {
