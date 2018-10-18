@@ -75,13 +75,9 @@ public class BcServerMain {
 		}
 		
 		BPSysSigTable sysSigTab = BPSysSigTable.getSysSigTableInstance();
-		try {
-			sysSigTab.loadTab();
-		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+		if(!sysSigTab.loadTab()) {
+			logger.error("!sysSigTab.loadTab()");
+			System.exit(0);
 		}
 		
 		consumerTask = new ConsumerTask();

@@ -55,12 +55,36 @@ public class BPSysSigTable {
 	public List<SysSigInfo> getSysSigInfoLst() {
 		return sysSigInfoLst;
 	}
-
-	public boolean loadTab() throws FileNotFoundException, UnsupportedEncodingException {
-		FileInputStream fis = new FileInputStream("config/sys_sig_info_basic.csv");
-		InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+	
+	public boolean loadTab() {
+		boolean ret = true;
+		List<String> systemSignalTableList = new ArrayList<>();
+		/* must be in order */
+		/* 1st. config/sys_sig_info_basic.csv */
+		systemSignalTableList.add("config/sys_sig_info_basic.csv");
+		/* 2nd. config/sys_sig_info_basic.csv */
+		systemSignalTableList.add("config/sys_sig_info_temp_humidity.csv");
 
 		sysSigInfoLst.clear();
+		try {
+			for(int i = 0; i < systemSignalTableList.size(); i++) {
+				if(!loadTab(systemSignalTableList.get(i))) {
+					ret = false;
+					break;
+				}
+			}
+		} catch(Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+			ret = false;
+		}
+		
+		return ret;
+	}
+
+	public boolean loadTab(String system_signal_table) throws FileNotFoundException, UnsupportedEncodingException {
+		FileInputStream fis = new FileInputStream(system_signal_table);
+		InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+
 		boolean ret = false;
 		String strTmp;
 
@@ -85,12 +109,11 @@ public class BPSysSigTable {
 
 		try (BufferedReader sysSigIn = new BufferedReader(isr)) {
 			String s;
-			// String pattern = "^(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+),(.+)$";
 			String pattern = "^";
 			for(int i = 0; i < SYSTEM_SIGNAL_ATTR_COLUMN_NUM-1; i++) {
-				pattern += "(.+),";
+				pattern += "(.*),";
 			}
-			pattern += "(.+)$";
+			pattern += "(.*)$";
 			Pattern r = Pattern.compile(pattern);
 			s = sysSigIn.readLine();
 			s = sysSigIn.readLine();
@@ -99,17 +122,23 @@ public class BPSysSigTable {
 			while ((s = sysSigIn.readLine()) != null) {
 				Matcher m = r.matcher(s);
 				if (!m.find()) {
-					break;
+					throw new BPParseCsvFileException("Matched error: " + s);
 				}
 				groupIndex = 4;
-				if (0 == m.group(groupIndex).compareToIgnoreCase("YES")) {
-					alm = true;
-				} else {
+				if(Util.isNull(m.group(groupIndex))) {
 					alm = false;
+				} else if (0 == m.group(groupIndex).compareToIgnoreCase("YES")) {
+					alm = true;
+				} else if(0 == m.group(groupIndex).compareToIgnoreCase("NO")){
+					alm = false;
+				} else {
+					throw new BPParseCsvFileException(m.group(1) + ":(" + m.group(groupIndex) + ") is alarm error");
 				}
 				/* 0-u32, 1-u16, 2-i32, 3-i16, 4-enum, 5-float, 6-string */
 				groupIndex++;
-				if (0 == m.group(groupIndex).compareToIgnoreCase("UINT32")) {
+				if(Util.isNull(m.group(groupIndex))) {
+					valType = 0;
+				} else if (0 == m.group(groupIndex).compareToIgnoreCase("UINT32")) {
 					valType = 0;
 				} else if (0 == m.group(groupIndex).compareToIgnoreCase("UINT16")) {
 					valType = 1;
@@ -130,31 +159,49 @@ public class BPSysSigTable {
 				groupIndex++;
 				strTmp = m.group(groupIndex);
 
-				try (Scanner scannerUnit = new Scanner(strTmp)) {
-					scannerUnit.useDelimiter("ULR");
-					if (!scannerUnit.hasNext()) {
-						throw new BPParseCsvFileException(m.group(1) + ": unit language resource error");
-					}
-					unitLangRes = scannerUnit.nextInt();
+				if(Util.isNull(m.group(groupIndex))) {
+					unitLangRes = 0;
+				} else {
+					try (Scanner scannerUnit = new Scanner(strTmp)) {
+						scannerUnit.useDelimiter("ULR");
+						if (!scannerUnit.hasNext()) {
+							throw new BPParseCsvFileException(m.group(1) + ": unit language resource error");
+						}
+						unitLangRes = scannerUnit.nextInt();
 
-					groupIndex++;
-					if (0 == m.group(groupIndex).compareToIgnoreCase("RO")) {
-						permission = 0;
-					} else {
-						permission = 1;
+					} catch (BPParseCsvFileException e) {
+						throw e;
 					}
-					groupIndex++;
-					if (0 == m.group(groupIndex).compareToIgnoreCase("YES")) {
-						ifDisplay = true;
-					} else {
-						ifDisplay = false;
-					}
-				} catch (BPParseCsvFileException e) {
-					Util.bcLog(e, logger);
+				}
+				
+				groupIndex++;
+				if(Util.isNull(m.group(groupIndex))) {
+					permission = 0;
+				} else if (0 == m.group(groupIndex).compareToIgnoreCase("RO")) {
+					permission = 0;
+				} else if(0 == m.group(groupIndex).compareToIgnoreCase("RW")) {
+					permission = 1;
+				} else {
+					throw new BPParseCsvFileException(m.group(1) + ":(" + m.group(groupIndex) + ") permission error");
+				}
+				
+				groupIndex++;
+				if(Util.isNull(m.group(groupIndex))) {
+					ifDisplay = false;
+				} else if (0 == m.group(groupIndex).compareToIgnoreCase("YES")) {
+					ifDisplay = true;
+				} else if(0 == m.group(groupIndex).compareToIgnoreCase("NO")) {
+					ifDisplay = false;
+				} else {
+					throw new BPParseCsvFileException(m.group(1) + ":(" + m.group(groupIndex) + ") ifDisplay error");
 				}
 
 				groupIndex++;
-				accuracy = (byte) Integer.parseInt(m.group(groupIndex));
+				if(Util.isNull(m.group(groupIndex))) {
+					accuracy = 0;
+				} else {
+					accuracy = (byte) Integer.parseInt(m.group(groupIndex));
+				}
 
 				groupIndex++;
 				if (Util.isNull(m.group(groupIndex))) {
@@ -178,10 +225,20 @@ public class BPSysSigTable {
 				}
 
 				groupIndex++;
-				if (!m.group(groupIndex).equals("NULL")) {
-					classLangRes = 1;
-				} else {
+				
+				if(Util.isNull(m.group(groupIndex))) {
 					classLangRes = 0;
+				} else {
+					try (Scanner scannerUnit = new Scanner(strTmp)) {
+						scannerUnit.useDelimiter("GLR");
+						if (!scannerUnit.hasNext()) {
+							throw new BPParseCsvFileException(m.group(1) + ": group language resource error");
+						}
+						classLangRes = scannerUnit.nextInt();
+
+					} catch (BPParseCsvFileException e) {
+						throw e;
+					}
 				}
 
 				if (null != mapEnumLangRes) {
@@ -191,32 +248,39 @@ public class BPSysSigTable {
 				if (4 == valType) {
 					groupIndex++;
 					strTmp = m.group(groupIndex);
-
-					try (Scanner scannerEnum = new Scanner(strTmp).useDelimiter("/")) {
-						mapEnumLangRes = new HashMap<>();
-						String enumPatternStr = "\\[(\\d+)\\s*=\\s*ELR(\\d+)\\]";
-						Pattern enumPattern = Pattern.compile(enumPatternStr);
-						while (scannerEnum.hasNext()) {
-							strTmp = scannerEnum.next();
-							Matcher enumMat = enumPattern.matcher(strTmp);
-							if (enumMat.find()) {
-								int enumIndex = Integer.parseInt(enumMat.group(1));
-								int enumLangResIndex = Integer.parseInt(enumMat.group(2));
-								mapEnumLangRes.put(enumIndex, enumLangResIndex);
-							} else {
-								throw new BPParseCsvFileException("Error: parse enumeration error");
+					if(Util.isNull(m.group(groupIndex))) {
+						mapEnumLangRes = null;
+					} else {
+						try(Scanner scannerEnum = new Scanner(strTmp).useDelimiter("/")) {
+							mapEnumLangRes = new HashMap<>();
+							String enumPatternStr = "\\[(\\d+)\\s*=\\s*ELR(\\d+)\\]";
+							Pattern enumPattern = Pattern.compile(enumPatternStr);
+							while (scannerEnum.hasNext()) {
+								strTmp = scannerEnum.next();
+								Matcher enumMat = enumPattern.matcher(strTmp);
+								if (enumMat.find()) {
+									int enumIndex = Integer.parseInt(enumMat.group(1));
+									int enumLangResIndex = Integer.parseInt(enumMat.group(2));
+									mapEnumLangRes.put(enumIndex, enumLangResIndex);
+								} else {
+									throw new BPParseCsvFileException("Error: parse enumeration error");
+								}
 							}
+						} catch (Exception e) {
+							throw e;
 						}
-					} catch (Exception e) {
-						Util.bcLog(e, logger);
 					}
 				}
 
 				groupIndex++;
-				if (0 == m.group(groupIndex).compareToIgnoreCase("YES")) {
+				if(Util.isNull(m.group(groupIndex))) {
 					enStatistics = true;
-				} else {
+				} else if(0 == m.group(groupIndex).compareToIgnoreCase("YES")) {
+					enStatistics = true;
+				} else if(0 == m.group(groupIndex).compareToIgnoreCase("NO")){
 					enStatistics = false;
+				} else {
+					throw new BPParseCsvFileException(m.group(1) + ":(" + m.group(groupIndex) + ") enStatistics error");
 				}
 				
 				if (alm) {

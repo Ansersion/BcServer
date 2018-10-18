@@ -39,7 +39,7 @@ public class Util {
 	}
 	
 	public static boolean isNull(String val) {
-		return null == val || val.length() == 0 || val.trim().isEmpty() || val.equals(BPValue.NULL_VAL);
+		return null == val || val.length() == 0 || val.trim().isEmpty() || val.equalsIgnoreCase(BPValue.NULL_VAL);
 	}
 	
 	public static void bcLog(Exception e, Logger logger) {

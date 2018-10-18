@@ -154,6 +154,8 @@ public class BcServerHandler extends IoHandlerAdapter {
 				beecomDb.getUserName2SessionMap().put(userName, bpSession);
 				beecomDb.getUserId2SessionMap().put(userInfoUnit.getUserInfoHbn().getId(), bpSession);
 				beecomDb.updateUserDevRel(userInfoUnit.getUserInfoHbn());
+				
+				//TODO: PUSH all unchecked signal values
 
 			} 
 			if(devClntFlag) {
