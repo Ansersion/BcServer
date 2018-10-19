@@ -255,7 +255,7 @@ public class BPPacketREPORT extends BPPacket {
 					int dist;
 					int sysSigClass;
 					int mapNum;
-
+					List<Integer> systemSignalEnabledList = new ArrayList<Integer>();
 					do {
 						distAndClass = getIoBuffer().get();
 						dist = (distAndClass >> 4) & 0x0F;
@@ -267,7 +267,7 @@ public class BPPacketREPORT extends BPPacket {
 							break;
 						}
 						mapNum = 0x01 << (sysSigClass - 1);
-						List<Integer> systemSignalEnabledList = new ArrayList<Integer>();
+						
 						// Byte[] sysSigMap = new Byte[mapNum];
 						// Map<Integer, Byte[]> sysMap = pld
 						//		.getMapDist2SysSigMap();
@@ -280,9 +280,10 @@ public class BPPacketREPORT extends BPPacket {
 								}
 							}
 						}
-						pld.setSystemSignalEnabledList(systemSignalEnabledList);
-						//sysMap.put(dist, sysSigMap);
+
 					} while ((distAndClass & VariableHeader.DIST_END_FLAG_MSK) != VariableHeader.DIST_END_FLAG_MSK);
+					pld.setSystemSignalEnabledList(systemSignalEnabledList);
+			
 				}
 				
 				if(vrb.getSysSigMapCustomInfo()) {
@@ -314,7 +315,7 @@ public class BPPacketREPORT extends BPPacket {
 						delayAfterAlarm = BPPacket.ALARM_DELAY_DEFAULT;
 						signalId = ioBuffer.getUnsignedShort();
 						BPSysSigTable bpSysSigTable = BPSysSigTable.getSysSigTableInstance();
-						SysSigInfo sysSigInfo = BPSysSigTable.getSysSigTableInstance().getSysSigInfoLst().get(signalId - BPPacket.SYS_SIG_START_ID);
+						SysSigInfo sysSigInfo = BPSysSigTable.getSysSigTableInstance().getSysSigInfo(signalId - BPPacket.SYS_SIG_START_ID);
 						if(null == sysSigInfo) {
 							throw new Exception("null == sysSigInfo");
 						}

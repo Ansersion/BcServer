@@ -321,28 +321,28 @@ public abstract class BPSession {
 			BPSysSigTable sysSigTab = BPSysSigTable.getSysSigTableInstance();
 			for(int i = 0; i < value.length; i++) {
 				if(((1 << 0) & value[i]) == (1 << 0)) {
-					sysSigMap.put(distSigStartId + i * 8 + 7, sysSigTab.getSysSigInfoLst().get(i * 8 + 7).getValDef());
+					sysSigMap.put(distSigStartId + i * 8 + 7, sysSigTab.getSysSigInfo(i * 8 + 7).getValDef());
 				}
 				if(((1 << 1) & value[i]) == (1 << 1)) {
-					sysSigMap.put(distSigStartId + i * 8 + 6, sysSigTab.getSysSigInfoLst().get(i * 8 + 6).getValDef());
+					sysSigMap.put(distSigStartId + i * 8 + 6, sysSigTab.getSysSigInfo(i * 8 + 6).getValDef());
 				}
 				if(((1 << 2) & value[i]) == (1 << 2)) {
-					sysSigMap.put(distSigStartId + i * 8 + 5, sysSigTab.getSysSigInfoLst().get(i * 8 + 5).getValDef());
+					sysSigMap.put(distSigStartId + i * 8 + 5, sysSigTab.getSysSigInfo(i * 8 + 5).getValDef());
 				}
 				if(((1 << 3) & value[i]) == (1 << 3)) {
-					sysSigMap.put(distSigStartId + i * 8 + 4, sysSigTab.getSysSigInfoLst().get(i * 8 + 4).getValDef());
+					sysSigMap.put(distSigStartId + i * 8 + 4, sysSigTab.getSysSigInfo(i * 8 + 4).getValDef());
 				}
 				if(((1 << 4) & value[i]) == (1 << 4)) {
-					sysSigMap.put(distSigStartId + i * 8 + 3, sysSigTab.getSysSigInfoLst().get(i * 8 + 3).getValDef());
+					sysSigMap.put(distSigStartId + i * 8 + 3, sysSigTab.getSysSigInfo(i * 8 + 3).getValDef());
 				}
 				if(((1 << 5) & value[i]) == (1 << 5)) {
-					sysSigMap.put(distSigStartId + i * 8 + 2, sysSigTab.getSysSigInfoLst().get(i * 8 + 2).getValDef());
+					sysSigMap.put(distSigStartId + i * 8 + 2, sysSigTab.getSysSigInfo(i * 8 + 2).getValDef());
 				}
 				if(((1 << 6) & value[i]) == (1 << 6)) {
-					sysSigMap.put(distSigStartId + i * 8 + 1, sysSigTab.getSysSigInfoLst().get(i * 8 + 1).getValDef());
+					sysSigMap.put(distSigStartId + i * 8 + 1, sysSigTab.getSysSigInfo(i * 8 + 1).getValDef());
 				}
 				if(((1 << 7) & value[i]) == (1 << 7)) {
-					sysSigMap.put(distSigStartId + i * 8 + 0, sysSigTab.getSysSigInfoLst().get(i * 8 + 0).getValDef());
+					sysSigMap.put(distSigStartId + i * 8 + 0, sysSigTab.getSysSigInfo(i * 8 + 0).getValDef());
 				}
 			}
 		}

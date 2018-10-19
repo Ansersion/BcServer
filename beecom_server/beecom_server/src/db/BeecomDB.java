@@ -947,11 +947,7 @@ public class BeecomDB {
 		if(systemSignalInfoHbnLst.get(0).getCustomFlags() == 0) {
 			BPSysSigTable bpSysSigTable = BPSysSigTable.getSysSigTableInstance();
 			int systemSignalIdOffset = signalId - BPPacket.SYS_SIG_START_ID;
-			final List<SysSigInfo> sysSigInfoLst = bpSysSigTable.getSysSigInfoLst();
-			if(systemSignalIdOffset >= sysSigInfoLst.size()) {
-				return false;
-			}
-			SysSigInfo sysSigInfo = sysSigInfoLst.get(systemSignalIdOffset);
+			SysSigInfo sysSigInfo = bpSysSigTable.getSysSigInfo(systemSignalIdOffset);
 			return checkSystemSignalValueUnformed(sysSigInfo, value);
 		} else {
 			
@@ -1137,13 +1133,9 @@ public class BeecomDB {
 					SignalInterface systemSignalInterface = null;
 					if(!ifConfigDef) {
 						BPSysSigTable sysSigTab = BPSysSigTable.getSysSigTableInstance();
-						List<SysSigInfo> sysSigInfoLst = sysSigTab.getSysSigInfoLst();
-						if(signalId - BPPacket.SYS_SIG_START_ID > sysSigInfoLst.size()) {
-							return null;
-						}
 						
 						Transaction tx = null;
-						switch(sysSigInfoLst.get(signalId - BPPacket.SYS_SIG_START_ID).getValType()) {
+						switch(sysSigTab.getSysSigInfo(signalId - BPPacket.SYS_SIG_START_ID).getValType()) {
 							case BPPacket.VAL_TYPE_UINT32:
 								try (Session session = sessionFactory.openSession()) {
 									tx = session.beginTransaction();
@@ -1805,13 +1797,9 @@ public class BeecomDB {
 					}
 					SignalInterface systemSignalInterface = null;
 					BPSysSigTable sysSigTab = BPSysSigTable.getSysSigTableInstance();
-					List<SysSigInfo> sysSigInfoLst = sysSigTab.getSysSigInfoLst();
-					if (signalId - BPPacket.SYS_SIG_START_ID > sysSigInfoLst.size()) {
-						return null;
-					}
 
 					Transaction tx = null;
-					switch (sysSigInfoLst.get(signalId - BPPacket.SYS_SIG_START_ID).getValType()) {
+					switch (sysSigTab.getSysSigInfo(signalId - BPPacket.SYS_SIG_START_ID).getValType()) {
 					case BPPacket.VAL_TYPE_UINT32:
 						try (Session session = sessionFactory.openSession()) {
 							tx = session.beginTransaction();
@@ -2753,7 +2741,7 @@ public class BeecomDB {
 							.setParameter("signal_id", signalInfoHbn.getId()).uniqueResult();
 					if(null != systemSignalInfoHbn) {
 						if(systemSignalInfoHbn.getCustomFlags() != 0) {
-							SysSigInfo sysSigInfo = BPSysSigTable.getSysSigTableInstance().getSysSigInfoLst().get(signalInfoHbn.getSignalId() - BPPacket.SYS_SIG_START_ID);
+							SysSigInfo sysSigInfo = BPSysSigTable.getSysSigTableInstance().getSysSigInfo(signalInfoHbn.getSignalId() - BPPacket.SYS_SIG_START_ID);
 							if(null != sysSigInfo) {
 								short sigType = sysSigInfo.getValType();
 								switch(sigType) {
@@ -2937,7 +2925,7 @@ public class BeecomDB {
 					.setParameter("dev_id", devUniqId).list();
 			
 			Iterator<SignalInfoHbn> itSih = signalInfoHbnList.iterator();
-			List<SysSigInfo> sysSigInfoLst = BPSysSigTable.getSysSigTableInstance().getSysSigInfoLst();
+			BPSysSigTable bpSysSigTable = BPSysSigTable.getSysSigTableInstance();
 			int signalIdTmp;
 			SysSigInfo sysSigInfoTmp;
 			short valueType;
@@ -3079,7 +3067,7 @@ public class BeecomDB {
 						return ret;
 					}
 					if(systemSignalInfoHbn.getCustomFlags() != 0) {
-						sysSigInfoTmp = sysSigInfoLst.get(signalIdTmp - BPPacket.SYS_SIG_START_ID);
+						sysSigInfoTmp = bpSysSigTable.getSysSigInfo(signalIdTmp - BPPacket.SYS_SIG_START_ID);
 						valueType = sysSigInfoTmp.getValType();
 						
 						signalInterfaceTmp = null;

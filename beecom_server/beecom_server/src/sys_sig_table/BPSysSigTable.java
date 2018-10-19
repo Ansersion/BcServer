@@ -35,6 +35,8 @@ public class BPSysSigTable {
 
 	public static final int SYSTEM_SIGNAL_ATTR_COLUMN_NUM = 18;
 	public static final int SID_ID_RESERVED = 0x0000;
+	private static final SysSigInfo SYS_SIG_INFO_DEFAULT = new SysSigInfo(false, (byte)0, 0, (byte)0, false, (byte)0, new Long(0), new Long(1),
+			new Long(0), 0, null, true, (byte)0x7f, 5, 5);
 
 	private List<SysSigInfo> sysSigInfoLst;
 
@@ -52,8 +54,12 @@ public class BPSysSigTable {
 		sysSigInfoLst = new ArrayList<>();
 	}
 
-	public List<SysSigInfo> getSysSigInfoLst() {
+	private List<SysSigInfo> getSysSigInfoLst() {
 		return sysSigInfoLst;
+	}
+	
+	public SysSigInfo getSysSigInfo(int signalId) {
+		return sysSigInfoLst.get(signalId);
 	}
 	
 	public boolean loadTab() {
@@ -73,6 +79,11 @@ public class BPSysSigTable {
 					break;
 				}
 			}
+			
+			for (int i = 0; i < sysSigInfoLst.size(); i++) {
+				dumpOneLineOfSysSigTab(i, sysSigInfoLst.get(i));
+			}
+			
 		} catch(Exception e) {
 			Util.logger(logger, Util.ERROR, e);
 			ret = false;
@@ -111,9 +122,9 @@ public class BPSysSigTable {
 			String s;
 			String pattern = "^";
 			for(int i = 0; i < SYSTEM_SIGNAL_ATTR_COLUMN_NUM-1; i++) {
-				pattern += "(.*),";
+				pattern += "(.+),";
 			}
-			pattern += "(.*)$";
+			pattern += "(.+)$";
 			Pattern r = Pattern.compile(pattern);
 			s = sysSigIn.readLine();
 			s = sysSigIn.readLine();
@@ -122,7 +133,8 @@ public class BPSysSigTable {
 			while ((s = sysSigIn.readLine()) != null) {
 				Matcher m = r.matcher(s);
 				if (!m.find()) {
-					throw new BPParseCsvFileException("Matched error: " + s);
+					sysSigInfoLst.add(SYS_SIG_INFO_DEFAULT);
+					continue;
 				}
 				groupIndex = 4;
 				if(Util.isNull(m.group(groupIndex))) {
@@ -294,11 +306,6 @@ public class BPSysSigTable {
 
 				sysSigInfoLst.add(new SysSigInfo(alm, valType, unitLangRes, permission, ifDisplay, accuracy, valMin, valMax,
 						valDef, classLangRes, mapEnumLangRes, enStatistics, almClass, dlyBefAlm, dlyAftAlm));
-			}
-
-			
-			for (int i = 0; i < sysSigInfoLst.size(); i++) {
-				dumpOneLineOfSysSigTab(i, sysSigInfoLst.get(i));
 			}
 
 			ret = true;
