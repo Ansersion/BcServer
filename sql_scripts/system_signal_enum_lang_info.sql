@@ -6,7 +6,7 @@ CREATE TABLE system_signal_enum_lang_info
 	ctime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	mtime TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	enum_key SMALLINT UNSIGNED NOT NULL,  
-	enum_val VARCHAR(128) NOT NULL DEFAULT "",
+	enum_val INT NOT NULL DEFAULT 0,
 	
 	/* ID in system_signal_enum_info table */
 	sys_sig_enm_id INT UNSIGNED NOT NULL,

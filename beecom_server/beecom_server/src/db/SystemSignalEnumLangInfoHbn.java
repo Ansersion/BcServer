@@ -3,7 +3,7 @@ package db;
 public class SystemSignalEnumLangInfoHbn {
     private Long id;
     private Integer enumKey;
-    private String enumVal;
+    private Integer enumVal;
     private Long sysSigEnmId;
 	public Long getId() {
 		return id;
@@ -17,10 +17,10 @@ public class SystemSignalEnumLangInfoHbn {
 	public void setEnumKey(Integer enumKey) {
 		this.enumKey = enumKey;
 	}
-	public String getEnumVal() {
+	public Integer getEnumVal() {
 		return enumVal;
 	}
-	public void setEnumVal(String enumVal) {
+	public void setEnumVal(Integer enumVal) {
 		this.enumVal = enumVal;
 	}
 	public Long getSysSigEnmId() {

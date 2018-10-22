@@ -1,5 +1,8 @@
 package db;
 
+import java.util.List;
+import java.util.Map;
+
 public class SystemSignalCustomInfoUnit {
 	
 	private int sysSigId;
@@ -7,16 +10,19 @@ public class SystemSignalCustomInfoUnit {
 	private Short delayBeforeAlarm;
 	private Short delayAfterAlarm;
 	private int customFlags;
+	private Map<Integer, Integer> enumLangMap;
 	private SignalInterface signalInterface;
 
+
 	public SystemSignalCustomInfoUnit(int sysSigId, Short alarmClass, Short delayBeforeAlarm, Short delayAfterAlarm,
-			int customFlags, SignalInterface signalInterface) {
+			int customFlags, Map<Integer, Integer> enumLangMap, SignalInterface signalInterface) {
 		super();
 		this.sysSigId = sysSigId;
 		this.alarmClass = alarmClass;
 		this.delayBeforeAlarm = delayBeforeAlarm;
 		this.delayAfterAlarm = delayAfterAlarm;
 		this.customFlags = customFlags;
+		this.enumLangMap = enumLangMap;
 		this.signalInterface = signalInterface;
 	}
 
@@ -66,6 +72,14 @@ public class SystemSignalCustomInfoUnit {
 
 	public void setCustomFlags(int customFlags) {
 		this.customFlags = customFlags;
+	}
+
+	public Map<Integer, Integer> getEnumLangMap() {
+		return enumLangMap;
+	}
+
+	public void setEnumLangMap(Map<Integer, Integer> enumLangMap) {
+		this.enumLangMap = enumLangMap;
 	}
 
 	@Override

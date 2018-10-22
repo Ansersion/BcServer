@@ -1783,11 +1783,13 @@ public class BeecomDB {
 		Iterator<SignalInfoHbn> itSI;
 		Iterator<SystemSignalInfoHbn> itSSI = systemSignalInfoHbnLst.iterator();
 		int signalId;
+		Map<Integer, Integer> enumLangMap;
 		while(itSSI.hasNext()) {
 			SystemSignalInfoHbn systemSignalInfoHbn = itSSI.next();
 			itSI = signalInfoHbnLst.iterator();
 			
 			while(itSI.hasNext()) {
+				enumLangMap = null;
 				SignalInfoHbn signalInfoHbn = itSI.next();
 				
 				if(systemSignalInfoHbn.getSignalId() == signalInfoHbn.getId()) {
@@ -1809,10 +1811,7 @@ public class BeecomDB {
 
 							tx.commit();
 						} catch (Exception e) {
-							StringWriter sw = new StringWriter();
-							e.printStackTrace(new PrintWriter(sw, true));
-							String str = sw.toString();
-							logger.error(str);
+							Util.logger(logger, Util.ERROR, e);
 							systemSignalInterface = null;
 						}
 						break;
@@ -1825,10 +1824,7 @@ public class BeecomDB {
 
 							tx.commit();
 						} catch (Exception e) {
-							StringWriter sw = new StringWriter();
-							e.printStackTrace(new PrintWriter(sw, true));
-							String str = sw.toString();
-							logger.error(str);
+							Util.logger(logger, Util.ERROR, e);
 							systemSignalInterface = null;
 						}
 
@@ -1842,10 +1838,7 @@ public class BeecomDB {
 
 							tx.commit();
 						} catch (Exception e) {
-							StringWriter sw = new StringWriter();
-							e.printStackTrace(new PrintWriter(sw, true));
-							String str = sw.toString();
-							logger.error(str);
+							Util.logger(logger, Util.ERROR, e);
 							systemSignalInterface = null;
 						}
 						break;
@@ -1858,10 +1851,7 @@ public class BeecomDB {
 
 							tx.commit();
 						} catch (Exception e) {
-							StringWriter sw = new StringWriter();
-							e.printStackTrace(new PrintWriter(sw, true));
-							String str = sw.toString();
-							logger.error(str);
+							Util.logger(logger, Util.ERROR, e);
 							systemSignalInterface = null;
 						}
 						break;
@@ -1873,12 +1863,25 @@ public class BeecomDB {
 											"from SystemSignalEnumInfoHbn where systemSignalId = :system_signal_id")
 									.setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
 
+							if ((systemSignalInfoHbn.getCustomFlags()
+									& BPPacket.SYSTEM_SIGNAL_CUSTOM_FLAGS_ENUM_LANG) != 0) {
+								List<SystemSignalEnumLangInfoHbn> systemSignalEnumLangInfoHbnList = session
+										.createQuery(
+												"from SystemSignalEnumLangInfoHbn where sysSigEnmId = :sys_sig_enm_id")
+										.setParameter("sys_sig_enm_id", systemSignalInterface.getId()).list();
+								if(null != systemSignalEnumLangInfoHbnList && !systemSignalEnumLangInfoHbnList.isEmpty()) {
+									int size = systemSignalEnumLangInfoHbnList.size();
+									enumLangMap = new HashMap<>();
+									SystemSignalEnumLangInfoHbn systemSignalEnumLangInfoHbnTmp;
+									for(int i = 0; i < size; i++) {
+										systemSignalEnumLangInfoHbnTmp = systemSignalEnumLangInfoHbnList.get(i);
+										enumLangMap.put(systemSignalEnumLangInfoHbnTmp.getEnumKey(), systemSignalEnumLangInfoHbnTmp.getEnumVal());
+									}
+								}
+							}
 							tx.commit();
 						} catch (Exception e) {
-							StringWriter sw = new StringWriter();
-							e.printStackTrace(new PrintWriter(sw, true));
-							String str = sw.toString();
-							logger.error(str);
+							Util.logger(logger, Util.ERROR, e);
 							systemSignalInterface = null;
 						}
 						break;
@@ -1892,10 +1895,7 @@ public class BeecomDB {
 
 							tx.commit();
 						} catch (Exception e) {
-							StringWriter sw = new StringWriter();
-							e.printStackTrace(new PrintWriter(sw, true));
-							String str = sw.toString();
-							logger.error(str);
+							Util.logger(logger, Util.ERROR, e);
 							systemSignalInterface = null;
 						}
 						break;
@@ -1909,10 +1909,7 @@ public class BeecomDB {
 
 							tx.commit();
 						} catch (Exception e) {
-							StringWriter sw = new StringWriter();
-							e.printStackTrace(new PrintWriter(sw, true));
-							String str = sw.toString();
-							logger.error(str);
+							Util.logger(logger, Util.ERROR, e);
 							systemSignalInterface = null;
 						}
 						break;
@@ -1926,17 +1923,14 @@ public class BeecomDB {
 
 							tx.commit();
 						} catch (Exception e) {
-							StringWriter sw = new StringWriter();
-							e.printStackTrace(new PrintWriter(sw, true));
-							String str = sw.toString();
-							logger.error(str);
+							Util.logger(logger, Util.ERROR, e);
 							systemSignalInterface = null;
 						}
 						break;
 					default:
 						return null;
 					}
-					systemSignalCustomInfoUnitLst.add(new SystemSignalCustomInfoUnit(signalId, signalInfoHbn.getAlmClass(), signalInfoHbn.getAlmDlyBef(), signalInfoHbn.getAlmDlyAft(), systemSignalInfoHbn.getCustomFlags(), systemSignalInterface));
+					systemSignalCustomInfoUnitLst.add(new SystemSignalCustomInfoUnit(signalId, signalInfoHbn.getAlmClass(), signalInfoHbn.getAlmDlyBef(), signalInfoHbn.getAlmDlyAft(), systemSignalInfoHbn.getCustomFlags(), enumLangMap, systemSignalInterface));
 					break;
 				}
 			}

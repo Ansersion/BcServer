@@ -267,10 +267,6 @@ public class BPPacketREPORT extends BPPacket {
 							break;
 						}
 						mapNum = 0x01 << (sysSigClass - 1);
-						
-						// Byte[] sysSigMap = new Byte[mapNum];
-						// Map<Integer, Byte[]> sysMap = pld
-						//		.getMapDist2SysSigMap();
 						byte tmp;
 						for (int i = 0; i < mapNum; i++) {
 							tmp = getIoBuffer().get();
@@ -300,11 +296,11 @@ public class BPPacketREPORT extends BPPacket {
 					int accuracy;
 					int sigType;
 					short alarmClass, delayBeforeAlarm, delayAfterAlarm;
-					List<Integer> enumLangList;
+					Map<Integer, Integer> enumLangMap;
 					SignalInterface signalInterface;
 					List<SystemSignalCustomInfoUnit> systemSignalCustomInfoUnitList = null;
 					for (int i = 0; i < signalNum; i++) {
-						enumLangList = null;
+						enumLangMap = null;
 						if (null == systemSignalCustomInfoUnitList) {
 							systemSignalCustomInfoUnitList = new ArrayList<>();
 						}
@@ -326,10 +322,11 @@ public class BPPacketREPORT extends BPPacket {
 							ifStatistics = ioBuffer.get() != 0;
 						}
 						if ((basicCustomInfoByte & 0x02) == 0x02) {
-							enumLangList = new ArrayList<>();
+							enumLangMap = new HashMap<>();
 							int enumLangNum = ioBuffer.getUnsigned();
 							for (int j = 0; j < enumLangNum; j++) {
-								enumLangList.add(ioBuffer.getUnsignedShort());
+								// TODO: 
+								// enumLangList.add(ioBuffer.getUnsignedShort());
 							}
 						}
 						if ((basicCustomInfoByte & 0x04) == 0x04) {
@@ -501,7 +498,7 @@ public class BPPacketREPORT extends BPPacket {
 							delayBeforeAlarm = ioBuffer.getUnsigned();
 							delayAfterAlarm = ioBuffer.getUnsigned();
 						}
-						systemSignalCustomInfoUnitList.add(new SystemSignalCustomInfoUnit(signalId, alarmClass, delayBeforeAlarm, delayAfterAlarm, (basicCustomInfoByte & 0xFF) | ((alarmCustomInfoByte & 0xFF) << 8), signalInterface));
+						systemSignalCustomInfoUnitList.add(new SystemSignalCustomInfoUnit(signalId, alarmClass, delayBeforeAlarm, delayAfterAlarm, (basicCustomInfoByte & 0xFF) | ((alarmCustomInfoByte & 0xFF) << 8), enumLangMap, signalInterface));
 
 					}
 					
