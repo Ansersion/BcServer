@@ -18,6 +18,7 @@ import bp_packet.BPUserSession;
 import bp_packet.Payload;
 import db.BeecomDB;
 import db.UserDevRelInfoInterface;
+import other.Util;
 
 public class PushSignalValuesProduct extends Product {
 	private static final Logger logger = LoggerFactory.getLogger(PushSignalValuesProduct.class);
@@ -35,8 +36,7 @@ public class PushSignalValuesProduct extends Product {
 	public boolean consume() {
 		boolean ret = false; 
 		try {
-			logger.info("PushPacketDeviceIDProduct consumed");
-			// IoSession session = bpDeviceSession.getSession();
+			logger.info("PushSignalValuesProduct consumed");
 			BeecomDB beecomDb = BeecomDB.getInstance();
 			if(null == bpPacket) {
 				/* not produced */
@@ -74,10 +74,7 @@ public class PushSignalValuesProduct extends Product {
 			}
 			ret = true;
 		} catch(Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 		}
 		return ret;
 	}
@@ -94,13 +91,10 @@ public class PushSignalValuesProduct extends Product {
 			bpPacket.getVrbHead().setSigValFlag(true);
 			Payload pld = bpPacket.getPld();
 			pld.setDevUniqId(bpDeviceSession.getUniqDevId());
-			pld.setPushSigValData(reportData);
+			pld.setRelayData(reportData);
 			ret = true;
 		} catch(Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			bpPacket = null;
 		}
 		return ret;

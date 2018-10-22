@@ -77,7 +77,7 @@ public class Payload {
 	private Map<Long, Long> deviceIdMap;
 	private int customSignalLangSupportMask;
 	private long sigMapCheckSum;
-	private byte[] pushSigValData;
+	private byte[] relayData;
 	
 	public BPError getError() {
 		return error;
@@ -508,15 +508,13 @@ public class Payload {
 		return sigValMap;
 	}
 
-	public byte[] getPushSigValData() {
-		return pushSigValData;
+	public byte[] getRelayData() {
+		return relayData;
 	}
 
-	public void setPushSigValData(byte[] pushSigValData) {
-		this.pushSigValData = pushSigValData;
+	public void setRelayData(byte[] relayData) {
+		this.relayData = relayData;
 	}
-		
-	
-	
-	
+
+
 }

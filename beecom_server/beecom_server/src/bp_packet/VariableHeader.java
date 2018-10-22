@@ -13,7 +13,8 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class VariableHeader {
     private static final int MAX_GLOBAL_PACK_SEQ_PLUS_ONE = 0xFFFF+1;
-    private static int globalPackSeq = new Random().nextInt(MAX_GLOBAL_PACK_SEQ_PLUS_ONE);
+    private static final int MIN_GLOBAL_PACK_SEQ = 1;
+    private static int globalPackSeq = MIN_GLOBAL_PACK_SEQ + new Random().nextInt(MAX_GLOBAL_PACK_SEQ_PLUS_ONE - 1);
     
     private static Lock globalPackSeqLock = new ReentrantLock();
     
@@ -60,12 +61,12 @@ public class VariableHeader {
     		globalPackSeqLock.lock();
     		ret = globalPackSeq++;
     		if(globalPackSeq >= MAX_GLOBAL_PACK_SEQ_PLUS_ONE) {
-    			globalPackSeq = 0;
+    			globalPackSeq = MIN_GLOBAL_PACK_SEQ;
     		}
     	} finally {
     		globalPackSeqLock.unlock();
     	}
-        return ret;
+        return globalPackSeq;
     }
 	
 	public VariableHeader() {

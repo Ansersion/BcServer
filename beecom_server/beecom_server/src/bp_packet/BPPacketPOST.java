@@ -10,6 +10,10 @@ import org.apache.mina.core.buffer.IoBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import other.CrcChecksum;
+import other.Util;
+import sys_sig_table.BPSysSigTable;
+
 /**
  * @author Ansersion
  *
@@ -32,6 +36,13 @@ public class BPPacketPOST extends BPPacket {
 	DevSigData[] sigDatas = null; 
 	int deviceNum;
 	private byte[] signalValueRelay;
+	
+	protected BPPacketPOST() {
+		super();
+		FixedHeader fxHead = getFxHead();
+		fxHead.setPacketType(BPPacketType.POST);
+		fxHead.setCrcType(CrcChecksum.CRC32);
+	}
 	
 	@Override
 	public boolean parseVariableHeader(IoBuffer ioBuf) {
@@ -101,9 +112,6 @@ public class BPPacketPOST extends BPPacket {
 
 			byte flags = getIoBuffer().get();
 			super.parseVrbHeadFlags(flags);
-			
-			int clientId = getIoBuffer().getUnsignedShort();
-			getVrbHead().setClientId(clientId);
 
 			int packSeqTmp = getIoBuffer().getUnsignedShort();
 			getVrbHead().setPackSeq(packSeqTmp);
@@ -130,7 +138,9 @@ public class BPPacketPOST extends BPPacket {
 				signalValueRelay = null;
 				pld.initSigValMap();
 				int signalValuePositionStart = ioBuffer.position();
-				final int sigNum = ioBuffer.get();
+				long uniqDevId = ioBuffer.getUnsignedInt();
+				pld.setDevUniqId(uniqDevId);
+				final int sigNum = ioBuffer.getUnsigned();
 				for (int i = 0; i < sigNum; i++) {
 					int sigId = ioBuffer.getUnsignedShort();
 					byte sigType = (byte) (ioBuffer.get() & BPPacket.VAL_TYPE_MASK);
@@ -183,10 +193,7 @@ public class BPPacketPOST extends BPPacket {
 
 			}
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 		}
 		return 0;
 	}
@@ -214,30 +221,16 @@ public class BPPacketPOST extends BPPacket {
 
 		return true;
 	}
-	
-	@Override
-	public boolean assembleFixedHeader() {
-		int packType = getPackTypeIntFxHead();
-		byte packFlags = getPackFlagsByteFxHead();
-		byte encodedByte = (byte) (((packType & 0xf) << 4) | (packFlags & 0xf));
-		
-		getIoBuffer().put(encodedByte);
-		
-		// Remaininglength 1 byte reserved
-		getIoBuffer().put((byte)0);
-		
-		return false;
-	}
 
 	@Override
 	public boolean assembleVariableHeader() throws BPAssembleVrbHeaderException {
 		super.assembleVariableHeader();
 		VariableHeader vrb = getVrbHead();
-		vrb.initPackSeq();
+		if(0 == vrb.getPackSeq()) {
+			vrb.initPackSeq();
+		}
 		byte flags = vrb.getFlags();
 		getIoBuffer().put(flags);
-		int clntId = vrb.getClientId();
-		getIoBuffer().putUnsignedShort(clntId);
 		int packSeqTmp = vrb.getPackSeq();
 		getIoBuffer().putUnsignedShort(packSeqTmp);	
 		
@@ -246,9 +239,16 @@ public class BPPacketPOST extends BPPacket {
 
 	@Override
 	public boolean assemblePayload() {
-		DevSigData sigData = getPld().getSigData();
-
-		sigData.assembleSigData(getIoBuffer());
+		if(0 != getVrbHead().getRetCode()) {
+			return false;
+		}
+		
+		byte[] relayData = getPld().getRelayData();
+		if(null == relayData || 0 == relayData.length) {
+			return false;
+		}
+		
+		getIoBuffer().put(relayData);
 		
 		return true;
 	}

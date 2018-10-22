@@ -86,7 +86,7 @@ public class BPPacketPUSH extends BPPacket {
 				buffer.putUnsignedInt(entry.getValue());
 			}
 		} else if(vrb.getSigValFlag()) {
-			byte[] data = pld.getPushSigValData();
+			byte[] data = pld.getRelayData();
 			long uniqDevId = pld.getUniqDevId();
 			buffer.putUnsignedInt(uniqDevId);
 			if(null == data) {

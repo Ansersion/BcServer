@@ -16,6 +16,7 @@ import bp_packet.BPPacketType;
 import bp_packet.BPUserSession;
 import bp_packet.Payload;
 import db.BeecomDB;
+import other.Util;
 
 class PushPacketDeviceIDProduct extends Product {
 	private static final Logger logger = LoggerFactory.getLogger(PushPacketDeviceIDProduct.class);
@@ -37,10 +38,7 @@ class PushPacketDeviceIDProduct extends Product {
 			session.write(bpPacket);
 			ret = true;
 		} catch(Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 		}
 		return ret;
 	}

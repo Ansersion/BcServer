@@ -84,9 +84,9 @@ public class BPPacket implements BPPacketInterface {
 	/* user auth to device */
 	public static final short USER_AUTH_NONE= 0x0000;
 	public static final short USER_AUTH_ALL = 0x7FFF;
-	public static final short USER_AUTH_READ = 0x0001;
+	public static final short USER_AUTH_READ = 0x0004;
 	public static final short USER_AUTH_WRITE = 0x0002;
-	public static final short USER_AUTH_MANAGE = 0x0004;
+	public static final short USER_AUTH_MANAGE = 0x0001;
 	
 	public static boolean inDist(int distIndex, int signalId) {
 		return (signalId >= SYS_SIG_START_ID + distIndex * SYS_SIG_DIST_STEP) && (signalId < SYS_SIG_START_ID + (distIndex + 1) * SYS_SIG_DIST_STEP);
