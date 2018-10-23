@@ -324,9 +324,11 @@ public class BPPacketREPORT extends BPPacket {
 						if ((basicCustomInfoByte & 0x02) == 0x02) {
 							enumLangMap = new HashMap<>();
 							int enumLangNum = ioBuffer.getUnsigned();
+							int key, val;
 							for (int j = 0; j < enumLangNum; j++) {
-								// TODO: 
-								// enumLangList.add(ioBuffer.getUnsignedShort());
+								key = ioBuffer.getUnsignedShort();
+								val = ioBuffer.getInt();
+								enumLangMap.put(key, val);
 							}
 						}
 						if ((basicCustomInfoByte & 0x04) == 0x04) {
@@ -427,11 +429,19 @@ public class BPPacketREPORT extends BPPacket {
 						}
 						case BPPacket.VAL_TYPE_ENUM: {
 							SystemSignalEnumInfoHbn systemSignalEnumInfoHbn = null;
-							if ((basicCustomInfoByte & 0x40) == 0x40) {
+							if ((basicCustomInfoByte & 0x02) == 0x02) {
 								if (null == systemSignalEnumInfoHbn) {
 									systemSignalEnumInfoHbn = new SystemSignalEnumInfoHbn();
 								}
-								systemSignalEnumInfoHbn.setDefVal(ioBuffer.getUnsignedShort());
+							}
+							if((basicCustomInfoByte & 0x40) != 0) {
+								if (null != systemSignalEnumInfoHbn) {
+									systemSignalEnumInfoHbn.setDefVal(ioBuffer.getUnsignedShort());
+								} else {
+									/* skip the default value */
+									ioBuffer.getUnsignedShort();
+								}
+								
 							}
 							signalInterface = systemSignalEnumInfoHbn;
 							break;

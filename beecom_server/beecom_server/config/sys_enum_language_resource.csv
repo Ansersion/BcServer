@@ -9,9 +9,9 @@
 6,暂停,Pause,NULL,NULL,NULL,NULL
 7,打开,Open,NULL,NULL,NULL,NULL
 8,停止,Stop,NULL,NULL,NULL,NULL
-9,,,,,,
-A,,,,,,
-B,,,,,,
+9,弱,Weak,NULL,NULL,NULL,NULL
+A,中等,Medium,NULL,NULL,NULL,NULL
+B,强,High,NULL,NULL,NULL,NULL
 C,,,,,,
 D,,,,,,
 E,,,,,,

@@ -9,7 +9,5 @@ CREATE TABLE system_signal_enum_lang_info
 	enum_val INT NOT NULL DEFAULT 0,
 	
 	/* ID in system_signal_enum_info table */
-	sys_sig_enm_id INT UNSIGNED NOT NULL,
-	
-	UNIQUE INDEX i_sys_sig_enm_id(sys_sig_enm_id)
+	sys_sig_enm_id INT UNSIGNED NOT NULL
 );

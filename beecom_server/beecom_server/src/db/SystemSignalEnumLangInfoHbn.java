@@ -5,6 +5,16 @@ public class SystemSignalEnumLangInfoHbn {
     private Integer enumKey;
     private Integer enumVal;
     private Long sysSigEnmId;
+    
+	public SystemSignalEnumLangInfoHbn() {
+		super();
+	}
+	public SystemSignalEnumLangInfoHbn(Integer enumKey, Integer enumVal, Long sysSigEnmId) {
+		super();
+		this.enumKey = enumKey;
+		this.enumVal = enumVal;
+		this.sysSigEnmId = sysSigEnmId;
+	}
 	public Long getId() {
 		return id;
 	}

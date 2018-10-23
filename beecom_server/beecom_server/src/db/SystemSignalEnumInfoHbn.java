@@ -11,6 +11,14 @@ public class SystemSignalEnumInfoHbn extends SignalInterface {
     private Integer groupLangId;
     private Boolean enStatistics;
     private Long systemSignalId;
+    
+	public SystemSignalEnumInfoHbn() {
+		super();
+    	permission = 4; // read
+    	defVal = 0;
+    	groupLangId = 0;
+    	enStatistics = true;
+	}
 	public Long getId() {
 		return id;
 	}
