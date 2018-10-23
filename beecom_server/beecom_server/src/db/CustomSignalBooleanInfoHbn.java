@@ -10,6 +10,10 @@ public class CustomSignalBooleanInfoHbn extends SignalInterface {
     private Boolean defVal;
     private Boolean enStatistics;
     private Long customSignalId;
+    
+	public CustomSignalBooleanInfoHbn() {
+		super();
+	}
 	public Long getId() {
 		return id;
 	}

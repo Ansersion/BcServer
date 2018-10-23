@@ -13,6 +13,11 @@ public class SystemSignalI32InfoHbn extends SignalInterface {
     private Integer groupLangId;
     private Boolean enStatistics;
     private Long systemSignalId;
+    
+	public SystemSignalI32InfoHbn() {
+		super();
+	}
+	
 	public Long getId() {
 		return id;
 	}

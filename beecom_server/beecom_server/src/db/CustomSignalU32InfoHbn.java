@@ -12,6 +12,10 @@ public class CustomSignalU32InfoHbn extends SignalInterface {
     private Long defVal;
     private Boolean enStatistics;
     private Long customSignalId;
+    
+	public CustomSignalU32InfoHbn() {
+		super();
+	}
 	public Long getId() {
 		return id;
 	}

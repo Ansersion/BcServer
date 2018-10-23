@@ -9,6 +9,10 @@ public class CustomAlarmNameLangEntityInfoHbn implements SignalLanguageInterface
 	private String arabic;
 	private String spanish;
 	
+	public CustomAlarmNameLangEntityInfoHbn() {
+		super();
+	}
+	
 	public Long getId() {
 		return id;
 	}

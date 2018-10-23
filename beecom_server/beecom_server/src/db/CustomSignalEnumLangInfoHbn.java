@@ -5,6 +5,10 @@ public class CustomSignalEnumLangInfoHbn {
     private Integer enumKey;
     private Long enumValLangId;
     private Long cusSigEnmId;
+    
+	public CustomSignalEnumLangInfoHbn() {
+		super();
+	}
 	public Long getId() {
 		return id;
 	}

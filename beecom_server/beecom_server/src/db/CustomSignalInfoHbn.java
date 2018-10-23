@@ -10,7 +10,9 @@ public class CustomSignalInfoHbn {
     private Long cusSigNameLangId;
     private Long cusSigUnitLangId;
     private Long cusGroupLangId;
-    
+	public CustomSignalInfoHbn() {
+		super();
+	}
 	public Long getId() {
 		return id;
 	}

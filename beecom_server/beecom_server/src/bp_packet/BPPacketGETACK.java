@@ -486,7 +486,7 @@ public class BPPacketGETACK extends BPPacket {
 						Map<Integer, String> unitLangMap = customSignalInfoUnit.getSignalUnitLangMap();
 						Map<Integer, String> groupLangMap = customSignalInfoUnit.getGroupLangMap();
 						Map<Integer, Map<Integer, String>> enumLangMap = customSignalInfoUnit.getSignalEnumLangMap();
-						CustomAlarmInfoUnit customAlarmInfoUnit = customSignalInfoUnit.getCustomAlarmInfoUnit();
+						// CustomAlarmInfoUnit customAlarmInfoUnit = customSignalInfoUnit.getCustomAlarmInfoUnit();
 						int langSupportMaskByte = 0;
 						int langSupportMaskTmp = langSupportMask;
 						for (int i = 7; i > 0; i--) {
@@ -537,20 +537,20 @@ public class BPPacketGETACK extends BPPacket {
 								buffer.put(group.getBytes());
 							}
 							if (customSignalInfoUnit.isIfAlarm()) {
-								if (null == customAlarmInfoUnit || null == customAlarmInfoUnit.getCustomAlarmNameLangMap()) {
+								//if (null == customAlarmInfoUnit || null == customAlarmInfoUnit.getCustomAlarmNameLangMap()) {
 									/* 2 bytes */
 									/* TODO: temporary no support the system unit language unit */
 									// buffer.put(BPPacket.SYSTEM_UNIT_LANGUAGE_FLAG & 0x02);
-									buffer.putUnsigned(0);
-								} else {
-									String alarmLang = customAlarmInfoUnit.getCustomAlarmNameLangMap().get(i);
-									if (null == alarmLang || alarmLang.getBytes().length > BPPacket.MAX_CUSTOM_SIGNAL_UNIT_LENGTH) {
-										logger.error("inner error: null == nameLangMap.get({})", i);
-										break;
-									}
-									buffer.put((byte) (alarmLang.getBytes().length & 0xFF));
-									buffer.put(alarmLang.getBytes());
-								}
+									//buffer.putUnsigned(0);
+								//} else {
+								//	String alarmLang = customAlarmInfoUnit.getCustomAlarmNameLangMap().get(i);
+								//	if (null == alarmLang || alarmLang.getBytes().length > BPPacket.MAX_CUSTOM_SIGNAL_UNIT_LENGTH) {
+								//		logger.error("inner error: null == nameLangMap.get({})", i);
+								//		break;
+								//	}
+								//	buffer.put((byte) (alarmLang.getBytes().length & 0xFF));
+								//	buffer.put(alarmLang.getBytes());
+								//}
 							}
 
 
@@ -698,20 +698,20 @@ public class BPPacketGETACK extends BPPacket {
 							break;
 						}
 						if (customSignalInfoUnit.isIfAlarm()) {
-							if (null == customAlarmInfoUnit || null == customAlarmInfoUnit.getCustomSignalAlmInfoHbn()) {
+							// if (null == customAlarmInfoUnit || null == customAlarmInfoUnit.getCustomSignalAlmInfoHbn()) {
 								/* 2 bytes */
 								/* TODO: temporary no support the system unit language unit */
 								// buffer.put(BPPacket.SYSTEM_UNIT_LANGUAGE_FLAG & 0x02);
-								buffer.putUnsigned(BPPacket.ALARM_CLASS_NONE);
-								buffer.putUnsigned(BPPacket.ALARM_DELAY_DEFAULT);
-								buffer.putUnsigned(BPPacket.ALARM_DELAY_DEFAULT);
+							//	buffer.putUnsigned(BPPacket.ALARM_CLASS_NONE);
+							//	buffer.putUnsigned(BPPacket.ALARM_DELAY_DEFAULT);
+							//	buffer.putUnsigned(BPPacket.ALARM_DELAY_DEFAULT);
 								
-							} else {
-								CustomSignalAlmInfoHbn customSignalAlmInfoHbnTmp = customAlarmInfoUnit.getCustomSignalAlmInfoHbn();
-								buffer.putUnsigned(customSignalAlmInfoHbnTmp.getAlmClass());
-								buffer.putUnsigned(customSignalAlmInfoHbnTmp.getDlyBeforeAlm());
-								buffer.putUnsigned(customSignalAlmInfoHbnTmp.getDlyAfterAlm());
-							}	
+							//} else {
+							//	CustomSignalAlmInfoHbn customSignalAlmInfoHbnTmp = customAlarmInfoUnit.getCustomSignalAlmInfoHbn();
+							//	buffer.putUnsigned(customSignalAlmInfoHbnTmp.getAlmClass());
+							//	buffer.putUnsigned(customSignalAlmInfoHbnTmp.getDlyBeforeAlm());
+							//	buffer.putUnsigned(customSignalAlmInfoHbnTmp.getDlyAfterAlm());
+							//}	
 						}
 					}
 				}

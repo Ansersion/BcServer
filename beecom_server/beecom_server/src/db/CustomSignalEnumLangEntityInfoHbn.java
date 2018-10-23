@@ -17,6 +17,10 @@ public class CustomSignalEnumLangEntityInfoHbn implements SignalLanguageInterfac
 	private String arabic;
 	private String spanish;
 	
+	public CustomSignalEnumLangEntityInfoHbn() {
+		super();
+	}
+	
 	public Long getId() {
 		return id;
 	}

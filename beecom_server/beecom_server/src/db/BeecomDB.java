@@ -1753,7 +1753,7 @@ public class BeecomDB {
 						return null;
 					}
 
-					customSignalInfoUnitLst.add(new CustomSignalInfoUnit(signalId, ifNotifying, ifAlarm, ifDisplay, groupLangId, cusSignalNameLangMap, cusSignalUnitLangMap, cusSignalGroupLangMap, cusSignalEnumLangMap, customAlarmInfoUnit, signalInterface));
+					customSignalInfoUnitLst.add(new CustomSignalInfoUnit(signalId, ifNotifying, ifAlarm, signalInfoHbn.getAlmClass(), signalInfoHbn.getAlmDlyBef(), signalInfoHbn.getAlmDlyAft(), ifDisplay, cusSignalNameLangMap, cusSignalUnitLangMap, cusSignalGroupLangMap, cusSignalEnumLangMap, signalInterface));
 					break;
 				}
 			}
@@ -3090,7 +3090,7 @@ public class BeecomDB {
 					// TODO: re-construct alarm data
 					// 			re-construct language resources
 		
-					CustomSignalInfoUnit customSignalInfoUnit = new CustomSignalInfoUnit(signalIdTmp, signalInfoHbn.getNotifying(), false, signalInfoHbn.getDisplay(), 0, null, null, null, null, null, signalInterfaceTmp);
+					CustomSignalInfoUnit customSignalInfoUnit = new CustomSignalInfoUnit(signalIdTmp, signalInfoHbn.getNotifying(), false, BPPacket.ALARM_CLASS_NONE, BPPacket.ALARM_DELAY_DEFAULT, BPPacket.ALARM_DELAY_DEFAULT, signalInfoHbn.getDisplay(), null, null, null, null, signalInterfaceTmp);
 					signalId2InfoUnitMap.put(signalIdTmp, customSignalInfoUnit);
 				} else {
 					systemSignalEnumLangInfoList = null;

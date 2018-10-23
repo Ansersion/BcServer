@@ -9,6 +9,10 @@ public class SystemSignalStringDefaultValueEntityInfoHbn implements SignalLangua
 	private String arabic;
 	private String spanish;
 	
+	public SystemSignalStringDefaultValueEntityInfoHbn() {
+		super();
+	}
+	
 	public Long getId() {
 		return id;
 	}

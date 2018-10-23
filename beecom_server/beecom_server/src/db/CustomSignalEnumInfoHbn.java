@@ -10,6 +10,10 @@ public class CustomSignalEnumInfoHbn extends SignalInterface {
     private Integer defVal;
     private Boolean enStatistics;
     private Long customSignalId;
+    
+	public CustomSignalEnumInfoHbn() {
+		super();
+	}
 	public Long getId() {
 		return id;
 	}

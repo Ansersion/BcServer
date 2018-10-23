@@ -14,6 +14,10 @@ public class SystemSignalFloatInfoHbn extends SignalInterface {
     private Integer groupLangId;
     private Boolean enStatistics;
     private Long systemSignalId;
+    
+	public SystemSignalFloatInfoHbn() {
+		super();
+	}
 	public Long getId() {
 		return id;
 	}

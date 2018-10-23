@@ -17,6 +17,10 @@ public class CustomSignalGroupLangEntityInfoHbn implements SignalLanguageInterfa
 	private String arabic;
 	private String spanish;
 	
+	public CustomSignalGroupLangEntityInfoHbn() {
+		super();
+	}
+	
 	public Long getId() {
 		return id;
 	}

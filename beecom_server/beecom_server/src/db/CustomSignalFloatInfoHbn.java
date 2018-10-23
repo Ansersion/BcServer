@@ -13,6 +13,10 @@ public class CustomSignalFloatInfoHbn extends SignalInterface {
     private Float defVal;
     private Boolean enStatistics;
     private Long customSignalId;
+    
+	public CustomSignalFloatInfoHbn() {
+		super();
+	}
 	public Long getId() {
 		return id;
 	}

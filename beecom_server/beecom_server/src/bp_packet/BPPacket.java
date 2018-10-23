@@ -81,6 +81,12 @@ public class BPPacket implements BPPacketInterface {
 	public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM_DELAY_BEF = 0x0200;
 	public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM_DELAY_AFT = 0x0400;
 	
+	public static final short CUSTOM_SIGNAL_TABLE_FLAGS_DISPLAY = 0x0001;
+	public static final short CUSTOM_SIGNAL_TABLE_FLAGS_ALARM = 0x0002;
+	public static final short CUSTOM_SIGNAL_TABLE_FLAGS_STATISTICS = 0x0004;
+	public static final short CUSTOM_SIGNAL_TABLE_FLAGS_PERMISSION = 0x0008;
+	public static final short CUSTOM_SIGNAL_TABLE_FLAGS_VAL_TYPE = 0x00F0;
+	
 	/* user auth to device */
 	public static final short USER_AUTH_NONE= 0x0000;
 	public static final short USER_AUTH_ALL = 0x7FFF;

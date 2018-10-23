@@ -5,6 +5,10 @@ public class UserDevRelInfoHbn implements UserDevRelInfoInterface {
     private Long userId;
     private Long snId;
     private Short auth;
+    
+	public UserDevRelInfoHbn() {
+		super();
+	}
 	public Long getId() {
 		return id;
 	}

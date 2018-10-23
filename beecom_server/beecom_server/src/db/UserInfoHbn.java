@@ -9,6 +9,10 @@ public class UserInfoHbn {
     private Boolean ifDeveloper;
     private String password;
     
+	public UserInfoHbn() {
+		super();
+	}
+    
 	public Long getId() {
 		return id;
 	}
