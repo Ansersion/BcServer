@@ -527,22 +527,22 @@ public class BcServerHandler extends IoHandlerAdapter {
 			vrb = decodedPack.getVrbHead();
 			byte flags = vrb.getFlags();
 			int seqId = vrb.getPackSeq();
-			boolean userOnLine = vrb.getUserOnLine();
+			// boolean userOnLine = vrb.getUserOnLine();
 			logger.info("PING: flags={}, cid={}, sid={}", flags, seqId);
 
 			BPPacket packAck = BPPackFactory.createBPPackAck(decodedPack);
-
-			bpSession = (BPSession) session
-					.getAttribute(SESS_ATTR_BP_SESSION);
 
 			packAck.getVrbHead().setPackSeq(seqId);
 			packAck.getVrbHead().setRetCode(BPPacketPINGACK.RET_CODE_OK);
 
 			session.write(packAck);
 			
-			if(userOnLine) {
-				// TODO: change the ProductType 
-				// pushMessage(bpSession, ProductType.PUSH_DEVICE_ID_LIST);
+			try {
+				bpSession = (BPSession) session
+						.getAttribute(SESS_ATTR_BP_SESSION);
+				bpSession.setLatestPingTimestamp(System.currentTimeMillis());
+			} catch(Exception e) {
+				Util.logger(logger, Util.ERROR, e);
 			}
 		} else if(BPPacketType.PINGACK == packType) {
 			/* NOT SUPPORTED */
@@ -703,7 +703,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 				// bpDeviceSession.startNotify(decodedPack);
 				// BPPacketREPORT report = (BPPacketREPORT)decodedPack;
 				byte[] relayData = decodedPack.getSignalValueRelay();
-				// TODO: strip(relayData), to avoid pushing no-notifying signals
+				// TODO: [NEED](no-notifying only working locally):strip(relayData), to avoid pushing no-notifying signals
 				// bpDeviceSession.reportSignalValue2UserClient(relayData);
 				pushMessage(bpDeviceSession, ProductType.PUSH_SIGNAL_VALUE, relayData, 0);
 			}

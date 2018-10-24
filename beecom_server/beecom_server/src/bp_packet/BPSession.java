@@ -67,6 +67,7 @@ public abstract class BPSession {
 	private short timeout;
 	private boolean debugMode;
 	private byte performanceClass;
+	private long latestPingTimestamp;
 	
 	private Map<Integer, RelayData> seqId2TimerRelayMap;
 	private Lock relayMaplock = new ReentrantLock();
@@ -501,6 +502,14 @@ public abstract class BPSession {
         }
         
         return ret;
+	}
+
+	public long getLatestPingTimestamp() {
+		return latestPingTimestamp;
+	}
+
+	public void setLatestPingTimestamp(long latestPingTimestamp) {
+		this.latestPingTimestamp = latestPingTimestamp;
 	}
 	
 	

@@ -21,6 +21,7 @@ import db.RelayData;
 import db.SignalInfoUnitInterface;
 import db.SystemSignalCustomInfoUnit;
 import db.SystemSignalInfoUnit;
+import other.Util;
 
 public class BPDeviceSession extends BPSession {
 	private static final Logger logger = LoggerFactory.getLogger(BPDeviceSession.class); 
@@ -202,10 +203,7 @@ public class BPDeviceSession extends BPSession {
 
 			}
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 		}
 		
 		setSignalId2InfoUnitMap(signalId2InfoUnitMap);

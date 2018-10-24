@@ -684,7 +684,6 @@ public class BPPacketREPORT extends BPPacket {
 						customSignalInterface.setEnStatistics(ifStatistics);
 						
 						if(ifAlarm) {
-							// TODO:
 							alarmClass = ioBuffer.getUnsigned();
 							alarmDelayBef = ioBuffer.getUnsigned();
 							alarmDelayAft = ioBuffer.getUnsigned();

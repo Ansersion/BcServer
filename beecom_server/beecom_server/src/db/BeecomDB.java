@@ -2299,7 +2299,11 @@ public class BeecomDB {
 					signalInfoHbn.setDevId(uniqDevId);
 				}
 	
-				signalInfoHbn.setNotifying(customSignalInfoUnit.isIfNotifing());
+				signalInfoHbn.setDisplay(customSignalInfoUnit.ifDisplay());
+				signalInfoHbn.setNotifying(customSignalInfoUnit.ifNotifying());
+				signalInfoHbn.setAlmClass(customSignalInfoUnit.getAlarmClass());
+				signalInfoHbn.setAlmDlyBef(customSignalInfoUnit.getAlarmDelayBef());
+				signalInfoHbn.setAlmDlyAft(customSignalInfoUnit.getAlarmDelayAft());
 				session.saveOrUpdate(signalInfoHbn);
 				
 				Long signalKeyId = signalInfoHbn.getId();
@@ -2465,10 +2469,7 @@ public class BeecomDB {
 			tx.commit();
 			ret = true;
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			ret = false;
 		}
     	return ret;
@@ -2481,6 +2482,7 @@ public class BeecomDB {
     	}
     	
 		Transaction tx = null;
+		int customInfo;
 		try (Session session = sessionFactory.openSession()) {
 			tx = session.beginTransaction();
 			SystemSignalCustomInfoUnit systemSignalCustomInfoUnitTmp;
@@ -2503,8 +2505,9 @@ public class BeecomDB {
 					logger.error("Internal error: null == systemSignalInfoHbn");
 					return ret;
 				}
+				customInfo = systemSignalCustomInfoUnitTmp.getCustomFlags();
 
-				systemSignalInfoHbn.setCustomFlags(systemSignalCustomInfoUnitTmp.getCustomFlags());
+				systemSignalInfoHbn.setCustomFlags(customInfo);
 				
 				session.update(systemSignalInfoHbn);
 				
@@ -2514,23 +2517,36 @@ public class BeecomDB {
 					logger.error("Internal error: null == devInfoHbn");
 					return ret;
 				}
-				Map<Integer, Integer> enumLangMap = systemSignalCustomInfoUnitTmp.getEnumLangMap();
-				if(null != enumLangMap) {
-					Iterator<Map.Entry<Integer, Integer>> it = enumLangMap.entrySet().iterator();
-					while(it.hasNext()) {
-						Map.Entry<Integer, Integer> entry = it.next();
-						session.save(new SystemSignalEnumLangInfoHbn(entry.getKey(), entry.getValue(), signalInterface.getId()));
+				
+				if ((customInfo & BPPacket.SYSTEM_SIGNAL_CUSTOM_FLAGS_ENUM_LANG) != 0) {
+					Map<Integer, Integer> enumLangMap = systemSignalCustomInfoUnitTmp.getEnumLangMap();
+					if(null != enumLangMap) {
+						Iterator<Map.Entry<Integer, Integer>> it = enumLangMap.entrySet().iterator();
+						while(it.hasNext()) {
+							Map.Entry<Integer, Integer> entry = it.next();
+							session.save(new SystemSignalEnumLangInfoHbn(entry.getKey(), entry.getValue(), signalInterface.getId()));
+						}
 					}
 				}
+				if ((customInfo & BPPacket.SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM) != 0) {
+					if((customInfo & BPPacket.SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM_CLASS) != 0) {
+						signalInfoHbn.setAlmClass(systemSignalCustomInfoUnitTmp.getAlarmClass());
+					}
+					if((customInfo & BPPacket.SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM_DELAY_BEF) != 0) {
+						signalInfoHbn.setAlmDlyBef(systemSignalCustomInfoUnitTmp.getDelayBeforeAlarm());
+					}
+					if((customInfo & BPPacket.SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM_DELAY_AFT) != 0) {
+						signalInfoHbn.setAlmDlyAft(systemSignalCustomInfoUnitTmp.getDelayAfterAlarm());
+					}
+				}
+				
+				session.update(signalInfoHbn);
 			}
 
 			tx.commit();
 			ret = true;
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			ret = false;
 		}
     	return ret;

@@ -33,6 +33,7 @@ import java.util.Map;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -215,9 +216,11 @@ public class BPPacketGETACK extends BPPacket {
 					Iterator<SystemSignalCustomInfoUnit> it = systemSignalCustomInfoUnitList.iterator();
 					buffer.putUnsignedShort(systemSignalCustomInfoUnitList.size());
 					SystemSignalCustomInfoUnit systemSignalCustomInfoUnitTmp;
+					Map<Integer, Integer> enumLangMap;
 					while(it.hasNext()) {
 						systemSignalCustomInfoUnitTmp = it.next();
 						int customFlags = systemSignalCustomInfoUnitTmp.getCustomFlags();
+						enumLangMap = systemSignalCustomInfoUnitTmp.getEnumLangMap();
 						SignalInterface signalInterfaceTmp = systemSignalCustomInfoUnitTmp.getSignalInterface();
 						buffer.putUnsignedShort(systemSignalCustomInfoUnitTmp.getSysSigId());
 						buffer.putUnsigned(customFlags & 0xFF);
@@ -230,7 +233,19 @@ public class BPPacketGETACK extends BPPacket {
 							}
 						}
 						if((customFlags & SYSTEM_SIGNAL_CUSTOM_FLAGS_ENUM_LANG) != 0) {
-							// TODO:
+							if(null != enumLangMap) {
+								int enumLangNum = enumLangMap.size();
+								if(enumLangNum > 255) {
+									return false;
+								}
+								buffer.putUnsigned(enumLangNum);
+								for(Map.Entry<Integer, Integer> entry: enumLangMap.entrySet()) {
+									buffer.putUnsignedShort(entry.getKey());
+									buffer.putUnsignedShort(entry.getValue());
+								}
+							} else {
+								buffer.putUnsigned(0);
+							}
 						}
 						if((customFlags & SYSTEM_SIGNAL_CUSTOM_FLAGS_GROUP_LANG) != 0) {
 							if(signalInterfaceTmp != null) {

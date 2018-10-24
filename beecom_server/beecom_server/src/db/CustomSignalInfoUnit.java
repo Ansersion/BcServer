@@ -90,8 +90,7 @@ public class CustomSignalInfoUnit implements SignalInfoUnitInterface {
 
 	@Override
 	public boolean ifNotifying() {
-		// TODO Auto-generated method stub
-		return false;
+		return ifNotifing;
 	}
 	@Override
 	public int getSignalId() {
@@ -115,8 +114,7 @@ public class CustomSignalInfoUnit implements SignalInfoUnitInterface {
 	}
 	@Override
 	public boolean ifDisplay() {
-		// TODO Auto-generated method stub
-		return false;
+		return ifDisplay;
 	}
 	@Override
 	public Map<Integer, String> getGignalUnitLangMap() {
