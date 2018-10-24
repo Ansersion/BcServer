@@ -241,7 +241,7 @@ public class BPPacketGETACK extends BPPacket {
 								buffer.putUnsigned(enumLangNum);
 								for(Map.Entry<Integer, Integer> entry: enumLangMap.entrySet()) {
 									buffer.putUnsignedShort(entry.getKey());
-									buffer.putUnsignedShort(entry.getValue());
+									buffer.putInt(entry.getValue());
 								}
 							} else {
 								buffer.putUnsigned(0);

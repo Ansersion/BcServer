@@ -540,7 +540,10 @@ public class BcServerHandler extends IoHandlerAdapter {
 			try {
 				bpSession = (BPSession) session
 						.getAttribute(SESS_ATTR_BP_SESSION);
-				bpSession.setLatestPingTimestamp(System.currentTimeMillis());
+				if(null != bpSession) {
+					bpSession.setLatestPingTimestamp(System.currentTimeMillis());
+				}
+				
 			} catch(Exception e) {
 				Util.logger(logger, Util.ERROR, e);
 			}

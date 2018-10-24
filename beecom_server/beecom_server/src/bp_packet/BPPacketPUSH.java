@@ -69,6 +69,7 @@ public class BPPacketPUSH extends BPPacket {
 	public boolean assemblePayload() throws BPAssemblePldException {
 		VariableHeader vrb = getVrbHead();
 		Payload pld = getPld();
+		FixedHeader fx = getFxHead();
 		IoBuffer buffer = getIoBuffer();
 		if(vrb.getReqAllDeviceId()) {
 			Map<Long, Long> deviceIdMap = pld.getDeviceIdMap();
@@ -82,8 +83,12 @@ public class BPPacketPUSH extends BPPacket {
 			while(it.hasNext()) {
 				entry = it.next();
 				buffer.putUnsignedInt(entry.getKey());
-				/* TODO: check the checksum type CRC16/32*/
-				buffer.putUnsignedInt(entry.getValue());
+				if(CrcChecksum.CRC32 == fx.getCrcChk()) {
+					buffer.putUnsignedInt(entry.getValue());
+				} else {
+					buffer.putUnsignedShort(entry.getValue());
+				}
+				
 			}
 		} else if(vrb.getSigValFlag()) {
 			byte[] data = pld.getRelayData();
@@ -97,7 +102,7 @@ public class BPPacketPUSH extends BPPacket {
 		} else {
 			buffer.putUnsignedShort(pld.getUniqDevId());
 			if(vrb.getSysSigFlag()) {
-				// TODO: pack system signal
+				// TODO: [NEED](no use):pack system signal
 			}
 			if(vrb.getCusSigFlag()) {
 				/* iterator all type of signal value and put them into buffer*/
