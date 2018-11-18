@@ -1,9 +1,9 @@
 ﻿NULL,NULL,NULL,NULL,NULL,NULL,NULL
 信号ID,中文,English,Français,русский,العربية,Español
-E200,环境温度,Env. Temp.,NULL,NULL,NULL,NULL
-E201,环境湿度,Env. Humidity,NULL,NULL,NULL,NULL
-E202,设定温度,Setting Temp.,NULL,NULL,NULL,NULL
-E203,设定湿度,Setting Humidity,NULL,NULL,NULL,NULL
+E200,环境温度,Env. Temp.,Température ambiante,Температура окружающей среды,درجة الحرارة المحيطة,Temperatura ambiente
+E201,环境湿度,Env. Humidity,Humidité ambiante,Влажность окружающей среды,الرطوبة المحيطة,Humedad ambiental
+E202,设定温度,Setting Temp.,Régler la température,Установленная температура,ضبط درجة الحرارة,Ajustar la temperatura
+E203,设定湿度,Setting Humidity,Régler l'humidité,Установить влажность,ضبط الرطوبة,Establecer humedad
 E204,,,,,,
 E205,,,,,,
 E206,,,,,,

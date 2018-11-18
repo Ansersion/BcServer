@@ -1,17 +1,17 @@
 ﻿NULL,NULL,NULL,NULL,NULL,NULL,NULL
 枚举语言资源ID,中文,English,Français,русский,العربية,Español
 0,NULL,NULL,NULL,NULL,NULL,NULL
-1,通信正常,CONNECTED,NULL,NULL,NULL,NULL
-2,通信失败,DISCONNECTED,NULL,NULL,NULL,NULL
-3,正在连接,CONNECTING,NULL,NULL,NULL,NULL
-4,关闭,TurnOff,NULL,NULL,NULL,NULL
-5,启动,TurnOn,NULL,NULL,NULL,NULL
-6,暂停,Pause,NULL,NULL,NULL,NULL
-7,打开,Open,NULL,NULL,NULL,NULL
-8,停止,Stop,NULL,NULL,NULL,NULL
-9,弱,Weak,NULL,NULL,NULL,NULL
-A,中等,Medium,NULL,NULL,NULL,NULL
-B,强,High,NULL,NULL,NULL,NULL
+1,通信正常,CONNECTED,Communication normale,Нормальное общение,اتصال عادي,Comunicación normal
+2,通信失败,DISCONNECTED,Échec de la communication,Ошибка связи,فشل الاتصال,Fallo de comunicación
+3,正在连接,CONNECTING,Connecter,соединительный,الرابط,Conectando
+4,关闭,TurnOff,Fermer,близко,قريب,Cerrar
+5,启动,TurnOn,Début,начало,بداية,Empezar
+6,暂停,Pause,Suspendre,пауза,وقفة,Suspender
+7,打开,Open,Ouvert,открытый,فتح,Abierto
+8,停止,Stop,Arrêter,остановить,توقف,Para
+9,弱,Weak,Faible,слабый,ضعيف,Débil
+A,中等,Medium,Moyen,умеренный,معتدل,Medio
+B,强,High,Forte,сильный,قوي,Fuerte
 C,,,,,,
 D,,,,,,
 E,,,,,,
