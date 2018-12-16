@@ -13,6 +13,9 @@ public class CustomSignalBooleanInfoHbn extends SignalInterface {
     
 	public CustomSignalBooleanInfoHbn() {
 		super();
+		this.permission = BPPacket.SIGNAL_PERMISSION_CODE_RO;
+		this.defVal = false;
+		this.enStatistics = true;
 	}
 	public Long getId() {
 		return id;

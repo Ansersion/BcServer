@@ -17,9 +17,18 @@ public class CustomUnitLangEntityInfoHbn implements SignalLanguageInterface {
 	private String arabic;
 	private String spanish;
 	
+	
+	
 	public CustomUnitLangEntityInfoHbn() {
 		super();
+		chinese = "";
+		english = "";
+		french = "";
+		russian = "";
+		arabic = "";
+		spanish = "";
 	}
+	
 	public Long getId() {
 		return id;
 	}

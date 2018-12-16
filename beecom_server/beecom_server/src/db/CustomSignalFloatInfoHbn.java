@@ -16,6 +16,12 @@ public class CustomSignalFloatInfoHbn extends SignalInterface {
     
 	public CustomSignalFloatInfoHbn() {
 		super();
+		this.permission = BPPacket.SIGNAL_PERMISSION_CODE_RO;
+		this.accuracy = 0;
+	    this.minVal = BPPacket.VAL_FLOAT_UNLIMIT;
+	    this.maxVal = BPPacket.VAL_FLOAT_UNLIMIT;
+	    this.defVal = 0f;
+		this.enStatistics = true;
 	}
 	public Long getId() {
 		return id;

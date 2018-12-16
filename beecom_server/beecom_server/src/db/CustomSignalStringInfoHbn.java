@@ -14,7 +14,7 @@ public class CustomSignalStringInfoHbn extends SignalInterface {
     
 	public CustomSignalStringInfoHbn() {
 		super();
-		permission = 4; // read
+		permission = BPPacket.SIGNAL_PERMISSION_CODE_RO; // read
 		defVal = "";
 		enStatistics = true;
 	}

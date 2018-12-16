@@ -1,9 +1,9 @@
 ﻿0.1,NULL,NULL,NULL,NULL,NULL,NULL
-分组语言资源ID,中文,English,Français,русский,العربية,Español
+枚举语言资源ID,中文,English,Français,русский,العربية,Español
 0,NULL,NULL,NULL,NULL,NULL,NULL
-1,,,,,,
-2,,,,,,
-3,,,,,,
+1,圆形,Circle,Cercle,Круг,دائرة,Circulo
+2,正方形,Rectangle,Rectangle,Прямоугольник,مستطيل,Rectángulo
+3,三角形,Triangle,Triangle,Треугольник,مثلث,Triángulo
 4,,,,,,
 5,,,,,,
 6,,,,,,

@@ -15,6 +15,11 @@ public class CustomSignalU16InfoHbn extends SignalInterface {
     
 	public CustomSignalU16InfoHbn() {
 		super();
+		this.permission = BPPacket.SIGNAL_PERMISSION_CODE_RO;
+		this.minVal = BPPacket.VAL_U16_UNLIMIT;
+		this.minVal = BPPacket.VAL_U16_UNLIMIT;
+		this.defVal = 0;
+		this.enStatistics = true;
 	}
 	public Long getId() {
 		return id;

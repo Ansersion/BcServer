@@ -2416,7 +2416,7 @@ public class BeecomDB {
 					session.save(customUnitLangEntityInfoHbn);
 					CustomUnitLangInfoHbn customUnitLangInfoHbn = new CustomUnitLangInfoHbn(customUnitLangEntityInfoHbn.getId()); 
 					session.save(customUnitLangInfoHbn);
-					customSignalInfoHbn.setCusSigNameLangId(customUnitLangInfoHbn.getId());
+					customSignalInfoHbn.setCusSigUnitLangId(customUnitLangInfoHbn.getId());
 				}
 				if(BPPacket.VAL_TYPE_ENUM == valueType) {
 					Map<Integer, Map<Integer, String> > enumLangMap = customSignalInfoUnit.getSignalEnumLangMap();

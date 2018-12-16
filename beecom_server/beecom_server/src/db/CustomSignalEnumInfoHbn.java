@@ -13,6 +13,9 @@ public class CustomSignalEnumInfoHbn extends SignalInterface {
     
 	public CustomSignalEnumInfoHbn() {
 		super();
+		this.permission = BPPacket.SIGNAL_PERMISSION_CODE_RO;
+		this.defVal = 0;
+		this.enStatistics = true;
 	}
 	public Long getId() {
 		return id;

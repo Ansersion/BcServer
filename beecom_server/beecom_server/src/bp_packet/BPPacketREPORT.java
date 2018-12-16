@@ -682,6 +682,7 @@ public class BPPacketREPORT extends BPPacket {
 						}
 						
 						customSignalInterface.setEnStatistics(ifStatistics);
+						customSignalInterface.setPermission(perm);
 						
 						if(ifAlarm) {
 							alarmClass = ioBuffer.getUnsigned();

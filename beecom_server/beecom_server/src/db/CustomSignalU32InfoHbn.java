@@ -15,6 +15,11 @@ public class CustomSignalU32InfoHbn extends SignalInterface {
     
 	public CustomSignalU32InfoHbn() {
 		super();
+		permission = BPPacket.SIGNAL_PERMISSION_CODE_RO; // read
+		minVal = BPPacket.VAL_U32_UNLIMIT;
+		maxVal = BPPacket.VAL_U32_UNLIMIT;
+		defVal = 0L;
+		enStatistics = true;
 	}
 	public Long getId() {
 		return id;
