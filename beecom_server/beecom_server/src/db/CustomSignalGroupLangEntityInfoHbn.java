@@ -19,6 +19,12 @@ public class CustomSignalGroupLangEntityInfoHbn implements SignalLanguageInterfa
 	
 	public CustomSignalGroupLangEntityInfoHbn() {
 		super();
+		chinese = "";
+		english = "";
+		french = "";
+		russian = "";
+		arabic = "";
+		spanish = "";
 	}
 	
 	public Long getId() {
@@ -64,5 +70,13 @@ public class CustomSignalGroupLangEntityInfoHbn implements SignalLanguageInterfa
 	public void setSpanish(String spanish) {
 		this.spanish = spanish;
 	}
+
+	@Override
+	public String toString() {
+		return chinese + english + french
+				+ russian + arabic + spanish;
+	}
+	
+	
 
 }

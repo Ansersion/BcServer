@@ -35,8 +35,7 @@
    <mapping resource="db/signal_info.hbm.xml"/>
    
      
-   <mapping resource="db/custom_group_lang_info.hbm.xml"/>
-   <mapping resource="db/custom_group_lang_entity_info.hbm.xml"/>
+   <mapping resource="db/custom_signal_group_lang_entity_info.hbm.xml"/>
    <mapping resource="db/custom_signal_alm_info.hbm.xml"/>
    <mapping resource="db/custom_signal_boolean_info.hbm.xml"/>
    <mapping resource="db/custom_signal_enum_info.hbm.xml"/>
@@ -46,12 +45,10 @@
    <mapping resource="db/custom_signal_i16_info.hbm.xml"/>
    <mapping resource="db/custom_signal_i32_info.hbm.xml"/>
    <mapping resource="db/custom_signal_info.hbm.xml"/>
-   <mapping resource="db/custom_signal_name_lang_info.hbm.xml"/>
    <mapping resource="db/custom_signal_name_lang_entity_info.hbm.xml"/>
    <mapping resource="db/custom_signal_string_info.hbm.xml"/>
    <mapping resource="db/custom_signal_u16_info.hbm.xml"/>
    <mapping resource="db/custom_signal_u32_info.hbm.xml"/>
-   <mapping resource="db/custom_unit_lang_info.hbm.xml"/>
    <mapping resource="db/custom_unit_lang_entity_info.hbm.xml"/>
      
        

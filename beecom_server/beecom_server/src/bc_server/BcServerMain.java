@@ -26,7 +26,6 @@ import db.CustomSignalEnumInfoHbn;
 import db.CustomSignalEnumLangInfoHbn;
 import db.CustomSignalInfoHbn;
 import db.CustomSignalInfoUnit;
-import db.CustomSignalNameLangInfoHbn;
 import db.DevInfoHbn;
 import db.SignalInfoHbn;
 import db.SnInfoHbn;

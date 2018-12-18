@@ -72,5 +72,11 @@ public class CustomUnitLangEntityInfoHbn implements SignalLanguageInterface {
 	public void setSpanish(String spanish) {
 		this.spanish = spanish;
 	}
+	
+	@Override
+	public String toString() {
+		return chinese + english + french
+				+ russian + arabic + spanish;
+	}
 
 }

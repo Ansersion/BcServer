@@ -1303,8 +1303,8 @@ public class BeecomDB {
 
 	}
 	
-	private Map<Integer, String> getCustomSignalNameLangMap(long custonSignalNameLangId, int langSupportMask) {
-		if(INVALID_LANGUAGE_ID == custonSignalNameLangId) {
+	private Map<Integer, String> getCustomSignalNameLangMap(long customSignalNameLangId, int langSupportMask) {
+		if(INVALID_LANGUAGE_ID == customSignalNameLangId) {
 			return null;
 		}
 		
@@ -1317,12 +1317,14 @@ public class BeecomDB {
 			// CustomSignalNameLangInfoHbn customSignalNameLangInfoHbn = (CustomSignalNameLangInfoHbn)session  
 		    //        .createQuery("from CustomSignalNameLangInfoHbn where cusSigEnmId = :cus_sig_enm_id")
 		    //        .setParameter("id", custonSignalNameLangId).list();
+			/*
 			CustomSignalNameLangInfoHbn customSignalNameLangInfoHbn = session.get(CustomSignalNameLangInfoHbn.class, custonSignalNameLangId);
 			if(null == customSignalNameLangInfoHbn) {
 				tx.commit();
 				return null;
 			}
-			CustomSignalNameLangEntityInfoHbn customSignalNameLangEntityInfoHbn = session.get(CustomSignalNameLangEntityInfoHbn.class, customSignalNameLangInfoHbn.getCustomSignalName());
+			*/
+			CustomSignalNameLangEntityInfoHbn customSignalNameLangEntityInfoHbn = session.get(CustomSignalNameLangEntityInfoHbn.class, customSignalNameLangId);
 			if(null == customSignalNameLangEntityInfoHbn) {
 				tx.commit();
 				return null;
@@ -1343,8 +1345,8 @@ public class BeecomDB {
 		return customSignalLangMap;
 	}
 	
-	private Map<Integer, String> getCustomUnitLangMap(long custonUnitLangId, int langSupportMask) {
-		if(INVALID_LANGUAGE_ID == custonUnitLangId) {
+	private Map<Integer, String> getCustomUnitLangMap(long customUnitLangId, int langSupportMask) {
+		if(INVALID_LANGUAGE_ID == customUnitLangId) {
 			return null;
 		}
 		Map<Integer, String> customUnitLangMap = null;
@@ -1356,12 +1358,14 @@ public class BeecomDB {
 			// CustomSignalNameLangInfoHbn customSignalNameLangInfoHbn = (CustomSignalNameLangInfoHbn)session  
 		    //        .createQuery("from CustomSignalNameLangInfoHbn where cusSigEnmId = :cus_sig_enm_id")
 		    //        .setParameter("id", custonSignalNameLangId).list();
-			CustomUnitLangInfoHbn customUnitLangInfoHbn = session.get(CustomUnitLangInfoHbn.class, custonUnitLangId);
+			/*
+			CustomUnitLangInfoHbn customUnitLangInfoHbn = session.get(CustomUnitLangInfoHbn.class, customUnitLangId);
 			if(null == customUnitLangInfoHbn) {
 				tx.commit();
 				return null;
 			}
-			CustomUnitLangEntityInfoHbn customUnitLangEntityInfoHbn = session.get(CustomUnitLangEntityInfoHbn.class, customUnitLangInfoHbn.getUnitLang());
+			*/
+			CustomUnitLangEntityInfoHbn customUnitLangEntityInfoHbn = session.get(CustomUnitLangEntityInfoHbn.class, customUnitLangId);
 			if(null == customUnitLangEntityInfoHbn) {
 				tx.commit();
 				return null;
@@ -1395,12 +1399,14 @@ public class BeecomDB {
 			// CustomSignalNameLangInfoHbn customSignalNameLangInfoHbn = (CustomSignalNameLangInfoHbn)session  
 		    //        .createQuery("from CustomSignalNameLangInfoHbn where cusSigEnmId = :cus_sig_enm_id")
 		    //        .setParameter("id", custonSignalNameLangId).list();
+			/*
 			CustomGroupLangInfoHbn customGroupLangInfoHbn = session.get(CustomGroupLangInfoHbn.class, customGroupLangId);
 			if(null == customGroupLangInfoHbn) {
 				tx.commit();
 				return null;
 			}
-			CustomSignalGroupLangEntityInfoHbn customSignalGroupLangEntityInfoHbn = session.get(CustomSignalGroupLangEntityInfoHbn.class, customGroupLangInfoHbn.getGroupLang());
+			*/
+			CustomSignalGroupLangEntityInfoHbn customSignalGroupLangEntityInfoHbn = session.get(CustomSignalGroupLangEntityInfoHbn.class, customGroupLangId);
 			if(null == customSignalGroupLangEntityInfoHbn) {
 				tx.commit();
 				return null;
@@ -2286,6 +2292,9 @@ public class BeecomDB {
 		try (Session session = sessionFactory.openSession()) {
 			tx = session.beginTransaction();
 
+			Map<String, CustomSignalGroupLangEntityInfoHbn> customSignalGroupLangEntityInfoHbnMap = new HashMap<>();
+			Map<String, CustomUnitLangEntityInfoHbn> customUnitLangEntityInfoHbnMap = new HashMap<>();
+			
 			for(int i = 0; i < customSignalUnitInfoList.size(); i++) {
 				CustomSignalInfoUnit customSignalInfoUnit = customSignalUnitInfoList.get(i); 
 				int valueType = customSignalInfoUnit.getCustomSignalInterface().getValType();
@@ -2346,9 +2355,12 @@ public class BeecomDB {
 						}
 					}
 					session.save(customSignalNameLangEntityInfoHbn);
+					/*
 					CustomSignalNameLangInfoHbn customSignalNameLangInfoHbn = new CustomSignalNameLangInfoHbn(customSignalNameLangEntityInfoHbn.getId()); 
 					session.save(customSignalNameLangInfoHbn);
 					customSignalInfoHbn.setCusSigNameLangId(customSignalNameLangInfoHbn.getId());
+					*/
+					customSignalInfoHbn.setCusSigNameLangId(customSignalNameLangEntityInfoHbn.getId());
 				}
 				langMap = customSignalInfoUnit.getGroupLangMap();
 				if(null == langMap || langMap.isEmpty()) {
@@ -2379,10 +2391,18 @@ public class BeecomDB {
 							break;
 						}
 					}
-					session.save(customSignalGroupLangEntityInfoHbn);
+					if(customSignalGroupLangEntityInfoHbnMap.containsKey(customSignalGroupLangEntityInfoHbn.toString())) {
+						customSignalGroupLangEntityInfoHbn = customSignalGroupLangEntityInfoHbnMap.get(customSignalGroupLangEntityInfoHbn.toString());
+					} else {
+						customSignalGroupLangEntityInfoHbnMap.put(customSignalGroupLangEntityInfoHbn.toString(), customSignalGroupLangEntityInfoHbn);
+						session.save(customSignalGroupLangEntityInfoHbn);
+					}
+					/*
 					CustomGroupLangInfoHbn customGroupLangInfoHbn = new CustomGroupLangInfoHbn(customSignalGroupLangEntityInfoHbn.getId()); 
 					session.save(customGroupLangInfoHbn);
 					customSignalInfoHbn.setCusGroupLangId(customGroupLangInfoHbn.getId());
+					*/
+					customSignalInfoHbn.setCusGroupLangId(customSignalGroupLangEntityInfoHbn.getId());
 				}
 				langMap = customSignalInfoUnit.getSignalUnitLangMap();
 				if(null == langMap || langMap.isEmpty()) {
@@ -2413,48 +2433,22 @@ public class BeecomDB {
 							break;
 						}
 					}
-					session.save(customUnitLangEntityInfoHbn);
+					
+					if(customUnitLangEntityInfoHbnMap.containsKey(customUnitLangEntityInfoHbn.toString())) {
+						customUnitLangEntityInfoHbn = customUnitLangEntityInfoHbnMap.get(customUnitLangEntityInfoHbn.toString());
+					} else {
+						customUnitLangEntityInfoHbnMap.put(customUnitLangEntityInfoHbn.toString(), customUnitLangEntityInfoHbn);
+						session.save(customUnitLangEntityInfoHbn);
+					}
+					
+					/*
 					CustomUnitLangInfoHbn customUnitLangInfoHbn = new CustomUnitLangInfoHbn(customUnitLangEntityInfoHbn.getId()); 
 					session.save(customUnitLangInfoHbn);
 					customSignalInfoHbn.setCusSigUnitLangId(customUnitLangInfoHbn.getId());
+					*/
+					customSignalInfoHbn.setCusSigUnitLangId(customUnitLangEntityInfoHbn.getId());
 				}
-				if(BPPacket.VAL_TYPE_ENUM == valueType) {
-					Map<Integer, Map<Integer, String> > enumLangMap = customSignalInfoUnit.getSignalEnumLangMap();
-					if(null != enumLangMap && !enumLangMap.isEmpty()) {
-						/*
-						Iterator<Map.Entry<Integer, Map<Integer, String> > > itLangEntity = enumLangMap.entrySet().iterator();
-						CustomUnitLangEntityInfoHbn customUnitLangEntityInfoHbn = new CustomUnitLangEntityInfoHbn();
-						while(itLangEntity.hasNext()) {
-							Map.Entry<Integer, String> entry = itLangEntity.next();
-							switch(entry.getKey()) {
-							case BPLanguageId.CHINESE:
-								customUnitLangEntityInfoHbn.setChinese(entry.getValue());
-								break;
-							case BPLanguageId.ENGLISH:
-								customUnitLangEntityInfoHbn.setEnglish(entry.getValue());
-								break;
-							case BPLanguageId.FRENCH:
-								customUnitLangEntityInfoHbn.setFrench(entry.getValue());
-								break;
-							case BPLanguageId.RUSSIAN:
-								customUnitLangEntityInfoHbn.setRussian(entry.getValue());
-								break;
-							case BPLanguageId.ARABIC:
-								customUnitLangEntityInfoHbn.setArabic(entry.getValue());
-								break;
-							case BPLanguageId.SPANISH:
-								customUnitLangEntityInfoHbn.setSpanish(entry.getValue());
-								break;
-							}
-							
-						}
-						session.save(customUnitLangEntityInfoHbn);
-						CustomUnitLangInfoHbn customUnitLangInfoHbn = new CustomUnitLangInfoHbn(customUnitLangEntityInfoHbn.getId()); 
-						session.save(customUnitLangInfoHbn);
-						customSignalInfoHbn.setCusSigNameLangId(customUnitLangInfoHbn.getId());
-						*/
-					}
-				}
+
 				session.saveOrUpdate(customSignalInfoHbn);
 				
 				SignalInterface signalInterface = customSignalInfoUnit.getCustomSignalInterface();
@@ -2462,6 +2456,50 @@ public class BeecomDB {
 				if(signalInterface.saveToDb(session) < 0) {
 					logger.error("Internal error: null == devInfoHbn");
 					return ret;
+				}
+				
+				if(BPPacket.VAL_TYPE_ENUM == valueType) {
+					Map<Integer, Map<Integer, String> > enumLangMap = customSignalInfoUnit.getSignalEnumLangMap();
+					if(null != enumLangMap && !enumLangMap.isEmpty()) {
+						Iterator<Map.Entry<Integer, Map<Integer, String> > > enumLangIterator = enumLangMap.entrySet().iterator();
+						Map.Entry<Integer, Map<Integer, String>> enumLangEntry;
+						Iterator<Map.Entry<Integer, String>> langIterator;
+						Map.Entry<Integer, String> langEntry;
+						while(enumLangIterator.hasNext()) {
+							enumLangEntry = enumLangIterator.next();
+							langIterator = enumLangEntry.getValue().entrySet().iterator();
+							CustomSignalEnumLangInfoHbn customSignalEnumLangInfoHbn = new CustomSignalEnumLangInfoHbn(); 
+							CustomSignalEnumLangEntityInfoHbn customSignalEnumLangEntityInfoHbn = new CustomSignalEnumLangEntityInfoHbn();
+							while(langIterator.hasNext()) {
+								langEntry = langIterator.next();
+								switch(langEntry.getKey()) {
+								case BPLanguageId.CHINESE:
+									customSignalEnumLangEntityInfoHbn.setChinese(langEntry.getValue());
+									break;
+								case BPLanguageId.ENGLISH:
+									customSignalEnumLangEntityInfoHbn.setEnglish(langEntry.getValue());
+									break;
+								case BPLanguageId.FRENCH:
+									customSignalEnumLangEntityInfoHbn.setFrench(langEntry.getValue());
+									break;
+								case BPLanguageId.RUSSIAN:
+									customSignalEnumLangEntityInfoHbn.setRussian(langEntry.getValue());
+									break;
+								case BPLanguageId.ARABIC:
+									customSignalEnumLangEntityInfoHbn.setArabic(langEntry.getValue());
+									break;
+								case BPLanguageId.SPANISH:
+									customSignalEnumLangEntityInfoHbn.setSpanish(langEntry.getValue());
+									break;
+								}
+							}
+							session.save(customSignalEnumLangEntityInfoHbn);
+							customSignalEnumLangInfoHbn.setEnumKey(enumLangEntry.getKey());
+							customSignalEnumLangInfoHbn.setEnumValLangId(customSignalEnumLangEntityInfoHbn.getId());
+							customSignalEnumLangInfoHbn.setCusSigEnmId(signalInterface.getId());
+							session.save(customSignalEnumLangInfoHbn);
+						}
+					}
 				}
 				
 			}
@@ -2628,6 +2666,7 @@ public class BeecomDB {
 						}
 						if (null != customSignalInfoHbn) {
 							if (0 != customSignalInfoHbn.getCusSigNameLangId()) {
+								/*
 								CustomSignalNameLangInfoHbn customSignalNameLangInfoHbn = session.get(
 										CustomSignalNameLangInfoHbn.class, customSignalInfoHbn.getCusSigNameLangId());
 								if (null != customSignalNameLangInfoHbn) {
@@ -2639,8 +2678,16 @@ public class BeecomDB {
 									}
 									session.delete(customSignalNameLangInfoHbn);
 								}
+								*/
+								
+								CustomSignalNameLangEntityInfoHbn customSignalNameLangEntityInfoHbn = session.get(CustomSignalNameLangEntityInfoHbn.class,
+										customSignalInfoHbn.getCusSigNameLangId());
+								if (null != customSignalNameLangEntityInfoHbn) {
+									session.delete(customSignalNameLangEntityInfoHbn);
+								}
 							}
 							if (0 != customSignalInfoHbn.getCusGroupLangId()) {
+								/*
 								CustomGroupLangInfoHbn customGroupLangInfoHbn = session
 										.get(CustomGroupLangInfoHbn.class, customSignalInfoHbn.getCusGroupLangId());
 								if (null != customGroupLangInfoHbn) {
@@ -2652,8 +2699,15 @@ public class BeecomDB {
 									}
 									session.delete(customGroupLangInfoHbn);
 								}
+								*/
+								CustomSignalGroupLangEntityInfoHbn customSignalGroupLangEntityInfoHbn = session.get(CustomSignalGroupLangEntityInfoHbn.class,
+										customSignalInfoHbn.getCusGroupLangId());
+								if (null != customSignalGroupLangEntityInfoHbn) {
+									session.delete(customSignalGroupLangEntityInfoHbn);
+								}
 							}
 							if (0 != customSignalInfoHbn.getCusSigUnitLangId()) {
+								/*
 								CustomUnitLangInfoHbn customUnitLangInfoHbn = session.get(CustomUnitLangInfoHbn.class,
 										customSignalInfoHbn.getCusSigUnitLangId());
 								if (null != customUnitLangInfoHbn) {
@@ -2663,6 +2717,12 @@ public class BeecomDB {
 										session.delete(customUnitLangEntityInfoHbn);
 									}
 									session.delete(customSignalInfoHbn);
+								}
+								*/
+								CustomUnitLangEntityInfoHbn customUnitLangEntityInfoHbn = session.get(CustomUnitLangEntityInfoHbn.class,
+										customSignalInfoHbn.getCusSigUnitLangId());
+								if (null != customUnitLangEntityInfoHbn) {
+									session.delete(customUnitLangEntityInfoHbn);
 								}
 							}
 							switch (customSignalInfoHbn.getValType()) {
@@ -2724,7 +2784,7 @@ public class BeecomDB {
 													.next();
 											CustomSignalEnumLangEntityInfoHbn customSignalEnumLangEntityInfoHbn = session
 													.get(CustomSignalEnumLangEntityInfoHbn.class,
-															customSignalEnumLangInfoHbn.getCusSigEnmId());
+															customSignalEnumLangInfoHbn.getEnumValLangId());
 											if (null != customSignalEnumLangEntityInfoHbn) {
 												session.delete(customSignalEnumLangEntityInfoHbn);
 											}
@@ -2993,9 +3053,9 @@ public class BeecomDB {
 	    	StringBuilder hql = new StringBuilder();
 	    	String tag;
 	    	List<SystemSignalEnumLangInfoHbn> systemSignalEnumLangInfoList;
-			CustomSignalNameLangInfoHbn customSignalNameLangInfoHbn = null;
-			CustomGroupLangInfoHbn customGroupLangInfoHbn = null;
-			CustomUnitLangInfoHbn customUnitLangInfoHbn = null;
+			// CustomSignalNameLangInfoHbn customSignalNameLangInfoHbn = null;
+			// CustomGroupLangInfoHbn customGroupLangInfoHbn = null;
+			// CustomUnitLangInfoHbn customUnitLangInfoHbn = null;
 			CustomSignalEnumInfoHbn customSignalEnumInfoHbn = null;
 			while(itSih.hasNext()) {
 				signalInterfaceTmp = null;

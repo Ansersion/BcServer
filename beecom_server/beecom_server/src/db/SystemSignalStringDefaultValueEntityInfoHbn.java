@@ -11,6 +11,12 @@ public class SystemSignalStringDefaultValueEntityInfoHbn implements SignalLangua
 	
 	public SystemSignalStringDefaultValueEntityInfoHbn() {
 		super();
+		chinese = "";
+		english = "";
+		french = "";
+		russian = "";
+		arabic = "";
+		spanish = "";
 	}
 	
 	public Long getId() {

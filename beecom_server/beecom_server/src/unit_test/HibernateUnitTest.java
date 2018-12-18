@@ -18,7 +18,6 @@ import db.BeecomDB;
 import db.CustomSignalEnumInfoHbn;
 import db.CustomSignalEnumLangInfoHbn;
 import db.CustomSignalInfoHbn;
-import db.CustomSignalNameLangInfoHbn;
 import db.DevInfoHbn;
 import db.SignalInfoHbn;
 import db.SnInfoHbn;
@@ -63,8 +62,8 @@ public class HibernateUnitTest {
 			assertNotEquals(null, systemSignalInfoHbn);
 			CustomSignalEnumInfoHbn customSignalEnumInfoHbn = session.load(CustomSignalEnumInfoHbn.class, 1L);
 			assertNotEquals(null, customSignalEnumInfoHbn);
-			CustomSignalNameLangInfoHbn customSignalNameLangInfoHbn = session.load(CustomSignalNameLangInfoHbn.class,1L);
-			assertNotEquals(null, customSignalNameLangInfoHbn);
+			// CustomSignalNameLangInfoHbn customSignalNameLangInfoHbn = session.load(CustomSignalNameLangInfoHbn.class,1L);
+			// assertNotEquals(null, customSignalNameLangInfoHbn);
 			CustomSignalEnumLangInfoHbn customSignalEnumLangInfoHbn = session.load(CustomSignalEnumLangInfoHbn.class,1L);
 			assertNotEquals(null, customSignalEnumLangInfoHbn);
 			SystemSignalStringInfoHbn systemSignalStringInfoHbn = session.load(SystemSignalStringInfoHbn.class, 1L);

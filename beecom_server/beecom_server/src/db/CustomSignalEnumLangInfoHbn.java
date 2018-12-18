@@ -8,6 +8,7 @@ public class CustomSignalEnumLangInfoHbn {
     
 	public CustomSignalEnumLangInfoHbn() {
 		super();
+		cusSigEnmId = 0L;
 	}
 	public Long getId() {
 		return id;
