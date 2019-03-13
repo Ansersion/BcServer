@@ -28,7 +28,6 @@ import db.SystemSignalI32InfoHbn;
 import db.SystemSignalStringInfoHbn;
 import db.SystemSignalU16InfoHbn;
 import db.SystemSignalU32InfoHbn;
-import javafx.util.Pair;
 import sys_sig_table.BPSysSigTable;
 import sys_sig_table.SysSigInfo;
 

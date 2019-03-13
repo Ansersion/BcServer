@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import bp_packet.BPPacket;
-import javafx.util.Pair;
 
 public class CustomSignalInfoUnit implements SignalInfoUnitInterface {
 	private int cusSigId;
@@ -123,7 +122,7 @@ public class CustomSignalInfoUnit implements SignalInfoUnitInterface {
 	}
 	
 	@Override
-	public boolean putSignalValue(Entry<Integer, Pair<Byte, Object>> entry) {
+	public boolean putSignalValue(Entry<Integer, Map.Entry<Byte, Object>> entry) {
 		boolean ret = false;
 		try {
 			signalValue = entry.getValue().getValue();

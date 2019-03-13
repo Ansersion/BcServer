@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import db.RelayData;
-import javafx.util.Pair;
 import other.BPValue;
 import sys_sig_table.BPSysSigTable;
 
@@ -59,7 +58,7 @@ public abstract class BPSession {
 	Map<Integer, Byte[]> mapDist2SysSigMap = null;
 	Map<Integer, Object> sysSigMap;
 	Map<Integer, Object> systemSignalValueMap;
-	Map<Integer, Pair<Byte, Object>> customSignalValueMap;
+	Map<Integer, Map.Entry<Byte, Object>> customSignalValueMap;
 	// private BPError error;
 	
 	private int procLevel;
@@ -373,11 +372,11 @@ public abstract class BPSession {
 		this.systemSignalValueMap = systemSignalValueMap;
 	}
 
-	public Map<Integer, Pair<Byte, Object>> getCustomSignalValueMap() {
+	public Map<Integer, Map.Entry<Byte, Object>> getCustomSignalValueMap() {
 		return customSignalValueMap;
 	}
 
-	public void setCustomSignalValueMap(Map<Integer, Pair<Byte, Object>> customSignalValueMap) {
+	public void setCustomSignalValueMap(Map<Integer, Map.Entry<Byte, Object>> customSignalValueMap) {
 		this.customSignalValueMap = customSignalValueMap;
 	}
 

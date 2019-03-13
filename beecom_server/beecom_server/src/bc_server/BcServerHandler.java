@@ -52,7 +52,6 @@ import db.SystemSignalCustomInfoUnit;
 import db.UserInfoUnit;
 import db.BeecomDB.GetSnErrorEnum;
 import db.BeecomDB.LoginErrorEnum;
-import javafx.util.Pair;
 import other.BPError;
 import other.Util;
 
@@ -410,10 +409,10 @@ public class BcServerHandler extends IoHandlerAdapter {
 			    	session.write(packAck);
 			    	return;
 				}
-				Map<Integer, Pair<Byte, Object> > sigValMap = pld.getSigValMap();
-				Iterator<Map.Entry<Integer, Pair<Byte, Object>>> entriesSigVals = sigValMap.entrySet().iterator();
+				Map<Integer, Map.Entry<Byte, Object> > sigValMap = pld.getSigValMap();
+				Iterator<Map.Entry<Integer, Map.Entry<Byte, Object>>> entriesSigVals = sigValMap.entrySet().iterator();
 				SignalInfoUnitInterface signalInfoUnitInterface;
-				Map.Entry<Integer, Pair<Byte, Object>> entry;
+				Map.Entry<Integer, Map.Entry<Byte, Object>> entry;
 				/* check error */
 				while (entriesSigVals.hasNext()) {  
 				    entry = entriesSigVals.next();  
@@ -673,10 +672,10 @@ public class BcServerHandler extends IoHandlerAdapter {
 			    	session.write(packAck);
 			    	return;
 				}
-				Map<Integer, Pair<Byte, Object> > sigValMap = pld.getSigValMap();
-				Iterator<Map.Entry<Integer, Pair<Byte, Object>>> entriesSigVals = sigValMap.entrySet().iterator();
+				Map<Integer, Map.Entry<Byte, Object> > sigValMap = pld.getSigValMap();
+				Iterator<Map.Entry<Integer, Map.Entry<Byte, Object>>> entriesSigVals = sigValMap.entrySet().iterator();
 				SignalInfoUnitInterface signalInfoUnitInterface;
-				Map.Entry<Integer, Pair<Byte, Object>> entry;
+				Map.Entry<Integer, Map.Entry<Byte, Object>> entry;
 				/* check error */
 				while (entriesSigVals.hasNext()) {  
 				    entry = entriesSigVals.next();  

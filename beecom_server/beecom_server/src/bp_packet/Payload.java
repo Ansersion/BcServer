@@ -29,7 +29,6 @@ import db.SignalInfoHbn;
 import db.SignalInfoUnitInterface;
 import db.SystemSignalCustomInfoUnit;
 import db.SystemSignalInfoUnit;
-import javafx.util.Pair;
 import other.BPError;
 import other.Util;
 import sys_sig_table.BPSysSigTable;
@@ -41,6 +40,33 @@ import sys_sig_table.SysSigInfo;
  *
  */
 public class Payload {
+	
+	final class MyEntry<K, V> implements Map.Entry<K, V> {
+	    private final K key;
+	    private V value;
+
+	    public MyEntry(K key, V value) {
+	        this.key = key;
+	        this.value = value;
+	    }
+
+	    @Override
+	    public K getKey() {
+	        return key;
+	    }
+
+	    @Override
+	    public V getValue() {
+	        return value;
+	    }
+
+	    @Override
+	    public V setValue(V value) {
+	        V old = this.value;
+	        this.value = value;
+	        return old;
+	    }
+	}
 	
 	public static final byte SYSTEM_SIGNAL_MAP_END_MASK = 0x01;
 	
@@ -71,8 +97,8 @@ public class Payload {
 	private List<SystemSignalCustomInfoUnit> systemSignalCustomInfoUnitLst;
 	private List<Integer> systemSignalEnabledList;
 	private Map<Integer, Object> sysSigValMap;
-	private Map<Integer, Pair<Byte, Object>> cusSigValMap;
-	private Map<Integer, Pair<Byte, Object>> sigValMap;
+	private Map<Integer, Map.Entry<Byte, Object>> cusSigValMap;
+	private Map<Integer, Map.Entry<Byte, Object>> sigValMap;
 	private List<Long> deviceIdList;
 	private Map<Long, Long> deviceIdMap;
 	private int customSignalLangSupportMask;
@@ -345,10 +371,10 @@ public class Payload {
 		if(null == cusSigLst || null == bpDeviceSession) {
 			return false;
 		}
-		cusSigValMap = new HashMap<Integer, Pair<Byte, Object>>();
+		cusSigValMap = new HashMap<Integer, Map.Entry<Byte, Object>>();
 		
 		Iterator<Integer> it = cusSigLst.iterator();
-		Map<Integer, Pair<Byte, Object> > customSignalValueMap;
+		Map<Integer, Map.Entry<Byte, Object> > customSignalValueMap;
 		customSignalValueMap = bpDeviceSession.getCustomSignalValueMap();
 		while(it.hasNext()) {
 			int cusSigId = it.next();
@@ -395,7 +421,7 @@ public class Payload {
 		return sysSigValMap;
 	}
 
-	public Map<Integer, Pair<Byte, Object>> getCusSigValMap() {
+	public Map<Integer, Map.Entry<Byte, Object>> getCusSigValMap() {
 		return cusSigValMap;
 	}
 	
@@ -410,14 +436,14 @@ public class Payload {
 		return sysSigValMap;
 	}
 	
-	public Map<Integer, Pair<Byte, Object> > putCusSigValMap(Integer sigId, Byte sigType, Object value) {
+	public Map<Integer, Map.Entry<Byte, Object> > putCusSigValMap(Integer sigId, Byte sigType, Object value) {
 		if(null == sigId || null == sigType || null == value) {
 			return cusSigValMap;
 		}
 		if(null == cusSigValMap) {
-			cusSigValMap = new HashMap<Integer, Pair<Byte, Object>>();
+			cusSigValMap = new HashMap<Integer, Map.Entry<Byte, Object>>();
 		}
-		cusSigValMap.put(sigId, new Pair<Byte, Object>(sigType, value));
+		cusSigValMap.put(sigId, new MyEntry<Byte, Object>(sigType, value));
 		return cusSigValMap;
 	}
 	
@@ -489,22 +515,22 @@ public class Payload {
 		this.sigMapCheckSum = sigMapCheckSum;
 	}
 
-	public Map<Integer, Pair<Byte, Object> > putSigValMap(Integer sigId, Byte sigType, Object value) {
+	public Map<Integer, Map.Entry<Byte, Object> > putSigValMap(Integer sigId, Byte sigType, Object value) {
 		if(null == sigId || null == sigType || null == value) {
 			return sigValMap;
 		}
-		sigValMap.put(sigId, new Pair<Byte, Object>(sigType, value));
+		sigValMap.put(sigId, new MyEntry<Byte, Object>(sigType, value));
 		return sigValMap;
 	}
 	
 	public void initSigValMap() {
 		if(null == sigValMap) {
-			sigValMap = new HashMap<Integer, Pair<Byte, Object>>();
+			sigValMap = new HashMap<Integer, Map.Entry<Byte, Object>>();
 		}
 		sigValMap.clear();
 	}
 
-	public Map<Integer, Pair<Byte, Object>> getSigValMap() {
+	public Map<Integer, Map.Entry<Byte, Object>> getSigValMap() {
 		return sigValMap;
 	}
 

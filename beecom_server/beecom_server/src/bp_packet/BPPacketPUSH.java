@@ -11,7 +11,6 @@ import java.util.Map;
 
 import org.apache.mina.core.buffer.IoBuffer;
 
-import javafx.util.Pair;
 import other.CrcChecksum;
 
 
@@ -110,14 +109,14 @@ public class BPPacketPUSH extends BPPacket {
 				int attr = 0;
 				int signalNum = 0;
 				int putNum = 0;
-				Map<Integer, Pair<Byte, Object> > customSignalValueMap =  pld.getCusSigValMap();
+				Map<Integer, Map.Entry<Byte, Object> > customSignalValueMap =  pld.getCusSigValMap();
 				for (int i = 0; i < BPPacket.MAX_VAL_TYPE_NUM; i++) {
-					Iterator<Map.Entry<Integer, Pair<Byte, Object>>> it = customSignalValueMap.entrySet().iterator();
+					Iterator<Map.Entry<Integer, Map.Entry<Byte, Object>>> it = customSignalValueMap.entrySet().iterator();
 					attr = ((i << 4) & 0xF0);
 					signalNum = 0;
 					valueList.clear();
 					while (it.hasNext()) {
-						Map.Entry<Integer, Pair<Byte, Object>> entry = it.next();
+						Map.Entry<Integer, Map.Entry<Byte, Object>> entry = it.next();
 						Byte valType = entry.getValue().getKey();
 						if ((valType & 0xFF) == i) {
 							signalNum++;
