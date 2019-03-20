@@ -1,7 +1,5 @@
 package bc_server;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 
@@ -47,7 +45,7 @@ public class PushSignalValuesProduct extends Product {
 				return ret;
 			}
 			int size = userDevRelInfoInterfaceList.size();
-			long devUniqId = bpDeviceSession.getUniqDevId();
+			// long devUniqId = bpDeviceSession.getUniqDevId();
 			long userId;
 			BPUserSession userSession;
 			IoSession ioSession;

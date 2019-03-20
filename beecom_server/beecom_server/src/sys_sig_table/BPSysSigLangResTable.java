@@ -103,7 +103,7 @@ public class BPSysSigLangResTable {
 				langResTmp.add(m.group(7));
 				sigLangResTmp.add(langResTmp);
 
-				int sigId = Integer.parseInt(m.group(1), 16);
+				// int sigId = Integer.parseInt(m.group(1), 16);
 			}
 			sysSigLangResLst.add(sigLangResTmp);
 			ret = true;

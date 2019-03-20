@@ -7,10 +7,6 @@ package bc_server;
 
 import java.util.List;
 import java.util.Map;
-import java.util.TimerTask;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -26,7 +22,6 @@ import bp_packet.BPDeviceSession;
 import bp_packet.BPPackFactory;
 import bp_packet.BPPacket;
 import bp_packet.BPPacketType;
-import bp_packet.BPParseException;
 import bp_packet.BPPacketCONNACK;
 import bp_packet.BPPacketGET;
 import bp_packet.BPPacketPINGACK;
@@ -36,21 +31,15 @@ import bp_packet.BPPacketREPORT;
 import bp_packet.BPPacketRPRTACK;
 import bp_packet.BPSession;
 import bp_packet.BPUserSession;
-import bp_packet.DevSigData;
-import bp_packet.FixedHeader;
 import bp_packet.Payload;
 import bp_packet.SignalAttrInfo;
 import bp_packet.VariableHeader;
 import db.BeecomDB;
-import db.ClientIDDB;
 import db.CustomSignalInfoUnit;
-import db.DBDevInfoRec;
-import db.DBSysSigRec;
 import db.DeviceInfoUnit;
 import db.SignalInfoUnitInterface;
 import db.SystemSignalCustomInfoUnit;
 import db.UserInfoUnit;
-import db.BeecomDB.GetSnErrorEnum;
 import db.BeecomDB.LoginErrorEnum;
 import other.BPError;
 import other.Util;
@@ -86,7 +75,6 @@ public class BcServerHandler extends IoHandlerAdapter {
 	public void messageReceived(IoSession session, Object message)
 			throws Exception {
 		
-		String s;
 		BPPacket decodedPack = (BPPacket) message;
 		VariableHeader vrb, vrbAck;
 		Payload pld, pldAck;
@@ -482,7 +470,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 				}
 				if(vrb.getCusSigAttrFlag()) {
 					/* Not completed yes */
-					Map<Integer, SignalAttrInfo> sysCusAttrMap = pld.getCusSigAttrMap();
+					// Map<Integer, SignalAttrInfo> sysCusAttrMap = pld.getCusSigAttrMap();
 					/* change the custom signal attributes */
 				}
 				if(vrb.getSysSigFlag() || vrb.getCusSigFlag()) {
@@ -553,7 +541,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 		} else if (BPPacketType.PUSHACK == packType) {
 			vrb = decodedPack.getVrbHead();
 			int retCode = vrb.getRetCode();
-			int packSeq = vrb.getPackSeq();
+			// int packSeq = vrb.getPackSeq();
 			/*
 			if(!checkPackSeq()) {
 				return;
@@ -591,11 +579,11 @@ public class BcServerHandler extends IoHandlerAdapter {
 			boolean sysSigMapFlag = vrb.getSysSigMapFlag();
 			boolean cusSigMapFlag = vrb.getCusSigMapFlag();
 			boolean sigValFlag = vrb.getSigValFlag();
-			boolean sysSigFlag = vrb.getSysSigFlag();
-			boolean cusSigFlag = vrb.getCusSigFlag();
+			// boolean sysSigFlag = vrb.getSysSigFlag();
+			// boolean cusSigFlag = vrb.getCusSigFlag();
 			boolean sysSigCusInfoFlag = vrb.getSysCusFlag();
 			boolean sigMapChecksumFlagOnly = vrb.getSigMapChecksumFlag();
-			boolean gotNewSigMapChecksum = false;
+			// boolean gotNewSigMapChecksum = false;
 			
 			
 			long uniqDevId = bpDeviceSession.getUniqDevId();

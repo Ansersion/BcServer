@@ -1,0 +1,6 @@
+Driver=com.mysql.jdbc.Driver;
+Host=localhost;
+Port=3306;
+Name=server_new;
+User=xxxyyyzzz;
+Password=xxxyyyzzz123; 

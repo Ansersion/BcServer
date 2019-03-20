@@ -2,8 +2,6 @@ package bc_server;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.mina.core.session.IoSession;
@@ -54,7 +52,7 @@ class PushPacketDeviceIDProduct extends Product {
 			// IoSession session = bpUserSession.getSession();
 			bpPacket = BPPackFactory.createBPPack(BPPacketType.PUSH);
 			bpPacket.getVrbHead().setReqAllDeviceIdFlag(true);
-			String userName = bpUserSession.getUserName();
+			// String userName = bpUserSession.getUserName();
 			Payload pld = bpPacket.getPld();
 			BeecomDB beecomDb = BeecomDB.getInstance();
 			Map<Long, Long> deviceIdMap = beecomDb.getDeviceIDMap(bpUserSession.getUserName());

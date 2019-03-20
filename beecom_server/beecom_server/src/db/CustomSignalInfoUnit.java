@@ -179,7 +179,7 @@ public class CustomSignalInfoUnit implements SignalInfoUnitInterface {
 				break;
 			}
 			case BPPacket.VAL_TYPE_ENUM: {
-				CustomSignalEnumInfoHbn customSignalEnumInfoHbn = (CustomSignalEnumInfoHbn)customSignalInterface;
+				// CustomSignalEnumInfoHbn customSignalEnumInfoHbn = (CustomSignalEnumInfoHbn)customSignalInterface;
 				Integer v = (Integer)value;
 				Iterator<Map.Entry<Integer, Map<Integer, String> > > it = signalEnumLangMap.entrySet().iterator();
 				if(it.hasNext()) {

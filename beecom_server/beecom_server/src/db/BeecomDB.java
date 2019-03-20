@@ -3,34 +3,35 @@
  */
 package db;
 
-import static org.junit.Assert.assertNotNull;
-
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.procedure.internal.Util.ResultClassesResolutionContext;
+import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import bc_server.BcServerHandler;
 import bp_packet.BPDeviceSession;
 import bp_packet.BPPacket;
+import bp_packet.BPParseCsvFileException;
 import bp_packet.BPSession;
-import bp_packet.BPUserSession;
 import bp_packet.SignalAttrInfo;
+import ch.qos.logback.core.util.StatusPrinter;
 import other.Util;
 import sys_sig_table.BPSysSigTable;
 import sys_sig_table.SysSigInfo;
@@ -43,25 +44,29 @@ import java.util.List;
  */
 public class BeecomDB {
 	
-	private static final Logger logger = LoggerFactory.getLogger(BeecomDB.class);
+	private static Logger logger = null;
 	private static final Long INVALID_LANGUAGE_ID = 0L;
-	private static final Long INVALID_ADMIN_ID = 0L;
+	// private static final Long INVALID_ADMIN_ID = 0L;
 	private static final Long INVALID_SIG_MAP_CHECKSUM = 0x7FFFFFFFFFFFFFFFL;
 	
-
 	static BeecomDB bcDb = null;
 
-	List<DBUserInfoRec> userInfoRecLst;
-	List<DBDevInfoRec> devInfoRecLst;
-	List<DBDevAuthRec> devAuthRecLst;
-	List<DBSysSigRec> sysSigRecLst;
-	Map<String, Long> name2IDMap;
+	private List<DBUserInfoRec> userInfoRecLst;
+	private List<DBDevInfoRec> devInfoRecLst;
+	private List<DBDevAuthRec> devAuthRecLst;
+	private List<DBSysSigRec> sysSigRecLst;
+	private Map<String, Long> name2IDMap;
 
-	Connection con;
-	static String driver = "com.mysql.jdbc.Driver";
-	static String url = "jdbc:mysql://localhost:3306/bc_server_db?useSSL=false";
-	static String user = "root";
-	static String password = "Ansersion";
+	private Connection con;
+	
+	private static final String dbDriverDefault = "com.mysql.jdbc.Driver";
+	private static final String dbHostDefault = "localhost";
+	private static final String dbPortDefault = "3306";
+	private static final String dbNameDefault = "bc_server_db";
+	private static final String dbUserDefault = "root";
+	private static final String dbPasswordDefault = "Ansersion";
+	
+	private static Map<String, String> dbConfigMap;
 	
 	private Map<Long, BPSession> devUniqId2SessionMap;
 	private Map<String, BPSession> userName2SessionMap;
@@ -70,7 +75,7 @@ public class BeecomDB {
 	private Map<Long, List<UserDevRelInfoInterface> > userId2UserDevRelInfoListMap;
 	/* must always be updated */
 	private Map<Long, List<UserDevRelInfoInterface> > snId2UserDevRelInfoListMap;
-	private List<UserDevRelInfoInterface> userDevRelInfoHbnList;
+	// private List<UserDevRelInfoInterface> userDevRelInfoHbnList;
 	
 	private SessionFactory sessionFactory;
 	
@@ -89,6 +94,7 @@ public class BeecomDB {
 	}
 
 	private BeecomDB() {
+		logger = LoggerFactory.getLogger(this.getClass());
 		sessionFactory = buildSessionFactory(); 
 		String s = "Info: Create BeecomDB";
 		logger.info(s);
@@ -101,7 +107,7 @@ public class BeecomDB {
 
 		DBUserInfoRec record0Blank = new DBUserInfoRec();
 		userInfoRecLst.add(record0Blank);
-		String sql;
+		// String sql;
 		
 		devUniqId2SessionMap = new HashMap<Long, BPSession>();
 		userName2SessionMap = new HashMap<String, BPSession>();
@@ -109,7 +115,7 @@ public class BeecomDB {
 
 		userId2UserDevRelInfoListMap = new HashMap<>();
 		snId2UserDevRelInfoListMap = new HashMap<>();
-		userDevRelInfoHbnList = new LinkedList<>();
+		// userDevRelInfoHbnList = new LinkedList<>();
 	}
 
 	public Map<String, Long> getName2IDMap() {
@@ -549,71 +555,6 @@ public class BeecomDB {
 		return customSignalInterface;
 	}
 	
-    /* for system signal info */
-    private SignalInterface getSignalInterface(short valueType, SystemSignalInfoHbn systemSignalInfoHbn) {
-    	SignalInterface signalInterface = null;
-    	if(null == systemSignalInfoHbn) {
-    		return signalInterface;
-    	}
-    	if(!BPPacket.ifSigTypeValid(valueType)) {
-    		return signalInterface;
-    	}
-    	/* construct a hql like "from <table> where systemSignalId =: system_signal_id"*/
-    	StringBuilder hql = new StringBuilder();
-    	hql.append("from ");
-		String tableName;
-		switch(valueType) {
-		case BPPacket.VAL_TYPE_UINT32:
-			tableName = "SystemSignalU32InfoHbn";
-			break;
-		case BPPacket.VAL_TYPE_UINT16:
-			tableName = "SystemSignalU16InfoHbn";
-			break;
-		case BPPacket.VAL_TYPE_IINT32:
-			tableName = "SystemSignalI32InfoHbn";
-			break;
-		case BPPacket.VAL_TYPE_IINT16:
-			tableName = "SystemSignalI16InfoHbn";
-			break;
-		case BPPacket.VAL_TYPE_ENUM:
-			tableName = "SystemSignalEnumInfoHbn";
-			break;
-		case BPPacket.VAL_TYPE_FLOAT:
-			tableName = "SystemSignalFloatInfoHbn";
-			break;
-		case BPPacket.VAL_TYPE_STRING:
-			tableName = "SystemSignalStringInfoHbn";
-			break;
-		case BPPacket.VAL_TYPE_BOOLEAN:
-			tableName = "SystemSignalBooleanInfoHbn";
-			break;
-		default:
-			logger.error("Inner error: invalid value type");
-			return signalInterface;
-		}
-		hql.append(tableName);
-		hql.append(" where systemSignalId =: system_signal_id");
-		
-		Transaction tx = null;
-		try (Session session = sessionFactory.openSession()) {
-			tx = session.beginTransaction();
-			signalInterface = (SignalInterface)session.createQuery(hql.toString())
-		            .setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
-		    
-			// tx.commit();
-		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
-			signalInterface = null;
-		}
-		
-		return signalInterface;
-		
-    }
-
-	
 	protected List<Integer> getCustomSignalEnumLangInfoEnumKeysLst(CustomSignalEnumInfoHbn customSignalEnumInfoHbn) {
 		if(null == customSignalEnumInfoHbn) {
 			return null;
@@ -759,7 +700,7 @@ public class BeecomDB {
 			}
 			case BPPacket.VAL_TYPE_STRING:
 			{
-				CustomSignalStringInfoHbn customSignalStringInfoHbn = (CustomSignalStringInfoHbn)signalInterface;
+				// CustomSignalStringInfoHbn customSignalStringInfoHbn = (CustomSignalStringInfoHbn)signalInterface;
 				String v = (String)value;
 				if(v.length() > 0xFF) {
 					ret = false;
@@ -769,8 +710,8 @@ public class BeecomDB {
 			}
 			case BPPacket.VAL_TYPE_BOOLEAN:
 			{
-				CustomSignalU16InfoHbn customSignalU16InfoHbn = (CustomSignalU16InfoHbn)signalInterface;
-				Boolean v = (Boolean)value;
+				// CustomSignalU16InfoHbn customSignalU16InfoHbn = (CustomSignalU16InfoHbn)signalInterface;
+				// Boolean v = (Boolean)value;
 				break;
 			}
 			default:
@@ -907,7 +848,7 @@ public class BeecomDB {
 			}
 			case BPPacket.VAL_TYPE_BOOLEAN:
 			{
-				Boolean v = (Boolean)value;
+				// Boolean v = (Boolean)value;
 
 				break;
 			}
@@ -2972,10 +2913,6 @@ public class BeecomDB {
 			Util.logger(logger, Util.ERROR, e);
 		}
     }
-    
-    private boolean saveLanguageLang(Map<Integer, String> langMap) {
-    	return false;
-    }
 	
 	/*
 	public List<SystemSignalInfoUnit> getSysSigInfoMap(List<SystemSignalInfoHbn> systemSignalInfoHbnLst) {
@@ -3007,11 +2944,59 @@ public class BeecomDB {
 		
 	}
 	*/
+    
+    public static void dbConfigure() {
+    	/* set default configuration */
+    	dbConfigMap = new HashMap<>();
+    	dbConfigMap.put("Driver", dbDriverDefault);
+    	dbConfigMap.put("Host", dbHostDefault);
+    	dbConfigMap.put("Port", dbPortDefault);
+    	dbConfigMap.put("Name", dbNameDefault);
+    	dbConfigMap.put("User", dbUserDefault);
+    	dbConfigMap.put("Password", dbPasswordDefault);
+    	
+    	/* load the configuration file if any:
+    	 * Driver=com.mysql.jdbc.Driver;
+    	 * Host=localhost;
+    	 * Port=3306;
+    	 * Name=bc_server_db;
+    	 * User=root;
+    	 * Password=Ansersion; */
+		try {
+			FileInputStream fis = new FileInputStream("config/db_config.txt");
+			InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+			try (BufferedReader sysSigIn = new BufferedReader(isr)) {
+				String s;
+				String pattern = "(.+)=(.+);";
+				Pattern r = Pattern.compile(pattern);
+
+				while ((s = sysSigIn.readLine()) != null) {
+					Matcher m = r.matcher(s);
+					if (!m.find()) {
+						continue;
+					}
+					dbConfigMap.put(m.group(1), m.group(2));
+					Util.logger(logger, Util.INFO, m.group(1) + "->" + m.group(2));
+				}
+			}
+		} catch (Exception e) {
+			Util.logger(logger, Util.DEBUG, e);
+		}
+    }
 	
     public static SessionFactory buildSessionFactory() {  
+    	dbConfigure();
         try {  
-            // Create the SessionFactory from hibernate.cfg.xml  
-            return new Configuration().configure().buildSessionFactory();  
+        	Configuration configuration = new Configuration();
+        	configuration = configuration.configure();
+        	String url = "jdbc:mysql://" + dbConfigMap.get("Host") + ":" + dbConfigMap.get("Port") + "/" + dbConfigMap.get("Name") + "?useSSL=false";
+        	configuration.setProperty("hibernate.connection.driver_class", dbConfigMap.get("Driver"));
+        	configuration.setProperty("hibernate.connection.url", url);
+        	configuration.setProperty("hibernate.connection.username", dbConfigMap.get("User"));
+        	configuration.setProperty("hibernate.connection.password", dbConfigMap.get("Password"));
+        	
+            //  return new Configuration().configure("db_config.xml").buildSessionFactory();  
+        	return configuration.buildSessionFactory();  
         }  
         catch (Throwable ex) {  
             // Make sure you log the exception, as it might be swallowed  
@@ -3056,7 +3041,7 @@ public class BeecomDB {
 			// CustomSignalNameLangInfoHbn customSignalNameLangInfoHbn = null;
 			// CustomGroupLangInfoHbn customGroupLangInfoHbn = null;
 			// CustomUnitLangInfoHbn customUnitLangInfoHbn = null;
-			CustomSignalEnumInfoHbn customSignalEnumInfoHbn = null;
+			// CustomSignalEnumInfoHbn customSignalEnumInfoHbn = null;
 			while(itSih.hasNext()) {
 				signalInterfaceTmp = null;
 				SignalInfoHbn signalInfoHbn = itSih.next();

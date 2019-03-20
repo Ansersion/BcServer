@@ -2,7 +2,6 @@ package sys_sig_table;
 
 import java.util.Map;
 
-import other.BPValue;
 
 public class SysSigInfo {
 	private boolean alm;

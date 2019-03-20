@@ -9,8 +9,6 @@ import org.apache.mina.core.buffer.IoBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import db.CustomAlarmInfoUnit;
-import db.CustomSignalAlmInfoHbn;
 import db.CustomSignalEnumInfoHbn;
 import db.CustomSignalFloatInfoHbn;
 import db.CustomSignalI16InfoHbn;
@@ -145,7 +143,7 @@ public class BPPacketGETACK extends BPPacket {
 
 	@Override
 	public boolean assemblePayload() {
-		byte encodedByte;
+		// byte encodedByte;
 		boolean ret = false;
 		try {
 			VariableHeader vrb = getVrbHead();

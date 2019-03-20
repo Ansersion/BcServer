@@ -285,13 +285,13 @@ public class BPPacketREPORT extends BPPacket {
 					int signalNum = ioBuffer.getUnsignedShort();
 					int signalId;
 					int customInfoFlags;
-					boolean ifNotifing;
+					// boolean ifNotifing;
 					boolean ifAlarm;
 					boolean ifStatistics;
-					boolean ifDisplay;
-					short perm;
+					// boolean ifDisplay;
+					// short perm;
 					int groupLangId;
-					int accuracy;
+					// int accuracy;
 					int sigType;
 					short alarmClass, delayBeforeAlarm, delayAfterAlarm;
 					Map<Integer, Integer> enumLangMap;

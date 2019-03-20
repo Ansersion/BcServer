@@ -41,7 +41,7 @@ public class BPSysSigTable {
 	private List<SysSigInfo> sysSigInfoLst;
 
 	static BPSysSigTable sysSigTab = null;
-	public static final int BP_SYS_SIG_SET_VERSION = 0;
+	public static final int BP_SYS_SIG_SET_VERSION = 1;
 
 	public static BPSysSigTable getSysSigTableInstance() {
 		if (null == sysSigTab) {
@@ -54,9 +54,11 @@ public class BPSysSigTable {
 		sysSigInfoLst = new ArrayList<>();
 	}
 
+	/*
 	private List<SysSigInfo> getSysSigInfoLst() {
 		return sysSigInfoLst;
 	}
+	*/
 	
 	public SysSigInfo getSysSigInfo(int signalId) {
 		return sysSigInfoLst.get(signalId);

@@ -66,7 +66,7 @@ public class VariableHeader {
     	} finally {
     		globalPackSeqLock.unlock();
     	}
-        return globalPackSeq;
+        return ret;
     }
 	
 	public VariableHeader() {

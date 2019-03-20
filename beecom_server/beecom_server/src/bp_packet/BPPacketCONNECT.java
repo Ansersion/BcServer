@@ -22,6 +22,7 @@ public class BPPacketCONNECT extends BPPacket {
 	}
 
 	ParseVrbState prsVrbSt = ParseVrbState.PARSE_STATE_1;
+	private int sysSigTableVersion;
 
 	protected BPPacketCONNECT(FixedHeader fxHeader) {
 		super(fxHeader);
@@ -169,6 +170,8 @@ public class BPPacketCONNECT extends BPPacket {
 			byte[] password = new byte[passwordLen];
 			getIoBuffer().get(password);
 			
+			setSysSigTableVersion(getIoBuffer().getUnsignedShort());
+			
 			setPldUserName(new String(userName));
 			setPldPassword(new String(password));
 
@@ -227,6 +230,14 @@ public class BPPacketCONNECT extends BPPacket {
 		}
 
 		return true;
+	}
+
+	public int getSysSigTableVersion() {
+		return sysSigTableVersion;
+	}
+
+	public void setSysSigTableVersion(int sysSigTableVersion) {
+		this.sysSigTableVersion = sysSigTableVersion;
 	}
 
 

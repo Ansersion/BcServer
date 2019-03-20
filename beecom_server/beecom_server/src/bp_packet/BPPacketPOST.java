@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import other.CrcChecksum;
 import other.Util;
-import sys_sig_table.BPSysSigTable;
 
 /**
  * @author Ansersion

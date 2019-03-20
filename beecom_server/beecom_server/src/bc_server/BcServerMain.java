@@ -7,34 +7,15 @@ package bc_server;
 import java.io.*;
 
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import db.BeecomDB;
-import db.CustomSignalEnumInfoHbn;
-import db.CustomSignalEnumLangInfoHbn;
-import db.CustomSignalInfoHbn;
-import db.CustomSignalInfoUnit;
-import db.DevInfoHbn;
-import db.SignalInfoHbn;
-import db.SnInfoHbn;
-import db.SystemSignalCustomInfoUnit;
-import db.SystemSignalInfoHbn;
-import db.SystemSignalInfoUnit;
-import db.SystemSignalStringInfoHbn;
-import db.UserDevRelInfoHbn;
-import db.UserInfoHbn;
 import sys_sig_table.BPSysEnmLangResTable;
 import sys_sig_table.BPSysSigLangResTable;
 import sys_sig_table.BPSysSigTable;

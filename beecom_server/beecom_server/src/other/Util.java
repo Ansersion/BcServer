@@ -70,7 +70,11 @@ public class Util {
     public static final int ERROR = 5;
     public static final int NOTHING = 6;
     public static int level = VERBOSE;
+    
     public static void logger(Logger logger, int l, Exception e) {
+    	if(null == logger || null == e) {
+    		return;
+    	}
         StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw, true));
         String str = sw.toString();
@@ -91,6 +95,29 @@ public class Util {
                 logger.error(str);
                 break;
         }
+    }
+    
+    public static void logger(Logger logger, int l, String str) {
+    	if(null == logger || null == str) {
+    		return;
+    	}
+        switch(l) {
+        case VERBOSE:
+            logger.trace(str);
+            break;
+        case DEBUG:
+            logger.debug(str);
+            break;
+        case INFO:
+            logger.info(str);
+            break;
+        case WARN:
+            logger.warn(str);
+            break;
+        case ERROR:
+            logger.error(str);
+            break;
+    }
     }
 
 }

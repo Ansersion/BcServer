@@ -1,7 +1,5 @@
 package db;
 
-import bp_packet.BPPacket;
-
 public class CustomSignalInfoHbn {
     private Long id;
     private Boolean ifAlarm;

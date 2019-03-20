@@ -11,28 +11,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import db.BeecomDB;
-import db.CustomSignalBooleanInfoHbn;
-import db.CustomSignalEnumInfoHbn;
-import db.CustomSignalFloatInfoHbn;
-import db.CustomSignalI16InfoHbn;
-import db.CustomSignalI32InfoHbn;
 import db.CustomSignalInfoUnit;
-import db.CustomSignalStringInfoHbn;
-import db.CustomSignalU16InfoHbn;
-import db.CustomSignalU32InfoHbn;
-import db.SignalInfoHbn;
 import db.SignalInfoUnitInterface;
 import db.SystemSignalCustomInfoUnit;
 import db.SystemSignalInfoUnit;
 import other.BPError;
 import other.Util;
-import sys_sig_table.BPSysSigTable;
-import sys_sig_table.SysSigInfo;
 
 
 /**

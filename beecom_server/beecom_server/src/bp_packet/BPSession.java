@@ -275,7 +275,7 @@ public abstract class BPSession {
 	public BPValue getSysSigVal(Integer sigId) {
 		BPValue val = null;
 		if(sysSigMap.containsKey(sigId)) {
-			Object tmp = sysSigMap.get(sigId);
+			// Object tmp = sysSigMap.get(sigId);
 			// val = new BPValue(tmp.getType());
 			// val.setValStr(tmp.getValStr());
 		}
