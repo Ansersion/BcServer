@@ -119,5 +119,18 @@ public class Util {
             break;
     }
     }
+    
+    /* parse string to integer
+     * @return 0 when error occurred or the integer parsed*/
+    public static int parseInt(String s) {
+    	int ret = 0;
+    	try {
+    		ret = Integer.parseInt(s);
+    	} catch(Exception e) {
+    		ret = 0;
+    	}
+    	
+    	return ret;
+    }
 
 }

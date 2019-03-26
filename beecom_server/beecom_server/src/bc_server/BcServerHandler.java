@@ -37,6 +37,7 @@ import bp_packet.VariableHeader;
 import db.BeecomDB;
 import db.CustomSignalInfoUnit;
 import db.DeviceInfoUnit;
+import db.ServerChainHbn;
 import db.SignalInfoUnitInterface;
 import db.SystemSignalCustomInfoUnit;
 import db.UserInfoUnit;
@@ -167,6 +168,11 @@ public class BcServerHandler extends IoHandlerAdapter {
 					if (loginErrorEnum != BeecomDB.LoginErrorEnum.LOGIN_OK) {
 						return;
 					}
+					ServerChainHbn serverChainHbn = BeecomDB.getInstance().getServerChain(devUniqId);
+					if(null == serverChainHbn) {
+						return;
+					}
+					packAck.getPld().setServerChainHbn(serverChainHbn);
 					bpSession = new BPDeviceSession(session, devUniqId, password, deviceInfoUnit.getDevInfoHbn().getAdminId(), deviceInfoUnit.getDevInfoHbn().getSnId());
 					BeecomDB.getInstance().getDevUniqId2SessionMap().put(devUniqId, bpSession);
 					session.setAttribute(SESS_ATTR_BP_SESSION, bpSession);
@@ -180,19 +186,6 @@ public class BcServerHandler extends IoHandlerAdapter {
 					session.write(packAck);
 					session.closeOnFlush();
 				}
-
-			/*
-				if(!BeecomDB.getInstance().getDevUniqId2SessionMap().containsKey(devUniqId)) {
-					bpSession = new BPDeviceSession(session, devUniqId, password);
-					BeecomDB.getInstance().getDevUniqId2SessionMap().put(devUniqId, bpSession);
-				} else {
-					bpSession = BeecomDB.getInstance().getDevUniqId2SessionMap().get(devUniqId);
-				}
-				*/
-
-				
-
-				
 			}
 
 			int aliveTime = vrb.getAliveTime();

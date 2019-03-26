@@ -11,5 +11,6 @@ a.out
 .recommenders/*
 .recommenders
 *.log
+.DS_Store
 pom.xml
 

@@ -3,6 +3,7 @@
  */
 package bp_packet;
 
+import db.ServerChainHbn;
 import other.CrcChecksum;
 import sys_sig_table.BPSysSigTable;
 
@@ -70,18 +71,25 @@ public class BPPacketCONNACK extends BPPacket {
 	@Override
 	public boolean assemblePayload() {
 		byte encodedByte;
+		Payload payload;
+		ServerChainHbn serverChainHbn;
 		if(RET_CODE_OK != getVrbHead().getRetCode()) {
 			return false;
 		}
-		
-		encodedByte = (byte)getPld().getClntIdLen();
+		payload = getPld();
+		encodedByte = (byte)payload.getClntIdLen();
 		getIoBuffer().put(encodedByte);
-		
-		// short clientId = (short)getPld().getClntId();
-
-		// getIoBuffer().putUnsignedShort(clientId);
-
 		getIoBuffer().putUnsignedShort(BPSysSigTable.BP_SYS_SIG_SET_VERSION);
+		
+		serverChainHbn = payload.getServerChainHbn();
+		if(null == serverChainHbn) {
+			return false;
+		}
+		
+		encodedByte = serverChainHbn.getUpperServerType();
+		// set upper server
+		encodedByte = serverChainHbn.getLowerServerType();
+		// set lower server
 		
 		return true;
 	}

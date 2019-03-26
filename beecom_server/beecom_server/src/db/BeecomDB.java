@@ -1012,6 +1012,32 @@ public class BeecomDB {
 		return deviceUniqId;
 	}
 	
+	public ServerChainHbn getServerChain(long uniqDevId) {
+		if(uniqDevId <= 0) {
+			return null;
+		}
+
+		long deviceUniqId = 0;
+		ServerChainHbn serverChainHbn = null;
+		DevInfoHbn devInfoHbn = null;
+		// Transaction tx = null;
+		try (Session session = sessionFactory.openSession()) {
+			// tx = session.beginTransaction();
+			serverChainHbn = (ServerChainHbn)session  
+		            .createQuery(" from ServerChainHbn where clientId = :client_id ")
+		            .setParameter("client_id", uniqDevId)
+		            .uniqueResult();  
+			// tx.commit();
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			String str = sw.toString();
+			logger.error(str);
+		}
+		
+		return serverChainHbn;
+	}
+	
 	public List<SignalInfoHbn> getSysSigMapLst(long uniqDeviceId) {
 		/*
 		if(uniqDeviceId < 0) {
@@ -2582,6 +2608,13 @@ public class BeecomDB {
 		Transaction tx = null;
 		try (Session session = sessionFactory.openSession()) {
 			tx = session.beginTransaction();
+			
+			ServerChainHbn devServerChainHbn = (ServerChainHbn) session  
+		            .createQuery("from ServerChainHbn where clientId = :client_id")
+		            .setParameter("client_id", uniqDevId).uniqueResult();
+			if(null != devServerChainHbn) {
+				session.delete(devServerChainHbn);
+			}
 
 			DevInfoHbn devInfoHbn = session.get(DevInfoHbn.class, uniqDevId);
 			if(null == devInfoHbn) {
@@ -2900,7 +2933,18 @@ public class BeecomDB {
 						}
 					}
 				} catch (Exception e) {
+					throw e;
+					/*
 					Util.logger(logger, Util.ERROR, e);
+					try{
+		    			tx.rollback();
+		    			
+		    		}catch(RuntimeException rbe){
+		    			Util.logger(logger, Util.ERROR, rbe);
+		    			throw rbe;
+		    		}
+		    		*/
+					
 				}
 				session.delete(signalInfoHbn);
 
@@ -2911,6 +2955,12 @@ public class BeecomDB {
 			tx.commit();
 		} catch (Exception e) {
 			Util.logger(logger, Util.ERROR, e);
+			try{
+    			tx.rollback();
+    		}catch(RuntimeException rbe){
+    			Util.logger(logger, Util.ERROR, rbe);
+    		}
+			
 		}
     }
 	

@@ -32,6 +32,7 @@
    <mapping resource="db/dev_info.hbm.xml"/>
    <mapping resource="db/sn_info.hbm.xml"/>
    <mapping resource="db/user_dev_rel_info.hbm.xml"/>
+   <mapping resource="db/server_chain.hbm.xml"/>
    <mapping resource="db/signal_info.hbm.xml"/>
    
      

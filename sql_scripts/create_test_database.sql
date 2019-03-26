@@ -1,9 +1,8 @@
-CREATE DATABASE  IF NOT EXISTS `bc_server_db` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
--- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.17, for macos10.12 (x86_64)
 --
--- Host: localhost    Database: bc_server_db
+-- Host: 127.0.0.1    Database: bc_server_db
 -- ------------------------------------------------------
--- Server version	5.7.20
+-- Server version	8.0.11
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -644,6 +643,37 @@ INSERT INTO `dev_info` VALUES (1,'2018-08-14 08:14:56','2019-01-29 09:47:13',1,1
 UNLOCK TABLES;
 
 --
+-- Table structure for table `server_chain`
+--
+
+DROP TABLE IF EXISTS `server_chain`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `server_chain` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ctime` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `mtime` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `client_id` int(10) unsigned NOT NULL,
+  `upper_server` varchar(128) DEFAULT '',
+  `upper_server_type` tinyint(4) DEFAULT '0',
+  `lower_server` varchar(128) DEFAULT '',
+  `lower_server_type` tinyint(4) DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `i_dev_id` (`client_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `server_chain`
+--
+
+LOCK TABLES `server_chain` WRITE;
+/*!40000 ALTER TABLE `server_chain` DISABLE KEYS */;
+INSERT INTO `server_chain` VALUES (1,'2019-03-26 11:53:59','2019-03-26 12:12:56',1,'',0,'192.168.1.2',1),(2,'2019-03-26 11:53:59','2019-03-26 11:53:59',2,'',0,'',0),(3,'2019-03-26 11:53:59','2019-03-26 11:53:59',3,'',0,'',0);
+/*!40000 ALTER TABLE `server_chain` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `signal_info`
 --
 
@@ -812,7 +842,7 @@ CREATE TABLE `system_signal_enum_lang_info` (
   `enum_val` int(11) NOT NULL DEFAULT '0',
   `sys_sig_enm_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1108,14 +1138,6 @@ LOCK TABLES `user_info` WRITE;
 INSERT INTO `user_info` VALUES (1,'2018-04-24 10:40:01','2018-04-24 10:40:01','Ansersion1','@@@@?1','@@@@?1',0,'1a7d8f0ae2600087a30fda710f1bfd655287f4ee609bc654c634bce355a6fd41'),(2,'2018-04-24 10:40:01','2018-04-24 10:40:01','Ansersion2','@@@@?2','@@@@?2',0,'e8a3486b600b41c8336ae755550df518670f2aa19d61e77b64c60891f08e89a8'),(3,'2018-04-24 10:40:01','2018-04-24 10:40:01','Ansersion3','@@@@?3','@@@@?3',1,'357f30611fe5930e1b7b5638e192aeb7c08930e20d8d96bcbd76c831715cd227');
 /*!40000 ALTER TABLE `user_info` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Dumping events for database 'bc_server_db'
---
-
---
--- Dumping routines for database 'bc_server_db'
---
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -1126,4 +1148,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-01-29 17:49:30
+-- Dump completed on 2019-03-26 20:23:41
