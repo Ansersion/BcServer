@@ -1,5 +1,7 @@
 package server_chain;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,8 +100,27 @@ public class ServerChain {
      * @return 0 when error occurred or the integer parsed*/
     public static int parseInt(String s) {
     	int ret = 0;
+    	if(null == s || s.isEmpty()) {
+    		return ret;
+    	}
     	try {
     		ret = Integer.parseInt(s);
+    	} catch(Exception e) {
+    		ret = 0;
+    	}
+    	
+    	return ret;
+    }
+    
+    /* parse string(hex) to integer
+     * @return 0 when error occurred or the integer parsed*/
+    public static int parseIntHex(String s) {
+    	int ret = 0;
+    	if(null == s || s.isEmpty()) {
+    		return ret;
+    	}
+    	try {
+    		ret = Integer.parseInt(s, 16);
     	} catch(Exception e) {
     		ret = 0;
     	}

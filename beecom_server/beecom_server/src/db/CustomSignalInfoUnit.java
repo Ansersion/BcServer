@@ -201,7 +201,7 @@ public class CustomSignalInfoUnit implements SignalInfoUnitInterface {
 			}
 			case BPPacket.VAL_TYPE_STRING: {
 				String v = (String)value;
-				if(v.length() <= BPPacket.MAX_CUSTOM_SIGNAL_STRING_LENGTH) {
+				if(v.length() <= BPPacket.MAX_STR_LENGTH) {
 					ret = false;
 				}
 				break;

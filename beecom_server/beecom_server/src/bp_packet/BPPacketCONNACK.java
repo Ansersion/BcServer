@@ -3,8 +3,11 @@
  */
 package bp_packet;
 
+import org.apache.mina.core.buffer.IoBuffer;
+
 import db.ServerChainHbn;
 import other.CrcChecksum;
+import server_chain.ServerChain;
 import sys_sig_table.BPSysSigTable;
 
 /**
@@ -57,13 +60,17 @@ public class BPPacketCONNACK extends BPPacket {
 	public boolean assembleVariableHeader() throws BPAssembleVrbHeaderException {
 		super.assembleVariableHeader();
 		byte encodedByte;
+		VariableHeader vrb = getVrbHead();
+		IoBuffer ioBuffer = getIoBuffer();
 		
-		encodedByte = (byte)getVrbHead().getLevel();
-		getIoBuffer().put(encodedByte);
-		encodedByte = getVrbHead().getFlags();
-		getIoBuffer().put(encodedByte);
+		encodedByte = (byte)vrb.getLevel();
+		ioBuffer.put(encodedByte);
+		encodedByte = vrb.getFlags();
+		ioBuffer.put(encodedByte);
+		ioBuffer.putUnsignedShort(vrb.getAliveTime());
+		ioBuffer.put((byte)vrb.getTimeout());
 		encodedByte = (byte)getVrbHead().getRetCode();
-		getIoBuffer().put(encodedByte);
+		ioBuffer.put(encodedByte);
 		
 		return true;
 	}
@@ -73,13 +80,12 @@ public class BPPacketCONNACK extends BPPacket {
 		byte encodedByte;
 		Payload payload;
 		ServerChainHbn serverChainHbn;
+		IoBuffer ioBuffer = getIoBuffer();
 		if(RET_CODE_OK != getVrbHead().getRetCode()) {
 			return false;
 		}
 		payload = getPld();
-		encodedByte = (byte)payload.getClntIdLen();
-		getIoBuffer().put(encodedByte);
-		getIoBuffer().putUnsignedShort(BPSysSigTable.BP_SYS_SIG_SET_VERSION);
+		ioBuffer.putUnsignedShort(BPSysSigTable.BP_SYS_SIG_SET_VERSION);
 		
 		serverChainHbn = payload.getServerChainHbn();
 		if(null == serverChainHbn) {
@@ -87,11 +93,64 @@ public class BPPacketCONNACK extends BPPacket {
 		}
 		
 		encodedByte = serverChainHbn.getUpperServerType();
-		// set upper server
+		if(!packServer(ioBuffer, encodedByte, serverChainHbn.getUpperServer())) {
+			return false;
+		}
 		encodedByte = serverChainHbn.getLowerServerType();
-		// set lower server
+		
+		if(!packServer(ioBuffer, encodedByte, serverChainHbn.getLowerServer())) {
+			return false;
+		}
 		
 		return true;
+	}
+	
+	private boolean packServer(IoBuffer ioBuffer, int serverType, String serverAddress) {
+		boolean ret = false;
+		if(null == ioBuffer) {
+			return ret;
+		}
+		
+		switch(serverType) {
+		case ServerChain.TYPE_DEFAULT: {
+			ioBuffer.put((byte)serverType);
+			ret = true;
+			break;
+		}
+		case ServerChain.TYPE_IPv4: {
+			String array[] = serverAddress.split("\\.");
+			if(null != array && 4 == array.length) {
+				ioBuffer.put((byte)serverType);
+				for(int i = 0; i < array.length; i++) {
+					ioBuffer.put((byte)ServerChain.parseInt(array[i]));
+				}
+				ret = true;
+			}
+			break;
+		}
+		case ServerChain.TYPE_IPv6: {
+			String array[] = serverAddress.split(":");
+			if(null != array && 8 == array.length) {
+				ioBuffer.put((byte)serverType);
+				for(int i = 0; i < array.length; i++) {
+					ioBuffer.putUnsignedShort(ServerChain.parseIntHex(array[i]));
+				}
+				ret = true;
+			}
+			break;
+		}
+		case ServerChain.TYPE_DOMAIN: {
+			ioBuffer.put((byte)serverType);
+			if(BPUtils.assembleStr(ioBuffer, serverAddress) == 0) {
+				ret = true;
+			}
+			break;
+		}
+		default:
+			break;
+		}
+		
+		return ret;
 	}
 
 }

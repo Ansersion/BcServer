@@ -51,11 +51,10 @@ public class BPPacket implements BPPacketInterface {
 	public static final String VAL_STR_UNLIMIT ="";
 	public static final boolean VAL_BOOLEAN_UNLIMIT =false;
 	public static final int INVALID_LANGUAGE_ID = 0;
-	public static final int MAX_CUSTOM_SIGNAL_NAME_LENGTH = 255;
-	public static final int MAX_CUSTOM_SIGNAL_UNIT_LENGTH = 127;
-	public static final int MAX_CUSTOM_SIGNAL_GROUP_LENGTH = 127;
-	public static final int MAX_CUSTOM_SIGNAL_STRING_LENGTH = 255;
+	public static final int MAX_STR_LENGTH = 255;
 	public static final int SYSTEM_UNIT_LANGUAGE_FLAG = 0x80;
+	
+	
 	
 	public static final long INVALID_SIGNAL_MAP_CHECKSUM = 0x7FFFFFFFFFFFFFFFL;
 	

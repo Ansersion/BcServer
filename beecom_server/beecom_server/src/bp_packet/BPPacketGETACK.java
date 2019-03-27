@@ -412,8 +412,8 @@ public class BPPacketGETACK extends BPPacket {
 								if(null != stringTmp) {
 									byte[] stringTmpBytes = stringTmp.getBytes();
 									int len = stringTmpBytes.length;
-									if(len > MAX_CUSTOM_SIGNAL_STRING_LENGTH) {
-										len = MAX_CUSTOM_SIGNAL_STRING_LENGTH;
+									if(len > MAX_STR_LENGTH) {
+										len = MAX_STR_LENGTH;
 									}
 									buffer.putUnsigned(len);
 									if(len > 0) {
@@ -515,7 +515,7 @@ public class BPPacketGETACK extends BPPacket {
 							langSupportMaskTmp &= (~langSupportMaskByte);
 							buffer.putUnsigned(langSupportMaskByte);
 							String name = nameLangMap.get(i);
-							if (null == name || name.getBytes().length > BPPacket.MAX_CUSTOM_SIGNAL_NAME_LENGTH) {
+							if (null == name || name.getBytes().length > BPPacket.MAX_STR_LENGTH) {
 								logger.error("inner error: null == nameLangMap.get({})", i);
 								break;
 							}
@@ -528,7 +528,7 @@ public class BPPacketGETACK extends BPPacket {
 								buffer.putUnsigned(0);
 							} else {
 								String unit = unitLangMap.get(i);
-								if (null == unit || unit.getBytes().length > BPPacket.MAX_CUSTOM_SIGNAL_UNIT_LENGTH) {
+								if (null == unit || unit.getBytes().length > BPPacket.MAX_STR_LENGTH) {
 									logger.error("inner error: null == nameLangMap.get({})", i);
 									break;
 								}
@@ -542,7 +542,7 @@ public class BPPacketGETACK extends BPPacket {
 								buffer.putUnsigned(0);
 							} else {
 								String group = groupLangMap.get(i);
-								if (null == group || group.getBytes().length > BPPacket.MAX_CUSTOM_SIGNAL_UNIT_LENGTH) {
+								if (null == group || group.getBytes().length > BPPacket.MAX_STR_LENGTH) {
 									logger.error("inner error: null == nameLangMap.get({})", i);
 									break;
 								}
@@ -689,8 +689,8 @@ public class BPPacketGETACK extends BPPacket {
 							
 							String defVal = customSignalStringInfoHbn.getDefVal();
 							int strlen = customSignalStringInfoHbn.getDefVal().getBytes().length;
-							if (strlen > BPPacket.MAX_CUSTOM_SIGNAL_STRING_LENGTH) {
-								strlen = BPPacket.MAX_CUSTOM_SIGNAL_STRING_LENGTH;
+							if (strlen > BPPacket.MAX_STR_LENGTH) {
+								strlen = BPPacket.MAX_STR_LENGTH;
 							}
 							buffer.putUnsigned(strlen);
 							if(strlen > 0) {
