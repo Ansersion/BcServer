@@ -46,23 +46,6 @@ public class FixedHeader {
 	}
 	
 	public void setRemainLen(IoBuffer io) throws BPParseFxHeaderException{
-		/*
-		if(io.remaining() >= 2) {
-			int multiplier = 1;
-			int len = 0;
-			byte encodedByte;
-			do {
-				encodedByte = io.get();
-				len += (encodedByte & 0x7F) * multiplier;
-				multiplier *= 128;
-				if (multiplier > 128) {
-					throw new BPParseFxHeaderException("Remaining length too long");
-				}
-			} while ((encodedByte & 0x80) != 0);
-			
-			remainingLength = len;
-		}
-		*/
 		remainingLength = io.get() << 8;
 		remainingLength += (io.get() & 0xFF); 
 	}

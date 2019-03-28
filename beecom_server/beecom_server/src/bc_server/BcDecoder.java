@@ -23,20 +23,16 @@ import bp_packet.FixedHeader;
 import bp_packet.Payload;
 import bp_packet.VariableHeader;
 import other.CrcChecksum;
+import other.Util;
 
 public class BcDecoder extends CumulativeProtocolDecoder {
-	
 	private static final Logger logger = LoggerFactory.getLogger(BcDecoder.class); 
 
 	public enum DecodeState {
 		DEC_INVALID, DEC_FX_HEAD, DEC_REMAINING_DATA;
 	}
 
-	public static final String NEW_CONNECTION = "NEW CONNECTION";
-	public static final String BAD_CONNECTION = "BAD CONNECTION";
-	public static final String FIXED_HEADER = "FIXED HEADER";
-	public static final String VARIABLE_HEADER = "VARIABLE HEADER";
-	public static final String PAYLOAD = "PAYLOAD";
+	public static final String OLD_CONNECTION = "OLD CONNECTION";
 	public static final String CRC_CHECKSUM = "CRC CHECKSUM";
 	public static final String DECODE_STATE = "DECODE STATE";
 	public static final String BP_PACKET = "BP PACKET";
@@ -44,45 +40,27 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 	@Override
 	protected boolean doDecode(IoSession session, IoBuffer ioIn,
 			ProtocolDecoderOutput decoderOut) throws Exception {
-		
 		boolean ret = false;
-	
 		
-		if (!session.containsAttribute(NEW_CONNECTION)) {
-			session.setAttribute(NEW_CONNECTION, true);
-			session.setAttribute(BAD_CONNECTION, false);
-			session.setAttribute(FIXED_HEADER, new FixedHeader());
-			session.setAttribute(VARIABLE_HEADER, new VariableHeader());
-			session.setAttribute(PAYLOAD, new Payload());
+		if (!session.containsAttribute(OLD_CONNECTION)) {
+			session.setAttribute(OLD_CONNECTION, true);
 			session.setAttribute(DECODE_STATE, DecodeState.DEC_FX_HEAD);
 		}
 
 		DecodeState currState = (DecodeState) session
 				.getAttribute(DECODE_STATE);
 		
-
 		switch (currState) {
 		case DEC_FX_HEAD:
-			// The length of fixed-header is 3 at most 
 			if (ioIn.remaining() >= BPPacket.FIXED_HEADER_SIZE) { 
-				/*
-				byte[] tst = ioIn.array();
-				if(tst[0] == 'T' && tst[1] == 'S' && tst[2] == 'T') {
-					ioIn.get(new byte[ioIn.remaining()]);
-					decoderOut.write("TST");
-					return true;
-				}
-				*/
 				BPPacket bpPack = BPPackFactory.createBPPack(ioIn);
 				if(null == bpPack) {
 					throw new BPParseFxHeaderException("Error: cannot create BPPacket!");
 				}
-				bpPack.putFxHead2Buf();
 				session.setAttribute(BP_PACKET, bpPack);
-				
 				session.setAttribute(DECODE_STATE, DecodeState.DEC_REMAINING_DATA);
+				/* NO break here!!! */
 			} else {
-				ret = false;
 				break;
 			}
 		case DEC_REMAINING_DATA:
@@ -94,37 +72,40 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 				ioIn.get(remainingData);
 				int vrbPos = packIoBuf.position();
 				packIoBuf.put(remainingData);
-				bpPack.getIoBuffer().flip();
-				bpPack.getIoBuffer().limit();
-				byte[] data = new byte[bpPack.getIoBuffer().limit() - 4];
+				packIoBuf.flip();
+				packIoBuf.limit();
+				byte[] data = new byte[packIoBuf.limit() - 4];
 				
 				packIoBuf.get(data);
-				long crcGet = packIoBuf.getUnsignedInt();
+				int crcSize = (fxHead.getCrcChk() == CrcChecksum.CRC32 ? 4 : 2);
+				long crcGet;
+				if(4 == crcSize) {
+					crcGet = packIoBuf.getUnsignedInt();
+				} else {
+					crcGet = packIoBuf.getUnsignedShort();
+				}
 				if(!CrcChecksum.crcCheck(data, fxHead.getCrcChk(), crcGet)) {
-					session.setAttribute(BAD_CONNECTION, true);
 					session.setAttribute(DECODE_STATE, DecodeState.DEC_FX_HEAD);
-					ret = false;
 					return ret;
 				}
 				try {
 					packIoBuf.rewind();
 					packIoBuf.position(vrbPos);
-					bpPack.parseVariableHeader();
-					bpPack.parsePayload();
+					if(0 != bpPack.parseVariableHeader()) {
+						return ret;
+					}
+					if(0 != bpPack.parsePayload()) {
+						return ret;
+					}
 					
 				} catch(Exception e) {
 					session.setAttribute(DECODE_STATE, DecodeState.DEC_FX_HEAD);
-		            StringWriter sw = new StringWriter();
-		            e.printStackTrace(new PrintWriter(sw, true));
-		            String str = sw.toString();
-		            logger.error(str);
+		            Util.logger(logger, Util.ERROR, e);
 					throw e;
 				}
 				session.setAttribute(DECODE_STATE, DecodeState.DEC_FX_HEAD);
 				decoderOut.write(bpPack);
 				ret = true;
-			} else {
-				ret = false;
 			}
 			break;
 		default:

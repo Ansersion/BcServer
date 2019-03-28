@@ -170,19 +170,7 @@ public class BPPacket implements BPPacketInterface {
 	public void putFxHead2Buf() {
 		bpPacketData.clear();
 		bpPacketData.put(fxHeader.getFirstByte());
-		// int len = fxHeader.getRemainingLen();
 		bpPacketData.putUnsignedShort(fxHeader.getRemainingLen());
-		/*
-		byte encodedByte;
-		do {
-			encodedByte = (byte)(len % 128);
-			len = len / 128;
-			if(len > 0) {
-				encodedByte |= 128;
-			}
-			bpPacketData.put(encodedByte);
-		} while (len > 0);
-		*/
 	}
 
 	/**

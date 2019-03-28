@@ -26,6 +26,8 @@ public class BPPacketCONNACK extends BPPacket {
 	public static final int RET_CODE_CRC_CHECK_ERR = 0x07;
 	public static final int RET_CODE_CLNT_ID_INVALID = 0x08;
 	public static final int RET_CODE_CLNT_UNKNOWN = 0x09;
+	
+	public static final int RET_CODE_SERVER_CHAIN_INVALID = 0x10;
 
 	protected BPPacketCONNACK(FixedHeader fxHeader) {
 		super(fxHeader);
@@ -89,7 +91,14 @@ public class BPPacketCONNACK extends BPPacket {
 		
 		serverChainHbn = payload.getServerChainHbn();
 		if(null == serverChainHbn) {
-			return false;
+			// TODO: return true when user connect
+			if(!packServer(ioBuffer, ServerChain.TYPE_DEFAULT, null)) {
+				return false;
+			}
+			if(!packServer(ioBuffer, ServerChain.TYPE_DEFAULT, null)) {
+				return false;
+			}
+			return true;
 		}
 		
 		encodedByte = serverChainHbn.getUpperServerType();

@@ -983,7 +983,7 @@ public class BeecomDB {
 		try (Session session = sessionFactory.openSession()) {
 			tx = session.beginTransaction();
 		    snInfoHbn = (SnInfoHbn)session  
-		            .createQuery(" from SnInfoHbn where sn = ? ")
+		            .createQuery(" from SnInfoHbn where sn = ?0 ")
 		            .setParameter(0, sn)
 		            .uniqueResult();  
 		    if(snInfoHbn != null) {
@@ -1017,22 +1017,14 @@ public class BeecomDB {
 			return null;
 		}
 
-		long deviceUniqId = 0;
 		ServerChainHbn serverChainHbn = null;
-		DevInfoHbn devInfoHbn = null;
-		// Transaction tx = null;
 		try (Session session = sessionFactory.openSession()) {
-			// tx = session.beginTransaction();
 			serverChainHbn = (ServerChainHbn)session  
-		            .createQuery(" from ServerChainHbn where clientId = :client_id ")
-		            .setParameter("client_id", uniqDevId)
+		            .createQuery(" from ServerChainHbn where clientId=?0 ")
+		            .setParameter("0", uniqDevId)
 		            .uniqueResult();  
-			// tx.commit();
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 		}
 		
 		return serverChainHbn;

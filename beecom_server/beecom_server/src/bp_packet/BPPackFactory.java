@@ -85,6 +85,7 @@ public class BPPackFactory {
 				fxHead.setBPType(b);
 				fxHead.setFlags(b);
 				fxHead.setRemainLen(io);
+				ret.putFxHead2Buf();
 			}
 		} catch(Exception e) {
             StringWriter sw = new StringWriter();
