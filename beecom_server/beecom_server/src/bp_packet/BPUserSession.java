@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import db.UserInfoUnit;
+import other.Util;
 
 public class BPUserSession extends BPSession {
 	private static final Logger logger = LoggerFactory.getLogger(BPUserSession.class);
@@ -42,10 +43,7 @@ public class BPUserSession extends BPSession {
 		try {
 			this.userName = this.userInfoUnit.getUserInfoHbn().getName();
 		} catch(Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 		}
 	}
 	

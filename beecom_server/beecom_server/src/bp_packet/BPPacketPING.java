@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import other.CrcChecksum;
+import other.Util;
 
 /**
  * @author Ansersion
@@ -50,10 +51,7 @@ public class BPPacketPING extends BPPacket {
 			int packSeq = getIoBuffer().getUnsignedShort();
 			getVrbHead().setPackSeq(packSeq);
 		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			throw e;
 		}
 

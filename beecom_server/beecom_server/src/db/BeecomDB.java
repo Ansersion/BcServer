@@ -95,7 +95,7 @@ public class BeecomDB {
 
 	private BeecomDB() {
 		logger = LoggerFactory.getLogger(this.getClass());
-		sessionFactory = buildSessionFactory(); 
+
 		String s = "Info: Create BeecomDB";
 		logger.info(s);
 		userInfoRecLst = new ArrayList<>();
@@ -206,10 +206,7 @@ public class BeecomDB {
 				}
 			}
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			userInfoUnit = null;
 			result = LoginErrorEnum.PASSWORD_INVALID;
 		}
@@ -255,10 +252,7 @@ public class BeecomDB {
 			tx.commit();
 
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			result = GetSnErrorEnum.GET_SN_PERMISSION_DENY;
 		}
 		
@@ -313,10 +307,7 @@ public class BeecomDB {
 			tx.commit();
 
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			result = false;
 		}
 		
@@ -349,10 +340,7 @@ public class BeecomDB {
 			tx.commit();
 
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			ret = LoginErrorEnum.PASSWORD_INVALID;
 		}
 		
@@ -409,10 +397,7 @@ public class BeecomDB {
 			tx.commit();
 
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			ret = false;
 		}
 		
@@ -435,10 +420,7 @@ public class BeecomDB {
 				    
 					tx.commit();
 				} catch (Exception e) {
-					StringWriter sw = new StringWriter();
-					e.printStackTrace(new PrintWriter(sw, true));
-					String str = sw.toString();
-					logger.error(str);
+					Util.logger(logger, Util.ERROR, e);
 					customSignalInterface = null;
 				}
 			break;
@@ -466,10 +448,7 @@ public class BeecomDB {
 				    
 					tx.commit();
 				} catch (Exception e) {
-					StringWriter sw = new StringWriter();
-					e.printStackTrace(new PrintWriter(sw, true));
-					String str = sw.toString();
-					logger.error(str);
+					Util.logger(logger, Util.ERROR, e);
 					customSignalInterface = null;
 				}
 			break;
@@ -481,10 +460,7 @@ public class BeecomDB {
 				    
 					tx.commit();
 				} catch (Exception e) {
-					StringWriter sw = new StringWriter();
-					e.printStackTrace(new PrintWriter(sw, true));
-					String str = sw.toString();
-					logger.error(str);
+					Util.logger(logger, Util.ERROR, e);
 					customSignalInterface = null;
 				}
 			break;
@@ -496,10 +472,7 @@ public class BeecomDB {
 				    
 					tx.commit();
 				} catch (Exception e) {
-					StringWriter sw = new StringWriter();
-					e.printStackTrace(new PrintWriter(sw, true));
-					String str = sw.toString();
-					logger.error(str);
+					Util.logger(logger, Util.ERROR, e);
 					customSignalInterface = null;
 				}
 			break;
@@ -511,10 +484,7 @@ public class BeecomDB {
 				    
 					tx.commit();
 				} catch (Exception e) {
-					StringWriter sw = new StringWriter();
-					e.printStackTrace(new PrintWriter(sw, true));
-					String str = sw.toString();
-					logger.error(str);
+					Util.logger(logger, Util.ERROR, e);
 					customSignalInterface = null;
 				}
 			break;
@@ -526,10 +496,7 @@ public class BeecomDB {
 				    
 					tx.commit();
 				} catch (Exception e) {
-					StringWriter sw = new StringWriter();
-					e.printStackTrace(new PrintWriter(sw, true));
-					String str = sw.toString();
-					logger.error(str);
+					Util.logger(logger, Util.ERROR, e);
 					customSignalInterface = null;
 				}
 			break;
@@ -541,10 +508,7 @@ public class BeecomDB {
 				    
 					tx.commit();
 				} catch (Exception e) {
-					StringWriter sw = new StringWriter();
-					e.printStackTrace(new PrintWriter(sw, true));
-					String str = sw.toString();
-					logger.error(str);
+					Util.logger(logger, Util.ERROR, e);
 					customSignalInterface = null;
 				}
 			break;
@@ -570,10 +534,7 @@ public class BeecomDB {
 		    
 			tx.commit();
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			customSignalEnumLangInfoEnumKeysLst = null;
 		}
 		
@@ -718,10 +679,7 @@ public class BeecomDB {
 				ret = false;
 			}
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			ret = false;
 		}
 		
@@ -856,10 +814,7 @@ public class BeecomDB {
 				ret = false;
 			}
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			ret = false;
 		}
 		
@@ -998,10 +953,7 @@ public class BeecomDB {
 		    
 			tx.commit();
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			deviceUniqId = 0;
 		}
 		if(null != deviceInfoUnit && deviceUniqId > 0) {
@@ -1103,10 +1055,7 @@ public class BeecomDB {
 								    
 									tx.commit();
 								} catch (Exception e) {
-									StringWriter sw = new StringWriter();
-									e.printStackTrace(new PrintWriter(sw, true));
-									String str = sw.toString();
-									logger.error(str);
+									Util.logger(logger, Util.ERROR, e);
 									systemSignalInterface = null;
 								}
 							break;
@@ -1295,10 +1244,7 @@ public class BeecomDB {
 			
 			tx.commit();
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 		}
 		
 		return customSignalLangMap;
@@ -1336,10 +1282,7 @@ public class BeecomDB {
 			
 			tx.commit();
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 		}
 		
 		return customUnitLangMap;
@@ -1377,10 +1320,7 @@ public class BeecomDB {
 			
 			tx.commit();
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 		}
 		
 		return customGroupLangMap;
@@ -1428,10 +1368,7 @@ public class BeecomDB {
 			
 			tx.commit();
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			customSignalEnumLangMap = null;
 		}
 		
@@ -1464,10 +1401,7 @@ public class BeecomDB {
 			
 			tx.commit();
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 		}
 		
 		return customDefaultStringLangMap;
@@ -1504,10 +1438,7 @@ public class BeecomDB {
 			
 			tx.commit();
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			customAlarmInfoUnit = null;
 		}
 		
@@ -1591,10 +1522,7 @@ public class BeecomDB {
 
 							tx.commit();
 						} catch (Exception e) {
-							StringWriter sw = new StringWriter();
-							e.printStackTrace(new PrintWriter(sw, true));
-							String str = sw.toString();
-							logger.error(str);
+							Util.logger(logger, Util.ERROR, e);
 							signalInterface = null;
 						}
 						break;
@@ -1928,10 +1856,7 @@ public class BeecomDB {
 		    
 			tx.commit();
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 		}
 		return sigInfoHbnLst;
 	}
@@ -1993,10 +1918,7 @@ public class BeecomDB {
 
 			tx.commit();
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			// systemSignalInfoHbnLst = null;
 		}
 		
@@ -2026,10 +1948,7 @@ public class BeecomDB {
 
 			tx.commit();
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			customSignalInfoHbnLst = null;
 		}
 		
@@ -2053,10 +1972,7 @@ public class BeecomDB {
 			tx.commit();
 			ret = true;
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			ret = false;
 		}
     	return ret;
@@ -2125,10 +2041,7 @@ public class BeecomDB {
 			}
 			tx.commit();
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			deviceInfoMap = null;
 		}
     	return deviceInfoMap;
@@ -2151,10 +2064,7 @@ public class BeecomDB {
 
 			tx.commit();
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 		}
     	return ret;
     }
@@ -2183,10 +2093,7 @@ public class BeecomDB {
 			tx.commit();
 			ret = true;
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			ret = false;
 		}
     	return ret;
@@ -2228,10 +2135,7 @@ public class BeecomDB {
 			tx.commit();
 			ret = true;
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			ret = false;
 		}
     	return ret;
@@ -2582,10 +2486,7 @@ public class BeecomDB {
 				
 				tx.commit();
 			} catch (Exception e) {
-				StringWriter sw = new StringWriter();
-				e.printStackTrace(new PrintWriter(sw, true));
-				String str = sw.toString();
-				logger.error(str);
+				Util.logger(logger, Util.ERROR, e);
 			}
 		}  
 		return 0;
@@ -3288,11 +3189,7 @@ public class BeecomDB {
 			bpDeviceSession.setSignalId2InfoUnitMap(signalId2InfoUnitMap);
 			tx.commit();
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
-			ret = false;
+			Util.logger(logger, Util.ERROR, e);
 		}
 
     	return ret;
@@ -3333,10 +3230,7 @@ public class BeecomDB {
 			
 			tx.commit();
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 		}
 	    
     }
@@ -3374,10 +3268,7 @@ public class BeecomDB {
 			
 			tx.commit();
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 		}
 	    
     }

@@ -28,6 +28,7 @@ import db.SystemSignalI32InfoHbn;
 import db.SystemSignalStringInfoHbn;
 import db.SystemSignalU16InfoHbn;
 import db.SystemSignalU32InfoHbn;
+import other.Util;
 import sys_sig_table.BPSysSigTable;
 import sys_sig_table.SysSigInfo;
 
@@ -85,10 +86,7 @@ public class BPPacketREPORT extends BPPacket {
 			packSeq = ioBuf.getUnsignedShort();
 
 		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			throw e;
 		}
 
@@ -117,10 +115,7 @@ public class BPPacketREPORT extends BPPacket {
 			packSeq = BPPacket.assemble2ByteBigend(packSeqMsg, packSeqLsb);
 
 		} catch (Exception e) {
-	        StringWriter sw = new StringWriter();
-	        e.printStackTrace(new PrintWriter(sw, true));
-	        String str = sw.toString();
-	        logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			throw e;
 		}
 
@@ -153,10 +148,7 @@ public class BPPacketREPORT extends BPPacket {
 			}while(!endFlag);	
 
 		} catch (Exception e) {
-	        StringWriter sw = new StringWriter();
-	        e.printStackTrace(new PrintWriter(sw, true));
-	        String str = sw.toString();
-	        logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			throw e;
 		}
 
@@ -174,10 +166,7 @@ public class BPPacketREPORT extends BPPacket {
 			int packSeqTmp = getIoBuffer().getUnsignedShort();
 			getVrbHead().setPackSeq(packSeqTmp);
 		} catch (Exception e) {
-	        StringWriter sw = new StringWriter();
-	        e.printStackTrace(new PrintWriter(sw, true));
-	        String str = sw.toString();
-	        logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			throw e;
 		}
 
@@ -701,10 +690,7 @@ public class BPPacketREPORT extends BPPacket {
 			}
 
 		} catch (Exception e) {
-	        StringWriter sw = new StringWriter();
-	        e.printStackTrace(new PrintWriter(sw, true));
-	        String str = sw.toString();
-	        logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 		}
 		return 0;
 	}

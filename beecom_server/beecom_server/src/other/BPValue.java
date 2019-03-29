@@ -101,10 +101,7 @@ public class BPValue {
 				break;
 			}
 		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 		}
 	}
 
@@ -233,10 +230,7 @@ public class BPValue {
 				break;
 			}
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			dst = null;
 		}
 		

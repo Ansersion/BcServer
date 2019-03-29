@@ -121,10 +121,7 @@ public class BPSysSigLangResTable {
 		try {
 			ret = sysSigLangResLst.get(dist).get(offset).get(lang);
 		}catch(Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			ret = "NULL";
 		}
 		return ret;

@@ -14,6 +14,8 @@ import org.apache.mina.core.buffer.IoBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import other.Util;
+
 /**
  * @author Ansersion
  * 
@@ -52,10 +54,7 @@ public class BPPacketGET extends BPPacket {
 			getVrbHead().setPackSeq(packSeq);
 
 		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			throw e;
 		}
 
@@ -84,10 +83,7 @@ public class BPPacketGET extends BPPacket {
 			packSeq = BPPacket.assemble2ByteBigend(packSeqMsb, packSeqLsb);
 
 		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			throw e;
 		}
 
@@ -107,10 +103,7 @@ public class BPPacketGET extends BPPacket {
 			int packSeqTmp = getIoBuffer().getUnsignedShort();
 			getVrbHead().setPackSeq(packSeqTmp);
 		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			throw e;
 		}
 
@@ -149,10 +142,7 @@ public class BPPacketGET extends BPPacket {
 				mapDev2siglst.put(devId, lstSig);
 			}
 		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			throw e;
 		}
 		return 0;
@@ -170,10 +160,7 @@ public class BPPacketGET extends BPPacket {
 			counter += devSigData.parseSigMap(buf, counter);
 
 		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			throw e;
 		}
 

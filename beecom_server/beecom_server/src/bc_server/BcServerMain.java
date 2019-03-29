@@ -15,7 +15,9 @@ import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import bc_console.BcConsole;
 import db.BeecomDB;
+import other.Util;
 import sys_sig_table.BPSysEnmLangResTable;
 import sys_sig_table.BPSysSigLangResTable;
 import sys_sig_table.BPSysSigTable;
@@ -28,6 +30,7 @@ public class BcServerMain {
 	private static final int BC_SOCK_BUFF_SIZE = 2048;
 	private static final int IDLE_READ_PROC_TIME = 30;
 	public static ConsumerTask consumerTask;
+	public static BcConsole bcConsole;
 
 	/**
 	 * @param args
@@ -38,20 +41,14 @@ public class BcServerMain {
 		try {
 			sigLangResTab.loadTab();
 		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 		}
 		
 		BPSysEnmLangResTable enumLangResTab = BPSysEnmLangResTable.getSysEnmLangResTable();
 		try {
 			enumLangResTab.loadTab();
 		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 		}
 		
 		BPSysSigTable sysSigTab = BPSysSigTable.getSysSigTableInstance();
@@ -62,6 +59,9 @@ public class BcServerMain {
 		
 		consumerTask = new ConsumerTask();
 		consumerTask.start();
+		
+		bcConsole = new BcConsole();
+		bcConsole.start();
 		
 		/* initialize database */
 		BeecomDB.getInstance();
@@ -82,10 +82,7 @@ public class BcServerMain {
 		try {
 			bcAcceptor.bind(new InetSocketAddress(BC_SERVER_PORT));
 		} catch (IOException e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 		}
 	}
 	

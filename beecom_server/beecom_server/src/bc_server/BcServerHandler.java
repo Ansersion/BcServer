@@ -92,10 +92,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 			try {
 				bpDeviceSession = (BPDeviceSession)session.getAttribute(SESS_ATTR_BP_SESSION);
 			} catch(Exception e) {
-				StringWriter sw = new StringWriter();
-				e.printStackTrace(new PrintWriter(sw, true));
-				String str = sw.toString();
-				logger.error(str);
+				Util.logger(logger, Util.ERROR, e);
 			}
 			if(null == bpDeviceSession) {
 				return;
@@ -332,10 +329,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 				BcServerMain.consumerTask.produce(product);
 			}
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 		}
 	}
 
@@ -504,10 +498,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 			try {
 				bpUserSession = (BPUserSession) session.getAttribute(SESS_ATTR_BP_SESSION);
 			} catch (Exception e) {
-				StringWriter sw = new StringWriter();
-				e.printStackTrace(new PrintWriter(sw, true));
-				String str = sw.toString();
-				logger.error(str);
+				Util.logger(logger, Util.ERROR, e);
 			}
 			if (null == bpUserSession) {
 				return;

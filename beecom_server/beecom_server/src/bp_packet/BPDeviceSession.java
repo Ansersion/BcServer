@@ -72,10 +72,7 @@ public class BPDeviceSession extends BPSession {
 					relayData.setTimeoutRelayed(true);
 					removeRelayList(packAck.getVrbHead().getPackSeq());
 				} catch (Exception e) {
-					StringWriter sw = new StringWriter();
-					e.printStackTrace(new PrintWriter(sw, true));
-					String str = sw.toString();
-					logger.error(str);
+					Util.logger(logger, Util.ERROR, e);
 				}
             }  
         };

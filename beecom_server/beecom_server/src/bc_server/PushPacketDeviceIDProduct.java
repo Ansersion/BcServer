@@ -59,10 +59,7 @@ class PushPacketDeviceIDProduct extends Product {
 			pld.setDeviceIdMap(deviceIdMap);
 			ret = true;
 		} catch(Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 		}
 		return ret;
 	}	

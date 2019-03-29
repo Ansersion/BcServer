@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import db.RelayData;
 import other.BPValue;
+import other.Util;
 import sys_sig_table.BPSysSigTable;
 
 /**
@@ -207,10 +208,7 @@ public abstract class BPSession {
 				}
 			}
 		} catch(SigIdNonExistException e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			ret = false;
 		}
 

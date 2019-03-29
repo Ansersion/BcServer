@@ -10,6 +10,8 @@ import org.apache.mina.core.buffer.IoBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import other.Util;
+
 
 /**
  * @author Ansersion
@@ -35,10 +37,7 @@ public class BPPacketDISCONN extends BPPacket {
 			super.getVrbHead().parseClientId(clientIdMsb, clientIdLsb);
 
 		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			throw e;
 		}
 	
@@ -52,10 +51,7 @@ public class BPPacketDISCONN extends BPPacket {
 			encodedByte = getIoBuffer().get();
 			super.parseVrbHeadLevel(encodedByte);
 		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			throw e;
 		}
 

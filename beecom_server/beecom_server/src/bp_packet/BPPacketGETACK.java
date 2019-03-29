@@ -26,6 +26,7 @@ import db.SystemSignalInfoUnit;
 import db.SystemSignalU16InfoHbn;
 import db.SystemSignalU32InfoHbn;
 import other.CrcChecksum;
+import other.Util;
 
 import java.util.Map;
 import java.io.PrintWriter;
@@ -85,10 +86,7 @@ public class BPPacketGETACK extends BPPacket {
 			byte retCode = getIoBuffer().get();
 			getVrbHead().setRetCode(retCode);
 		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			throw e;
 		}
 
@@ -116,10 +114,7 @@ public class BPPacketGETACK extends BPPacket {
 			getPld().setSigData(sigData);
 
 		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			throw e;
 		}
 		return 0;
@@ -731,10 +726,7 @@ public class BPPacketGETACK extends BPPacket {
 			}
 			ret = true;
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			ret = false;
 		}
 		return ret;

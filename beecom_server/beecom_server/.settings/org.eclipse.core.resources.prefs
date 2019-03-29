@@ -1,4 +1,5 @@
 eclipse.preferences.version=1
+encoding//src/bc_console/BcConsole.java=UTF-8
 encoding//src/bc_server/BcServerMain.java=UTF-8
 encoding//src/other/CrcChecksum.java=UTF-8
 separateDerivedEncodings=true

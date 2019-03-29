@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import other.CrcChecksum;
+import other.Util;
 
 /**
  * @author Ansersion
@@ -72,10 +73,7 @@ public class BPPacketCONNECT extends BPPacket {
 			byte timeout = ioBuf.get();
 			super.parseVrbTimeout(timeout);
 		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			throw e;
 		}
 
@@ -114,10 +112,7 @@ public class BPPacketCONNECT extends BPPacket {
 			byte timeout = buf[counter];
 			super.parseVrbTimeout(timeout);
 		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			throw e;
 		}
 
@@ -145,10 +140,7 @@ public class BPPacketCONNECT extends BPPacket {
 			short timeOut = getIoBuffer().get();
 			getVrbHead().setTimeout(timeOut);
 		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			throw e;
 		}
 
@@ -176,10 +168,7 @@ public class BPPacketCONNECT extends BPPacket {
 			setPldPassword(new String(password));
 
 		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			throw e;
 		}
 		return 0;
@@ -222,10 +211,7 @@ public class BPPacketCONNECT extends BPPacket {
 			// setPldPassword(password);
 
 		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			throw e;
 		}
 

@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import bp_packet.BPPacket;
 import bp_packet.BPParseCsvFileException;
+import other.Util;
 
 /**
  * @author Ansersion
@@ -137,10 +138,7 @@ public class DBSysSigRec extends DBBaseRec {
 			}
 			logger.debug(dumpSysSig.toString());
 		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 		}
 	}
 
@@ -184,10 +182,7 @@ public class DBSysSigRec extends DBBaseRec {
 			}
 			ps.executeUpdate();
 		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 		}
 
 		return false;

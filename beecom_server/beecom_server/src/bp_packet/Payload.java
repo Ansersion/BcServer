@@ -205,10 +205,7 @@ public class Payload {
 		try {
 			this.devName= new String(devName);
 		} catch(Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 		}
 	}
 	
@@ -345,10 +342,7 @@ public class Payload {
 			}
 			ret = true;
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			ret = false;
 			if(null != bpError) {
 				bpError.setErrorCode(BPPacketGET.RET_CODE_INNER_ERR);

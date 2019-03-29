@@ -43,10 +43,7 @@ public class Util {
 	}
 	
 	public static void bcLog(Exception e, Logger logger) {
-        StringWriter sw = new StringWriter();
-        e.printStackTrace(new PrintWriter(sw, true));
-        String str = sw.toString();
-        logger.error(str);
+		Util.logger(logger, Util.ERROR, e);
 	}
 	
 	public static void bcLog(String s) {

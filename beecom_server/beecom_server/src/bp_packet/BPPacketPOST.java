@@ -63,10 +63,7 @@ public class BPPacketPOST extends BPPacket {
 			packSeq = ioBuf.getUnsignedShort();
 
 		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			throw e;
 		}
 
@@ -95,10 +92,7 @@ public class BPPacketPOST extends BPPacket {
 			packSeq = BPPacket.assemble2ByteBigend(packSeqMsb, packSeqLsb);
 
 		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			throw e;
 		}
 
@@ -115,10 +109,7 @@ public class BPPacketPOST extends BPPacket {
 			int packSeqTmp = getIoBuffer().getUnsignedShort();
 			getVrbHead().setPackSeq(packSeqTmp);
 		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			throw e;
 		}
 
@@ -211,10 +202,7 @@ public class BPPacketPOST extends BPPacket {
 			}
 
 		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			throw e;
 		}
 

@@ -18,6 +18,8 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import other.Util;
+
 /**
  * @author Ansersion
  * 
@@ -81,10 +83,7 @@ public class BPSysEnmLangResTable {
 			ret = true;
 
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			ret = false;
 		}
 
@@ -96,10 +95,7 @@ public class BPSysEnmLangResTable {
 		try {
 			ret = sysEnmLangResLst.get(offset).get(lang);
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			ret = "NULL";
 		}
 		return ret;

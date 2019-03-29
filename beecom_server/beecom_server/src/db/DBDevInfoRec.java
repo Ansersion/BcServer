@@ -11,6 +11,8 @@ import java.sql.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import other.Util;
+
 
 /**
  * @author Ansersion
@@ -121,10 +123,7 @@ public class DBDevInfoRec extends DBBaseRec {
 			st.executeUpdate(sql);
 			return true;
 		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 		} 
 
 		return false;

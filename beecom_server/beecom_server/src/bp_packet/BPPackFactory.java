@@ -10,6 +10,8 @@ import org.apache.mina.core.buffer.IoBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import other.Util;
+
 
 /**
  * @author Ansersion
@@ -88,10 +90,7 @@ public class BPPackFactory {
 				ret.putFxHead2Buf();
 			}
 		} catch(Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 			ret = null;
 		}
 		return ret;
