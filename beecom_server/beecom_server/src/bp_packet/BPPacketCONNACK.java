@@ -27,6 +27,9 @@ public class BPPacketCONNACK extends BPPacket {
 	public static final int RET_CODE_CLNT_ID_INVALID = 0x08;
 	public static final int RET_CODE_CLNT_UNKNOWN = 0x09;
 	
+	public static final int RET_CODE_USER_INVALID = 0x10;
+	public static final int RET_CODE_REGISTER_FAILED = 0x11;
+	
 	public static final int RET_CODE_SERVER_CHAIN_INVALID = 0x10;
 
 	protected BPPacketCONNACK(FixedHeader fxHeader) {
@@ -84,7 +87,7 @@ public class BPPacketCONNACK extends BPPacket {
 		ServerChainHbn serverChainHbn;
 		IoBuffer ioBuffer = getIoBuffer();
 		if(RET_CODE_OK != getVrbHead().getRetCode()) {
-			return false;
+			return true;
 		}
 		payload = getPld();
 		ioBuffer.putUnsignedShort(BPSysSigTable.BP_SYS_SIG_SET_VERSION);
@@ -126,7 +129,7 @@ public class BPPacketCONNACK extends BPPacket {
 			ret = true;
 			break;
 		}
-		case ServerChain.TYPE_IPv4: {
+		case ServerChain.TYPE_IPV4: {
 			String array[] = serverAddress.split("\\.");
 			if(null != array && 4 == array.length) {
 				ioBuffer.put((byte)serverType);
@@ -137,7 +140,7 @@ public class BPPacketCONNACK extends BPPacket {
 			}
 			break;
 		}
-		case ServerChain.TYPE_IPv6: {
+		case ServerChain.TYPE_IPV6: {
 			String array[] = serverAddress.split(":");
 			if(null != array && 8 == array.length) {
 				ioBuffer.put((byte)serverType);

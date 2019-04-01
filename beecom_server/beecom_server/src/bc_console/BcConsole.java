@@ -21,13 +21,10 @@ import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import db.BeecomDB;
+import bp_packet.BPPacket;
 import other.Util;
 import server_chain.ServerChain;
 import server_chain.ServerNode;
-import sys_sig_table.BPSysEnmLangResTable;
-import sys_sig_table.BPSysSigLangResTable;
-import sys_sig_table.BPSysSigTable;
 
 public class BcConsole {
 	private static final Logger logger = LoggerFactory.getLogger(BcConsole.class); 
@@ -39,6 +36,7 @@ public class BcConsole {
 	private static ServerNode serverFather = ServerChain.SERVER_NODE_DEFAULT;
 	private static Lock serverLock = new ReentrantLock();
 	
+	
 	public static String updateServerChildren(String file) {
     	/* load the configuration file if any:
     	 * 1->192.168.1.2;
@@ -46,8 +44,7 @@ public class BcConsole {
     	 * */
 		String ret = "OK";
 		serverLock.lock();
-		try {
-			FileInputStream fis = new FileInputStream(file);
+		try(FileInputStream fis = new FileInputStream(file)) {
 			InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
 			try (BufferedReader sysSigIn = new BufferedReader(isr)) {
 				String s;
@@ -83,7 +80,11 @@ public class BcConsole {
 		String ret = "OK";
 		serverLock.lock();
 		try {
-			serverFather = serverNode;
+			if(serverFather.getType() == serverNode.getType() && 0 == serverFather.getAddress().compareTo(serverNode.getAddress())  ) {
+				ret = "Same server father";
+			} else {
+				serverFather = serverNode;
+			}
 		} catch (Exception e) {
 			Util.logger(logger, Util.DEBUG, e);
 			ret = e.getMessage();
@@ -98,6 +99,7 @@ public class BcConsole {
 		String ret = "";
 		serverLock.lock();
 		try {
+			ret += "* OpenRegister: " + BPPacket.isOpenRegister() + "\r\n";
 			ret += "* Father: "  + serverFather.getType() + "->" + serverFather.getAddress() + "\r\n";
 			for (Map.Entry<String, ServerNode> entry : serverChildrenMap.entrySet()) { 
 				ret += "* Child: "  + entry.getValue().getType() + "->" + entry.getValue().getAddress() + "\r\n";
@@ -134,7 +136,7 @@ public class BcConsole {
 	/**
 	 * @param args
 	 */
-	public static void start() {
+	public void start() {
 
 		NioSocketAcceptor bcAcceptor = new NioSocketAcceptor();
 

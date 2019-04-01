@@ -8,8 +8,6 @@ import static org.junit.Assert.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import db.BeecomDB;
 import db.ServerChainHbn;
@@ -22,7 +20,6 @@ import server_chain.ServerNode;
  */
 public class ServerChainTest {
 	
-	private static final Logger logger = LoggerFactory.getLogger(ServerChainTest.class);
 	
 	private static final String TEST_SERVER_CHAIN_1 = "1<192.168.2.2>1<192.168.2.3";
 	private static final String TEST_SERVER_CHAIN_2 = "";
@@ -48,15 +45,15 @@ public class ServerChainTest {
 		ServerChain serverChain = new ServerChain(TEST_SERVER_CHAIN_1);
 		ServerNode tmp;
 		tmp = serverChain.getDirectNode();
-		assertEquals(tmp.getType(), ServerChain.TYPE_IPv4);
+		assertEquals(tmp.getType(), ServerChain.TYPE_IPV4);
 		assertEquals(0, tmp.getAddress().compareTo("192.168.2.2"));
 		
 		tmp = serverChain.getUpperNode(tmp);
-		assertEquals(tmp.getType(), ServerChain.TYPE_IPv4);
+		assertEquals(tmp.getType(), ServerChain.TYPE_IPV4);
 		assertEquals(0, tmp.getAddress().compareTo("192.168.2.3"));
 		
 		tmp = serverChain.getLowerNode(tmp);
-		assertEquals(tmp.getType(), ServerChain.TYPE_IPv4);
+		assertEquals(tmp.getType(), ServerChain.TYPE_IPV4);
 		assertEquals(0, tmp.getAddress().compareTo("192.168.2.2"));
 		
 		serverChain.update(TEST_SERVER_CHAIN_2);
@@ -75,7 +72,7 @@ public class ServerChainTest {
 		ServerChainHbn serverChainHbn = BeecomDB.getInstance().getServerChain(1);
 		assertEquals(serverChainHbn.getUpperServerType(), ServerChain.TYPE_DEFAULT);
 		assertEquals(0, serverChainHbn.getUpperServer().compareTo(""));
-		assertEquals(serverChainHbn.getLowerServerType(), ServerChain.TYPE_IPv4);
+		assertEquals(serverChainHbn.getLowerServerType(), ServerChain.TYPE_IPV4);
 		assertEquals(0, serverChainHbn.getLowerServer().compareTo("192.168.1.2"));
 	}
 

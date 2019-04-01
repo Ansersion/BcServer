@@ -91,6 +91,10 @@ public class Util {
             case ERROR:
                 logger.error(str);
                 break;
+            default:
+                logger.error(str);
+            	break;
+            	
         }
     }
     
@@ -114,6 +118,9 @@ public class Util {
         case ERROR:
             logger.error(str);
             break;
+        default:
+            logger.error(str);
+        	break;
     }
     }
     

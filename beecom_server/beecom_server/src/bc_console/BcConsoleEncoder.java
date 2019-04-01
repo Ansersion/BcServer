@@ -8,11 +8,7 @@ package bc_console;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolEncoderAdapter;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import bp_packet.BPPacket;
-import other.Util;
 
 import org.apache.mina.core.buffer.IoBuffer;
 

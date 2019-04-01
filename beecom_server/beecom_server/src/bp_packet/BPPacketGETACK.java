@@ -29,10 +29,7 @@ import other.CrcChecksum;
 import other.Util;
 
 import java.util.Map;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -264,45 +261,30 @@ public class BPPacketGETACK extends BPPacket {
 							case BPPacket.VAL_TYPE_UINT32:
 							{
 								SystemSignalU32InfoHbn systemSignalU32InfoHbnTmp = (SystemSignalU32InfoHbn)signalInterfaceTmp;
-								if(null == systemSignalU32InfoHbnTmp) {
-									return ret;
-								}
 								buffer.putUnsignedInt(systemSignalU32InfoHbnTmp.getMinVal());
 								break;
 							}
 							case BPPacket.VAL_TYPE_UINT16:
 							{
 								SystemSignalU16InfoHbn systemSignalU16InfoHbnTmp = (SystemSignalU16InfoHbn)signalInterfaceTmp;
-								if(null == systemSignalU16InfoHbnTmp) {
-									return ret;
-								}
 								buffer.putUnsignedShort(systemSignalU16InfoHbnTmp.getMinVal());
 								break;
 							}
 							case BPPacket.VAL_TYPE_IINT32:
 							{
 								SystemSignalI32InfoHbn systemSignalI32InfoHbnTmp = (SystemSignalI32InfoHbn)signalInterfaceTmp;
-								if(null == systemSignalI32InfoHbnTmp) {
-									return ret;
-								}
 								buffer.putInt(systemSignalI32InfoHbnTmp.getMinVal());
 								break;
 							}
 							case BPPacket.VAL_TYPE_IINT16:
 							{
 								SystemSignalI16InfoHbn systemSignalI16InfoHbnTmp = (SystemSignalI16InfoHbn)signalInterfaceTmp;
-								if(null == systemSignalI16InfoHbnTmp) {
-									return ret;
-								}
 								buffer.putShort(systemSignalI16InfoHbnTmp.getMinVal());
 								break;
 							}
 							case BPPacket.VAL_TYPE_FLOAT:
 							{
 								SystemSignalFloatInfoHbn systemSignalFloatInfoHbnTmp = (SystemSignalFloatInfoHbn)signalInterfaceTmp;
-								if(null == systemSignalFloatInfoHbnTmp) {
-									return ret;
-								}
 								buffer.putFloat(systemSignalFloatInfoHbnTmp.getMinVal());
 								break;
 							}
@@ -318,45 +300,30 @@ public class BPPacketGETACK extends BPPacket {
 							case BPPacket.VAL_TYPE_UINT32:
 							{
 								SystemSignalU32InfoHbn systemSignalU32InfoHbnTmp = (SystemSignalU32InfoHbn)signalInterfaceTmp;
-								if(null == systemSignalU32InfoHbnTmp) {
-									return ret;
-								}
 								buffer.putUnsignedInt(systemSignalU32InfoHbnTmp.getMaxVal());
 								break;
 							}
 							case BPPacket.VAL_TYPE_UINT16:
 							{
 								SystemSignalU16InfoHbn systemSignalU16InfoHbnTmp = (SystemSignalU16InfoHbn)signalInterfaceTmp;
-								if(null == systemSignalU16InfoHbnTmp) {
-									return ret;
-								}
 								buffer.putUnsignedShort(systemSignalU16InfoHbnTmp.getMaxVal());
 								break;
 							}
 							case BPPacket.VAL_TYPE_IINT32:
 							{
 								SystemSignalI32InfoHbn systemSignalI32InfoHbnTmp = (SystemSignalI32InfoHbn)signalInterfaceTmp;
-								if(null == systemSignalI32InfoHbnTmp) {
-									return ret;
-								}
 								buffer.putInt(systemSignalI32InfoHbnTmp.getMaxVal());
 								break;
 							}
 							case BPPacket.VAL_TYPE_IINT16:
 							{
 								SystemSignalI16InfoHbn systemSignalI16InfoHbnTmp = (SystemSignalI16InfoHbn)signalInterfaceTmp;
-								if(null == systemSignalI16InfoHbnTmp) {
-									return ret;
-								}
 								buffer.putShort(systemSignalI16InfoHbnTmp.getMaxVal());
 								break;
 							}
 							case BPPacket.VAL_TYPE_FLOAT:
 							{
 								SystemSignalFloatInfoHbn systemSignalFloatInfoHbnTmp = (SystemSignalFloatInfoHbn)signalInterfaceTmp;
-								if(null == systemSignalFloatInfoHbnTmp) {
-									return ret;
-								}
 								buffer.putFloat(systemSignalFloatInfoHbnTmp.getMaxVal());
 								break;
 							}

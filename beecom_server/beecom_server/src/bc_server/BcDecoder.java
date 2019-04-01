@@ -1,8 +1,5 @@
 package bc_server;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 /**
  * @author Ansersion
  *
@@ -20,8 +17,6 @@ import bp_packet.BPPacket;
 import bp_packet.BPParseException;
 import bp_packet.BPParseFxHeaderException;
 import bp_packet.FixedHeader;
-import bp_packet.Payload;
-import bp_packet.VariableHeader;
 import other.CrcChecksum;
 import other.Util;
 

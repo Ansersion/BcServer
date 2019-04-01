@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import bc_server.BcDecoder;
-import db.CustomAlarmInfoUnit;
 import db.CustomSignalBooleanInfoHbn;
 import db.CustomSignalEnumInfoHbn;
 import db.CustomSignalFloatInfoHbn;
@@ -32,9 +31,6 @@ import other.Util;
 import sys_sig_table.BPSysSigTable;
 import sys_sig_table.SysSigInfo;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -275,11 +271,11 @@ public class BPPacketREPORT extends BPPacket {
 					int signalId;
 					int customInfoFlags;
 					// boolean ifNotifing;
-					boolean ifAlarm;
-					boolean ifStatistics;
+					// boolean ifAlarm;
+					// boolean ifStatistics;
 					// boolean ifDisplay;
 					// short perm;
-					int groupLangId;
+					// int groupLangId;
 					// int accuracy;
 					int sigType;
 					short alarmClass, delayBeforeAlarm, delayAfterAlarm;
@@ -293,12 +289,12 @@ public class BPPacketREPORT extends BPPacket {
 							systemSignalCustomInfoUnitList = new ArrayList<>();
 						}
 						signalInterface = null;
-						ifAlarm = false;
+						// ifAlarm = false;
 						alarmClass = BPPacket.ALARM_CLASS_NONE;
 						delayBeforeAlarm = BPPacket.ALARM_DELAY_DEFAULT;
 						delayAfterAlarm = BPPacket.ALARM_DELAY_DEFAULT;
 						signalId = ioBuffer.getUnsignedShort();
-						BPSysSigTable bpSysSigTable = BPSysSigTable.getSysSigTableInstance();
+						// BPSysSigTable bpSysSigTable = BPSysSigTable.getSysSigTableInstance();
 						SysSigInfo sysSigInfo = BPSysSigTable.getSysSigTableInstance().getSysSigInfo(signalId - BPPacket.SYS_SIG_START_ID);
 						if(null == sysSigInfo) {
 							throw new Exception("null == sysSigInfo");
@@ -307,7 +303,7 @@ public class BPPacketREPORT extends BPPacket {
 						customInfoFlags = ioBuffer.getUnsigned() & 0xFF;
 						customInfoFlags |= ((ioBuffer.getUnsigned() & 0xFF)<< 8);
 						if ((customInfoFlags & SYSTEM_SIGNAL_CUSTOM_FLAGS_STATISTICS) != 0) {
-							ifStatistics = ioBuffer.get() != 0;
+							// ifStatistics = ioBuffer.get() != 0;
 						}
 						if ((customInfoFlags & SYSTEM_SIGNAL_CUSTOM_FLAGS_ENUM_LANG) != 0) {
 							enumLangMap = new HashMap<>();
@@ -320,7 +316,7 @@ public class BPPacketREPORT extends BPPacket {
 							}
 						}
 						if ((customInfoFlags & SYSTEM_SIGNAL_CUSTOM_FLAGS_GROUP_LANG) != 0) {
-							groupLangId = ioBuffer.getUnsignedShort();
+							// groupLangId = ioBuffer.getUnsignedShort();
 						}
 						switch (sigType) {
 						case BPPacket.VAL_TYPE_UINT32: {
@@ -490,6 +486,9 @@ public class BPPacketREPORT extends BPPacket {
 							signalInterface = systemSignalBooleanInfoHbn;
 							break;
 						}
+						default:
+							Util.logger(logger, Util.ERROR, "invalid signal type");
+							break;
 						}
 						if((customInfoFlags & SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM) != 0) {
 							alarmClass = ioBuffer.getUnsigned();
@@ -515,12 +514,12 @@ public class BPPacketREPORT extends BPPacket {
 					short alarmClass = BPPacket.ALARM_CLASS_NONE, alarmDelayBef = BPPacket.ALARM_DELAY_DEFAULT, alarmDelayAft = BPPacket.ALARM_DELAY_DEFAULT;
 					boolean ifStatistics;
 					boolean ifDisplay;
-					int groupLangId;
+					// int groupLangId;
 					Map<Integer, String> signalNameLangMap = null;
 					Map<Integer, String> signalUnitLangMap = null;
 					Map<Integer, String> groupLangMap = null;
 					Map<Integer, Map<Integer, String> > signalEnumLangMap = null;
-					CustomAlarmInfoUnit customAlarmInfoUnit;
+					// CustomAlarmInfoUnit customAlarmInfoUnit;
 					SignalInterface customSignalInterface;
 					for(int i = 0; i < signalNum; i++) {
 						cusSigId = ioBuffer.getUnsignedShort();
@@ -535,7 +534,7 @@ public class BPPacketREPORT extends BPPacket {
 						groupLangMap = null;
 						signalEnumLangMap = null;
 						customSignalInterface = null;
-						customAlarmInfoUnit = null;
+						// customAlarmInfoUnit = null;
 						perm = (short)((flagsTmp >> 3) & 0x01);
 						ifStatistics = ((flagsTmp >> 2) & 0x01) != 0;
 						ifAlarm = ((flagsTmp >> 1) & 0x01) != 0;
@@ -666,6 +665,9 @@ public class BPPacketREPORT extends BPPacket {
 							CustomSignalBooleanInfoHbn customSignalBooleanInfoHbn = new CustomSignalBooleanInfoHbn();
 							customSignalBooleanInfoHbn.setDefVal(ioBuffer.getUnsigned() != 0);
 							customSignalInterface = customSignalBooleanInfoHbn;
+							break;
+						default:
+							Util.logger(logger, Util.ERROR, "invalid signal type");
 							break;
 						}
 						

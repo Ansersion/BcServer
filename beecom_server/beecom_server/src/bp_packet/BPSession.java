@@ -189,7 +189,6 @@ public abstract class BPSession {
 		// error = new BPError();
 		boolean ret = true;
 		Integer key = null;
-		Short value = null;
 		Object tmp = null;
 		
 		try {
@@ -199,7 +198,7 @@ public abstract class BPSession {
 				while (entries.hasNext()) {
 					Map.Entry<Integer, Short> entry = entries.next();
 					key = entry.getKey();
-					value = entry.getValue();
+					// value = entry.getValue();
 					tmp = sysSigMap.get(key);
 					if (null == tmp) {
 						throw new SigIdNonExistException();

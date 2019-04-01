@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,17 +20,14 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
-import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import bc_server.BcServerHandler;
+import bc_server.BcDecoder;
 import bp_packet.BPDeviceSession;
 import bp_packet.BPPacket;
-import bp_packet.BPParseCsvFileException;
 import bp_packet.BPSession;
 import bp_packet.SignalAttrInfo;
-import ch.qos.logback.core.util.StatusPrinter;
 import other.Util;
 import sys_sig_table.BPSysSigTable;
 import sys_sig_table.SysSigInfo;
@@ -44,7 +40,7 @@ import java.util.List;
  */
 public class BeecomDB {
 	
-	private static Logger logger = null;
+	private static final Logger logger = LoggerFactory.getLogger(BcDecoder.class); 
 	private static final Long INVALID_LANGUAGE_ID = 0L;
 	// private static final Long INVALID_ADMIN_ID = 0L;
 	private static final Long INVALID_SIG_MAP_CHECKSUM = 0x7FFFFFFFFFFFFFFFL;
@@ -53,18 +49,18 @@ public class BeecomDB {
 
 	private List<DBUserInfoRec> userInfoRecLst;
 	private List<DBDevInfoRec> devInfoRecLst;
-	private List<DBDevAuthRec> devAuthRecLst;
+	// private List<DBDevAuthRec> devAuthRecLst;
 	private List<DBSysSigRec> sysSigRecLst;
 	private Map<String, Long> name2IDMap;
 
 	private Connection con;
 	
-	private static final String dbDriverDefault = "com.mysql.jdbc.Driver";
-	private static final String dbHostDefault = "localhost";
-	private static final String dbPortDefault = "3306";
-	private static final String dbNameDefault = "bc_server_db";
-	private static final String dbUserDefault = "root";
-	private static final String dbPasswordDefault = "Ansersion";
+	private static final String DB_DRIVER_DEFAULT = "com.mysql.jdbc.Driver";
+	private static final String DB_HOST_DEFAULT = "localhost";
+	private static final String DB_PORT_DEFAULT = "3306";
+	private static final String DB_NAME_DEFAULT = "bc_server_db";
+	private static final String DB_USER_DEFAULT = "root";
+	private static final String DEB_PASSWORD_DEFAULT = "Ansersion";
 	
 	private static Map<String, String> dbConfigMap;
 	
@@ -83,7 +79,6 @@ public class BeecomDB {
 		LOGIN_OK,
 		USER_INVALID,
 		PASSWORD_INVALID,
-		USER_OR_PASSWORD_INVALID,
 	}
 	
 	public static enum GetSnErrorEnum {
@@ -94,13 +89,12 @@ public class BeecomDB {
 	}
 
 	private BeecomDB() {
-		logger = LoggerFactory.getLogger(this.getClass());
-
+		sessionFactory = buildSessionFactory();
 		String s = "Info: Create BeecomDB";
 		logger.info(s);
 		userInfoRecLst = new ArrayList<>();
 		devInfoRecLst = new ArrayList<>();
-		devAuthRecLst = new ArrayList<>();
+		// devAuthRecLst = new ArrayList<>();
 		sysSigRecLst = new ArrayList<>();
 
 		name2IDMap = new HashMap<>();
@@ -209,6 +203,44 @@ public class BeecomDB {
 			Util.logger(logger, Util.ERROR, e);
 			userInfoUnit = null;
 			result = LoginErrorEnum.PASSWORD_INVALID;
+		}
+		return result;
+	}
+	
+	public LoginErrorEnum checkSnPassword(String sn, String password, DeviceInfoUnit deviceInfoUnit) {
+
+		if(null == sn || sn.isEmpty()) {
+			return LoginErrorEnum.USER_INVALID;
+		}
+		if(null == password || password.isEmpty()) {
+			return LoginErrorEnum.PASSWORD_INVALID;
+		}
+
+		LoginErrorEnum result = LoginErrorEnum.USER_INVALID;
+		try (Session session = sessionFactory.openSession()) {
+			SnInfoHbn snInfoHbn = (SnInfoHbn)session  
+		            .createQuery("from SnInfoHbn where sn = :p_sn")
+		            .setParameter("p_sn", sn).uniqueResult();
+		    
+			if(null == snInfoHbn) {
+				return result;
+			} 
+			result = LoginErrorEnum.PASSWORD_INVALID;
+
+			DevInfoHbn devInfoHbn = (DevInfoHbn)session  
+		            .createQuery("from DevInfoHbn where snId = :sn_id")
+		            .setParameter("sn_id", snInfoHbn.getId()).uniqueResult();
+			
+			if(null == devInfoHbn) {
+				return result;
+			}
+			if(null != deviceInfoUnit) {
+				deviceInfoUnit.setDevInfoHbn(devInfoHbn);
+				deviceInfoUnit.setSnInfoHbn(snInfoHbn);
+			}
+			result = LoginErrorEnum.LOGIN_OK;
+		} catch (Exception e) {
+			Util.logger(logger, Util.ERROR, e);
 		}
 		return result;
 	}
@@ -519,20 +551,21 @@ public class BeecomDB {
 		return customSignalInterface;
 	}
 	
+	@SuppressWarnings("unchecked")
 	protected List<Integer> getCustomSignalEnumLangInfoEnumKeysLst(CustomSignalEnumInfoHbn customSignalEnumInfoHbn) {
 		if(null == customSignalEnumInfoHbn) {
 			return null;
 		}
 		
-		Transaction tx = null;
+		// Transaction tx = null;
 		List<Integer> customSignalEnumLangInfoEnumKeysLst = null;
 		try (Session session = sessionFactory.openSession()) {
-			tx = session.beginTransaction();
-			customSignalEnumLangInfoEnumKeysLst = session  
+			// tx = session.beginTransaction();
+			customSignalEnumLangInfoEnumKeysLst = (List<Integer>)session  
 		            .createQuery("select enumKey from CustomSignalEnumLangInfoHbn where cusSigEnmId = :cus_sig_enm_id")
 		            .setParameter("cus_sig_enm_id", customSignalEnumInfoHbn.getId()).list();
 		    
-			tx.commit();
+			// tx.commit();
 		} catch (Exception e) {
 			Util.logger(logger, Util.ERROR, e);
 			customSignalEnumLangInfoEnumKeysLst = null;
@@ -1326,6 +1359,7 @@ public class BeecomDB {
 		return customGroupLangMap;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private Map<Integer, Map<Integer, String> > getCustomSignalEnumLangMap(long customSignalId, int langSupportMask) {
 		if(INVALID_LANGUAGE_ID == customSignalId) {
 			return null;
@@ -1375,6 +1409,7 @@ public class BeecomDB {
 		return customSignalEnumLangMap;
 	}
 	
+	/*
 	private Map<Integer, String> getCustomDefaultStringLangMap(long customDefaultStringLangId, int langSupportMask) {
 		if(INVALID_LANGUAGE_ID == customDefaultStringLangId) {
 			return null;
@@ -1397,7 +1432,7 @@ public class BeecomDB {
 			customDefaultStringLangMap = new HashMap<>();
 			putLangIntoMap(customDefaultStringLangMap, langSupportMask, customSignalStringDefaultValueEntityInfoHbn);
 			
-			/* TODO: add support for other language */
+			// TODO: add support for other language 
 			
 			tx.commit();
 		} catch (Exception e) {
@@ -1406,7 +1441,9 @@ public class BeecomDB {
 		
 		return customDefaultStringLangMap;
 	}
+	*/
 	
+	/*
 	private CustomAlarmInfoUnit getCustomSignalAlmInfoUnit(long customSignalId, int langSupportMask) {
 		if(INVALID_LANGUAGE_ID == customSignalId) {
 			return null;
@@ -1433,7 +1470,7 @@ public class BeecomDB {
 			customAlarmNameLangMap = new HashMap<>();
 			putLangIntoMap(customAlarmNameLangMap, langSupportMask, customAlarmNameLangEntityInfoHbn);
 			
-			/* TODO: add support for other language */
+			// TODO: add support for other language 
 			customAlarmInfoUnit = new CustomAlarmInfoUnit(customAlarmNameLangMap, customSignalAlmInfoHbn);
 			
 			tx.commit();
@@ -1444,6 +1481,7 @@ public class BeecomDB {
 		
 		return customAlarmInfoUnit;
 	}
+	*/
 	
 	public List<CustomSignalInfoUnit> getCustomSignalUnitLst(long uniqDeviceId, List<CustomSignalInfoUnit> customSignalInfoUnitLst, int langSupportMask) {
 		if(uniqDeviceId < 0) {
@@ -1471,23 +1509,23 @@ public class BeecomDB {
 		boolean ifNotifying;
 		boolean ifAlarm;
 		boolean ifDisplay;
-		CustomAlarmInfoUnit customAlarmInfoUnit = null;
+		// CustomAlarmInfoUnit customAlarmInfoUnit = null;
 		Map<Integer, String> cusSignalNameLangMap = null;
 		Map<Integer, String> cusSignalUnitLangMap = null;
 		Map<Integer, String> cusSignalGroupLangMap = null;
 		Map<Integer, Map<Integer, String> > cusSignalEnumLangMap = null;
-		int groupLangId = BPPacket.INVALID_LANGUAGE_ID;
+		// int groupLangId = BPPacket.INVALID_LANGUAGE_ID;
 		
 		while(itSI.hasNext()) {
 			SignalInfoHbn signalInfoHbn = itSI.next();
 			itCSI = customSignalInfoHbnLst.iterator();
 			while(itCSI.hasNext()) {
-				customAlarmInfoUnit = null;
+				// customAlarmInfoUnit = null;
 				cusSignalNameLangMap = null;
 				cusSignalUnitLangMap = null;
 				cusSignalGroupLangMap = null;
 				cusSignalEnumLangMap = null;
-				groupLangId = BPPacket.INVALID_LANGUAGE_ID;
+				// groupLangId = BPPacket.INVALID_LANGUAGE_ID;
 				CustomSignalInfoHbn customSignalInfoHbn = itCSI.next();
 
 				if (customSignalInfoHbn.getSignalId() == signalInfoHbn.getId()) {
@@ -1499,7 +1537,7 @@ public class BeecomDB {
 					ifDisplay = signalInfoHbn.getDisplay();
 					ifAlarm = customSignalInfoHbn.getIfAlarm();
 					if(ifAlarm) {
-						customAlarmInfoUnit = getCustomSignalAlmInfoUnit(customSignalInfoHbn.getId(), langSupportMask);
+						// customAlarmInfoUnit = getCustomSignalAlmInfoUnit(customSignalInfoHbn.getId(), langSupportMask);
 					}
 					
 					SignalInterface signalInterface = null;
@@ -1655,6 +1693,7 @@ public class BeecomDB {
 		return customSignalInfoUnitLst;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List<SystemSignalCustomInfoUnit> getSystemSignalCustomInfoUnitLst(long uniqDeviceId, List<SystemSignalCustomInfoUnit> systemSignalCustomInfoUnitLst) {
 		if(uniqDeviceId < 0) {
 			return null;
@@ -1831,6 +1870,7 @@ public class BeecomDB {
 		return systemSignalCustomInfoUnitLst;
 	}
 	
+	@SuppressWarnings("unchecked")
 	protected List<SignalInfoHbn> getSignalInfoHbnLst(long uniqDeviceId, int signalIdSmallest, int signalIdBiggest) {
 		if(uniqDeviceId < 0) {
 			return null;
@@ -1844,17 +1884,17 @@ public class BeecomDB {
 			sIdBig = BPPacket.MAX_SIG_ID;
 		}
 
-		Transaction tx = null;
+		// Transaction tx = null;
 		List<SignalInfoHbn> sigInfoHbnLst = null;
 		try (Session session = sessionFactory.openSession()) {
-			tx = session.beginTransaction();
+			// tx = session.beginTransaction();
 			sigInfoHbnLst = session  
 		            .createQuery("from SignalInfoHbn where devId = :dev_id and signalId >= :signal_id_s and signalId <= :signal_id_b")
 		            .setParameter("dev_id", uniqDeviceId)
 		            .setParameter("signal_id_s", sIdSmall)
 		            .setParameter("signal_id_b", sIdBig).list();
 		    
-			tx.commit();
+			// tx.commit();
 		} catch (Exception e) {
 			Util.logger(logger, Util.ERROR, e);
 		}
@@ -1978,6 +2018,7 @@ public class BeecomDB {
     	return ret;
     }
     
+    @SuppressWarnings("unchecked")
     public Map<Long, Long> getDeviceIDMap(String userName) {
 
 		if(null == userName) {
@@ -2094,6 +2135,11 @@ public class BeecomDB {
 			ret = true;
 		} catch (Exception e) {
 			Util.logger(logger, Util.ERROR, e);
+			try{
+    			tx.rollback();
+    		}catch(RuntimeException rbe){
+    			Util.logger(logger, Util.ERROR, rbe);
+    		}
 			ret = false;
 		}
     	return ret;
@@ -2136,6 +2182,113 @@ public class BeecomDB {
 			ret = true;
 		} catch (Exception e) {
 			Util.logger(logger, Util.ERROR, e);
+			try{
+    			tx.rollback();
+    		}catch(RuntimeException rbe){
+    			Util.logger(logger, Util.ERROR, rbe);
+    		}
+			ret = false;
+		}
+    	return ret;
+    }
+    
+    /* 
+     * To put a new SN info into database. Used for open register only
+     * 
+     * @param snInfoHbn the device SN info, its id must be 0 to indicate it's new
+     * @return true OK, false error
+     */
+    public boolean putNewSnInfo(SnInfoHbn snInfoHbn) {
+    	boolean ret = false;
+    	if(null == snInfoHbn) {
+    		return ret;
+    	}
+    	if(snInfoHbn.getId() != 0) {
+    		/* must be a new SnInfoHbn */
+    		return ret;
+    	}
+    	
+		Transaction tx = null;
+		try (Session session = sessionFactory.openSession()) {
+			tx = session.beginTransaction();
+			session.save(snInfoHbn);
+			tx.commit();
+			ret = true;
+		} catch (Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+			try{
+    			tx.rollback();
+    		}catch(RuntimeException rbe){
+    			Util.logger(logger, Util.ERROR, rbe);
+    		}
+			ret = false;
+		}
+    	return ret;
+    }
+    
+    /* 
+     * To put a new device info into database. Used for open register only
+     * 
+     * @param devInfoHbn the device info, its id must be 0 to indicate it's new
+     * @return true OK, false error
+     */
+    public boolean putNewDevInfo(DevInfoHbn devInfoHbn) {
+    	boolean ret = false;
+    	if(null == devInfoHbn) {
+    		return ret;
+    	}
+    	if(devInfoHbn.getId() != 0) {
+    		/* must be a new DevInfoHbn */
+    		return ret;
+    	}
+    	
+		Transaction tx = null;
+		try (Session session = sessionFactory.openSession()) {
+			tx = session.beginTransaction();
+			session.save(devInfoHbn);
+			tx.commit();
+			ret = true;
+		} catch (Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+			try{
+    			tx.rollback();
+    		}catch(RuntimeException rbe){
+    			Util.logger(logger, Util.ERROR, rbe);
+    		}
+			ret = false;
+		}
+    	return ret;
+    }
+    
+    /* 
+     * To put a new device info into database.
+     * 
+     * @param serverChainHbn the server chain info, its id must be 0 to indicate it's new
+     * @return true OK, false error
+     */
+    public boolean putNewServerChain(ServerChainHbn serverChainHbn) {
+    	boolean ret = false;
+    	if(null == serverChainHbn) {
+    		return ret;
+    	}
+    	if(serverChainHbn.getId() != 0) {
+    		/* must be a new DevInfoHbn */
+    		return ret;
+    	}
+    	
+		Transaction tx = null;
+		try (Session session = sessionFactory.openSession()) {
+			tx = session.beginTransaction();
+			session.save(serverChainHbn);
+			tx.commit();
+			ret = true;
+		} catch (Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+			try{
+    			tx.rollback();
+    		}catch(RuntimeException rbe){
+    			Util.logger(logger, Util.ERROR, rbe);
+    		}
 			ret = false;
 		}
     	return ret;
@@ -2215,6 +2368,9 @@ public class BeecomDB {
 						case BPLanguageId.SPANISH:
 							customSignalNameLangEntityInfoHbn.setSpanish(entry.getValue());
 							break;
+						default:
+							Util.logger(logger, Util.ERROR, "invalid signal language type");
+							break;
 						}
 					}
 					session.save(customSignalNameLangEntityInfoHbn);
@@ -2251,6 +2407,9 @@ public class BeecomDB {
 							break;
 						case BPLanguageId.SPANISH:
 							customSignalGroupLangEntityInfoHbn.setSpanish(entry.getValue());
+							break;
+						default:
+							Util.logger(logger, Util.ERROR, "invalid signal language type");
 							break;
 						}
 					}
@@ -2293,6 +2452,9 @@ public class BeecomDB {
 							break;
 						case BPLanguageId.SPANISH:
 							customUnitLangEntityInfoHbn.setSpanish(entry.getValue());
+							break;
+						default:
+							Util.logger(logger, Util.ERROR, "invalid signal language type");
 							break;
 						}
 					}
@@ -2354,6 +2516,9 @@ public class BeecomDB {
 								case BPLanguageId.SPANISH:
 									customSignalEnumLangEntityInfoHbn.setSpanish(langEntry.getValue());
 									break;
+								default:
+									Util.logger(logger, Util.ERROR, "invalid signal language type");
+									break;
 								}
 							}
 							session.save(customSignalEnumLangEntityInfoHbn);
@@ -2371,6 +2536,11 @@ public class BeecomDB {
 			ret = true;
 		} catch (Exception e) {
 			Util.logger(logger, Util.ERROR, e);
+			try{
+    			tx.rollback();
+    		}catch(RuntimeException rbe){
+    			Util.logger(logger, Util.ERROR, rbe);
+    		}
 			ret = false;
 		}
     	return ret;
@@ -2448,6 +2618,11 @@ public class BeecomDB {
 			ret = true;
 		} catch (Exception e) {
 			Util.logger(logger, Util.ERROR, e);
+			try{
+    			tx.rollback();
+    		}catch(RuntimeException rbe){
+    			Util.logger(logger, Util.ERROR, rbe);
+    		}
 			ret = false;
 		}
     	return ret;
@@ -2493,6 +2668,7 @@ public class BeecomDB {
 	}
 	
     
+	@SuppressWarnings("unchecked")
     public void clearDeviceSignalInfo(Long uniqDevId) {
 		if(uniqDevId <= 0) {
 			return;
@@ -2741,7 +2917,7 @@ public class BeecomDB {
 												.setParameter("system_signal_id", systemSignalInfoHbn.getId())
 												.uniqueResult();
 										if (null != systemSignalInfoHbn) {
-											session.delete(systemSignalInfoHbn);
+											session.delete(systemSignalI32InfoHbn);
 										}
 										break;
 									}
@@ -2891,12 +3067,12 @@ public class BeecomDB {
     public static void dbConfigure() {
     	/* set default configuration */
     	dbConfigMap = new HashMap<>();
-    	dbConfigMap.put("Driver", dbDriverDefault);
-    	dbConfigMap.put("Host", dbHostDefault);
-    	dbConfigMap.put("Port", dbPortDefault);
-    	dbConfigMap.put("Name", dbNameDefault);
-    	dbConfigMap.put("User", dbUserDefault);
-    	dbConfigMap.put("Password", dbPasswordDefault);
+    	dbConfigMap.put("Driver", DB_DRIVER_DEFAULT);
+    	dbConfigMap.put("Host", DB_HOST_DEFAULT);
+    	dbConfigMap.put("Port", DB_PORT_DEFAULT);
+    	dbConfigMap.put("Name", DB_NAME_DEFAULT);
+    	dbConfigMap.put("User", DB_USER_DEFAULT);
+    	dbConfigMap.put("Password", DEB_PASSWORD_DEFAULT);
     	
     	/* load the configuration file if any:
     	 * Driver=com.mysql.jdbc.Driver;
@@ -2905,8 +3081,7 @@ public class BeecomDB {
     	 * Name=bc_server_db;
     	 * User=root;
     	 * Password=Ansersion; */
-		try {
-			FileInputStream fis = new FileInputStream("config/db_config.txt");
+		try(FileInputStream fis = new FileInputStream("config/db_config.txt")) {
 			InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
 			try (BufferedReader sysSigIn = new BufferedReader(isr)) {
 				String s;
@@ -2952,6 +3127,7 @@ public class BeecomDB {
     	return sn != null && sn.length() > 0 && sn.length() <=64;
     }
 
+    @SuppressWarnings("unchecked")
     public boolean getSignalInfoUnitInterfaceMap(BPDeviceSession bpDeviceSession) {
     	boolean ret = false;
     	if(null == bpDeviceSession) {
@@ -3196,6 +3372,7 @@ public class BeecomDB {
     }
     
     /* update 'userId2UserDevRelInfoListMap' */
+    @SuppressWarnings("unchecked")
     public void updateUserDevRel(UserInfoHbn userInfoHbn) {
     	if(null == userInfoHbn) {
     		return;
@@ -3235,6 +3412,7 @@ public class BeecomDB {
 	    
     }
 
+    @SuppressWarnings("unchecked")
     public void updateUserDevRel(DevInfoHbn devInfoHbn) {
     	if(null == devInfoHbn) {
     		return;

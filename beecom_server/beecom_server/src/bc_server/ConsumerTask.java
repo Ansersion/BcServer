@@ -1,7 +1,5 @@
 package bc_server;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.LinkedList;
 
 import org.slf4j.Logger;

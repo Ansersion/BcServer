@@ -1,15 +1,13 @@
 package server_chain;
 
-import static org.junit.Assert.assertNotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class ServerChain {
 	
 	public static final int TYPE_DEFAULT = 0;
-	public static final int TYPE_IPv4 = 1;
-	public static final int TYPE_IPv6 = 2;
+	public static final int TYPE_IPV4 = 1;
+	public static final int TYPE_IPV6 = 2;
 	public static final int TYPE_DOMAIN = 3;
 	
 	public static final ServerNode SERVER_NODE_DEFAULT = new ServerNode(TYPE_DEFAULT, "");

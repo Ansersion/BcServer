@@ -4,10 +4,13 @@
 package bc_console;
 
 /**
- * @author isdt
+ * command: print
+ * @author Ansersion
  *
  */
 public class BcConsoleCommandPrint extends BcConsoleCommand {
+	/* example: print*/
+	public static final String CMD_WORD = "print";
 
 	/* (non-Javadoc)
 	 * @see bc_console.BcConsoleCommand#getCommandKey()

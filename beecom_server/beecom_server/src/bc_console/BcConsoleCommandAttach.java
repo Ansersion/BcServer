@@ -3,7 +3,6 @@
  */
 package bc_console;
 
-import server_chain.ServerChain;
 import server_chain.ServerNode;
 
 /**
@@ -11,6 +10,8 @@ import server_chain.ServerNode;
  *
  */
 public class BcConsoleCommandAttach extends BcConsoleCommand {
+	/* example: attach 1 127.0.0.1 */
+	public static final String CMD_WORD = "attach";
 	
 	private ServerNode serverNode;
 	
@@ -42,5 +43,15 @@ public class BcConsoleCommandAttach extends BcConsoleCommand {
 		ret = BcConsole.updateServerFather(serverNode);
 		return ret;
 	}
+
+	public ServerNode getServerNode() {
+		return serverNode;
+	}
+
+	public void setServerNode(ServerNode serverNode) {
+		this.serverNode = serverNode;
+	}
+	
+
 
 }

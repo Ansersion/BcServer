@@ -1,7 +1,6 @@
 package bc_console;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
+
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 
@@ -14,22 +13,10 @@ import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import bc_server.BcDecoder.DecodeState;
-import bp_packet.BPPackFactory;
-import bp_packet.BPPacket;
-import bp_packet.BPParseException;
-import bp_packet.BPParseFxHeaderException;
-import bp_packet.FixedHeader;
-import bp_packet.Payload;
-import bp_packet.VariableHeader;
-import other.CrcChecksum;
-import other.Util;
 
 public class BcConsoleDecoder extends CumulativeProtocolDecoder {
-	private static final Logger logger = LoggerFactory.getLogger(BcConsoleDecoder.class); 
+	// private static final Logger logger = LoggerFactory.getLogger(BcConsoleDecoder.class); 
 
 	public enum DecodeState {
 		DEC_INVALID, DEC_FX_HEAD, DEC_REMAINING_DATA;
@@ -57,12 +44,11 @@ public class BcConsoleDecoder extends CumulativeProtocolDecoder {
 			} else {
 				ret = true;
 				session.setAttribute(DATA, "");
-				s.replace(';', ' ');
+				s = s.replace(';', ' ');
 				String[] array = s.split(" +");
 				BcConsoleCommand bcCosoleCommand = BcConsoleCommand.createConsoleCommand(array);
 				if(null != bcCosoleCommand) {
-					// BcConsoleCommand 
-					// decoderOut.write(s);
+					decoderOut.write(bcCosoleCommand);
 				}
 
 			}

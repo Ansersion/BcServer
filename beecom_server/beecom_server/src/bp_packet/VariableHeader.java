@@ -177,6 +177,10 @@ public class VariableHeader {
 		return (flags & 0x02) != 0;
 	}
 	
+	public boolean getRegisterFlag() {
+		return (flags & 0x08) != 0;
+	}
+	
 	public int getLevel() {
 		return level;
 	}

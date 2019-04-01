@@ -3,8 +3,7 @@
  */
 package db;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
+
 import java.sql.Connection;
 import java.sql.Statement;
 

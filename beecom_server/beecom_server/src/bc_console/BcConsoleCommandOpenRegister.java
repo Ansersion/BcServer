@@ -3,11 +3,17 @@
  */
 package bc_console;
 
+import bp_packet.BPPacket;
+
 /**
  * @author Ansersion
  *
  */
 public class BcConsoleCommandOpenRegister extends BcConsoleCommand {
+	/* example: register open[close]*/
+	public static final String CMD_WORD = "register";
+	
+	private boolean enableOpenRegister;
 
 	/* (non-Javadoc)
 	 * @see bc_console.BcConsoleCommand#getCommandKey()
@@ -32,8 +38,19 @@ public class BcConsoleCommandOpenRegister extends BcConsoleCommand {
 	 */
 	@Override
 	public String doCommand() {
-		// TODO Auto-generated method stub
-		return null;
+		String ret = "OK";
+		BPPacket.setOpenRegister(enableOpenRegister);
+		return ret;
 	}
+
+	public boolean isEnableOpenRegister() {
+		return enableOpenRegister;
+	}
+
+	public void setEnableOpenRegister(boolean enableOpenRegister) {
+		this.enableOpenRegister = enableOpenRegister;
+	}
+	
+	
 
 }

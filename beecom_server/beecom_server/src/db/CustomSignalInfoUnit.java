@@ -207,7 +207,7 @@ public class CustomSignalInfoUnit implements SignalInfoUnitInterface {
 				break;
 			}
 			case BPPacket.VAL_TYPE_BOOLEAN: {
-				Boolean v = (Boolean)value;
+				// Boolean v = (Boolean)value;
 				ret = false;
 				break;
 			}

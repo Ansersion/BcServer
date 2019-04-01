@@ -19,10 +19,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import bc_server.BcServerHandler;
 import db.BeecomDB;
 import db.CustomSignalInfoUnit;
-import db.SignalInfoHbn;
 import db.SystemSignalCustomInfoUnit;
 import db.SystemSignalInfoUnit;
 import sys_sig_table.BPSysEnmLangResTable;

@@ -1,8 +1,9 @@
 package other;
 
-import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by Ansersion on 2018/2/14.
@@ -10,6 +11,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class BeecomEncryption {
 
+	private static final Logger logger = LoggerFactory.getLogger(BeecomEncryption.class); 
     private static BeecomEncryption beecomEncryption = null;
 
     private BeecomEncryption() {
@@ -34,10 +36,8 @@ public class BeecomEncryption {
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
             messageDigest.update(str.getBytes("UTF-8"));
             encodeStr = byte2Hex(messageDigest.digest());
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+        	Util.logger(logger, Util.ERROR, e);
         }
         return encodeStr;
     }

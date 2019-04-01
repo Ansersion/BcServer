@@ -1,5 +1,8 @@
 package bp_packet;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import org.apache.mina.core.buffer.IoBuffer;
 
 import other.CrcChecksum;
@@ -92,6 +95,23 @@ public class BPPacket implements BPPacketInterface {
 	public static final short USER_AUTH_READ = 0x0004;
 	public static final short USER_AUTH_WRITE = 0x0002;
 	public static final short USER_AUTH_MANAGE = 0x0001;
+	
+	/* open register */
+	private static Lock openRegisterLock = new ReentrantLock(); 
+	private static boolean openRegister = false;
+	
+	public static void setOpenRegister(boolean enable) {
+		openRegisterLock.lock();
+		try {
+			openRegister = enable;
+		} finally {
+			openRegisterLock.unlock();
+		}
+	}
+	
+	public static boolean isOpenRegister() {
+		return openRegister;
+	}
 	
 	public static boolean inDist(int distIndex, int signalId) {
 		return (signalId >= SYS_SIG_START_ID + distIndex * SYS_SIG_DIST_STEP) && (signalId < SYS_SIG_START_ID + (distIndex + 1) * SYS_SIG_DIST_STEP);

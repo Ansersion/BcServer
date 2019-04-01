@@ -1,7 +1,6 @@
 package bp_packet;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -25,7 +24,7 @@ public class BPDeviceSession extends BPSession {
 	private static final int MAX_RELAY_LIST_SIZE = 10;
 	private Long uniqDeviceId;
 	private String password;
-	private Long adminId;
+	// private Long adminId;
 	private Map<Integer, List<Object> > signalValueMap;
 	private Map<Integer, SignalInfoUnitInterface> signalId2InfoUnitMap;
 	private boolean sigMapCheckOK;
@@ -46,7 +45,7 @@ public class BPDeviceSession extends BPSession {
 		super(session);
 		this.uniqDeviceId = uniqDeviceId;
 		this.password = password;
-		this.adminId = adminId;
+		// this.adminId = adminId;
 		this.signalValueMap = new HashMap<>();
 		super.setSystemSignalValueMap(new HashMap<Integer, Object>());
 		sigMapCheckOK = false;

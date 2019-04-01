@@ -197,20 +197,17 @@ public class SystemSignalInfoUnit implements SignalInfoUnitInterface {
 
 	@Override
 	public short getAlarmClass() {
-		// TODO Auto-generated method stub
-		return 0;
+		return alarmClass;
 	}
 
 	@Override
 	public short getAlarmDelayBef() {
-		// TODO Auto-generated method stub
-		return 0;
+		return alarmDelayBef;
 	}
 
 	@Override
 	public short getAlarmDelayAft() {
-		// TODO Auto-generated method stub
-		return 0;
+		return alarmDelayAft;
 	}
 
 	

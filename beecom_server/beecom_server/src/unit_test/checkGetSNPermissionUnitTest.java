@@ -7,8 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import db.BeecomDB;
-import db.UserInfoUnit;
-import other.BeecomEncryption;
+
 
 public class checkGetSNPermissionUnitTest {
 
