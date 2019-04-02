@@ -253,6 +253,10 @@ public class VariableHeader {
     	flags &= (~0x40);
         return this;
     }
+    
+    public boolean getSNFlag() {
+        return (flags & 0x20) != 0;
+    }
 
     public boolean getSysSigMapFlag() {
     	return (flags & 0x80) != 0;
@@ -269,7 +273,7 @@ public class VariableHeader {
     }
     /* for GET end */
 	
-	public boolean getSysSigFlag() {
+	public boolean getSigFlag() {
 		return (flags & 0x10) != 0;
 	}
 	

@@ -25,7 +25,7 @@ public class BcConsoleDecoder extends CumulativeProtocolDecoder {
 	public static final String OLD_CONNECTION = "OLD CONNECTION";
 	public static final String DATA = "DATA";
 	private static final Charset cs = Charset.forName("utf8");
-	private static final CharsetDecoder decoder = cs.newDecoder();
+	public static final CharsetDecoder DECODER_UTF8 = cs.newDecoder();
 
 	@Override
 	protected boolean doDecode(IoSession session, IoBuffer ioIn,
@@ -38,7 +38,7 @@ public class BcConsoleDecoder extends CumulativeProtocolDecoder {
 		}
 	
 		if (ioIn.remaining() > 0) { 
-			String s = session.getAttribute("DATA") + ioIn.getString(decoder);
+			String s = session.getAttribute("DATA") + ioIn.getString(DECODER_UTF8);
 			if(s.indexOf(";")  < 0) {
 				session.setAttribute(DATA, s);
 			} else {

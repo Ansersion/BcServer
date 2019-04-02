@@ -85,7 +85,7 @@ public class BPPacketPUSH extends BPPacket {
 			buffer.put(data);
 		} else {
 			buffer.putUnsignedShort(pld.getUniqDevId());
-			if(vrb.getSysSigFlag()) {
+			if(vrb.getSigFlag()) {
 				// TODO: [NEED](no use):pack system signal
 			}
 			if(vrb.getCusSigFlag()) {

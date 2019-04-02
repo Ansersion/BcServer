@@ -24,7 +24,7 @@ public class ConsumerTask extends Thread {
     	if(null == product) {
     		return;
     	}
-        synchronized (list) {
+        synchronized (list) { 
             while (list.size() == MAX_SIZE) {
                 try {
                     list.wait();

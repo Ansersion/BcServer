@@ -346,8 +346,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 			boolean sysSigMapFlag = vrb.getSysSigMapFlag();
 			boolean cusSigMapFlag = vrb.getCusSigMapFlag();
 			boolean devIdFlag = vrb.getDevIdFlag();
-			boolean sysSigFlag = vrb.getSysSigFlag();
-			boolean cusSigFlag = vrb.getCusSigFlag();
+			boolean sigFlag = vrb.getSigFlag();
 			boolean sysSigCusInfoFlag = vrb.getSysCusFlag();
 			boolean pushDeviceIdFlag = vrb.getReqAllDeviceId();
 
@@ -355,13 +354,13 @@ public class BcServerHandler extends IoHandlerAdapter {
 			vrbAck = packAck.getVrbHead();
 
 			if (devIdFlag) {
-				if (sysSigMapFlag || cusSigMapFlag || sysSigFlag || cusSigFlag || sysSigCusInfoFlag
+				if (sysSigMapFlag || cusSigMapFlag || sigFlag || sysSigCusInfoFlag
 						|| pushDeviceIdFlag) {
 					packAck.getVrbHead().setRetCode(BPPacketGET.RET_CODE_VRB_HEADER_FLAG_ERR);
 					session.write(packAck);
 					return;
 				}
-				String sn = pld.getDeviceSn();
+				String sn = pld.getSN();
 				long devUniqIdTmp = BeecomDB.getInstance().getDeviceUniqId(sn, null);
 				BeecomDB.GetSnErrorEnum getSnErrorEnum = BeecomDB.getInstance()
 						.checkGetSNPermission(bpUserSession.getUserInfoUnit().getUserInfoHbn().getId(), sn);
@@ -376,7 +375,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 				return;
 			}
 			if (pushDeviceIdFlag) {
-				if (sysSigMapFlag || cusSigMapFlag || sysSigFlag || cusSigFlag || sysSigCusInfoFlag) {
+				if (sysSigMapFlag || cusSigMapFlag || sigFlag || sysSigCusInfoFlag) {
 					packAck.getVrbHead().setRetCode(BPPacketGET.RET_CODE_VRB_HEADER_FLAG_ERR);
 					session.write(packAck);
 					return;
@@ -419,19 +418,17 @@ public class BcServerHandler extends IoHandlerAdapter {
 			BPDeviceSession bpDeviceSession = (BPDeviceSession) beecomDb.getDevUniqId2SessionMap().get(devUniqId);
 
 			boolean signalValuePackOk = true;
-			if (sysSigFlag && signalValuePackOk) {
-				List<Integer> sysSigLst = pld.getSysSig();
-				signalValuePackOk = pldAck.packSysSignalValues(sysSigLst, bpDeviceSession, bpError);
-			}
-			if (cusSigFlag && signalValuePackOk) {
-				List<Integer> cusSigLst = pld.getCusSig();
-				signalValuePackOk = pldAck.packCusSignalValues(cusSigLst, bpDeviceSession, bpError);
+
+			if (sigFlag && signalValuePackOk) {
+				List<Integer> sigList = pld.getSignalLst();
+				if(!pldAck.packSignalValues(sigList, bpDeviceSession, bpError)) {
+					vrbAck.setRetCode(bpError.getErrorCode());
+					session.write(packAck);
+					return;
+				}
 			}
 
-			if (!signalValuePackOk) {
-				vrbAck.setRetCode(bpError.getErrorCode());
-				session.write(packAck);
-			} else if (bpError.getErrorCode() == BPError.BP_ERROR_STATISTICS_NONE_SIGNAL) {
+			if (bpError.getErrorCode() == BPError.BP_ERROR_STATISTICS_NONE_SIGNAL) {
 				List<Integer> statisticsNoneSignalList = bpError.getStatisticsNoneSignalList();
 				if (null == statisticsNoneSignalList || statisticsNoneSignalList.isEmpty()) {
 					logger.error("Inner error: null == statisticsNoneSignalList || statisticsNoneSignalList.isEmpty()");
@@ -500,12 +497,11 @@ public class BcServerHandler extends IoHandlerAdapter {
 		vrbAck = packAck.getVrbHead();
 		pldAck = packAck.getPld();
 		
-		boolean sysSigFlag = vrb.getSysSigFlag();
-		boolean cusSigFlag = vrb.getCusSigFlag();
+		boolean sigFlag = vrb.getSigFlag();
 		boolean sysSigAttrFlag = vrb.getSysSigAttrFlag();
 		boolean cusSigAttrFlag = vrb.getCusSigAttrFlag();
 		boolean sigValFlag = vrb.getSigValFlag();
-		if((sysSigFlag || cusSigFlag) && (sysSigAttrFlag || cusSigAttrFlag)) {
+		if(sigFlag && (sysSigAttrFlag || cusSigAttrFlag)) {
 			packAck.getVrbHead().setRetCode(BPPacketPOST.RET_CODE_INVALID_FLAGS_ERR);
 			session.write(packAck);
 			return;
@@ -600,7 +596,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 				// Map<Integer, SignalAttrInfo> sysCusAttrMap = pld.getCusSigAttrMap();
 				/* change the custom signal attributes */
 			}
-			if(vrb.getSysSigFlag() || vrb.getCusSigFlag()) {
+			if(vrb.getSigFlag() || vrb.getCusSigFlag()) {
 				/* forward the packet to the device
 				 * and put a callback when get the response */
 			}

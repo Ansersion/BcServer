@@ -512,5 +512,23 @@ public class BPPacket implements BPPacketInterface {
 	public byte[] getSignalValueRelay() {
 		return null;
 	}
+	
+
+    public String parseString(IoBuffer ioBuffer) {
+        String ret = null;
+        if(null == ioBuffer) {
+            return ret;
+        }
+        try {
+        	int len = ioBuffer.getUnsigned();
+    		byte[] bytes = new byte[len];
+    		ioBuffer.get(bytes);
+    		ret = new String(bytes, "UTF-8");
+        } catch(Exception e) {
+            Util.logger(logger, Util.ERROR, e);
+        }
+
+        return ret;
+    }
 
 }

@@ -57,15 +57,34 @@ public class BPPacketGET extends BPPacket {
 
 	@Override
 	public int parsePayload() {
+		int ret = -1;
 		try {
 			VariableHeader vrb = getVrbHead();
-			if(vrb.getReqAllDeviceId()) {
-				return 0;
-			}
-			if(vrb.getSysSigMapFlag() || vrb.getCusSigMapFlag() || vrb.getSysSigMapCustomInfo()) {
+			if(vrb.getSNFlag()) {
+				String sn = parseString(getIoBuffer());
+				if(null == sn) {
+					return ret;
+				}
+				getPld().setSN(sn);
+			} else if(vrb.getReqAllDeviceId()) {
+				/* no payload */
+			} else if(vrb.getSysSigMapFlag() || vrb.getCusSigMapFlag() || vrb.getSysSigMapCustomInfo()) {
 				getPld().setDevUniqId(getIoBuffer().getUnsignedInt());
-				return 0;
-			}
+			} else if(vrb.getSigFlag()) {
+				getPld().setDevUniqId(getIoBuffer().getUnsignedInt());
+                List<Integer> signalLst = new ArrayList<>();
+                int signalNum = getIoBuffer().getUnsigned();
+                for(int i = 0; i < signalNum; i++) {
+                	signalLst.add(getIoBuffer().getUnsignedShort());
+                }
+                getPld().setSignalLst(signalLst);
+            } else {
+                logger.error("GET: variable head flags error");
+                return ret;
+            }
+			
+			ret = 0;
+			/*
 			String s;
 			short devNum = getIoBuffer().get();
 			Map<Integer, List<Integer> > mapDev2siglst = getPld().getMapDev2SigLst();
@@ -86,11 +105,11 @@ public class BPPacketGET extends BPPacket {
 				}
 				mapDev2siglst.put(devId, lstSig);
 			}
+			*/
 		} catch (Exception e) {
 			Util.logger(logger, Util.ERROR, e);
-			throw e;
 		}
-		return 0;
+		return ret;
 	}
 
 	@Override

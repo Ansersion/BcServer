@@ -75,6 +75,8 @@ public class Payload {
 	private long devUniqId;
 	DevSigData sigData = null;
 	
+	private String SN;
+	
 	private BPError error;
 	
 	Map<Integer, List<Integer> > mapDevId2SigIdLst = new HashMap<>();
@@ -92,6 +94,7 @@ public class Payload {
 	private long sigMapCheckSum;
 	private byte[] relayData;
 	private ServerChainHbn serverChainHbn;
+	private List<Integer> signalLst;
 	
 	public BPError getError() {
 		return error;
@@ -223,11 +226,6 @@ public class Payload {
 		return mapDist2SysSigMap;
 	}
 	
-	public String getDeviceSn() {
-		// TODO
-		return "";
-	}
-	
 	public void setDevUniqId(long devUniqId) {
 		this.devUniqId = devUniqId;
 	}
@@ -349,42 +347,44 @@ public class Payload {
 		return ret;
 	}
 	
-	public boolean packCusSignalValues(List<Integer> cusSigLst, BPDeviceSession bpDeviceSession, BPError bpError) {
-		if(null == cusSigLst || null == bpDeviceSession) {
-			return false;
+	public boolean packSignalValues(List<Integer> sigLst, BPDeviceSession bpDeviceSession, BPError bpError) {
+		boolean ret = false;
+		if(null == sigLst || null == bpDeviceSession) {
+			return ret;
 		}
-		cusSigValMap = new HashMap<Integer, Map.Entry<Byte, Object>>();
+		sigValMap = new HashMap<Integer, Map.Entry<Byte, Object>>();
 		
-		Iterator<Integer> it = cusSigLst.iterator();
+		Iterator<Integer> it = sigLst.iterator();
 		Map<Integer, Map.Entry<Byte, Object> > customSignalValueMap;
 		customSignalValueMap = bpDeviceSession.getCustomSignalValueMap();
 		while(it.hasNext()) {
-			int cusSigId = it.next();
-			if(cusSigId < BPPacket.CUS_SIG_START_ID || cusSigId > BPPacket.CUS_SIG_END_ID) {
+			int sigId = it.next();
+			if(sigId < 0 || sigId > BPPacket.MAX_SIG_ID) {
 				if(null != bpError) {
 					bpError.setErrorCode(BPPacketGET.RET_CODE_SIGNAL_NOT_SUPPORT_ERR);
-					bpError.setSigId(cusSigId);
+					bpError.setSigId(sigId);
 				}
-				return false;
+				return ret;
 			}
 			
-			if(!customSignalValueMap.containsKey(cusSigId)) {
+			if(!customSignalValueMap.containsKey(sigId)) {
 				if(null != bpError) {
 					bpError.setErrorCode(BPPacketGET.RET_CODE_SIGNAL_NOT_SUPPORT_ERR);
-					bpError.setSigId(cusSigId);
+					bpError.setSigId(sigId);
 				}
-				return false;
+				return ret;
 			}
-			if(cusSigValMap.containsKey(cusSigId)) {
+			if(sigValMap.containsKey(sigId)) {
 				if(null != bpError) {
 					bpError.setErrorCode(BPPacketGET.RET_CODE_SIGNAL_REPEAT_ERR);
-					bpError.setSigId(cusSigId);
+					bpError.setSigId(sigId);
 				}
-				return false;
+				return ret;
 			}
-			cusSigValMap.put(cusSigId, customSignalValueMap.get(cusSigId));
+			sigValMap.put(sigId, customSignalValueMap.get(sigId));
 		}
-		return true;
+		ret = true;
+		return ret;
 	}
 	
 	public boolean packCusSignal(long uniqDevId, List<Integer> sysSigLst, byte langFlags) {
@@ -530,6 +530,22 @@ public class Payload {
 
 	public void setServerChainHbn(ServerChainHbn serverChainHbn) {
 		this.serverChainHbn = serverChainHbn;
+	}
+
+	public String getSN() {
+		return SN;
+	}
+
+	public void setSN(String sN) {
+		SN = sN;
+	}
+
+	public List<Integer> getSignalLst() {
+		return signalLst;
+	}
+
+	public void setSignalLst(List<Integer> signalLst) {
+		this.signalLst = signalLst;
 	}
 
 
