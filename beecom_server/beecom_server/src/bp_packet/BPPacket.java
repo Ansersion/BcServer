@@ -4,14 +4,19 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.mina.core.buffer.IoBuffer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import other.CrcChecksum;
+import other.Util;
 
 /**
  * @author Ansersion
  * 
  */
 public class BPPacket implements BPPacketInterface {
+	
+	private static final Logger logger = LoggerFactory.getLogger(BPPacket.class); 
 
 	public static final int BP_SIGNAL_RESERVED = 0x0000;
 	public static final int BP_LEVEL = 0;
@@ -56,8 +61,6 @@ public class BPPacket implements BPPacketInterface {
 	public static final int INVALID_LANGUAGE_ID = 0;
 	public static final int MAX_STR_LENGTH = 255;
 	public static final int SYSTEM_UNIT_LANGUAGE_FLAG = 0x80;
-	
-	
 	
 	public static final long INVALID_SIGNAL_MAP_CHECKSUM = 0x7FFFFFFFFFFFFFFFL;
 	
@@ -205,14 +208,6 @@ public class BPPacket implements BPPacketInterface {
 		return 0;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean parseVariableHeader(IoBuffer ioBuf) throws BPParseVrbHeaderException {
-		return false;
-	}
-
 	public void parseVrbHeadLevel(byte level) {
 		vrbHeader.parseLevel(level);
 	}
@@ -280,21 +275,6 @@ public class BPPacket implements BPPacketInterface {
 	@Override
 	public int parseVariableHeader() throws BPParseVrbHeaderException {
 		return 0;
-	}
-
-	@Override
-	public boolean parseVariableHeader(byte[] buf) throws BPParseVrbHeaderException {
-		return false;
-	}
-
-	@Override
-	public boolean parsePayload(IoBuffer ioBuf) throws BPParsePldException {
-		return false;
-	}
-
-	@Override
-	public boolean parsePayload(byte[] buf) throws BPParsePldException {
-		return false;
 	}
 	
 	public IoBuffer getIoBuffer() {
@@ -384,11 +364,11 @@ public class BPPacket implements BPPacketInterface {
 
 	@Override
 	public boolean assembleFixedHeader() throws BPAssembleFxHeaderException {
-        int pack_type = getPackTypeIntFxHead();
-        byte pack_flags = getPackFlagsByteFxHead();
-        byte encoded_byte = (byte) (((pack_type & 0xf) << 4) | (pack_flags & 0xf));
+        int packTypeTmp = getPackTypeIntFxHead();
+        byte packFlagsTmp = getPackFlagsByteFxHead();
+        byte encodedByte = (byte) (((packTypeTmp & 0xf) << 4) | (packFlagsTmp & 0xf));
 
-        getIoBuffer().put(encoded_byte);
+        getIoBuffer().put(encodedByte);
         getIoBuffer().putUnsignedShort(0);
 
         return true;
@@ -397,8 +377,7 @@ public class BPPacket implements BPPacketInterface {
 
 	@Override
 	public boolean assembleVariableHeader() throws BPAssembleVrbHeaderException {
-		// getVrbHead().initPackSeq();
-		return false;
+		return true;
 	}
 
 	@Override
@@ -511,7 +490,7 @@ public class BPPacket implements BPPacketInterface {
 			case VAL_TYPE_BOOLEAN: {
 				ret = 1;
 				Boolean v = (Boolean) value;
-				buffer.put(v == true ? (byte)1 : (byte)0);
+				buffer.put(v ? (byte)1 : (byte)0);
 				break;
 			}
 			default: {
@@ -519,7 +498,7 @@ public class BPPacket implements BPPacketInterface {
 			}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			Util.logger(logger, Util.ERROR, e);
 			ret = 0;
 		}
 		return ret;

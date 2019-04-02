@@ -42,14 +42,12 @@ public class BeecomDB {
 	
 	private static final Logger logger = LoggerFactory.getLogger(BcDecoder.class); 
 	private static final Long INVALID_LANGUAGE_ID = 0L;
-	// private static final Long INVALID_ADMIN_ID = 0L;
 	private static final Long INVALID_SIG_MAP_CHECKSUM = 0x7FFFFFFFFFFFFFFFL;
 	
 	static BeecomDB bcDb = null;
 
 	private List<DBUserInfoRec> userInfoRecLst;
 	private List<DBDevInfoRec> devInfoRecLst;
-	// private List<DBDevAuthRec> devAuthRecLst;
 	private List<DBSysSigRec> sysSigRecLst;
 	private Map<String, Long> name2IDMap;
 

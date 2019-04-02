@@ -39,63 +39,7 @@ public class BPPacketPOST extends BPPacket {
 		fxHead.setPacketType(BPPacketType.POST);
 		fxHead.setCrcType(CrcChecksum.CRC32);
 	}
-	
-	@Override
-	public boolean parseVariableHeader(IoBuffer ioBuf) {
-		int clientIdLen = 0;
 
-		try {
-			byte encodedByte = 0;
-			clientIdLen = 2;
-
-			byte[] id = new byte[clientIdLen];
-			for (int i = 0; i < clientIdLen; i++) {
-				id[i] = ioBuf.get();
-			}
-			super.parseVrbClientId(id, clientIdLen);
-			
-			encodedByte = ioBuf.get();
-			super.parseVrbHeadFlags(encodedByte);
-			
-			packSeq = ioBuf.getUnsignedShort();
-
-		} catch (Exception e) {
-			Util.logger(logger, Util.ERROR, e);
-			throw e;
-		}
-
-		return true;
-	}
-	
-	@Override
-	public boolean parseVariableHeader(byte[] buf) {
-		try {
-			int counter = 0;
-			int clientIdLen = 0;
-			byte encodedByte = 0;
-			clientIdLen = 2;
-			
-			byte[] id = new byte[clientIdLen];
-			for(int i = 0; i < clientIdLen; i++) {
-				id[i] = buf[counter++];
-			}
-			super.parseVrbClientId(id, clientIdLen);
-			
-			encodedByte = buf[counter++];
-			super.parseVrbHeadFlags(encodedByte);
-			
-			byte packSeqMsb = buf[counter++];
-			byte packSeqLsb = buf[counter];
-			packSeq = BPPacket.assemble2ByteBigend(packSeqMsb, packSeqLsb);
-
-		} catch (Exception e) {
-			Util.logger(logger, Util.ERROR, e);
-			throw e;
-		}
-
-		return true;
-	}
-	
 	@Override
 	public int parseVariableHeader() {
 		try {
@@ -183,27 +127,6 @@ public class BPPacketPOST extends BPPacket {
 			Util.logger(logger, Util.ERROR, e);
 		}
 		return 0;
-	}
-	
-	@Override
-	public boolean parsePayload(byte[] buf) {
-		
-		try {
-			int counter = 0;
-			
-			deviceNum = buf[counter++];
-			sigDatas = new DevSigData[deviceNum];
-			
-			for(int i = 0; i < deviceNum; i++) {
-				counter += sigDatas[i].parseSigData(buf, counter);
-			}
-
-		} catch (Exception e) {
-			Util.logger(logger, Util.ERROR, e);
-			throw e;
-		}
-
-		return true;
 	}
 
 	@Override

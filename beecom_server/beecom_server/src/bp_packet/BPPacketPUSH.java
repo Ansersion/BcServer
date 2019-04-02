@@ -35,21 +35,6 @@ public class BPPacketPUSH extends BPPacket {
 		fxHead.setPacketType(BPPacketType.PUSH);
 		fxHead.setCrcType(CrcChecksum.CRC32);
 	}
-	
-	@Override
-	public boolean parseVariableHeader(IoBuffer ioBuf) {
-		return true;
-	}
-
-	@Override
-	public boolean parseVariableHeader(byte[] buf) {
-		return true;
-	}
-	
-	@Override
-	public boolean parsePayload(byte[] buf) {
-		return true;
-	}
 
 	@Override
 	public boolean assembleVariableHeader() throws BPAssembleVrbHeaderException {

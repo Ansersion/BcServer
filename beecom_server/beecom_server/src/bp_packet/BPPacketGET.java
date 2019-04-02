@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.List;
 
-import org.apache.mina.core.buffer.IoBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,58 +34,6 @@ public class BPPacketGET extends BPPacket {
 	int packSeq;
 	DeviceSignals devSigData = null;
 	int deviceNum;
-
-	@Override
-	public boolean parseVariableHeader(IoBuffer ioBuf) {
-
-		try {
-			byte encodedByte = 0;
-			encodedByte = ioBuf.get();
-			super.parseVrbHeadFlags(encodedByte);
-			if(getVrbHead().getCusSigMapFlag()) {
-				encodedByte = ioBuf.get();
-				getVrbHead().setLangFlags(encodedByte);
-			}
-
-			packSeq = ioBuf.getUnsignedShort();
-			getVrbHead().setPackSeq(packSeq);
-
-		} catch (Exception e) {
-			Util.logger(logger, Util.ERROR, e);
-			throw e;
-		}
-
-		return true;
-	}
-
-	@Override
-	public boolean parseVariableHeader(byte[] buf) {
-		try {
-			int counter = 0;
-			int clientIdLen = 0;
-			byte encodedByte = 0;
-			clientIdLen = 2;
-
-			byte[] id = new byte[clientIdLen];
-			for (int i = 0; i < clientIdLen; i++) {
-				id[i] = buf[counter++];
-			}
-			super.parseVrbClientId(id, clientIdLen);
-
-			encodedByte = buf[counter++];
-			super.parseVrbHeadFlags(encodedByte);
-
-			byte packSeqMsb = buf[counter++];
-			byte packSeqLsb = buf[counter];
-			packSeq = BPPacket.assemble2ByteBigend(packSeqMsb, packSeqLsb);
-
-		} catch (Exception e) {
-			Util.logger(logger, Util.ERROR, e);
-			throw e;
-		}
-
-		return true;
-	}
 
 	@Override
 	public int parseVariableHeader() {
@@ -146,25 +93,6 @@ public class BPPacketGET extends BPPacket {
 		return 0;
 	}
 
-	@Override
-	public boolean parsePayload(byte[] buf) {
-
-		try {
-			int counter = 0;
-
-			deviceNum = buf[counter++];
-			devSigData = new DeviceSignals(deviceNum);
-
-			counter += devSigData.parseSigMap(buf, counter);
-
-		} catch (Exception e) {
-			Util.logger(logger, Util.ERROR, e);
-			throw e;
-		}
-
-		return true;
-	}
-	
 	@Override
 	public boolean assembleFixedHeader() {
 		int packType = getPackTypeIntFxHead();

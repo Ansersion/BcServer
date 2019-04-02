@@ -1,7 +1,5 @@
 package bp_packet;
 
-import org.apache.mina.core.buffer.IoBuffer;
-
 import other.CrcChecksum;
 
 /**
@@ -18,11 +16,7 @@ public interface BPPacketInterface {
      */
 	public int parseFixedHeader() throws BPParseFxHeaderException;
 	public int parseVariableHeader() throws BPParseVrbHeaderException;
-	public boolean parseVariableHeader(IoBuffer ioBuf) throws BPParseVrbHeaderException;
-	public boolean parseVariableHeader(byte[] buf) throws BPParseVrbHeaderException;
 	public int parsePayload() throws BPParsePldException;
-	public boolean parsePayload(IoBuffer ioBuf) throws BPParsePldException;
-	public boolean parsePayload(byte[] buf) throws BPParsePldException;
 	public boolean assembleStart() throws BPAssembleException;
 	public boolean assembleFixedHeader() throws BPAssembleFxHeaderException;
 	public boolean assembleVariableHeader() throws BPAssembleVrbHeaderException;
