@@ -111,6 +111,7 @@ public class BPDeviceSession extends BPSession {
 		return uniqDeviceId.toString();
 	}
 	
+	@Override
 	public long getUniqDevId() {
 		return uniqDeviceId;
 	}
@@ -132,14 +133,14 @@ public class BPDeviceSession extends BPSession {
 	}
 	
 	public void parseSignalInfoUnitInterfaceMap(List<Integer> systemSignalEnabledList, List<SystemSignalCustomInfoUnit> systemSignalCustomInfoUnitList, List<CustomSignalInfoUnit> customSignalInfoUnitList) {
-		Map<Integer, SignalInfoUnitInterface> signalId2InfoUnitMap = new HashMap<>();
+		Map<Integer, SignalInfoUnitInterface> signalId2InfoUnitMapTmp = new HashMap<>();
 		
 		try {
 			Iterator<Integer> itInteger = systemSignalEnabledList.iterator();
 			Integer signalId;
 			while (itInteger.hasNext()) {
 				signalId = itInteger.next() + BPPacket.SYS_SIG_START_ID;
-				signalId2InfoUnitMap.put(signalId, new SystemSignalInfoUnit(signalId));
+				signalId2InfoUnitMapTmp.put(signalId, new SystemSignalInfoUnit(signalId));
 			}
 			Iterator<SystemSignalCustomInfoUnit> itSystemSignalCustomInfoUnit = systemSignalCustomInfoUnitList
 					.iterator();
@@ -147,7 +148,7 @@ public class BPDeviceSession extends BPSession {
 			int customFlags;
 			while (itSystemSignalCustomInfoUnit.hasNext()) {
 				systemSignalCustomInfoUnit = itSystemSignalCustomInfoUnit.next();
-				SystemSignalInfoUnit systemSignalInfoUnit = (SystemSignalInfoUnit)signalId2InfoUnitMap.get(systemSignalCustomInfoUnit.getSysSigId());
+				SystemSignalInfoUnit systemSignalInfoUnit = (SystemSignalInfoUnit)signalId2InfoUnitMapTmp.get(systemSignalCustomInfoUnit.getSysSigId());
 				customFlags = systemSignalCustomInfoUnit.getCustomFlags();
 				systemSignalInfoUnit.setCustomFlags(customFlags);
 				systemSignalInfoUnit.setSystemSignalInterface(systemSignalCustomInfoUnit.getSignalInterface());
@@ -199,7 +200,7 @@ public class BPDeviceSession extends BPSession {
 			Util.logger(logger, Util.ERROR, e);
 		}
 		
-		setSignalId2InfoUnitMap(signalId2InfoUnitMap);
+		setSignalId2InfoUnitMap(signalId2InfoUnitMapTmp);
 	}
 	
 	public void reportSignalValue2UserClient(byte[] reportData) {

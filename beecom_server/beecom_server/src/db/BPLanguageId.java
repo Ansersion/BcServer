@@ -1,6 +1,11 @@
 package db;
 
 public class BPLanguageId {
+	
+	private BPLanguageId() {
+		throw new IllegalStateException("Utility class");
+	}
+	  
 	public static final int CHINESE = 0x07; 
 	public static final int ENGLISH = 0x06; 
 	public static final int FRENCH = 0x05; 

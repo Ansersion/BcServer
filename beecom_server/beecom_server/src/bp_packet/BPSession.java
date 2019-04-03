@@ -289,7 +289,7 @@ public abstract class BPSession {
 		    Map.Entry<Integer, Object> entry = entries.next();
 		    Integer key = entry.getKey();  
 		    Object value = entry.getValue();  
-		    logger.info("{}=>{}", key, value.toString()); 
+		    logger.info("{}=>{}", key, value); 
 		}  
 	}
 	public void setSysSigMap(Map<Integer, Byte[]> sysSigMap) {
@@ -445,10 +445,11 @@ public abstract class BPSession {
         		RelayData relayData = seqId2TimerRelayMap.get(seqId);
         		relayData.getTimer().cancel();
         		if(relayData.isTimeoutRelayed()) {
-        			return false;
+        			return ret;
         		}
         		relayData.getIoSession().write(relayData.getRelayData());
         		removeRelayList(seqId);
+        		ret = true;
         		
         	} else {
         		logger.error("Inner error: seqId2TimerRelayMap.containsKey(seqId)");
@@ -456,7 +457,6 @@ public abstract class BPSession {
         	
         } catch (Exception e) {
         	logger.error("Inner error: Exception in putRelayList");
-        	ret = false;
         }finally {
         	relayMaplock.unlock();
         }
@@ -476,7 +476,6 @@ public abstract class BPSession {
         	
         } catch (Exception e) {
         	logger.error("Inner error: Exception in putRelayList");
-        	ret = false;
         }finally {
         	relayMaplock.unlock();
         }
@@ -492,7 +491,6 @@ public abstract class BPSession {
         	ret = true;
         } catch (Exception e) {
         	logger.error("Inner error: Exception in removeRelayList");
-        	ret = false;
         }finally {
         	relayMaplock.unlock();
         }

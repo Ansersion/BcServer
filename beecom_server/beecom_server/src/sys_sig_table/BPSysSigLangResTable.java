@@ -7,7 +7,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -68,16 +68,17 @@ public class BPSysSigLangResTable {
 		return ret;
 	}
 
-	public boolean loadTab(String systemSignalLanguageResource) throws FileNotFoundException,
-			UnsupportedEncodingException {
+	public boolean loadTab(String systemSignalLanguageResource) throws FileNotFoundException {
 		FileInputStream fis = new FileInputStream(systemSignalLanguageResource);
-		InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+		InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
 		boolean ret = false;
-		String pattern = "^";
+		StringBuilder bld = new StringBuilder();
+		bld.append("^");
 		for(int i = 0; i < SYSTEM_SIGNAL_LANG_COLUMN_NUM-1; i++) {
-			pattern += "(.+),";
+			bld.append("(.+),");
 		}
-		pattern += "(.+)$";
+		bld.append("(.+)$");
+		String pattern = bld.toString();
 		Pattern r = Pattern.compile(pattern);
 
 		try (BufferedReader sysSigLangIn = new BufferedReader(isr)){

@@ -45,7 +45,7 @@ public class FixedHeader {
 		remainingLength = len;
 	}
 	
-	public void setRemainLen(IoBuffer io) throws BPParseFxHeaderException{
+	public void setRemainLen(IoBuffer io) {
 		remainingLength = io.get() << 8;
 		remainingLength += (io.get() & 0xFF); 
 	}

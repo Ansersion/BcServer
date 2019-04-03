@@ -236,18 +236,15 @@ public class Payload {
 	
 	public boolean packSysSigMap(long uniqDevId) {
 		BeecomDB beecomDB = BeecomDB.getInstance();
-		systemSignalInfoUnitLst = new ArrayList<SystemSignalInfoUnit>();
+		systemSignalInfoUnitLst = new ArrayList<>();
 		systemSignalInfoUnitLst = beecomDB.getSystemSignalUnitLst(uniqDevId, systemSignalInfoUnitLst);
-		if(null == systemSignalInfoUnitLst || systemSignalInfoUnitLst.isEmpty()) {
-			return false;
-		} else {
-			return true;
-		}
+		
+		return (null != systemSignalInfoUnitLst && !systemSignalInfoUnitLst.isEmpty());
 	}
 	
 	public boolean packCusSigMap(long uniqDevId) {
 		BeecomDB beecomDB = BeecomDB.getInstance();
-		customSignalInfoUnitLst = new ArrayList<CustomSignalInfoUnit>();
+		customSignalInfoUnitLst = new ArrayList<>();
 		customSignalInfoUnitLst = beecomDB.getCustomSignalUnitLst(uniqDevId, customSignalInfoUnitLst, customSignalLangSupportMask);
 		if(null == customSignalInfoUnitLst || customSignalInfoUnitLst.isEmpty()) {
 			return false;
@@ -292,7 +289,7 @@ public class Payload {
 		}
 
 		try {
-			sysSigValMap = new HashMap<Integer, Object>();
+			sysSigValMap = new HashMap<>();
 			Iterator<Integer> it = sysSigLst.iterator();
 			Map<Integer, SignalInfoUnitInterface> signalInfoUnitInterfaceMap = bpDeviceSession
 					.getSignalId2InfoUnitMap();
@@ -352,7 +349,7 @@ public class Payload {
 		if(null == sigLst || null == bpDeviceSession) {
 			return ret;
 		}
-		sigValMap = new HashMap<Integer, Map.Entry<Byte, Object>>();
+		sigValMap = new HashMap<>();
 		
 		Iterator<Integer> it = sigLst.iterator();
 		Map<Integer, Map.Entry<Byte, Object> > customSignalValueMap;
@@ -412,7 +409,7 @@ public class Payload {
 			return sysSigValMap;
 		}
 		if(null == sysSigValMap) {
-			sysSigValMap = new HashMap<Integer, Object>();
+			sysSigValMap = new HashMap<>();
 		}
 		sysSigValMap.put(sigId,  value);
 		return sysSigValMap;
@@ -423,7 +420,7 @@ public class Payload {
 			return cusSigValMap;
 		}
 		if(null == cusSigValMap) {
-			cusSigValMap = new HashMap<Integer, Map.Entry<Byte, Object>>();
+			cusSigValMap = new HashMap<>();
 		}
 		cusSigValMap.put(sigId, new MyEntry<Byte, Object>(sigType, value));
 		return cusSigValMap;
@@ -507,7 +504,7 @@ public class Payload {
 	
 	public void initSigValMap() {
 		if(null == sigValMap) {
-			sigValMap = new HashMap<Integer, Map.Entry<Byte, Object>>();
+			sigValMap = new HashMap<>();
 		}
 		sigValMap.clear();
 	}

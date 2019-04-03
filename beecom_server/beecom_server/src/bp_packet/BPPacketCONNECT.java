@@ -50,9 +50,6 @@ public class BPPacketCONNECT extends BPPacket {
 			encodedByte = getIoBuffer().get();
 			super.parseVrbHeadFlags(encodedByte);
 
-			// int clientId = getIoBuffer().getUnsignedShort();
-			// getVrbHead().setClientId(clientId);
-
 			int aliveTime = getIoBuffer().getUnsignedShort();
 			getVrbHead().setAliveTime(aliveTime);
 

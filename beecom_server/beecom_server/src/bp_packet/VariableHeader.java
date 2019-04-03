@@ -273,10 +273,6 @@ public class VariableHeader {
     }
     /* for GET end */
 	
-	public boolean getSigFlag() {
-		return (flags & 0x10) != 0;
-	}
-	
 	public boolean getCusSigFlag() {
 		return (flags & 0x08) != 0;
 	}

@@ -164,61 +164,61 @@ public class BPValue {
 		}
 	}
 	
-	static public Object setVal(byte valType, String src, Object dst) {
+	public static Object setVal(byte valType, String src, Object dst) {
 		try {
 			switch (valType) {
 			case BPPacket.VAL_TYPE_UINT32:
 				if (null == src) {
-					dst = new Long((Long)BPPacket.VAL_U32_UNLIMIT);
+					dst = Long.valueOf(BPPacket.VAL_U32_UNLIMIT);
 				} else {
 					dst = Long.valueOf(src);
 				}
 				break;
 			case BPPacket.VAL_TYPE_UINT16:
 				if (null == src) {
-					dst = new Integer((Integer)BPPacket.VAL_U16_UNLIMIT);
+					dst = Integer.valueOf(BPPacket.VAL_U16_UNLIMIT);
 				} else {
 					dst = Integer.valueOf(src);
 				}
 				break;
 			case BPPacket.VAL_TYPE_IINT32:
 				if (null == src) {
-					dst = new Integer((Integer)BPPacket.VAL_I32_UNLIMIT);
+					dst = Integer.valueOf(BPPacket.VAL_I32_UNLIMIT);
 				} else {
 					dst = Integer.valueOf(src);
 				}
 				break;
 			case BPPacket.VAL_TYPE_IINT16:
 				if (null == src) {
-					dst = new Short((Short)BPPacket.VAL_I16_UNLIMIT);
+					dst = Short.valueOf(BPPacket.VAL_I16_UNLIMIT);
 				} else {
 					dst = Short.valueOf(src);
 				}
 				break;
 			case BPPacket.VAL_TYPE_ENUM:
 				if (null == src) {
-					dst = new Integer((Integer)BPPacket.VAL_ENUM_UNLIMIT);
+					dst = Integer.valueOf(BPPacket.VAL_ENUM_UNLIMIT);
 				} else {
 					dst = Integer.valueOf(src);
 				}
 				break;
 			case BPPacket.VAL_TYPE_FLOAT:
 				if (null == src) {
-					dst = new Float((Float)BPPacket.VAL_FLOAT_UNLIMIT);
+					dst = Float.valueOf(BPPacket.VAL_FLOAT_UNLIMIT);
 				} else {
 					dst = Float.valueOf(src);
 				}
 				break;
 			case BPPacket.VAL_TYPE_STRING:
 				if (null == src) {
-					dst = new String((String)BPPacket.VAL_STR_UNLIMIT);
+					dst = BPPacket.VAL_STR_UNLIMIT;
 				} else {
 					dst = String.valueOf(src);
 				}
 				break;
 			case BPPacket.VAL_TYPE_BOOLEAN:
 				if (null == src) {
-					dst = new Boolean((Boolean)BPPacket.VAL_BOOLEAN_UNLIMIT);
+					dst = Boolean.valueOf(BPPacket.VAL_BOOLEAN_UNLIMIT);
 				} else {
 					dst = Boolean.valueOf(src);
 				}
@@ -234,7 +234,7 @@ public class BPValue {
 		return dst;
 	}
 	
-	static public Object setVal(byte valType, String src) {
+	public static Object setVal(byte valType, String src) {
 		return setVal(valType, src, null);
 	}
 

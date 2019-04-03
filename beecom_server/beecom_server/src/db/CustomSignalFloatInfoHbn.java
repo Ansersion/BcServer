@@ -34,9 +34,12 @@ public class CustomSignalFloatInfoHbn extends SignalInterface {
 	public Short getPermission() {
 		return permission;
 	}
+	
+	@Override
 	public void setPermission(Short permission) {
 		this.permission = permission;
 	}
+	@Override
 	public Short getAccuracy() {
 		return accuracy;
 	}
@@ -61,15 +64,21 @@ public class CustomSignalFloatInfoHbn extends SignalInterface {
 	public void setDefVal(Float defVal) {
 		this.defVal = defVal;
 	}
+	
+	@Override
 	public Boolean getEnStatistics() {
 		return enStatistics;
 	}
+	
+	@Override
 	public void setEnStatistics(Boolean enStatistics) {
 		this.enStatistics = enStatistics;
 	}
 	public Long getCustomSignalId() {
 		return customSignalId;
 	}
+	
+	@Override
 	public void setCustomSignalId(Long customSignalId) {
 		this.customSignalId = customSignalId;
 	}

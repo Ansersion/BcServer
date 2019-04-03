@@ -4,9 +4,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import other.Util;
+
 
 public class SystemSignalInfoUnit implements SignalInfoUnitInterface {
-
+	private static final Logger logger = LoggerFactory.getLogger(SystemSignalInfoUnit.class); 
 	private int sysSigId;
 	private boolean ifNotifing;
 	private boolean ifConfigDef;
@@ -133,7 +138,7 @@ public class SystemSignalInfoUnit implements SignalInfoUnitInterface {
 			signalValue = entry.getValue().getValue();
 			ret = true;
 		} catch(Exception e) {
-			e.printStackTrace();
+			Util.logger(logger, Util.ERROR, e);
 			ret = false;
 		}
 		return ret;

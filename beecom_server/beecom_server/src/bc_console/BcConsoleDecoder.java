@@ -34,12 +34,12 @@ public class BcConsoleDecoder extends CumulativeProtocolDecoder {
 		
 		if (!session.containsAttribute(OLD_CONNECTION)) {
 			session.setAttribute(OLD_CONNECTION, true);
-			session.setAttribute(DATA, new String(""));
+			session.setAttribute(DATA, "");
 		}
 	
 		if (ioIn.remaining() > 0) { 
 			String s = session.getAttribute("DATA") + ioIn.getString(DECODER_UTF8);
-			if(s.indexOf(";")  < 0) {
+			if(s.indexOf(';')  < 0) {
 				session.setAttribute(DATA, s);
 			} else {
 				ret = true;

@@ -29,6 +29,7 @@ public class SystemSignalI16InfoHbn extends SignalInterface {
 	public Short getPermission() {
 		return permission;
 	}
+	@Override
 	public void setPermission(Short permission) {
 		this.permission = permission;
 	}
@@ -50,21 +51,26 @@ public class SystemSignalI16InfoHbn extends SignalInterface {
 	public void setDefVal(Short defVal) {
 		this.defVal = defVal;
 	}
+	@Override
 	public Integer getGroupLangId() {
 		return groupLangId;
 	}
 	public void setGroupLangId(Integer groupLangId) {
 		this.groupLangId = groupLangId;
 	}
+	@Override
 	public Boolean getEnStatistics() {
 		return enStatistics;
 	}
+	@Override
 	public void setEnStatistics(Boolean enStatistics) {
 		this.enStatistics = enStatistics;
 	}
+	@Override
 	public Long getSystemSignalId() {
 		return systemSignalId;
 	}
+	@Override
 	public void setSystemSignalId(Long systemSignalId) {
 		this.systemSignalId = systemSignalId;
 	}

@@ -4,9 +4,14 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import bp_packet.BPPacket;
+import other.Util;
 
 public class CustomSignalInfoUnit implements SignalInfoUnitInterface {
+	private static final Logger logger = LoggerFactory.getLogger(CustomSignalInfoUnit.class); 
 	private int cusSigId;
 	private boolean ifNotifing;
 	private boolean ifAlarm;
@@ -127,7 +132,7 @@ public class CustomSignalInfoUnit implements SignalInfoUnitInterface {
 		try {
 			signalValue = entry.getValue().getValue();
 		} catch(Exception e) {
-			e.printStackTrace();
+			Util.logger(logger, Util.ERROR, e);
 			ret = false;
 		}
 		return ret;
@@ -215,7 +220,7 @@ public class CustomSignalInfoUnit implements SignalInfoUnitInterface {
 				/* do nothing */
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			Util.logger(logger, Util.ERROR, e);
 			ret = true;
 		}
 		return ret;

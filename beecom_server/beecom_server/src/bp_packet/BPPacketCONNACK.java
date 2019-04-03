@@ -130,7 +130,7 @@ public class BPPacketCONNACK extends BPPacket {
 			break;
 		}
 		case ServerChain.TYPE_IPV4: {
-			String array[] = serverAddress.split("\\.");
+			String[] array = serverAddress.split("\\.");
 			if(null != array && 4 == array.length) {
 				ioBuffer.put((byte)serverType);
 				for(int i = 0; i < array.length; i++) {
@@ -141,7 +141,7 @@ public class BPPacketCONNACK extends BPPacket {
 			break;
 		}
 		case ServerChain.TYPE_IPV6: {
-			String array[] = serverAddress.split(":");
+			String[] array = serverAddress.split(":");
 			if(null != array && 8 == array.length) {
 				ioBuffer.put((byte)serverType);
 				for(int i = 0; i < array.length; i++) {

@@ -1,5 +1,6 @@
 package bp_packet;
 
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -102,6 +103,72 @@ public class BPPacket implements BPPacketInterface {
 	/* open register */
 	private static Lock openRegisterLock = new ReentrantLock(); 
 	private static boolean openRegister = false;
+	
+	public static boolean assembleSignalValue(IoBuffer ioBuffer, int signalId, byte type, byte alarmFlags, Object value) {
+		boolean ret = false;
+		
+		try {
+			ioBuffer.putUnsignedShort(signalId);
+			ioBuffer.putUnsigned(type | alarmFlags);
+			switch (type) {
+			case BPPacket.VAL_TYPE_UINT32:
+				ioBuffer.putUnsignedInt((Long)value);
+				ret = true;
+				break;
+			case BPPacket.VAL_TYPE_UINT16:
+				ioBuffer.putUnsignedShort((Integer)value);
+				ret = true;
+				break;
+			case BPPacket.VAL_TYPE_IINT32:
+				ioBuffer.putInt((Integer)value);
+				ret = true;
+				break;
+			case BPPacket.VAL_TYPE_IINT16:
+				ioBuffer.putShort((Short)value);
+				ret = true;
+				break;
+			case BPPacket.VAL_TYPE_ENUM:
+				ioBuffer.putUnsignedShort((Integer)value);
+				ret = true;
+				break;
+			case BPPacket.VAL_TYPE_FLOAT:
+				ioBuffer.putFloat((Float)value);
+				ret = true;
+				break;
+			case BPPacket.VAL_TYPE_STRING:
+				ret = assembleString(ioBuffer, (String)value);
+				break;
+			case BPPacket.VAL_TYPE_BOOLEAN:
+				ioBuffer.put((Byte)value);
+				ret = true;
+				break;
+			default:
+				logger.error("Unknown value type");
+				break;
+			}
+		} catch (Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+		}
+		
+		return ret;
+	}
+	
+    public static boolean assembleString(IoBuffer ioBuffer, String s) {
+        boolean ret = false;
+        if(null == ioBuffer || null == s || s.length() > BPPacket.MAX_STR_LENGTH) {
+            return ret;
+        }
+        try {
+            byte[] bytes = s.getBytes();
+            ioBuffer.putUnsigned(bytes.length);
+            ioBuffer.put(bytes);
+            ret = true;
+        } catch(Exception e) {
+            Util.logger(logger, Util.ERROR, e);
+        }
+
+        return ret;
+    }
 	
 	public static void setOpenRegister(boolean enable) {
 		openRegisterLock.lock();
@@ -523,7 +590,7 @@ public class BPPacket implements BPPacketInterface {
         	int len = ioBuffer.getUnsigned();
     		byte[] bytes = new byte[len];
     		ioBuffer.get(bytes);
-    		ret = new String(bytes, "UTF-8");
+    		ret = new String(bytes, StandardCharsets.UTF_8);
         } catch(Exception e) {
             Util.logger(logger, Util.ERROR, e);
         }

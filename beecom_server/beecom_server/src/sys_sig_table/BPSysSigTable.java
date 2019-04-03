@@ -7,7 +7,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,8 +35,8 @@ public class BPSysSigTable {
 
 	public static final int SYSTEM_SIGNAL_ATTR_COLUMN_NUM = 18;
 	public static final int SID_ID_RESERVED = 0x0000;
-	private static final SysSigInfo SYS_SIG_INFO_DEFAULT = new SysSigInfo(false, (byte)0, 0, (byte)0, false, (byte)0, new Long(0), new Long(1),
-			new Long(0), 0, null, true, (byte)0x7f, 5, 5);
+	private static final SysSigInfo SYS_SIG_INFO_DEFAULT = new SysSigInfo(false, (byte)0, 0, (byte)0, false, (byte)0, Long.valueOf(0), Long.valueOf(1),
+			Long.valueOf(0), 0, null, true, (byte)0x7f, 5, 5);
 
 	private List<SysSigInfo> sysSigInfoLst;
 
@@ -94,9 +94,9 @@ public class BPSysSigTable {
 		return ret;
 	}
 
-	public boolean loadTab(String system_signal_table) throws FileNotFoundException, UnsupportedEncodingException {
+	public boolean loadTab(String system_signal_table) throws FileNotFoundException {
 		FileInputStream fis = new FileInputStream(system_signal_table);
-		InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+		InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
 
 		boolean ret = false;
 		String strTmp;
@@ -122,12 +122,13 @@ public class BPSysSigTable {
 
 		try (BufferedReader sysSigIn = new BufferedReader(isr)) {
 			String s;
-			String pattern = "^";
+			StringBuilder bld = new StringBuilder();
+			bld.append("^");
 			for(int i = 0; i < SYSTEM_SIGNAL_ATTR_COLUMN_NUM-1; i++) {
-				pattern += "(.+),";
+				bld.append("(.+),");
 			}
-			pattern += "(.+)$";
-			Pattern r = Pattern.compile(pattern);
+			bld.append("(.+)$");
+			Pattern r = Pattern.compile(bld.toString());
 			s = sysSigIn.readLine();
 			s = sysSigIn.readLine();
 			int groupIndex = 0;
@@ -184,6 +185,7 @@ public class BPSysSigTable {
 						unitLangRes = scannerUnit.nextInt();
 
 					} catch (BPParseCsvFileException e) {
+						Util.logger(logger, Util.ERROR, e);
 						throw e;
 					}
 				}
@@ -251,6 +253,7 @@ public class BPSysSigTable {
 						classLangRes = scannerUnit.nextInt();
 
 					} catch (BPParseCsvFileException e) {
+						Util.logger(logger, Util.ERROR, e);
 						throw e;
 					}
 				}
@@ -281,6 +284,7 @@ public class BPSysSigTable {
 								}
 							}
 						} catch (Exception e) {
+							Util.logger(logger, Util.ERROR, e);
 							throw e;
 						}
 					}

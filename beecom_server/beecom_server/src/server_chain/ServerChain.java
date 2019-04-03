@@ -25,7 +25,7 @@ public class ServerChain {
 
 	public ServerChain(String serverChainStr) {
 		super();
-		serverNodeList = new ArrayList<ServerNode>();
+		serverNodeList = new ArrayList<>();
 		if(null == serverChainStr) {
 			serverChainStr = "";
 		}

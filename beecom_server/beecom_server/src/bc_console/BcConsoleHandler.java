@@ -21,7 +21,7 @@ public class BcConsoleHandler extends IoHandlerAdapter {
 	static final String SESS_ATTR_ID = "SESS_ATTR_ID";
 	public static final String SESS_ATTR_BP_SESSION = "SESS_ATTR_BP_SESSION";
 	
-	static enum ProductType {
+	enum ProductType {
 		PUSH_DEVICE_ID_LIST,
 		PUSH_SIGNAL_VALUE,
 		POST_SIGNAL_VALUE,

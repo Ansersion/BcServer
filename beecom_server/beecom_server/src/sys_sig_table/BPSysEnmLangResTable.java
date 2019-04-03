@@ -7,7 +7,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -41,9 +41,9 @@ public class BPSysEnmLangResTable {
 		sysEnmLangResLst = new ArrayList<>();
 	}
 
-	public boolean loadTab() throws FileNotFoundException, UnsupportedEncodingException {
+	public boolean loadTab() throws FileNotFoundException {
 		FileInputStream fis = new FileInputStream("config/sys_enum_language_resource.csv");
-		InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+		InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
 
 		sysEnmLangResLst.clear();
 		boolean ret = false;

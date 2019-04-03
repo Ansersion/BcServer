@@ -32,6 +32,7 @@ public class CustomSignalI32InfoHbn extends SignalInterface {
 	public Short getPermission() {
 		return permission;
 	}
+	@Override
 	public void setPermission(Short permission) {
 		this.permission = permission;
 	}
@@ -53,15 +54,18 @@ public class CustomSignalI32InfoHbn extends SignalInterface {
 	public void setDefVal(Integer defVal) {
 		this.defVal = defVal;
 	}
+	@Override
 	public Boolean getEnStatistics() {
 		return enStatistics;
 	}
+	@Override
 	public void setEnStatistics(Boolean enStatistics) {
 		this.enStatistics = enStatistics;
 	}
 	public Long getCustomSignalId() {
 		return customSignalId;
 	}
+	@Override
 	public void setCustomSignalId(Long customSignalId) {
 		this.customSignalId = customSignalId;
 	}

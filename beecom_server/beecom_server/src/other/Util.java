@@ -66,7 +66,7 @@ public class Util {
     public static final int WARN = 4;
     public static final int ERROR = 5;
     public static final int NOTHING = 6;
-    public static int level = VERBOSE;
+    public static final int level = VERBOSE;
     
     public static void logger(Logger logger, int l, Exception e) {
     	if(null == logger || null == e) {

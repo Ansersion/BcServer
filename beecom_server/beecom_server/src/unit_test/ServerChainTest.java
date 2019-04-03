@@ -29,7 +29,7 @@ public class ServerChainTest {
 	 * @throws java.lang.Exception
 	 */
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		BeecomDB.getInstance();
 	}
 

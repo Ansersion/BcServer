@@ -14,11 +14,11 @@ public class BPError {
 	// 0: error
 	// else: no error
 	
-	public static int BP_OK = 0;
+	public static final int BP_OK = 0;
 	/* There are statistics unsupported signals existing.
 	 * That means we should get the real signal values from the device manually.
 	 * */
-	public static int BP_ERROR_STATISTICS_NONE_SIGNAL = 0xE0;
+	public static final int BP_ERROR_STATISTICS_NONE_SIGNAL = 0xE0;
 	
 	private int errorCode;
 	private int sigId;

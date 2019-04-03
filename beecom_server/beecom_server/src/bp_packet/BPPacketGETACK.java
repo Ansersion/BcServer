@@ -135,7 +135,6 @@ public class BPPacketGETACK extends BPPacket {
 
 	@Override
 	public boolean assemblePayload() {
-		// byte encodedByte;
 		boolean ret = false;
 		try {
 			VariableHeader vrb = getVrbHead();
@@ -149,6 +148,21 @@ public class BPPacketGETACK extends BPPacket {
 			Payload pld = getPld();
 			IoBuffer buffer = getIoBuffer();
 			buffer.putUnsignedInt(pld.getUniqDevId());
+			
+			if(vrb.getSigValFlag()) {
+				/* check ret code */
+				Map<Integer, Map.Entry<Byte, Object>> sigValMap = pld.getSigValMap();
+				Iterator<Map.Entry<Integer, Map.Entry<Byte, Object>>> entries = sigValMap.entrySet().iterator();
+				buffer.putUnsigned(sigValMap.size());
+				while(entries.hasNext()) {
+					Map.Entry<Integer, Map.Entry<Byte, Object>> entry = entries.next();
+					if(!assembleSignalValue(buffer, entry.getKey(), entry.getValue().getKey(), (byte)0, entry.getValue().getValue())) {
+						return false;
+					}
+					
+				}
+			}
+			
 			if (vrb.getSysSigMapFlag()) {
 				List<SystemSignalInfoUnit> systemSignalInfoUnitList = pld.getSystemSignalInfoUnitLst();
 				if (null == systemSignalInfoUnitList || systemSignalInfoUnitList.isEmpty()) {
@@ -419,7 +433,7 @@ public class BPPacketGETACK extends BPPacket {
 					Iterator<CustomSignalInfoUnit> it = customSignalInfoUnitList.iterator();
 					byte cusSignalFlag = 0;
 					int signalIdTmp = 0;
-					int valType = BPPacket.VAL_TYPE_INVALID;
+					int valType;
 
 					while(it.hasNext()) {
 						CustomSignalInfoUnit customSignalInfoUnit = it.next();
@@ -457,6 +471,7 @@ public class BPPacketGETACK extends BPPacket {
 						Map<Integer, String> nameLangMap = customSignalInfoUnit.getSignalNameLangMap();
 						if (null == nameLangMap) {
 							logger.error("inner error: null == nameLangMap");
+							return ret;
 						}
 						Map<Integer, String> unitLangMap = customSignalInfoUnit.getSignalUnitLangMap();
 						Map<Integer, String> groupLangMap = customSignalInfoUnit.getGroupLangMap();

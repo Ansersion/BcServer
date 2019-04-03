@@ -74,18 +74,18 @@ public class BeecomDBUnitTest {
 		long n = beecomDB.getDeviceUniqId("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2", null);
 		assertEquals(n,2);
 		
-		List<SystemSignalCustomInfoUnit> systemSignalCustomInfoUnit = new ArrayList<SystemSignalCustomInfoUnit>();
+		List<SystemSignalCustomInfoUnit> systemSignalCustomInfoUnit = new ArrayList<>();
 		systemSignalCustomInfoUnit = beecomDB.getSystemSignalCustomInfoUnitLst(3L, systemSignalCustomInfoUnit);
 		assertEquals(systemSignalCustomInfoUnit.size(), 1);
 		assertEquals(systemSignalCustomInfoUnit.get(0).getSysSigId(), 0xE001);
 		
-		List<SystemSignalInfoUnit> systemSignalInfoUnitLst = new ArrayList<SystemSignalInfoUnit>();
+		List<SystemSignalInfoUnit> systemSignalInfoUnitLst = new ArrayList<>();
 		systemSignalInfoUnitLst = beecomDB.getSystemSignalUnitLst(3L, systemSignalInfoUnitLst);
 		assertEquals(systemSignalInfoUnitLst.size(), 2);
 		assertEquals(systemSignalInfoUnitLst.get(0).getSysSigId(), 0xE001);
 		assertEquals(systemSignalInfoUnitLst.get(1).getSysSigId(), 0xE002);
 		
-		List<CustomSignalInfoUnit> customSignalInfoUnitLst = new ArrayList<CustomSignalInfoUnit>();
+		List<CustomSignalInfoUnit> customSignalInfoUnitLst = new ArrayList<>();
 		customSignalInfoUnitLst = beecomDB.getCustomSignalUnitLst(3L, customSignalInfoUnitLst, 0x80);
 		assertEquals(customSignalInfoUnitLst.size(), 2);
 		assertEquals(customSignalInfoUnitLst.get(0).getCusSigId(), 1);

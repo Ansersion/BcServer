@@ -1,5 +1,6 @@
 package other;
 
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 
 import org.slf4j.Logger;
@@ -34,7 +35,7 @@ public class BeecomEncryption {
         String encodeStr = "";
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-            messageDigest.update(str.getBytes("UTF-8"));
+            messageDigest.update(str.getBytes(StandardCharsets.UTF_8));
             encodeStr = byte2Hex(messageDigest.digest());
         } catch (Exception e) {
         	Util.logger(logger, Util.ERROR, e);
@@ -43,16 +44,16 @@ public class BeecomEncryption {
     }
 
     private String byte2Hex(byte[] bytes){
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuilder = new StringBuilder();
         String temp = null;
         for (int i=0;i<bytes.length;i++){
             temp = Integer.toHexString(bytes[i] & 0xFF);
             if (temp.length()==1){
                 //1得到一位的进行补0操作
-                stringBuffer.append("0");
+                stringBuilder.append("0");
             }
-            stringBuffer.append(temp);
+            stringBuilder.append(temp);
         }
-        return stringBuffer.toString();
+        return stringBuilder.toString();
     }
 }

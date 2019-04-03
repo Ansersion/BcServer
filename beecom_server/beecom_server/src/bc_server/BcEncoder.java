@@ -48,11 +48,13 @@ public class BcEncoder extends ProtocolEncoderAdapter {
 
 		IoBuffer buf = packToEncode.getIoBuffer();
 		int limit = buf.limit();
-		String s = "send: ";
+		StringBuilder bld = new StringBuilder();
+		bld.append("send: ");
 		for(int i = 0; i < limit; i++) {
-			s += String.format("%02x", buf.getUnsigned()) + " ";
+			bld.append(String.format("%02x", buf.getUnsigned()));
+			bld.append(" ");
 		}
-		logger.info(s);
+		logger.info(bld.toString());
 		buf.rewind();
 		
 		arg2.write(buf);

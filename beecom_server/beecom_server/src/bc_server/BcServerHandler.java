@@ -46,6 +46,8 @@ import db.UserInfoUnit;
 import db.BeecomDB.LoginErrorEnum;
 import other.BPError;
 import other.Util;
+import sys_sig_table.BPSysSigTable;
+import sys_sig_table.SysSigInfo;
 
 public class BcServerHandler extends IoHandlerAdapter {
 	
@@ -57,7 +59,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 	static final String SESS_ATTR_ID = "SESS_ATTR_ID";
 	public static final String SESS_ATTR_BP_SESSION = "SESS_ATTR_BP_SESSION";
 	
-	static enum ProductType {
+	enum ProductType {
 		PUSH_DEVICE_ID_LIST,
 		PUSH_SIGNAL_VALUE,
 		POST_SIGNAL_VALUE,
@@ -249,7 +251,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 						SnInfoHbn snInfoHbn = new SnInfoHbn();
 						snInfoHbn.setSn(userName);
 						snInfoHbn.setDevelopUserId(0L);
-						if(false == beecomDb.putNewSnInfo(snInfoHbn)) {
+						if(!beecomDb.putNewSnInfo(snInfoHbn)) {
 							packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_REGISTER_FAILED);
 							session.write(packAck);
 							session.closeOnFlush();
@@ -259,7 +261,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 						devInfoHbn.setSnId(snInfoHbn.getId());
 						devInfoHbn.setPassword(password);
 						devInfoHbn.setAdminId(0L);
-						if(false == beecomDb.putNewDevInfo(devInfoHbn)) {
+						if(!beecomDb.putNewDevInfo(devInfoHbn)) {
 							packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_REGISTER_FAILED);
 							session.write(packAck);
 							session.closeOnFlush();
@@ -267,7 +269,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 						}
 						ServerChainHbn serverChainHbn = new ServerChainHbn();
 						serverChainHbn.setClientId(devInfoHbn.getId());
-						if(false == beecomDb.putNewServerChain(serverChainHbn)) {
+						if(!beecomDb.putNewServerChain(serverChainHbn)) {
 							packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_REGISTER_FAILED);
 							session.write(packAck);
 							session.closeOnFlush();
@@ -320,8 +322,10 @@ public class BcServerHandler extends IoHandlerAdapter {
 	}
 
 	private void onGet(IoSession session, BPPacket decodedPack) {
-		VariableHeader vrb, vrbAck;
-		Payload pld, pldAck;
+		VariableHeader vrb;
+		VariableHeader vrbAck;
+		Payload pld;
+		Payload pldAck;
 		long devUniqId = 0;
 		BeecomDB beecomDb = BeecomDB.getInstance();
 
@@ -346,7 +350,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 			boolean sysSigMapFlag = vrb.getSysSigMapFlag();
 			boolean cusSigMapFlag = vrb.getCusSigMapFlag();
 			boolean devIdFlag = vrb.getDevIdFlag();
-			boolean sigFlag = vrb.getSigFlag();
+			boolean sigFlag = vrb.getSigValFlag();
 			boolean sysSigCusInfoFlag = vrb.getSysCusFlag();
 			boolean pushDeviceIdFlag = vrb.getReqAllDeviceId();
 
@@ -417,15 +421,48 @@ public class BcServerHandler extends IoHandlerAdapter {
 			BPError bpError = new BPError();
 			BPDeviceSession bpDeviceSession = (BPDeviceSession) beecomDb.getDevUniqId2SessionMap().get(devUniqId);
 
-			boolean signalValuePackOk = true;
-
-			if (sigFlag && signalValuePackOk) {
-				List<Integer> sigList = pld.getSignalLst();
-				if(!pldAck.packSignalValues(sigList, bpDeviceSession, bpError)) {
-					vrbAck.setRetCode(bpError.getErrorCode());
+			if (sigFlag) {
+				bpDeviceSession = (BPDeviceSession)beecomDb.getDevUniqId2SessionMap().get(uniqDevId);
+				if(null == bpDeviceSession) {
+					packAck.getVrbHead().setRetCode(BPPacketGET.RET_CODE_OFF_LINE_ERR);
 					session.write(packAck);
 					return;
 				}
+				Map<Integer, SignalInfoUnitInterface> signalId2InfoUnitMap = bpDeviceSession.getSignalId2InfoUnitMap();
+				if(null == signalId2InfoUnitMap) {
+			    	vrbAck.setRetCode(BPPacketPOST.RET_CODE_OFF_LINE_ERR);
+			    	session.write(packAck);
+			    	return;
+				}
+				List<Integer> sigList = pld.getSignalLst();
+				pldAck.initSigValMap();
+				if(null == sigList || sigList.isEmpty()) {
+			    	session.write(packAck);
+			    	return;
+				}
+				Iterator<Integer> it = sigList.iterator();
+				// SignalInfoUnitInterface signalInfoUnitInterface;
+				Integer signalId;
+				/* check error */
+				int testValue = 0;
+				while (it.hasNext()) {  
+					signalId = it.next(); 
+				    if(!signalId2InfoUnitMap.containsKey(signalId)) {
+				    	vrbAck.setRetCode(BPPacketRPRTACK.RET_CODE_SIG_ID_INVALID);
+				    	pldAck.setUnsupportedSignalId(signalId);
+				    	session.write(packAck);
+				    	return;
+				    }
+				    // signalInfoUnitInterface = signalId2InfoUnitMap.get(signalId);
+					BPSysSigTable bpSysSigTable = BPSysSigTable.getSysSigTableInstance();
+					int systemSignalIdOffset = signalId - BPPacket.SYS_SIG_START_ID;
+					SysSigInfo sysSigInfo = bpSysSigTable.getSysSigInfo(systemSignalIdOffset);
+					/* TODO: to get custom signal type */
+				    pldAck.putSigValMap(signalId, sysSigInfo.getValType(), testValue++);
+				} 
+				
+				session.write(packAck);
+				return;
 			}
 
 			if (bpError.getErrorCode() == BPError.BP_ERROR_STATISTICS_NONE_SIGNAL) {
@@ -466,12 +503,13 @@ public class BcServerHandler extends IoHandlerAdapter {
 		
 		vrb = decodedPack.getVrbHead();
 		bpDeviceSession.startRelay(vrb.getPackSeq());
-		return;
 	}
 	
 	private void onPost(IoSession session, BPPacket decodedPack) {
-		VariableHeader vrb, vrbAck;
-		Payload pld, pldAck;
+		VariableHeader vrb;
+		VariableHeader vrbAck;
+		Payload pld;
+		Payload pldAck;
 		long devUniqId = 0;
 		BeecomDB beecomDb = BeecomDB.getInstance();
 		
@@ -497,7 +535,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 		vrbAck = packAck.getVrbHead();
 		pldAck = packAck.getPld();
 		
-		boolean sigFlag = vrb.getSigFlag();
+		boolean sigFlag = vrb.getSigValFlag();
 		boolean sysSigAttrFlag = vrb.getSysSigAttrFlag();
 		boolean cusSigAttrFlag = vrb.getCusSigAttrFlag();
 		boolean sigValFlag = vrb.getSigValFlag();
@@ -543,28 +581,9 @@ public class BcServerHandler extends IoHandlerAdapter {
 			    }
 			} 
 			
-			
-			/*
-			entriesSigVals = sigValMap.entrySet().iterator();
-			while (entriesSigVals.hasNext()) {  
-			    entry = entriesSigVals.next();  
-			    signalInfoUnitInterface = signalId2InfoUnitMap.get(entry.getKey());
-			    signalInfoUnitInterface.putSignalValue(entry);
-			} 
-			*/
-			
 			byte[] relayData = decodedPack.getSignalValueRelay();
 			pushMessage(bpDeviceSession, ProductType.POST_SIGNAL_VALUE, relayData, 0);
 			return;
-			
-			/*
-			bpDeviceSession.getSession().write(decodedPack);
-			if(!bpDeviceSession.putRelayList(session, BPPackFactory.createBPPackAck(decodedPack), bpDeviceSession.getTimeout())) {
-				packAck.getVrbHead().setRetCode(BPPacketPOST.RET_CODE_BUFFER_FILLED_ERR);
-				session.write(packAck);
-				return;
-			}
-			*/
 		}
 		
 		if(sysSigAttrFlag || cusSigAttrFlag) {
@@ -596,7 +615,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 				// Map<Integer, SignalAttrInfo> sysCusAttrMap = pld.getCusSigAttrMap();
 				/* change the custom signal attributes */
 			}
-			if(vrb.getSigFlag() || vrb.getCusSigFlag()) {
+			if(vrb.getSigValFlag() || vrb.getCusSigFlag()) {
 				/* forward the packet to the device
 				 * and put a callback when get the response */
 			}
@@ -635,13 +654,14 @@ public class BcServerHandler extends IoHandlerAdapter {
 		}
 		
 		bpDeviceSession.startRelay(vrb.getPackSeq());
-		return;
 
 	}
 	
 	private void onReport(IoSession session, BPPacket decodedPack) {
-		VariableHeader vrb, vrbAck;
-		Payload pld, pldAck;
+		VariableHeader vrb;
+		VariableHeader vrbAck;
+		Payload pld;
+		Payload pldAck;
 		
 		BPPacket packAck = BPPackFactory.createBPPackAck(decodedPack);
 		if(null == packAck) {
@@ -844,7 +864,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 	private void onDisconn(IoSession session, BPPacket decodedPack) {
 		BPSession bpSession = (BPSession)session.getAttribute(SESS_ATTR_BP_SESSION);
 		if(bpSession != null) {
-			logger.info("Disconn, {}", bpSession.toString());
+			logger.info("Disconn, {}", bpSession);
 		}
 		session.closeOnFlush();
 	}

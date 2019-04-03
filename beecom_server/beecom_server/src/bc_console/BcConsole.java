@@ -7,6 +7,7 @@ package bc_console;
 import java.io.*;
 
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
@@ -45,7 +46,7 @@ public class BcConsole {
 		String ret = "OK";
 		serverLock.lock();
 		try(FileInputStream fis = new FileInputStream(file)) {
-			InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+			InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
 			try (BufferedReader sysSigIn = new BufferedReader(isr)) {
 				String s;
 				String pattern = "(.+)->(.+);";

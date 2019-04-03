@@ -31,6 +31,7 @@ import other.Util;
 import sys_sig_table.BPSysSigTable;
 import sys_sig_table.SysSigInfo;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -120,7 +121,7 @@ public class BPPacketREPORT extends BPPacket {
 						int strLen = ioBuffer.get();
 						byte[] strBytes = new byte[strLen];
 						ioBuffer.get(strBytes);
-						String value = new String(strBytes, "UTF-8");
+						String value = new String(strBytes, StandardCharsets.UTF_8);
 						pld.putSigValMap(sigId, sigType, value);
 						break;
 					}
@@ -150,7 +151,7 @@ public class BPPacketREPORT extends BPPacket {
 					int dist;
 					int sysSigClass;
 					int mapNum;
-					List<Integer> systemSignalEnabledList = new ArrayList<Integer>();
+					List<Integer> systemSignalEnabledList = new ArrayList<>();
 					do {
 						distAndClass = getIoBuffer().get();
 						dist = (distAndClass >> 4) & 0x0F;
@@ -166,7 +167,7 @@ public class BPPacketREPORT extends BPPacket {
 						for (int i = 0; i < mapNum; i++) {
 							tmp = getIoBuffer().get();
 							for(int j = 0; j < 8; j++) {
-								if((tmp & (1 << j)) != 0) {
+								if(((tmp & 0xFF) & (1 << j)) != 0) {
 									systemSignalEnabledList.add(dist * BPPacket.SYS_SIG_DIST_STEP + i * 8 + j);
 								}
 							}
@@ -189,13 +190,14 @@ public class BPPacketREPORT extends BPPacket {
 					// int groupLangId;
 					// int accuracy;
 					int sigType;
-					short alarmClass, delayBeforeAlarm, delayAfterAlarm;
+					short alarmClass;
+					short delayBeforeAlarm;
+					short delayAfterAlarm;
 					Map<Integer, Integer> enumLangMap;
 					SignalInterface signalInterface;
 					List<SystemSignalCustomInfoUnit> systemSignalCustomInfoUnitList = null;
 					for (int i = 0; i < signalNum; i++) {
 						enumLangMap = null;
-						customInfoFlags = 0;
 						if (null == systemSignalCustomInfoUnitList) {
 							systemSignalCustomInfoUnitList = new ArrayList<>();
 						}
@@ -205,7 +207,6 @@ public class BPPacketREPORT extends BPPacket {
 						delayBeforeAlarm = BPPacket.ALARM_DELAY_DEFAULT;
 						delayAfterAlarm = BPPacket.ALARM_DELAY_DEFAULT;
 						signalId = ioBuffer.getUnsignedShort();
-						// BPSysSigTable bpSysSigTable = BPSysSigTable.getSysSigTableInstance();
 						SysSigInfo sysSigInfo = BPSysSigTable.getSysSigTableInstance().getSysSigInfo(signalId - BPPacket.SYS_SIG_START_ID);
 						if(null == sysSigInfo) {
 							throw new Exception("null == sysSigInfo");
@@ -219,7 +220,8 @@ public class BPPacketREPORT extends BPPacket {
 						if ((customInfoFlags & SYSTEM_SIGNAL_CUSTOM_FLAGS_ENUM_LANG) != 0) {
 							enumLangMap = new HashMap<>();
 							int enumLangNum = ioBuffer.getUnsigned();
-							int key, val;
+							int key;
+							int val;
 							for (int j = 0; j < enumLangNum; j++) {
 								key = ioBuffer.getUnsignedShort();
 								val = ioBuffer.getInt();
@@ -415,14 +417,16 @@ public class BPPacketREPORT extends BPPacket {
 				
 				if(vrb.getCusSigMapFlag()) {
 					int signalNum = ioBuffer.getUnsignedShort();
-					List<CustomSignalInfoUnit> customSignalInfoUnitList = new ArrayList<CustomSignalInfoUnit>(signalNum);
+					List<CustomSignalInfoUnit> customSignalInfoUnitList = new ArrayList<>(signalNum);
 					int flagsTmp;
 					int sigType;
 					short perm;
 					int cusSigId;
 					boolean ifNotifing = false;
 					boolean ifAlarm;
-					short alarmClass = BPPacket.ALARM_CLASS_NONE, alarmDelayBef = BPPacket.ALARM_DELAY_DEFAULT, alarmDelayAft = BPPacket.ALARM_DELAY_DEFAULT;
+					short alarmClass = BPPacket.ALARM_CLASS_NONE;
+					short alarmDelayBef = BPPacket.ALARM_DELAY_DEFAULT;
+					short alarmDelayAft = BPPacket.ALARM_DELAY_DEFAULT;
 					boolean ifStatistics;
 					boolean ifDisplay;
 					// int groupLangId;
@@ -612,6 +616,7 @@ public class BPPacketREPORT extends BPPacket {
 		return partitation;
 	}
 
+	@Override
 	public byte[] getSignalValueRelay() {
 		return signalValueRelay;
 	}

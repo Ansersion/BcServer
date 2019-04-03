@@ -42,6 +42,8 @@ public class CustomSignalAlmInfoHbn extends SignalInterface {
 	public Long getCustomSignalId() {
 		return customSignalId;
 	}
+	
+	@Override
 	public void setCustomSignalId(Long customSignalId) {
 		this.customSignalId = customSignalId;
 	}

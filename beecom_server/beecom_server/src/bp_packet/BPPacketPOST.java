@@ -3,6 +3,8 @@
  */
 package bp_packet;
 
+import java.nio.charset.StandardCharsets;
+
 import org.apache.mina.core.buffer.IoBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,7 +100,7 @@ public class BPPacketPOST extends BPPacket {
 						int strLen = ioBuffer.get();
 						byte[] strBytes = new byte[strLen];
 						ioBuffer.get(strBytes);
-						String value = new String(strBytes, "UTF-8");
+						String value = new String(strBytes, StandardCharsets.UTF_8);
 						pld.putSigValMap(sigId, sigType, value);
 						break;
 					}
@@ -160,6 +162,7 @@ public class BPPacketPOST extends BPPacket {
 		return true;
 	}
 
+	@Override
 	public byte[] getSignalValueRelay() {
 		return signalValueRelay;
 	}

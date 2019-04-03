@@ -16,8 +16,8 @@ import other.Util;
 
 public class ConsumerTask extends Thread {
 	private static final Logger logger = LoggerFactory.getLogger(ConsumerTask.class); 
-    private final int MAX_SIZE = 100;
-    private LinkedList<Product> list = new LinkedList<Product>();
+    private static final int MAX_SIZE = 100;
+    private LinkedList<Product> list = new LinkedList<>();
     private boolean loop = true;
 
     public void produce(Product product) {
@@ -41,7 +41,7 @@ public class ConsumerTask extends Thread {
 
     public void consume() {
         synchronized (list) {
-            while (list.size()==0) {
+            while (list.isEmpty()) {
                 try {
                     list.wait();
                 }

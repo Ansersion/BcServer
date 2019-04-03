@@ -11,6 +11,10 @@ import org.apache.mina.core.buffer.IoBuffer;
  */
 public class BPUtils {
 	
+	private BPUtils() {
+		throw new IllegalStateException("Utility class");
+	}
+	
     /* assemble the String into IoBuffer
      * @return 0 when success, other for failed*/
 	public static int assembleStr(IoBuffer ioBuffer, String s) {
