@@ -433,6 +433,14 @@ public class Payload {
 		}
 		error.setSigId(id);
 	}
+	
+	public int getunsupportedSignalId() {
+		int ret = 0;
+		if(null != error) {
+			ret = error.getSigId();
+		}
+		return ret;
+	}
 
 	public List<Integer> getSystemSignalEnabledList() {
 		return systemSignalEnabledList;

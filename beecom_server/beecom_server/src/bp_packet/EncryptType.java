@@ -6,6 +6,14 @@ package bp_packet;
  */
 
 public class EncryptType {
+	
+	public enum EnType {
+		PLAIN,
+		BASE64,
+		EN_2,
+		EN_3
+	}
+	
     /**
      * Represents the encryption type of no encryption
      */

@@ -86,6 +86,8 @@ public class PushSignalValuesProduct extends Product {
 		try {
 			logger.info("PushSignalValuesProduct producing");
 			bpPacket = BPPackFactory.createBPPack(BPPacketType.PUSH);
+			bpPacket.getFxHead().setCrcType(bpDeviceSession.getCrcType());
+			bpPacket.getFxHead().setEncryptType(bpDeviceSession.getEncryptionType());
 			bpPacket.getVrbHead().setSigValFlag(true);
 			Payload pld = bpPacket.getPld();
 			pld.setDevUniqId(bpDeviceSession.getUniqDevId());

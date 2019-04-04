@@ -38,6 +38,12 @@ import java.util.List;
  * 
  */
 public class BPPacketGETACK extends BPPacket {
+	
+	public static final int RET_CODE_OK = 0x00;
+	public static final int RET_CODE_FLAGS_INVALID = 0x01;
+	public static final int RET_CODE_SIG_MAP_UNCHECK = 0x02;
+	public static final int RET_CODE_SIG_ID_INVALID = 0x03;
+	
 	private static final Logger logger = LoggerFactory.getLogger(BPPacketGETACK.class); 
 	
 	int deviceNum;
@@ -141,9 +147,6 @@ public class BPPacketGETACK extends BPPacket {
 			if (vrb.getReqAllDeviceId()) {
 				return true;
 			}
-			if(vrb.getRetCode() != 0) {
-				return true;
-			}
 
 			Payload pld = getPld();
 			IoBuffer buffer = getIoBuffer();
@@ -151,15 +154,21 @@ public class BPPacketGETACK extends BPPacket {
 			
 			if(vrb.getSigValFlag()) {
 				/* check ret code */
-				Map<Integer, Map.Entry<Byte, Object>> sigValMap = pld.getSigValMap();
-				Iterator<Map.Entry<Integer, Map.Entry<Byte, Object>>> entries = sigValMap.entrySet().iterator();
-				buffer.putUnsigned(sigValMap.size());
-				while(entries.hasNext()) {
-					Map.Entry<Integer, Map.Entry<Byte, Object>> entry = entries.next();
-					if(!assembleSignalValue(buffer, entry.getKey(), entry.getValue().getKey(), (byte)0, entry.getValue().getValue())) {
-						return false;
+				int retCode = vrb.getRetCode();
+				if(0 == retCode) {
+					Map<Integer, Map.Entry<Byte, Object>> sigValMap = pld.getSigValMap();
+					Iterator<Map.Entry<Integer, Map.Entry<Byte, Object>>> entries = sigValMap.entrySet().iterator();
+					buffer.putUnsigned(sigValMap.size());
+					while (entries.hasNext()) {
+						Map.Entry<Integer, Map.Entry<Byte, Object>> entry = entries.next();
+						if (!assembleSignalValue(buffer, entry.getKey(), entry.getValue().getKey(), (byte) 0,
+								entry.getValue().getValue())) {
+							return false;
+						}
 					}
-					
+				} else {
+					buffer.putUnsignedShort(pld.getunsupportedSignalId());
+					return true;
 				}
 			}
 			

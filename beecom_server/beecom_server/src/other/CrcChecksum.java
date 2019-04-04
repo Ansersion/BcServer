@@ -137,7 +137,7 @@ public class CrcChecksum {
     	boolean ret = false;
     	String s;
     	if(CrcChecksum.CRC16 == ccCrc) {
-    		ret = (0 == calcCrc16(data));
+    		ret = (crc == calcCrc16(data));
     	} else if(CrcChecksum.CRC32 == ccCrc) {
     		return crc == calcCrc32(data);
     	} else {

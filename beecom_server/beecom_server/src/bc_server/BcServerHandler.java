@@ -175,6 +175,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 			boolean devClntFlag = vrb.getDevClntFlag();
 
 			BPPacket packAck = BPPackFactory.createBPPackAck(decodedPack);
+			packAck.getFxHead().setFlags(decodedPack.getFxHead().getFlags());
 			if (level > BPPacket.BP_LEVEL) {
 				logger.warn("Unsupported level: {} > {}", level, BPPacket.BP_LEVEL);
 				packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_LEVEL_ERR);
@@ -223,6 +224,8 @@ public class BcServerHandler extends IoHandlerAdapter {
 				}
 				bpSession = new BPUserSession(session, userInfoUnit);
 				session.setAttribute(SESS_ATTR_BP_SESSION, bpSession);
+				bpSession.setEncryptionType(decodedPack.getFxHead());
+				bpSession.setCrcType(decodedPack.getFxHead());
 				beecomDb.getUserName2SessionMap().put(userName, bpSession);
 				beecomDb.getUserId2SessionMap().put(userInfoUnit.getUserInfoHbn().getId(), bpSession);
 				beecomDb.updateUserDevRel(userInfoUnit.getUserInfoHbn());
@@ -294,6 +297,8 @@ public class BcServerHandler extends IoHandlerAdapter {
 					packAck.getPld().setServerChainHbn(serverChainHbn);
 					bpSession = new BPDeviceSession(session, devUniqId, password,
 							deviceInfoUnit.getDevInfoHbn().getAdminId(), deviceInfoUnit.getDevInfoHbn().getSnId());
+					bpSession.setEncryptionType(decodedPack.getFxHead());
+					bpSession.setCrcType(decodedPack.getFxHead());
 					BeecomDB.getInstance().getDevUniqId2SessionMap().put(devUniqId, bpSession);
 					session.setAttribute(SESS_ATTR_BP_SESSION, bpSession);
 					beecomDb.updateUserDevRel(deviceInfoUnit.getDevInfoHbn());
@@ -335,6 +340,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 				logger.error("Invalid packAck");
 				return;
 			}
+			
 			BPUserSession bpUserSession = null;
 			try {
 				bpUserSession = (BPUserSession) session.getAttribute(SESS_ATTR_BP_SESSION);
@@ -344,6 +350,8 @@ public class BcServerHandler extends IoHandlerAdapter {
 			if (null == bpUserSession) {
 				return;
 			}
+			packAck.getFxHead().setCrcType(bpUserSession.getCrcType());
+			packAck.getFxHead().setEncryptType(bpUserSession.getEncryptionType());
 
 			vrb = decodedPack.getVrbHead();
 			pld = decodedPack.getPld();
@@ -441,10 +449,11 @@ public class BcServerHandler extends IoHandlerAdapter {
 			    	return;
 				}
 				Iterator<Integer> it = sigList.iterator();
-				// SignalInfoUnitInterface signalInfoUnitInterface;
-				Integer signalId;
+				SignalInfoUnitInterface signalInfoUnitInterface;
 				/* check error */
-				int testValue = 0;
+				Integer signalId;
+				byte flags;
+				Object value;
 				while (it.hasNext()) {  
 					signalId = it.next(); 
 				    if(!signalId2InfoUnitMap.containsKey(signalId)) {
@@ -453,16 +462,44 @@ public class BcServerHandler extends IoHandlerAdapter {
 				    	session.write(packAck);
 				    	return;
 				    }
-				    // signalInfoUnitInterface = signalId2InfoUnitMap.get(signalId);
-					BPSysSigTable bpSysSigTable = BPSysSigTable.getSysSigTableInstance();
-					int systemSignalIdOffset = signalId - BPPacket.SYS_SIG_START_ID;
-					SysSigInfo sysSigInfo = bpSysSigTable.getSysSigInfo(systemSignalIdOffset);
-					/* TODO: to get custom signal type */
-				    pldAck.putSigValMap(signalId, sysSigInfo.getValType(), testValue++);
+				    signalInfoUnitInterface = signalId2InfoUnitMap.get(signalId);
+			    	value = signalInfoUnitInterface.getSignalValue(); 
+			    	if(null == value) {
+			    		/* TODO: change error code */
+			    		logger.error("Inner error: null == value");
+				    	vrbAck.setRetCode(BPPacketRPRTACK.RET_CODE_SIG_ID_INVALID);
+				    	pldAck.setUnsupportedSignalId(signalId);
+				    	session.write(packAck);
+				    	return;
+			    	}
+				    if(signalId < BPPacket.SYS_SIG_START_ID) {
+				    	if(null == signalInfoUnitInterface.getSignalInterface()) {
+				    		/* TODO: change error code */
+				    		logger.error("Inner error: null == signalInfoUnitInterface.getSignalInterface())");
+					    	vrbAck.setRetCode(BPPacketRPRTACK.RET_CODE_SIG_ID_INVALID);
+					    	pldAck.setUnsupportedSignalId(signalId);
+					    	session.write(packAck);
+					    	return;
+				    	}
+				    	flags = (byte)signalInfoUnitInterface.getSignalInterface().getValType();
+
+				    } else {
+						BPSysSigTable bpSysSigTable = BPSysSigTable.getSysSigTableInstance();
+						int systemSignalIdOffset = signalId - BPPacket.SYS_SIG_START_ID;
+						SysSigInfo sysSigInfo = bpSysSigTable.getSysSigInfo(systemSignalIdOffset);
+						if(null == sysSigInfo) {
+				    		/* TODO: change error code */
+				    		logger.error("Inner error: null == sysSigInfo");
+					    	vrbAck.setRetCode(BPPacketRPRTACK.RET_CODE_SIG_ID_INVALID);
+					    	pldAck.setUnsupportedSignalId(signalId);
+					    	session.write(packAck);
+					    	return;
+						}
+						flags = sysSigInfo.getValType();
+				    }
+
+				    pldAck.putSigValMap(signalId, flags, value);
 				} 
-				
-				session.write(packAck);
-				return;
 			}
 
 			if (bpError.getErrorCode() == BPError.BP_ERROR_STATISTICS_NONE_SIGNAL) {
@@ -527,6 +564,8 @@ public class BcServerHandler extends IoHandlerAdapter {
 		if(null == bpUserSession) {
 			return;
 		}
+		packAck.getFxHead().setCrcType(bpUserSession.getCrcType());
+		packAck.getFxHead().setEncryptType(bpUserSession.getEncryptionType());
 		
 		vrb = decodedPack.getVrbHead();
 		pld = decodedPack.getPld();
@@ -678,6 +717,9 @@ public class BcServerHandler extends IoHandlerAdapter {
 			return;
 		}
 		
+		packAck.getFxHead().setCrcType(bpDeviceSession.getCrcType());
+		packAck.getFxHead().setEncryptType(bpDeviceSession.getEncryptionType());
+		
 		vrb = decodedPack.getVrbHead();
 		pld = decodedPack.getPld();
 		boolean sysSigMapFlag = vrb.getSysSigMapFlag();
@@ -820,11 +862,6 @@ public class BcServerHandler extends IoHandlerAdapter {
 		logger.info("PING: flags={}, sid={}", flags, seqId);
 
 		BPPacket packAck = BPPackFactory.createBPPackAck(decodedPack);
-
-		packAck.getVrbHead().setPackSeq(seqId);
-		packAck.getVrbHead().setRetCode(BPPacketPINGACK.RET_CODE_OK);
-
-		session.write(packAck);
 		
 		try {
 			bpSession = (BPSession) session
@@ -836,6 +873,16 @@ public class BcServerHandler extends IoHandlerAdapter {
 		} catch(Exception e) {
 			Util.logger(logger, Util.ERROR, e);
 		}
+		
+		packAck.getFxHead().setCrcType(bpSession.getCrcType());
+		packAck.getFxHead().setEncryptType(bpSession.getEncryptionType());
+
+		packAck.getVrbHead().setPackSeq(seqId);
+		packAck.getVrbHead().setRetCode(BPPacketPINGACK.RET_CODE_OK);
+
+		session.write(packAck);
+		
+
 	}
 	
 	private void onPushAck(IoSession session, BPPacket decodedPack) {

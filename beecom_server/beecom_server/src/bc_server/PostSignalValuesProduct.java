@@ -62,6 +62,8 @@ public class PostSignalValuesProduct extends Product {
 		try {
 			logger.info("PostSignalValuesProduct producing");
 			bpPacket = BPPackFactory.createBPPack(BPPacketType.POST);
+			bpPacket.getFxHead().setCrcType(bpDeviceSession.getCrcType());
+			bpPacket.getFxHead().setEncryptType(bpDeviceSession.getEncryptionType());
 			bpPacket.getVrbHead().setSigValFlag(true);
 			bpPacket.getVrbHead().setPackSeq(packSeq);
 			Payload pld = bpPacket.getPld();

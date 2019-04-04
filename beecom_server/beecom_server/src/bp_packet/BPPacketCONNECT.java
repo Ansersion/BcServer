@@ -34,11 +34,6 @@ public class BPPacketCONNECT extends BPPacket {
 	}
 
 	@Override
-	public int parseFixedHeader() {
-		return 0;
-	}
-
-	@Override
 	public int parseVariableHeader() {
 
 		try {

@@ -474,8 +474,14 @@ public class BPPacket implements BPPacketInterface {
 		bpPacketData.putUnsignedShort(packRmnLen);
 		bpPacketData.position(posCrc);
 		byte[] buf = bpPacketData.array();
-		long crcTmp = CrcChecksum.calcCrc32(buf, 0, posCrc);
-		bpPacketData.putUnsignedInt(crcTmp);
+		if(CrcChecksum.CRC32 == getFxHead().getCrcChk()) {
+			long crcTmp = CrcChecksum.calcCrc32(buf, 0, posCrc);
+			bpPacketData.putUnsignedInt(crcTmp);
+		} else {
+			int crcTmp = CrcChecksum.calcCrc16(buf, 0, posCrc);
+			bpPacketData.putUnsignedShort(crcTmp);
+		}
+
 		bpPacketData.flip();
 
 		return true;

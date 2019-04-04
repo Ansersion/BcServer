@@ -69,10 +69,12 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 				packIoBuf.put(remainingData);
 				packIoBuf.flip();
 				packIoBuf.limit();
-				byte[] data = new byte[packIoBuf.limit() - 4];
+				int crcSize = (fxHead.getCrcChk() == CrcChecksum.CRC32 ? 4 : 2);
+				
+				byte[] data = new byte[packIoBuf.limit() - crcSize];
 				
 				packIoBuf.get(data);
-				int crcSize = (fxHead.getCrcChk() == CrcChecksum.CRC32 ? 4 : 2);
+				
 				long crcGet;
 				if(4 == crcSize) {
 					crcGet = packIoBuf.getUnsignedInt();
@@ -81,6 +83,7 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 				}
 				if(!CrcChecksum.crcCheck(data, fxHead.getCrcChk(), crcGet)) {
 					session.setAttribute(DECODE_STATE, DecodeState.DEC_FX_HEAD);
+					session.closeOnFlush();
 					return ret;
 				}
 				try {

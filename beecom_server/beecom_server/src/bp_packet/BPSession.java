@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import db.RelayData;
 import other.BPValue;
+import other.CrcChecksum;
 import other.Util;
 import sys_sig_table.BPSysSigTable;
 
@@ -71,6 +72,9 @@ public abstract class BPSession {
 	
 	private Map<Integer, RelayData> seqId2TimerRelayMap;
 	private Lock relayMaplock = new ReentrantLock();
+	
+	private EncryptType.EnType encryptionType;
+	private CrcChecksum crcType;
 	
 	public BPSession(IoSession session) {
 		this.session = session;
@@ -505,7 +509,29 @@ public abstract class BPSession {
 	public void setLatestPingTimestamp(long latestPingTimestamp) {
 		this.latestPingTimestamp = latestPingTimestamp;
 	}
+
+	public EncryptType.EnType getEncryptionType() {
+		return encryptionType;
+	}
+
+	public void setEncryptionType(EncryptType.EnType encryptionType) {
+		this.encryptionType = encryptionType;
+	}
+
+	public CrcChecksum getCrcType() {
+		return crcType;
+	}
+
+	public void setCrcType(CrcChecksum crcType) {
+		this.crcType = crcType;
+	}
 	
-	
+	public void setEncryptionType(FixedHeader fxHead) {
+		this.encryptionType = fxHead.getEncryptType();
+	}
+
+	public void setCrcType(FixedHeader fxHead) {
+		this.crcType = fxHead.getCrcChk();
+	}
 	
 }
