@@ -335,21 +335,20 @@ public class BcServerHandler extends IoHandlerAdapter {
 		BeecomDB beecomDb = BeecomDB.getInstance();
 
 		try {
+			BPUserSession bpUserSession = null;
+			bpUserSession = (BPUserSession)getBPSession(session);
+			if(null == bpUserSession) {
+				/* not connected */
+				session.closeOnFlush();
+				return;
+			}
+			
 			BPPacket packAck = BPPackFactory.createBPPackAck(decodedPack);
 			if (null == packAck) {
 				logger.error("Invalid packAck");
 				return;
 			}
 			
-			BPUserSession bpUserSession = null;
-			try {
-				bpUserSession = (BPUserSession) session.getAttribute(SESS_ATTR_BP_SESSION);
-			} catch (Exception e) {
-				Util.logger(logger, Util.ERROR, e);
-			}
-			if (null == bpUserSession) {
-				return;
-			}
 			packAck.getFxHead().setCrcType(bpUserSession.getCrcType());
 			packAck.getFxHead().setEncryptType(bpUserSession.getEncryptionType());
 
@@ -550,20 +549,21 @@ public class BcServerHandler extends IoHandlerAdapter {
 		long devUniqId = 0;
 		BeecomDB beecomDb = BeecomDB.getInstance();
 		
+
+		BPUserSession bpUserSession = null;
+		bpUserSession = (BPUserSession)getBPSession(session);
+		if(null == bpUserSession) {
+			/* not connected */
+			session.closeOnFlush();
+			return;
+		}
+		
 		BPPacket packAck = BPPackFactory.createBPPackAck(decodedPack);
 		if(null == packAck) {
 			logger.error("Invalid packAck");
 			return;
 		}
-		BPUserSession bpUserSession = null;
-		try {
-			bpUserSession = (BPUserSession)session.getAttribute(SESS_ATTR_BP_SESSION);
-		} catch(Exception e) {
-			Util.logger(logger, Util.ERROR, e);
-		}
-		if(null == bpUserSession) {
-			return;
-		}
+		
 		packAck.getFxHead().setCrcType(bpUserSession.getCrcType());
 		packAck.getFxHead().setEncryptType(bpUserSession.getEncryptionType());
 		
@@ -702,18 +702,17 @@ public class BcServerHandler extends IoHandlerAdapter {
 		Payload pld;
 		Payload pldAck;
 		
+		BPDeviceSession bpDeviceSession = null;
+		bpDeviceSession = (BPDeviceSession)getBPSession(session);
+		if(null == bpDeviceSession) {
+			/* not connected */
+			session.closeOnFlush();
+			return;
+		}
+		
 		BPPacket packAck = BPPackFactory.createBPPackAck(decodedPack);
 		if(null == packAck) {
 			logger.error("Invalid packAck");
-			return;
-		}
-		BPDeviceSession bpDeviceSession = null;
-		try {
-			bpDeviceSession = (BPDeviceSession)session.getAttribute(SESS_ATTR_BP_SESSION);
-		} catch(Exception e) {
-			Util.logger(logger, Util.ERROR, e);
-		}
-		if(null == bpDeviceSession) {
 			return;
 		}
 		
@@ -851,7 +850,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 		VariableHeader vrb;
 		// Payload pld, pldAck;
 		// long devUniqId = 0;
-		BPSession bpSession = null;
+		BPSession bpSession;
 		// BPPacketType packType = decodedPack.getPackTypeFxHead();
 		// BeecomDB beecomDb = BeecomDB.getInstance();
 		
@@ -860,19 +859,15 @@ public class BcServerHandler extends IoHandlerAdapter {
 		int seqId = vrb.getPackSeq();
 		// boolean userOnLine = vrb.getUserOnLine();
 		logger.info("PING: flags={}, sid={}", flags, seqId);
+		
+		bpSession = getBPSession(session);
+		if(null == bpSession) {
+			/* not connected */
+			session.closeOnFlush();
+			return;
+		}
 
 		BPPacket packAck = BPPackFactory.createBPPackAck(decodedPack);
-		
-		try {
-			bpSession = (BPSession) session
-					.getAttribute(SESS_ATTR_BP_SESSION);
-			if(null != bpSession) {
-				bpSession.setLatestPingTimestamp(System.currentTimeMillis());
-			}
-			
-		} catch(Exception e) {
-			Util.logger(logger, Util.ERROR, e);
-		}
 		
 		packAck.getFxHead().setCrcType(bpSession.getCrcType());
 		packAck.getFxHead().setEncryptType(bpSession.getEncryptionType());
@@ -909,11 +904,32 @@ public class BcServerHandler extends IoHandlerAdapter {
 	}
 	
 	private void onDisconn(IoSession session, BPPacket decodedPack) {
-		BPSession bpSession = (BPSession)session.getAttribute(SESS_ATTR_BP_SESSION);
+		BPSession bpSession;
+		bpSession = getBPSession(session);
+		if(null == bpSession) {
+			/* not connected */
+			session.closeOnFlush();
+			return;
+		}
 		if(bpSession != null) {
 			logger.info("Disconn, {}", bpSession);
 		}
 		session.closeOnFlush();
 	}
 	
+	private BPSession getBPSession(IoSession session) {
+		BPSession ret = null;
+		try {
+			ret = (BPSession) session
+					.getAttribute(SESS_ATTR_BP_SESSION);
+			if(null != ret) {
+				ret.setLatestPingTimestamp(System.currentTimeMillis());
+			}
+			
+		} catch(Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+		}
+		
+		return ret;
+	}
 }
