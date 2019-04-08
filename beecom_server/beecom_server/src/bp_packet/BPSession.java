@@ -45,23 +45,12 @@ public abstract class BPSession {
 	
 	private static final Logger logger = LoggerFactory.getLogger(BPSession.class);
 	
-	private static final int MIN_ALIVE_TIME = 5;
-	
-	// private int clientId = 0;
-	// long uniqDevId = 0;
-	// private byte[] userName = null;
-	// byte[] password = null;
-	// boolean isUserLogin = false;
-	// boolean isDevLogin = false;
-	// private int seqIdDevClnt = 0;
 	IoSession session;
 	int seqIdUsrClnt = 0;
-	// String devName;
 	Map<Integer, Byte[]> mapDist2SysSigMap = null;
 	Map<Integer, Object> sysSigMap;
 	Map<Integer, Object> systemSignalValueMap;
 	Map<Integer, Map.Entry<Byte, Object>> customSignalValueMap;
-	// private BPError error;
 	
 	private int procLevel;
 	private int aliveTime;
@@ -69,6 +58,7 @@ public abstract class BPSession {
 	private boolean debugMode;
 	private byte performanceClass;
 	private long latestPingTimestamp;
+	private boolean sessionReady;
 	
 	private Map<Integer, RelayData> seqId2TimerRelayMap;
 	private Lock relayMaplock = new ReentrantLock();
@@ -83,6 +73,7 @@ public abstract class BPSession {
 		this.timeout = 120;
 		this.seqId2TimerRelayMap = new HashMap<>();
 		this.relayMaplock = new ReentrantLock();    
+		this.sessionReady = false;
 	}
 	
 	public BPSession(IoSession session, String userName, String password) {
@@ -143,9 +134,6 @@ public abstract class BPSession {
 	}
 
 	public void setAliveTime(int aliveTime) {
-		if(aliveTime < MIN_ALIVE_TIME) {
-			aliveTime = MIN_ALIVE_TIME;
-		}
 		this.aliveTime = aliveTime;
 	}
 
@@ -534,4 +522,10 @@ public abstract class BPSession {
 		this.crcType = fxHead.getCrcChk();
 	}
 	
+	public boolean isSessionReady() {
+		return sessionReady;
+	}
+	public void setSessionReady(boolean sessionReady) {
+		this.sessionReady = sessionReady;
+	}
 }

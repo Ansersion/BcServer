@@ -115,8 +115,15 @@ public class BcServerHandler extends IoHandlerAdapter {
 	@Override
 	public void sessionIdle(IoSession session, IdleStatus status)
 			throws Exception {
-		String s = "Over Alive time";
-		logger.info(s);
+		StringBuilder sb = new StringBuilder();
+		sb.append("Over Alive time: ");
+		if(!session.containsAttribute(SESS_ATTR_BP_SESSION)) {
+			sb.append("no bp session");
+		} else {
+			BPSession bpSession = (BPSession)session.getAttribute(SESS_ATTR_BP_SESSION);
+			sb.append(bpSession.isSessionReady());
+		}
+		logger.info(sb.toString());
 		session.closeOnFlush();
 
 	}
@@ -210,116 +217,108 @@ public class BcServerHandler extends IoHandlerAdapter {
 					session.write(packAck);
 					session.closeOnFlush();
 					break;
-				default:
-					if (null == userInfoUnit.getUserInfoHbn()) {
-						session.write(packAck);
-						session.closeOnFlush();
-						throw new Exception("Error: Database Error");
-					}
+				case LOGIN_OK:
+					packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_OK);
 					break;
 				}
 
-				if (loginErrorEnum != BeecomDB.LoginErrorEnum.LOGIN_OK) {
-					return;
-				}
 				bpSession = new BPUserSession(session, userInfoUnit);
 				session.setAttribute(SESS_ATTR_BP_SESSION, bpSession);
 				bpSession.setEncryptionType(decodedPack.getFxHead());
 				bpSession.setCrcType(decodedPack.getFxHead());
+				bpSession.setSessionReady(true);
 				beecomDb.getUserName2SessionMap().put(userName, bpSession);
 				beecomDb.getUserId2SessionMap().put(userInfoUnit.getUserInfoHbn().getId(), bpSession);
 				beecomDb.updateUserDevRel(userInfoUnit.getUserInfoHbn());
 				packAck.getPld().setServerChainHbn(null);
 				// TODO: PUSH all unchecked signal values
 
-			}
-			if (devClntFlag) {
+			} else if (devClntFlag) {
 				BeecomDB.LoginErrorEnum loginErrorEnum;
-				try {
-					DeviceInfoUnit deviceInfoUnit = new DeviceInfoUnit();
-					loginErrorEnum = beecomDb.checkSnPassword(userName, password, deviceInfoUnit);
-					switch(loginErrorEnum) {
-					case USER_INVALID:
-						packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_USER_INVALID);
-						break;
-					  case PASSWORD_INVALID:
-						packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_PWD_INVALID);
-						break;
-					case LOGIN_OK:
-						packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_OK);
-						break;
-					}
-					
-					if(LoginErrorEnum.USER_INVALID == loginErrorEnum && vrb.getRegisterFlag() && BPPacket.isOpenRegister()) {
-						SnInfoHbn snInfoHbn = new SnInfoHbn();
-						snInfoHbn.setSn(userName);
-						snInfoHbn.setDevelopUserId(0L);
-						if(!beecomDb.putNewSnInfo(snInfoHbn)) {
-							packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_REGISTER_FAILED);
-							session.write(packAck);
-							session.closeOnFlush();
-							return;
-						}
-						DevInfoHbn devInfoHbn = new DevInfoHbn();
-						devInfoHbn.setSnId(snInfoHbn.getId());
-						devInfoHbn.setPassword(password);
-						devInfoHbn.setAdminId(0L);
-						if(!beecomDb.putNewDevInfo(devInfoHbn)) {
-							packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_REGISTER_FAILED);
-							session.write(packAck);
-							session.closeOnFlush();
-							return;
-						}
-						ServerChainHbn serverChainHbn = new ServerChainHbn();
-						serverChainHbn.setClientId(devInfoHbn.getId());
-						if(!beecomDb.putNewServerChain(serverChainHbn)) {
-							packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_REGISTER_FAILED);
-							session.write(packAck);
-							session.closeOnFlush();
-							return;
-						}
-						deviceInfoUnit.setDevInfoHbn(devInfoHbn);
-						deviceInfoUnit.setSnInfoHbn(snInfoHbn);
-					} else if (loginErrorEnum != LoginErrorEnum.LOGIN_OK) {
+				DeviceInfoUnit deviceInfoUnit = new DeviceInfoUnit();
+				loginErrorEnum = beecomDb.checkSnPassword(userName, password, deviceInfoUnit);
+				switch(loginErrorEnum) {
+				case USER_INVALID:
+					packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_USER_INVALID);
+					break;
+				  case PASSWORD_INVALID:
+					packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_PWD_INVALID);
+					break;
+				case LOGIN_OK:
+					packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_OK);
+					break;
+				}
+				
+				if(LoginErrorEnum.USER_INVALID == loginErrorEnum && vrb.getRegisterFlag() && BPPacket.isOpenRegister()) {
+					SnInfoHbn snInfoHbn = new SnInfoHbn();
+					snInfoHbn.setSn(userName);
+					snInfoHbn.setDevelopUserId(0L);
+					if(!beecomDb.putNewSnInfo(snInfoHbn)) {
+						packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_REGISTER_FAILED);
 						session.write(packAck);
 						session.closeOnFlush();
 						return;
 					}
-					devUniqId = deviceInfoUnit.getDevInfoHbn().getId();
-
-					ServerChainHbn serverChainHbn = BeecomDB.getInstance().getServerChain(devUniqId);
-					if (null == serverChainHbn) {
-						packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_SERVER_CHAIN_INVALID);
+					DevInfoHbn devInfoHbn = new DevInfoHbn();
+					devInfoHbn.setSnId(snInfoHbn.getId());
+					devInfoHbn.setPassword(password);
+					devInfoHbn.setAdminId(0L);
+					if(!beecomDb.putNewDevInfo(devInfoHbn)) {
+						packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_REGISTER_FAILED);
 						session.write(packAck);
 						session.closeOnFlush();
 						return;
 					}
-					packAck.getPld().setServerChainHbn(serverChainHbn);
-					bpSession = new BPDeviceSession(session, devUniqId, password,
-							deviceInfoUnit.getDevInfoHbn().getAdminId(), deviceInfoUnit.getDevInfoHbn().getSnId());
-					bpSession.setEncryptionType(decodedPack.getFxHead());
-					bpSession.setCrcType(decodedPack.getFxHead());
-					BeecomDB.getInstance().getDevUniqId2SessionMap().put(devUniqId, bpSession);
-					session.setAttribute(SESS_ATTR_BP_SESSION, bpSession);
-					beecomDb.updateUserDevRel(deviceInfoUnit.getDevInfoHbn());
-
-				} catch (NumberFormatException e) {
-					packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_USER_OR_PASSWORD_INVALID);
+					ServerChainHbn serverChainHbn = new ServerChainHbn();
+					serverChainHbn.setClientId(devInfoHbn.getId());
+					if(!beecomDb.putNewServerChain(serverChainHbn)) {
+						packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_REGISTER_FAILED);
+						session.write(packAck);
+						session.closeOnFlush();
+						return;
+					}
+					deviceInfoUnit.setDevInfoHbn(devInfoHbn);
+					deviceInfoUnit.setSnInfoHbn(snInfoHbn);
+				} else if (loginErrorEnum != LoginErrorEnum.LOGIN_OK) {
 					session.write(packAck);
 					session.closeOnFlush();
 					return;
 				}
+				devUniqId = deviceInfoUnit.getDevInfoHbn().getId();
+
+				ServerChainHbn serverChainHbn = BeecomDB.getInstance().getServerChain(devUniqId);
+				if (null == serverChainHbn) {
+					packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_SERVER_CHAIN_INVALID);
+					session.write(packAck);
+					session.closeOnFlush();
+					return;
+				}
+				packAck.getPld().setServerChainHbn(serverChainHbn);
+				bpSession = new BPDeviceSession(session, devUniqId, password,
+						deviceInfoUnit.getDevInfoHbn().getAdminId(), deviceInfoUnit.getDevInfoHbn().getSnId());
+				bpSession.setEncryptionType(decodedPack.getFxHead());
+				bpSession.setCrcType(decodedPack.getFxHead());
+				BeecomDB.getInstance().getDevUniqId2SessionMap().put(devUniqId, bpSession);
+				session.setAttribute(SESS_ATTR_BP_SESSION, bpSession);
+				beecomDb.updateUserDevRel(deviceInfoUnit.getDevInfoHbn());
+			} else {
+				logger.error("Inner error: client type unknown");
+				packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_SERVER_ERR);
+				session.write(packAck);
+				session.closeOnFlush();
+				return;
 			}
 
 			int aliveTime = vrb.getAliveTime();
+			if(aliveTime < BcServerMain.IDLE_TIME_MIN || aliveTime > BcServerMain.IDLE_TIME_MAX) {
+				aliveTime = userClntFlag ? BcServerMain.IDLE_TIME_DEFAULT_USER_CLIENT : BcServerMain.IDLE_TIME_DEFAULT_DEVICE_CLIENT;
+			}
 			bpSession.setAliveTime(aliveTime);
 			short timeout = vrb.getTimeout();
-			// boolean isDebugMode = vrb.getDebugMode();
 			byte performanceClass = vrb.getPerformanceClass();
 			bpSession.setTimeout(timeout);
-			// bpSession.setDebugMode(isDebugMode);
 			bpSession.setPerformanceClass(performanceClass);
-			session.getConfig().setIdleTime(IdleStatus.READER_IDLE, aliveTime);
+			session.getConfig().setIdleTime(IdleStatus.BOTH_IDLE, aliveTime);
 			session.write(packAck);
 		} catch (Exception e) {
 			Util.logger(logger, Util.ERROR, e);

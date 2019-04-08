@@ -28,7 +28,11 @@ public class BcServerMain {
 
 	private static final int BC_SERVER_PORT = 8025;
 	private static final int BC_SOCK_BUFF_SIZE = 2048;
-	private static final int IDLE_READ_PROC_TIME = 30;
+	private static final int IDLE_READ_PROC_TIME = 60;
+	public static final int IDLE_TIME_MIN = 30;
+	public static final int IDLE_TIME_DEFAULT_USER_CLIENT = 600;
+	public static final int IDLE_TIME_DEFAULT_DEVICE_CLIENT = 60;
+	public static final int IDLE_TIME_MAX = 0xFFFF;
 	public static ConsumerTask consumerTask;
 	public static BcConsole bcConsole;
 

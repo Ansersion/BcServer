@@ -16,24 +16,6 @@ public class BPUserSession extends BPSession {
 	private String password;
 	private UserInfoUnit userInfoUnit;
 	
-	/*
-	public BPUserSession() {
-		super();
-		this.userName = "";
-		this.password = "";
-		this.email = "";
-		this.phone = "";
-				
-	}
-	
-	public BPUserSession(String userName, String password) {
-		this.userName = userName;
-		this.password = password;
-		this.email = "";
-		this.phone = "";
-	}
-	*/
-	
 	public BPUserSession(IoSession session, UserInfoUnit userInfoUnit) {
 		super(session);
 		this.userInfoUnit = userInfoUnit;
@@ -97,8 +79,5 @@ public class BPUserSession extends BPSession {
 	public UserInfoUnit getUserInfoUnit() {
 		return userInfoUnit;
 	}
-	
-	
-	
-	
+
 }
