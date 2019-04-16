@@ -1,5 +1,7 @@
 package db;
 
+import bp_packet.BPPacket;
+
 public class DevInfoHbn {
     private Long id;
     private Long snId;
@@ -9,6 +11,13 @@ public class DevInfoHbn {
     private Short dailySigTabChangeTimes;
     private Short langSupportMask;
     
+	public DevInfoHbn() {
+		super();
+		sigMapChksum = BPPacket.INVALID_SIGNAL_MAP_CHECKSUM;
+		dailySigTabChangeTimes = 3;
+		/* Chinese and English enabled default */
+		langSupportMask = 0xC0;
+	}
 	public Long getId() {
 		return id;
 	}

@@ -24,8 +24,28 @@
    		update
    </property>
    
+   <property name="hibernate.connection.autocommit">
+   		false
+   </property>
+   
+   <property name="dialect">
+  	 org.hibernate.dialect.MySQLInnoDBDialect
+   </property>
+   
    <!-- Output sql of hibernate -->
 	<property name="hibernate.show_sql">true</property>
+	
+	<property name="connection.provider_class">
+                org.hibernate.connection.C3P0ConnectionProvider</property>
+	<property name="hibernate.c3p0.acquire_increment">5</property> 
+	<property name="acquireRetryAttempts">3</property>
+	<property name="acquireRetryDelay">1000</property>
+	<property name="hibernate.c3p0.idle_test_period">100</property>
+	<property name="hibernate.c3p0.max_size">20</property> 
+	<property name="hibernate.c3p0.min_size">5</property> 
+	<property name="hibernate.c3p0.timeout">3600</property>
+	
+
 
    <!-- List of XML mapping files -->
    <mapping resource="db/user_info.hbm.xml"/>

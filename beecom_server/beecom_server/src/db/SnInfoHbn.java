@@ -8,6 +8,14 @@ public class SnInfoHbn {
     private Long developUserId;
     private Date activiteDate;
     private Date expiredDate;
+    private Integer existTime;
+    
+	public SnInfoHbn() {
+		super();
+		activiteDate = new Date();
+		expiredDate = new Date();
+		existTime = -1;
+	}
 	public Long getId() {
 		return id;
 	}
@@ -38,11 +46,19 @@ public class SnInfoHbn {
 	public void setExpiredDate(Date expiredDate) {
 		this.expiredDate = expiredDate;
 	}
+
+	public Integer getExistTime() {
+		return existTime;
+	}
+	public void setExistTime(Integer existTime) {
+		this.existTime = existTime;
+	}
 	@Override
 	public String toString() {
-		return "SnInfo [id=" + id + ", sn=" + sn + ", developUserId=" + developUserId + ", activiteDate=" + activiteDate
-				+ ", expiredDate=" + expiredDate + "]";
+		return "SnInfoHbn [id=" + id + ", sn=" + sn + ", developUserId=" + developUserId + ", activiteDate="
+				+ activiteDate + ", expiredDate=" + expiredDate + ", existTime=" + existTime + "]";
 	}
+
     
     
 }

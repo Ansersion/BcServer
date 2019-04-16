@@ -12,5 +12,6 @@
         <property name="developUserId" column="develop_user_id" />  
         <property name="activiteDate" column="activite_date" />  
         <property name="expiredDate" column="expired_date" />  
+        <property name="existTime" column="exist_time" />  
     </class>    
 </hibernate-mapping>

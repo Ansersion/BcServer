@@ -59,6 +59,8 @@ public class BeecomDB {
 	private static final String DB_USER_DEFAULT = "root";
 	private static final String DEB_PASSWORD_DEFAULT = "Ansersion";
 	
+	private static int DEVELOP_SN_EXIST_TIME = 0x7FFFFFFF;
+	
 	private static Map<String, String> dbConfigMap;
 	
 	private Map<Long, BPSession> devUniqId2SessionMap;
@@ -225,8 +227,10 @@ public class BeecomDB {
 			result = LoginErrorEnum.PASSWORD_INVALID;
 
 			DevInfoHbn devInfoHbn = (DevInfoHbn)session  
-		            .createQuery("from DevInfoHbn where snId = :sn_id")
-		            .setParameter("sn_id", snInfoHbn.getId()).uniqueResult();
+		            .createQuery("from DevInfoHbn where snId = :sn_id and password = :pwd")
+		            .setParameter("sn_id", snInfoHbn.getId())
+		            .setParameter("pwd", password)
+		            .uniqueResult();
 			
 			if(null == devInfoHbn) {
 				return result;
@@ -972,13 +976,30 @@ public class BeecomDB {
 		}
 
 		ServerChainHbn serverChainHbn = null;
+		Transaction tx = null;
+
 		try (Session session = sessionFactory.openSession()) {
 			serverChainHbn = (ServerChainHbn)session  
 		            .createQuery(" from ServerChainHbn where clientId=?0 ")
 		            .setParameter("0", uniqDevId)
 		            .uniqueResult();  
+			
+			if(null == serverChainHbn) {
+				tx = session.beginTransaction();
+				serverChainHbn = new ServerChainHbn();
+				serverChainHbn.setClientId(uniqDevId);
+				session.save(serverChainHbn);
+				tx.commit();
+			}
 		} catch (Exception e) {
 			Util.logger(logger, Util.ERROR, e);
+			try{
+				if(null != tx) {
+					tx.rollback();
+				}
+    		}catch(RuntimeException rbe){
+    			Util.logger(logger, Util.ERROR, rbe);
+    		}
 		}
 		
 		return serverChainHbn;
@@ -2105,7 +2126,7 @@ public class BeecomDB {
     	if(null == serverChainHbn) {
     		return ret;
     	}
-    	if(serverChainHbn.getId() != 0) {
+    	if(serverChainHbn.getId() != null && serverChainHbn.getId() != 0) {
     		/* must be a new DevInfoHbn */
     		return ret;
     	}
@@ -2114,6 +2135,53 @@ public class BeecomDB {
 		try (Session session = sessionFactory.openSession()) {
 			tx = session.beginTransaction();
 			session.save(serverChainHbn);
+			tx.commit();
+			ret = true;
+		} catch (Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+			try{
+				if(null != tx) {
+					tx.rollback();
+				}
+    		}catch(RuntimeException rbe){
+    			Util.logger(logger, Util.ERROR, rbe);
+    		}
+			ret = false;
+		}
+    	return ret;
+    }
+    
+    /* put new SnInfoHbn and DevInfoHbn for development
+     * developmentUserId must be check first that exists in database */
+    public boolean putNewDevelopmentSnAndDevInfo(String sn, String password, long developmentUserId) {
+    	boolean ret = false;
+    	if(null == sn || sn.isEmpty()) {
+    		return ret;
+    	}
+    	if(null == password || password.isEmpty()) {
+    		return ret;
+    	}
+    	if(developmentUserId < 0) {
+    		return ret;
+    	}
+    	
+		Transaction tx = null;
+		try (Session session = sessionFactory.openSession()) {
+			tx = session.beginTransaction();
+			SnInfoHbn snInfoHbn = new SnInfoHbn();
+			snInfoHbn.setDevelopUserId(developmentUserId);
+			snInfoHbn.setSn(sn);
+			snInfoHbn.setExistTime(DEVELOP_SN_EXIST_TIME);
+			session.save(snInfoHbn);
+			
+			DevInfoHbn devInfoHbn = new DevInfoHbn();
+			devInfoHbn.setSnId(snInfoHbn.getId());
+			
+			/* 0 for no admin */
+			devInfoHbn.setAdminId(0L);
+			devInfoHbn.setPassword(password);
+			session.save(devInfoHbn);
+			
 			tx.commit();
 			ret = true;
 		} catch (Exception e) {
@@ -2514,12 +2582,14 @@ public class BeecomDB {
 		try (Session session = sessionFactory.openSession()) {
 			tx = session.beginTransaction();
 			
+			/*
 			ServerChainHbn devServerChainHbn = (ServerChainHbn) session  
 		            .createQuery("from ServerChainHbn where clientId = :client_id")
 		            .setParameter("client_id", uniqDevId).uniqueResult();
 			if(null != devServerChainHbn) {
 				session.delete(devServerChainHbn);
 			}
+			*/
 
 			DevInfoHbn devInfoHbn = session.get(DevInfoHbn.class, uniqDevId);
 			if(null == devInfoHbn) {

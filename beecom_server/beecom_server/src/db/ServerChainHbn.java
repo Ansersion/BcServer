@@ -3,6 +3,8 @@
  */
 package db;
 
+import server_chain.ServerChain;
+
 /**
  * @author Ansersion
  *
@@ -14,6 +16,14 @@ public class ServerChainHbn {
     private byte upperServerType;
     private String lowerServer;
     private byte lowerServerType;
+    
+	public ServerChainHbn() {
+		super();
+		upperServer = "";
+		upperServerType = ServerChain.TYPE_DEFAULT;
+		lowerServer = "";
+		lowerServerType = ServerChain.TYPE_DEFAULT;
+	}
 	public Long getId() {
 		return id;
 	}

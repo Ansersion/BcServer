@@ -10,6 +10,7 @@ CREATE TABLE sn_info
 	
 	activite_date DATE NOT NULL DEFAULT '1000-01-01',
 	expired_date DATE NOT NULL DEFAULT '1000-01-01',
+	exist_time INT NOT NULL DEFAULT -1,
 	
 	UNIQUE INDEX i_sn(sn), 
 	INDEX i_develop_user_id(develop_user_id)

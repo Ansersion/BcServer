@@ -52,5 +52,8 @@
 	<classpathentry kind="lib" path="junit4/junit-4.12.jar" sourcepath="junit4/junit-4.12-sources.jar"/>
 	<classpathentry kind="lib" path="logback/logback-classic-1.2.3-sources.jar"/>
 	<classpathentry kind="lib" path="logback/logback-classic-1.2.3.jar"/>
+	<classpathentry kind="lib" path="hibernate/c3p0-0.9.5.2.jar"/>
+	<classpathentry kind="lib" path="hibernate/hibernate-c3p0-5.2.16.Final.jar"/>
+	<classpathentry kind="lib" path="hibernate/mchange-commons-java-0.2.11.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

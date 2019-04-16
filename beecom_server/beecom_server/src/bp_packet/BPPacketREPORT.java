@@ -27,6 +27,7 @@ import db.SystemSignalI32InfoHbn;
 import db.SystemSignalStringInfoHbn;
 import db.SystemSignalU16InfoHbn;
 import db.SystemSignalU32InfoHbn;
+import other.CrcChecksum;
 import other.Util;
 import sys_sig_table.BPSysSigTable;
 import sys_sig_table.SysSigInfo;
@@ -599,8 +600,11 @@ public class BPPacketREPORT extends BPPacket {
 					}
 					pld.setCustomSignalInfoUnitLst(customSignalInfoUnitList);
 				}
-				
-				pld.setSigMapCheckSum(ioBuffer.getUnsignedInt());
+				if(getFxHead().getCrcChk() == CrcChecksum.CRC16) {
+					pld.setSigMapCheckSum(ioBuffer.getUnsignedShort());
+				} else {
+					pld.setSigMapCheckSum(ioBuffer.getUnsignedInt());
+				}
 				if(vrb.getSigMapChecksumOnly()) {
 					return 0;
 				}
