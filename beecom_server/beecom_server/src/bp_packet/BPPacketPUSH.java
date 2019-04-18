@@ -84,10 +84,9 @@ public class BPPacketPUSH extends BPPacket {
 			}
 			buffer.put(data);
 		} else {
+			/* deprecated */
 			buffer.putUnsignedShort(pld.getUniqDevId());
-			if(vrb.getSigValFlag()) {
-				// TODO: [NEED](no use):pack system signal
-			}
+
 			if(vrb.getCusSigFlag()) {
 				/* iterator all type of signal value and put them into buffer*/
 				List<Object> valueList = new ArrayList<>(Payload.CUSTOM_SIGNAL_PUSH_SIGNAL_VALUE_MAX_NUM);

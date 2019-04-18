@@ -4,6 +4,7 @@
 package bp_packet;
 
 
+import org.apache.mina.core.buffer.IoBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,9 +17,11 @@ import other.Util;
  */
 public class BPPacketPOSTACK extends BPPacket {
 	private static final Logger logger = LoggerFactory.getLogger(BPPacketPOSTACK.class);
+	public static final int RET_CODE_SIGNAL_ID_UNSUPPORTED = 0x03;
+	public static final int RET_CODE_SIGNAL_VALUE_UNFORMAL = 0x04;
 	
-	int packSeq;
-	
+	private byte[] signalValueRelay;
+	private int signalIdWithErr;
 	
 	protected BPPacketPOSTACK() {
 		super();
@@ -30,14 +33,18 @@ public class BPPacketPOSTACK extends BPPacket {
 	@Override
 	public boolean assembleVariableHeader() throws BPAssembleVrbHeaderException {
 		super.assembleVariableHeader();
-		getIoBuffer().putShort((short)packSeq);
+		byte flags = getVrbHead().getFlags();
+		getIoBuffer().put(flags);
+		int packSeq = getVrbHead().getPackSeq();
+		getIoBuffer().putUnsignedShort(packSeq);
+		byte retCode = (byte)getVrbHead().getRetCode();
+		getIoBuffer().put(retCode);
 
 		return true;
 	}
 
 	@Override
 	public boolean assemblePayload() {
-
 		return true;
 	}
 	
@@ -45,14 +52,11 @@ public class BPPacketPOSTACK extends BPPacket {
 	public int parseVariableHeader() {
 
 		try {
-			// flags(1 byte) + client ID(2 byte) + sequence ID(2 byte) + return code(1 byte)
+			// flags(1 byte) + sequence ID(2 byte) + return code(1 byte)
 			byte flags = 0;
 
 			flags = getIoBuffer().get();
 			super.parseVrbHeadFlags(flags);
-
-			int clientId = getIoBuffer().getUnsignedShort();
-			getVrbHead().setClientId(clientId);
 
 			int seqId = getIoBuffer().getUnsignedShort();
 			getVrbHead().setPackSeq(seqId);
@@ -69,6 +73,21 @@ public class BPPacketPOSTACK extends BPPacket {
 
 	@Override
 	public int parsePayload() {
+		try {
+			IoBuffer ioBuffer = getIoBuffer();
+			if (RET_CODE_SIGNAL_ID_UNSUPPORTED == getVrbHead().getRetCode()
+					|| RET_CODE_SIGNAL_VALUE_UNFORMAL == getVrbHead().getRetCode()) {
+				int signalValuePositionStart = ioBuffer.position();
+				signalIdWithErr = ioBuffer.getUnsignedShort();
+				int signalValuePositionEnd = ioBuffer.position();
+				ioBuffer.rewind();
+				ioBuffer.position(signalValuePositionStart);
+				signalValueRelay = new byte[signalValuePositionEnd - signalValuePositionStart];
+				ioBuffer.get(signalValueRelay);
+			}
+		} catch(Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+		}
 		return 0;
 	}
 

@@ -66,16 +66,15 @@ public class Payload {
 
 	// byte[] userName = null;
 	// byte[] password = null;
-	String userName;
-	String password;
-	String devName = null;
-	int clntIdLen;
-	int clntId;
-	int symSetVer;
+	private String userName;
+	private String password;
+	private String devName = null;
+	private int symSetVer;
 	private long devUniqId;
-	DevSigData sigData = null;
+	private DevSigData sigData = null;
 	
 	private String SN;
+	private String adminName;
 	
 	private BPError error;
 	
@@ -169,14 +168,6 @@ public class Payload {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-
-	public int getClntIdLen() {
-		return clntIdLen;
-	}
-	
-	public int getClntId() {
-		return clntId;
-	}
 	
 	public int getSymSetVer() {
 		return symSetVer;
@@ -188,18 +179,6 @@ public class Payload {
 	
 	public DevSigData getSigData() {
 		return sigData;
-	}
-	
-	public void setClientId(int id) {
-		clntId = id;
-	}
-	
-	public void setClientIdLen(int len) {
-		clntIdLen = len;
-	}
-	
-	public void setClientIdLen() {
-		clntIdLen = 2;
 	}
 	
 	public void setDevName(byte[] devName) {
@@ -551,6 +530,14 @@ public class Payload {
 
 	public void setSignalLst(List<Integer> signalLst) {
 		this.signalLst = signalLst;
+	}
+
+	public String getAdminName() {
+		return adminName;
+	}
+
+	public void setAdminName(String adminName) {
+		this.adminName = adminName;
 	}
 
 

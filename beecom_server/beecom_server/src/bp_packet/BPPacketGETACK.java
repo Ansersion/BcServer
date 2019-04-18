@@ -9,6 +9,7 @@ import org.apache.mina.core.buffer.IoBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import db.CustomSignalBooleanInfoHbn;
 import db.CustomSignalEnumInfoHbn;
 import db.CustomSignalFloatInfoHbn;
 import db.CustomSignalI16InfoHbn;
@@ -685,14 +686,17 @@ public class BPPacketGETACK extends BPPacket {
 							break;
 						}
 						case BPPacket.VAL_TYPE_BOOLEAN:
-							/* TODO: */
-							logger.error("VAL_TYPE_BOOLEAN not supported");
+							CustomSignalBooleanInfoHbn customSignalBooleanInfoHbn = (CustomSignalBooleanInfoHbn) customSignalInfoUnit
+									.getCustomSignalInterface();
+							if (null == customSignalBooleanInfoHbn) {
+								logger.error("inner error: null == customSignalBooleanInfoHbn");
+								break;
+							}
+
+							/* default value */
+							buffer.putUnsigned(customSignalBooleanInfoHbn.getDefVal() ? 1 : 0);
 							break;
 						default:
-							if (customSignalInfoUnit.isIfAlarm()) {
-								/* TODO: */
-								logger.error("ALARM VALUE not supported");
-							}
 							logger.error("inner error: unknown value type");
 							break;
 						}

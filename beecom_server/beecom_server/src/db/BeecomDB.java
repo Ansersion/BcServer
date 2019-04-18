@@ -408,7 +408,6 @@ public class BeecomDB {
 				return ret;
 			}
 			if(sigId < BPPacket.SYS_SIG_START_ID) {
-				/* TODO: check if alarm signal */
 				CustomSignalInfoHbn customSignalInfoHbn = null;
 				customSignalInfoHbn = (CustomSignalInfoHbn)session.createQuery("from CustomSignalInfoHbn where signalId = :signal_id and valType = :val_type")
 						.setParameter("signal_id", signalInfoHbn.getId())
@@ -417,7 +416,6 @@ public class BeecomDB {
 					return ret;
 				}
 			} else {
-				/* TODO: check if alarm signal */
 				SystemSignalInfoHbn systemSignalInfoHbn = null;
 				systemSignalInfoHbn = (SystemSignalInfoHbn)session.createQuery("from SystemSignalInfoHbn where signalId = :signal_id")
 						.setParameter("signal_id", signalInfoHbn.getId()).uniqueResult();
@@ -538,7 +536,7 @@ public class BeecomDB {
 		
 		List<Integer> customSignalEnumLangInfoEnumKeysLst = null;
 		try (Session session = sessionFactory.openSession()) {
-			customSignalEnumLangInfoEnumKeysLst = (List<Integer>)session  
+			customSignalEnumLangInfoEnumKeysLst = session  
 		            .createQuery("select enumKey from CustomSignalEnumLangInfoHbn where cusSigEnmId = :cus_sig_enm_id")
 		            .setParameter("cus_sig_enm_id", customSignalEnumInfoHbn.getId()).list();
 		    
@@ -926,6 +924,29 @@ public class BeecomDB {
 		// TODO:
 		return null;
 	}
+	
+	public long getUserIdByUserName(String name) {
+		long ret = -1;
+		if(null == name || name.isEmpty()) {
+			return ret;
+		}
+
+		UserInfoHbn userInfoHbn = null;
+		try (Session session = sessionFactory.openSession()) {
+			userInfoHbn = (UserInfoHbn)session  
+		            .createQuery(" from UserInfoHbn where name = ?0 ")
+		            .setParameter(0, name)
+		            .uniqueResult();  
+		    if(userInfoHbn != null) {
+		    	ret = userInfoHbn.getId();
+		    }
+		    
+		} catch (Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+		}
+		
+		return ret;
+	}
 
 	public Map<Long, List<UserDevRelInfoInterface>> getSnId2UserDevRelInfoListMap() {
 		return snId2UserDevRelInfoListMap;
@@ -1112,9 +1133,15 @@ public class BeecomDB {
 							break;
 							case BPPacket.VAL_TYPE_ENUM:
 								try (Session session = sessionFactory.openSession()) {
-									systemSignalInterface = (SystemSignalEnumInfoHbn)session.createQuery("from SystemSignalEnumInfoHbn where systemSignalId = :system_signal_id")
+									SystemSignalEnumInfoHbn systemSignalEnumInfoHbn = (SystemSignalEnumInfoHbn)session.createQuery("from SystemSignalEnumInfoHbn where systemSignalId = :system_signal_id")
 								            .setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
-								    
+									if(null != systemSignalEnumInfoHbn) {
+										systemSignalEnumLangInfoList = session.createQuery("from SystemSignalEnumLangInfoHbn where sysSigEnmId=?0")
+									            .setParameter("0", systemSignalEnumInfoHbn.getId())
+									            .list();
+									}
+																	
+									systemSignalInterface = systemSignalEnumInfoHbn;   
 								} catch (Exception e) {
 									Util.logger(logger, Util.ERROR, e);
 									systemSignalInterface = null;
@@ -1156,7 +1183,6 @@ public class BeecomDB {
 
 						
 					}
-					/* TODO: set the systemSignalEnumLangInfoList */
 					systemSignalInfoUnitLst.add(new SystemSignalInfoUnit(signalId, ifNotifying, ifConfigDef, systemSignalEnumLangInfoList, systemSignalInterface));
 					break;
 				}
@@ -3332,5 +3358,31 @@ public class BeecomDB {
 			Util.logger(logger, Util.ERROR, e);
 		}
 	    
+    }
+    
+    public boolean updateHbn(Object hbn) {
+    	boolean ret = false;
+    	if(null == hbn) {
+    		return ret;
+    	}
+    	
+		Transaction tx = null;
+		try (Session session = sessionFactory.openSession()) {
+			tx = session.beginTransaction();
+			session.update(hbn);
+			tx.commit();
+			ret = true;
+		} catch (Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+			try{
+				if(null != tx) {
+					tx.rollback();
+				}
+    		}catch(RuntimeException rbe){
+    			Util.logger(logger, Util.ERROR, rbe);
+    		}
+			ret = false;
+		}
+    	return ret;
     }
 }

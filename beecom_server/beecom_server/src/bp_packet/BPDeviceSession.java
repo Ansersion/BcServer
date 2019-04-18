@@ -1,12 +1,15 @@
 package bp_packet;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
@@ -30,6 +33,9 @@ public class BPDeviceSession extends BPSession {
 	private boolean sigMapCheckOK;
 	private long snId;
 	
+	private List<RelayAckData> relayAckDataList;
+	private Lock relayAckDataListLock = new ReentrantLock();
+	
 	public BPDeviceSession(IoSession session) {
 		super(session);
 		uniqDeviceId = 0L;
@@ -39,13 +45,14 @@ public class BPDeviceSession extends BPSession {
 		sigMapCheckOK = false;
 		signalId2InfoUnitMap = null;
 		snId = 0L;
+		relayAckDataList = new ArrayList<>();
 	}
 	
 	public BPDeviceSession(IoSession session, Long uniqDeviceId, String password, Long adminId, long snId) {
 		super(session);
 		this.uniqDeviceId = uniqDeviceId;
 		this.password = password;
-		// this.adminId = adminId;
+		relayAckDataList = new ArrayList<>();
 		this.signalValueMap = new HashMap<>();
 		super.setSystemSignalValueMap(new HashMap<Integer, Object>());
 		sigMapCheckOK = false;
@@ -216,5 +223,63 @@ public class BPDeviceSession extends BPSession {
 		this.snId = snId;
 	}
 	
+	public boolean putRelayList(BPUserSession userSession, int packSeq) {
+		boolean ret = false;
+		if(null == userSession) {
+			return ret;
+		}
+		relayAckDataListLock.lock();
+        try {
+        	long timestamp = System.currentTimeMillis();
+        	Iterator<RelayAckData> it = relayAckDataList.iterator();
+        	RelayAckData tmp;
+        	while(it.hasNext()){
+        		tmp = it.next();
+        	    if(tmp.getTimestamp() > timestamp || timestamp > tmp.getTimestamp() + userSession.getTimeout() * 1000){
+        	        it.remove();
+        	    } else {
+        	    	/* later item is new and not need to remove anymore */
+        	    	break;
+        	    }
+        	}
+        	relayAckDataList.add(new RelayAckData(userSession, packSeq));
+        	ret = true;
+        } catch (Exception e) {
+        	logger.error("Inner error: Exception in relayAckDataList");
+        	ret = false;
+        }finally {
+        	relayAckDataListLock.unlock();
+        }
+        
+        return ret;
+	}
+	
+	public BPUserSession getRelayUserSession(int packSeq) {
+		BPUserSession ret = null;
+		relayAckDataListLock.lock();
+        try {
+        	long timestamp = System.currentTimeMillis();
+        	Iterator<RelayAckData> it = relayAckDataList.iterator();
+        	RelayAckData tmp;
+        	while(it.hasNext()){
+        		tmp = it.next();
+        	    if(tmp.getPackSeq() == packSeq) {
+            	    if(tmp.getTimestamp() > timestamp || timestamp > tmp.getTimestamp() + tmp.getUserSession().getTimeout() * 1000){
+            	        it.remove();
+            	        continue;
+            	    }
+            	    ret = tmp.getUserSession();
+        	    	break;
+        	    }
+        	}
+        } catch (Exception e) {
+        	Util.logger(logger, Util.ERROR, e);
+        	ret = null;
+        }finally {
+        	relayAckDataListLock.unlock();
+        }
+        
+        return ret;
+	}
 	
 }

@@ -17,6 +17,8 @@ public class BPPacketRPRTACK extends BPPacket {
 	public static final int RET_CODE_SIG_ID_INVALID = 0x03;
 	public static final int RET_CODE_SIG_VAL_INVALID = 0x04;
 	
+	public static final int RET_CODE_SERVER_ERROR = 0xFF;
+	
 	
 	protected BPPacketRPRTACK() {
 		super();

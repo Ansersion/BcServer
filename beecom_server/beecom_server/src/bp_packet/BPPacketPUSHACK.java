@@ -42,15 +42,7 @@ public class BPPacketPUSHACK extends BPPacket {
 	@Override
 	public boolean assemblePayload() {
 		byte encodedByte;
-		
-		encodedByte = (byte)getPld().getClntIdLen();
-		getIoBuffer().put(encodedByte);
-		
-		int clientId = getPld().getClntId();
-		encodedByte = (byte)((clientId & 0xff00) >> 8);
-		getIoBuffer().put(encodedByte);
-		encodedByte = (byte)(clientId & 0xff);
-		getIoBuffer().put(encodedByte);
+
 		encodedByte = (byte)getPld().getSymSetVer();
 		getIoBuffer().put(encodedByte);
 		

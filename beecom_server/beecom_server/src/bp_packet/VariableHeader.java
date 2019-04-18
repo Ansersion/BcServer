@@ -349,11 +349,7 @@ public class VariableHeader {
 		return langFlags;
 	}
 	
-	public boolean getSysSigAttrFlag() {
-		return (flags & 0x02) != 0;
-	}
-	
-	public boolean getCusSigAttrFlag() {
+	public boolean getSigAttrFlag() {
 		return (flags & 0x01) != 0;
 	}
 	

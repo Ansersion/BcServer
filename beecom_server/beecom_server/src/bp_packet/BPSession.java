@@ -448,7 +448,7 @@ public abstract class BPSession {
         	}
         	
         } catch (Exception e) {
-        	logger.error("Inner error: Exception in putRelayList");
+        	Util.logger(logger, Util.ERROR, e);
         }finally {
         	relayMaplock.unlock();
         }

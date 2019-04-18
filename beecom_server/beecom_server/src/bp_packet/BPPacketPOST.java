@@ -29,10 +29,6 @@ public class BPPacketPOST extends BPPacket {
 	public static final int RET_CODE_BUFFER_FILLED_ERR = 0x0;
 	public static final int RET_CODE_PEER_INNER_ERR = 0xFF;
 	
-	
-	int packSeq;
-	DevSigData[] sigDatas = null; 
-	int deviceNum;
 	private byte[] signalValueRelay;
 	
 	protected BPPacketPOST() {

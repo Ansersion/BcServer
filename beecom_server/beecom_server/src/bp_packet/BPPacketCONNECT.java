@@ -1,5 +1,6 @@
 package bp_packet;
 
+import org.apache.mina.core.buffer.IoBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,29 +61,43 @@ public class BPPacketCONNECT extends BPPacket {
 
 	@Override
 	public int parsePayload() {
+		int ret = 0;
 		try {
-			if (!getUsrNameFlagVrbHead() || !getPwdFlagVrbHead()) {
-				return 0;
+			VariableHeader vrb = this.getVrbHead();
+			IoBuffer ioBuffer = getIoBuffer();
+			Payload pld = getPld();
+			if (!vrb.getUserNameFlag() || !vrb.getPwdFlag()) {
+				return ret;
 			}
 
-			int userNameLen = getIoBuffer().getUnsignedShort();
+			int userNameLen = ioBuffer.getUnsignedShort();
 			byte[] userName = new byte[userNameLen];
-			getIoBuffer().get(userName);
+			ioBuffer.get(userName);
 			
-			int passwordLen = getIoBuffer().getUnsignedShort();
+			int passwordLen = ioBuffer.getUnsignedShort();
 			byte[] password = new byte[passwordLen];
-			getIoBuffer().get(password);
+			ioBuffer.get(password);
 			
-			setSysSigTableVersion(getIoBuffer().getUnsignedShort());
+			setSysSigTableVersion(ioBuffer.getUnsignedShort());
 			
-			setPldUserName(new String(userName));
-			setPldPassword(new String(password));
+			pld.setUserName(new String(userName, "UTF-8"));
+			pld.setPassword(new String(password));
+			
+			if(vrb.getDevIdFlag()) {
+				int adminNameLen = ioBuffer.getUnsignedShort();
+				if(adminNameLen > 0) {
+					byte[] adminName = new byte[adminNameLen];
+					pld.setAdminName(new String(adminName, "UTF-8"));
+				} else {
+					pld.setAdminName(null);
+				}
+			}
 
 		} catch (Exception e) {
 			Util.logger(logger, Util.ERROR, e);
-			throw e;
+			ret = -1;
 		}
-		return 0;
+		return ret;
 	}
 
 	@Override
