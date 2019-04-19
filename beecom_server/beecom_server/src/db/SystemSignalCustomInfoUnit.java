@@ -9,12 +9,13 @@ public class SystemSignalCustomInfoUnit {
 	private Short delayBeforeAlarm;
 	private Short delayAfterAlarm;
 	private int customFlags;
+	private boolean display;
 	private Map<Integer, Integer> enumLangMap;
 	private SignalInterface signalInterface;
 
 
 	public SystemSignalCustomInfoUnit(int sysSigId, Short alarmClass, Short delayBeforeAlarm, Short delayAfterAlarm,
-			int customFlags, Map<Integer, Integer> enumLangMap, SignalInterface signalInterface) {
+			int customFlags, Map<Integer, Integer> enumLangMap, SignalInterface signalInterface, boolean display) {
 		super();
 		this.sysSigId = sysSigId;
 		this.alarmClass = alarmClass;
@@ -23,6 +24,7 @@ public class SystemSignalCustomInfoUnit {
 		this.customFlags = customFlags;
 		this.enumLangMap = enumLangMap;
 		this.signalInterface = signalInterface;
+		this.display = display;
 	}
 
 	public int getSysSigId() {
@@ -81,16 +83,21 @@ public class SystemSignalCustomInfoUnit {
 		this.enumLangMap = enumLangMap;
 	}
 
+	public boolean isDisplay() {
+		return display;
+	}
+
+	public void setDisplay(boolean display) {
+		this.display = display;
+	}
+
 	@Override
 	public String toString() {
 		return "SystemSignalCustomInfoUnit [sysSigId=" + sysSigId + ", alarmClass=" + alarmClass + ", delayBeforeAlarm="
 				+ delayBeforeAlarm + ", delayAfterAlarm=" + delayAfterAlarm + ", customFlags=" + customFlags
-				+ ", signalInterface=" + signalInterface + "]";
+				+ ", display=" + display + ", enumLangMap=" + enumLangMap + ", signalInterface=" + signalInterface
+				+ "]";
 	}
 
 
-
-
-
-	
 }

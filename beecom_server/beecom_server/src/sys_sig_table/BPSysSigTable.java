@@ -20,7 +20,17 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import bp_packet.BPPacket;
 import bp_packet.BPParseCsvFileException;
+import db.CustomSignalBooleanInfoHbn;
+import db.CustomSignalEnumInfoHbn;
+import db.CustomSignalFloatInfoHbn;
+import db.CustomSignalI16InfoHbn;
+import db.CustomSignalI32InfoHbn;
+import db.CustomSignalStringInfoHbn;
+import db.CustomSignalU16InfoHbn;
+import db.CustomSignalU32InfoHbn;
+import db.SystemSignalInfoUnit;
 import other.BPValue;
 import other.Util;
 
@@ -60,8 +70,28 @@ public class BPSysSigTable {
 	}
 	*/
 	
-	public SysSigInfo getSysSigInfo(int signalId) {
-		return sysSigInfoLst.get(signalId);
+	public SysSigInfo getSysSigInfo(int signalIdOffset) {
+		if(signalIdOffset < sysSigInfoLst.size()) {
+			return sysSigInfoLst.get(signalIdOffset);
+		} else {
+			return null;
+		}
+	}
+	
+	public SystemSignalInfoUnit createNewSystemSignalInfoUnit(int signalIdOffset) {
+		SystemSignalInfoUnit ret = null;
+
+		SysSigInfo sysSigInfo = getSysSigInfo(signalIdOffset);
+		if (null == sysSigInfo) {
+			return ret;
+		}
+		ret = new SystemSignalInfoUnit(signalIdOffset);
+		if (null == sysSigInfo.getValDef()) {
+			logger.error("Inner Error: null == sysSigInfo.getValDef()");
+			return ret;
+		}
+		ret.setSignalValue(sysSigInfo.getValDef());
+		return ret;
 	}
 	
 	public boolean loadTab() {

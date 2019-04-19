@@ -46,8 +46,7 @@ import java.util.Vector;
 public class BPPacketREPORT extends BPPacket {
 	
 	public static final int RET_CODE_INVALID_DEVICE_ID_ERR = 0x02;
-	public static final int RET_CODE_SIGNAL_MAP_CHECKSUM_ERR = 0x05;
-	public static final int RET_CODE_SIGNAL_MAP_ERR = 0x07;
+
 
 	int packSeq;
 	int devNameLen;
@@ -185,10 +184,11 @@ public class BPPacketREPORT extends BPPacket {
 					int customInfoFlags;
 					// boolean ifNotifing;
 					// boolean ifAlarm;
-					// boolean ifStatistics;
-					// boolean ifDisplay;
+					boolean ifStatistics;
+					boolean ifDisplay;
 					// short perm;
-					// int groupLangId;
+					int groupLangId;
+					int unitLangId;
 					// int accuracy;
 					int sigType;
 					short alarmClass;
@@ -212,11 +212,15 @@ public class BPPacketREPORT extends BPPacket {
 						if(null == sysSigInfo) {
 							throw new Exception("null == sysSigInfo");
 						}
+						ifStatistics = sysSigInfo.isEnStatistics();
+						ifDisplay = sysSigInfo.isIfDisplay();
+						groupLangId = sysSigInfo.getClassLangRes();
+						unitLangId = sysSigInfo.getUnitLangRes();
 						sigType = sysSigInfo.getValType();
 						customInfoFlags = ioBuffer.getUnsigned() & 0xFF;
 						customInfoFlags |= ((ioBuffer.getUnsigned() & 0xFF)<< 8);
 						if ((customInfoFlags & SYSTEM_SIGNAL_CUSTOM_FLAGS_STATISTICS) != 0) {
-							// ifStatistics = ioBuffer.get() != 0;
+							ifStatistics = ioBuffer.get() != 0;
 						}
 						if ((customInfoFlags & SYSTEM_SIGNAL_CUSTOM_FLAGS_ENUM_LANG) != 0) {
 							enumLangMap = new HashMap<>();
@@ -230,7 +234,7 @@ public class BPPacketREPORT extends BPPacket {
 							}
 						}
 						if ((customInfoFlags & SYSTEM_SIGNAL_CUSTOM_FLAGS_GROUP_LANG) != 0) {
-							// groupLangId = ioBuffer.getUnsignedShort();
+							groupLangId = ioBuffer.getUnsignedShort();
 						}
 						switch (sigType) {
 						case BPPacket.VAL_TYPE_UINT32: {
@@ -404,12 +408,26 @@ public class BPPacketREPORT extends BPPacket {
 							Util.logger(logger, Util.ERROR, "invalid signal type");
 							break;
 						}
+						if(signalInterface != null) {
+							signalInterface.setEnStatistics(ifStatistics);
+						}
 						if((customInfoFlags & SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM) != 0) {
 							alarmClass = ioBuffer.getUnsigned();
 							delayBeforeAlarm = ioBuffer.getUnsigned();
 							delayAfterAlarm = ioBuffer.getUnsigned();
 						}
-						systemSignalCustomInfoUnitList.add(new SystemSignalCustomInfoUnit(signalId, alarmClass, delayBeforeAlarm, delayAfterAlarm, customInfoFlags, enumLangMap, signalInterface));
+						
+						if ((customInfoFlags & SYSTEM_SIGNAL_CUSTOM_FLAGS_UNIT_LANG) != 0) {
+							/* TODO: set unit language */
+							unitLangId = ioBuffer.getUnsignedShort();
+						}
+						if((customInfoFlags & SYSTEM_SIGNAL_CUSTOM_FLAGS_PERMISSION) != 0) {
+							signalInterface.setPermission(ioBuffer.getUnsigned());
+						}
+						if((customInfoFlags & SYSTEM_SIGNAL_CUSTOM_FLAGS_DISPLAY) != 0) {
+							ifDisplay = ioBuffer.get() != 0;
+						}
+						systemSignalCustomInfoUnitList.add(new SystemSignalCustomInfoUnit(signalId, alarmClass, delayBeforeAlarm, delayAfterAlarm, customInfoFlags, enumLangMap, signalInterface, ifDisplay));
 
 					}
 					

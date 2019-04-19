@@ -1760,7 +1760,7 @@ public class BeecomDB {
 					default:
 						return null;
 					}
-					systemSignalCustomInfoUnitLst.add(new SystemSignalCustomInfoUnit(signalId, signalInfoHbn.getAlmClass(), signalInfoHbn.getAlmDlyBef(), signalInfoHbn.getAlmDlyAft(), systemSignalInfoHbn.getCustomFlags(), enumLangMap, systemSignalInterface));
+					systemSignalCustomInfoUnitLst.add(new SystemSignalCustomInfoUnit(signalId, signalInfoHbn.getAlmClass(), signalInfoHbn.getAlmDlyBef(), signalInfoHbn.getAlmDlyAft(), systemSignalInfoHbn.getCustomFlags(), enumLangMap, systemSignalInterface, signalInfoHbn.getDisplay()));
 					break;
 				}
 			}
@@ -2032,18 +2032,25 @@ public class BeecomDB {
 		Transaction tx = null;
 		try (Session session = sessionFactory.openSession()) {
 			tx = session.beginTransaction();
-
-			for(int i = 0; i < systemSignalEnabledList.size(); i++) {
+			int signalId;
+			int signalNumber = systemSignalEnabledList.size();
+			for(int i = 0; i < signalNumber; i++) {
+				signalId = systemSignalEnabledList.get(i) + BPPacket.SYS_SIG_START_ID;
 				SignalInfoHbn signalInfoHbn = (SignalInfoHbn) session
 						.createQuery("from SignalInfoHbn where signalId = :signal_id and devId = :dev_id")
-						.setParameter("signal_id", systemSignalEnabledList.get(i))
+						.setParameter("signal_id", signalId)
 						.setParameter("dev_id", uniqDevId).uniqueResult();
 				if (null == signalInfoHbn) {
 					signalInfoHbn = new SignalInfoHbn();
+					signalInfoHbn.setSignalId(signalId);
+					signalInfoHbn.setDevId(uniqDevId);
+					session.save(signalInfoHbn);
+				} else {
+					signalInfoHbn.setSignalId(signalId);
+					signalInfoHbn.setDevId(uniqDevId);
+					session.update(signalInfoHbn);
 				}
-				signalInfoHbn.setSignalId(systemSignalEnabledList.get(i) + BPPacket.SYS_SIG_START_ID);
-				signalInfoHbn.setDevId(uniqDevId);
-				session.saveOrUpdate(signalInfoHbn);
+
 				
 				SystemSignalInfoHbn systemSignalInfoHbn = (SystemSignalInfoHbn) session
 						.createQuery("from SystemSignalInfoHbn where signalId = :signal_id")
@@ -2052,7 +2059,6 @@ public class BeecomDB {
 					systemSignalInfoHbn = new SystemSignalInfoHbn(signalInfoHbn.getId());
 					session.save(systemSignalInfoHbn);
 				}
-				
 			}
 
 			tx.commit();
@@ -2240,8 +2246,9 @@ public class BeecomDB {
 
 			Map<String, CustomSignalGroupLangEntityInfoHbn> customSignalGroupLangEntityInfoHbnMap = new HashMap<>();
 			Map<String, CustomUnitLangEntityInfoHbn> customUnitLangEntityInfoHbnMap = new HashMap<>();
+			int unitListSize = customSignalUnitInfoList.size();
 			
-			for(int i = 0; i < customSignalUnitInfoList.size(); i++) {
+			for(int i = 0; i < unitListSize; i++) {
 				CustomSignalInfoUnit customSignalInfoUnit = customSignalUnitInfoList.get(i); 
 				int valueType = customSignalInfoUnit.getCustomSignalInterface().getValType();
 				SignalInfoHbn signalInfoHbn = (SignalInfoHbn) session
@@ -2304,11 +2311,6 @@ public class BeecomDB {
 						}
 					}
 					session.save(customSignalNameLangEntityInfoHbn);
-					/*
-					CustomSignalNameLangInfoHbn customSignalNameLangInfoHbn = new CustomSignalNameLangInfoHbn(customSignalNameLangEntityInfoHbn.getId()); 
-					session.save(customSignalNameLangInfoHbn);
-					customSignalInfoHbn.setCusSigNameLangId(customSignalNameLangInfoHbn.getId());
-					*/
 					customSignalInfoHbn.setCusSigNameLangId(customSignalNameLangEntityInfoHbn.getId());
 				}
 				langMap = customSignalInfoUnit.getGroupLangMap();
@@ -2349,11 +2351,6 @@ public class BeecomDB {
 						customSignalGroupLangEntityInfoHbnMap.put(customSignalGroupLangEntityInfoHbn.toString(), customSignalGroupLangEntityInfoHbn);
 						session.save(customSignalGroupLangEntityInfoHbn);
 					}
-					/*
-					CustomGroupLangInfoHbn customGroupLangInfoHbn = new CustomGroupLangInfoHbn(customSignalGroupLangEntityInfoHbn.getId()); 
-					session.save(customGroupLangInfoHbn);
-					customSignalInfoHbn.setCusGroupLangId(customGroupLangInfoHbn.getId());
-					*/
 					customSignalInfoHbn.setCusGroupLangId(customSignalGroupLangEntityInfoHbn.getId());
 				}
 				langMap = customSignalInfoUnit.getSignalUnitLangMap();
@@ -2395,12 +2392,6 @@ public class BeecomDB {
 						customUnitLangEntityInfoHbnMap.put(customUnitLangEntityInfoHbn.toString(), customUnitLangEntityInfoHbn);
 						session.save(customUnitLangEntityInfoHbn);
 					}
-					
-					/*
-					CustomUnitLangInfoHbn customUnitLangInfoHbn = new CustomUnitLangInfoHbn(customUnitLangEntityInfoHbn.getId()); 
-					session.save(customUnitLangInfoHbn);
-					customSignalInfoHbn.setCusSigUnitLangId(customUnitLangInfoHbn.getId());
-					*/
 					customSignalInfoHbn.setCusSigUnitLangId(customUnitLangEntityInfoHbn.getId());
 				}
 
@@ -2487,14 +2478,15 @@ public class BeecomDB {
 		try (Session session = sessionFactory.openSession()) {
 			tx = session.beginTransaction();
 			SystemSignalCustomInfoUnit systemSignalCustomInfoUnitTmp;
-			for(int i = 0; i < systemSignalCustomInfoUnitList.size(); i++) {
+			int unitSize = systemSignalCustomInfoUnitList.size();
+			for(int i = 0; i < unitSize; i++) {
 				systemSignalCustomInfoUnitTmp = systemSignalCustomInfoUnitList.get(i);
 				SignalInfoHbn signalInfoHbn = (SignalInfoHbn) session
 						.createQuery("from SignalInfoHbn where signalId = :signal_id and devId = :dev_id")
 						.setParameter("signal_id", systemSignalCustomInfoUnitTmp.getSysSigId())
 						.setParameter("dev_id", uniqDevId).uniqueResult();
 				if (null == signalInfoHbn) {
-					logger.error("Internal error: null == signalInfoHbn");
+					logger.error("Inner error: null == signalInfoHbn");
 					return ret;
 				}
 				
@@ -2503,10 +2495,14 @@ public class BeecomDB {
 						.createQuery("from SystemSignalInfoHbn where signalId = :signal_id")
 						.setParameter("signal_id",  signalKeyId).uniqueResult();
 				if(null == systemSignalInfoHbn) {
-					logger.error("Internal error: null == systemSignalInfoHbn");
+					logger.error("Inner error: null == systemSignalInfoHbn");
 					return ret;
 				}
 				customInfo = systemSignalCustomInfoUnitTmp.getCustomFlags();
+				if(0 == customInfo) {
+					logger.error("Warning: 0 == customInfo");
+					continue;
+				}
 
 				systemSignalInfoHbn.setCustomFlags(customInfo);
 				
@@ -2515,8 +2511,29 @@ public class BeecomDB {
 				SignalInterface signalInterface = systemSignalCustomInfoUnitTmp.getSignalInterface();
 				signalInterface.setSystemSignalId(systemSignalInfoHbn.getId());
 				if(signalInterface.saveToDb(session) < 0) {
-					logger.error("Internal error: null == devInfoHbn");
+					logger.error("Inner error: null == devInfoHbn");
 					return ret;
+				}
+				/*
+						SYSTEM_SIGNAL_CUSTOM_FLAGS_STATISTICS = 0x0001; // signalInterface.saveToDb(session) 
+						SYSTEM_SIGNAL_CUSTOM_FLAGS_ENUM_LANG = 0x0002;
+						SYSTEM_SIGNAL_CUSTOM_FLAGS_GROUP_LANG = 0x0004; // signalInterface.saveToDb(session) 
+						SYSTEM_SIGNAL_CUSTOM_FLAGS_ACCURACY = 0x0008; // signalInterface.saveToDb(session) 
+						SYSTEM_SIGNAL_CUSTOM_FLAGS_VALUE_MIN = 0x0010; // signalInterface.saveToDb(session)
+						SYSTEM_SIGNAL_CUSTOM_FLAGS_VALUE_MAX = 0x0020; // signalInterface.saveToDb(session)
+						SYSTEM_SIGNAL_CUSTOM_FLAGS_VALUE_DEF = 0x0040; // signalInterface.saveToDb(session)
+						SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM = 0x0080;
+						SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM_CLASS = 0x0100;
+						SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM_DELAY_BEF = 0x0200;
+						SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM_DELAY_AFT = 0x0400;
+						
+						public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_UNIT_LANG = 0x1000; // TODO
+						SYSTEM_SIGNAL_CUSTOM_FLAGS_PERMISSION = 0x2000; // signalInterface.saveToDb(session)
+						SYSTEM_SIGNAL_CUSTOM_FLAGS_DISPLAY = 0x4000;
+				 */
+				
+				if ((customInfo & BPPacket.CUSTOM_SIGNAL_TABLE_FLAGS_DISPLAY) != 0) {
+					signalInfoHbn.setDisplay(systemSignalCustomInfoUnitTmp.isDisplay());
 				}
 				
 				if ((customInfo & BPPacket.SYSTEM_SIGNAL_CUSTOM_FLAGS_ENUM_LANG) != 0) {

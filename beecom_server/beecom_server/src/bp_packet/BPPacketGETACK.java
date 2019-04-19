@@ -41,9 +41,15 @@ import java.util.List;
 public class BPPacketGETACK extends BPPacket {
 	
 	public static final int RET_CODE_OK = 0x00;
-	public static final int RET_CODE_FLAGS_INVALID = 0x01;
+	public static final int RET_CODE_VRB_HEADER_FLAG_ERR = 0x01;
 	public static final int RET_CODE_SIG_MAP_UNCHECK = 0x02;
 	public static final int RET_CODE_SIG_ID_INVALID = 0x03;
+	public static final int RET_CODE_SIGNAL_NOT_SUPPORT_ERR = 0x03;
+	public static final int RET_CODE_SIGNAL_REPEAT_ERR = 0x05;
+	public static final int RET_CODE_GET_SN_PERMISSION_DENY_ERR = 0x06;
+	public static final int RET_CODE_ACCESS_DEV_PERMISSION_DENY_ERR = 0x07;
+	public static final int RET_CODE_OFF_LINE_ERR = 0x08;
+	public static final int RET_CODE_SERVER_ERROR = 0xFF;
 	
 	private static final Logger logger = LoggerFactory.getLogger(BPPacketGETACK.class); 
 	

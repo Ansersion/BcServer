@@ -21,6 +21,7 @@ import db.SignalInfoUnitInterface;
 import db.SystemSignalCustomInfoUnit;
 import db.SystemSignalInfoUnit;
 import other.Util;
+import sys_sig_table.BPSysSigTable;
 
 public class BPDeviceSession extends BPSession {
 	private static final Logger logger = LoggerFactory.getLogger(BPDeviceSession.class); 
@@ -130,16 +131,8 @@ public class BPDeviceSession extends BPSession {
 	public void setSignalId2InfoUnitMap(Map<Integer, SignalInfoUnitInterface> signalId2InfoUnitMap) {
 		this.signalId2InfoUnitMap = signalId2InfoUnitMap;
 	}
-
-	public boolean isSigMapCheckOK() {
-		return sigMapCheckOK;
-	}
-
-	public void setSigMapCheckOK(boolean sigMapCheckOK) {
-		this.sigMapCheckOK = sigMapCheckOK;
-	}
 	
-	public void parseSignalInfoUnitInterfaceMap(List<Integer> systemSignalEnabledList, List<SystemSignalCustomInfoUnit> systemSignalCustomInfoUnitList, List<CustomSignalInfoUnit> customSignalInfoUnitList) {
+	public Map<Integer, SignalInfoUnitInterface> parseSignalInfoUnitInterfaceMap(List<Integer> systemSignalEnabledList, List<SystemSignalCustomInfoUnit> systemSignalCustomInfoUnitList, List<CustomSignalInfoUnit> customSignalInfoUnitList) {
 		Map<Integer, SignalInfoUnitInterface> signalId2InfoUnitMapTmp = new HashMap<>();
 		
 		try {
@@ -147,7 +140,12 @@ public class BPDeviceSession extends BPSession {
 			Integer signalId;
 			while (itInteger.hasNext()) {
 				signalId = itInteger.next() + BPPacket.SYS_SIG_START_ID;
-				signalId2InfoUnitMapTmp.put(signalId, new SystemSignalInfoUnit(signalId));
+				SystemSignalInfoUnit tmp = BPSysSigTable.getSysSigTableInstance().createNewSystemSignalInfoUnit(signalId);
+				if(null == tmp) {
+					logger.error("Inner Error: null == BPSysSigTable.getSysSigTableInstance().createNewSystemSignalInfoUnit({})", signalId);
+					continue;
+				}
+				signalId2InfoUnitMapTmp.put(signalId, tmp);
 			}
 			Iterator<SystemSignalCustomInfoUnit> itSystemSignalCustomInfoUnit = systemSignalCustomInfoUnitList
 					.iterator();
@@ -155,7 +153,12 @@ public class BPDeviceSession extends BPSession {
 			int customFlags;
 			while (itSystemSignalCustomInfoUnit.hasNext()) {
 				systemSignalCustomInfoUnit = itSystemSignalCustomInfoUnit.next();
-				SystemSignalInfoUnit systemSignalInfoUnit = (SystemSignalInfoUnit)signalId2InfoUnitMapTmp.get(systemSignalCustomInfoUnit.getSysSigId());
+				signalId = systemSignalCustomInfoUnit.getSysSigId();
+				if(!signalId2InfoUnitMapTmp.containsKey(signalId)) {
+					logger.error("Inner Error: system custom signal map info error({})", systemSignalCustomInfoUnit.getSysSigId());
+					continue;
+				}
+				SystemSignalInfoUnit systemSignalInfoUnit = (SystemSignalInfoUnit)signalId2InfoUnitMapTmp.get(signalId);
 				customFlags = systemSignalCustomInfoUnit.getCustomFlags();
 				systemSignalInfoUnit.setCustomFlags(customFlags);
 				systemSignalInfoUnit.setSystemSignalInterface(systemSignalCustomInfoUnit.getSignalInterface());
@@ -207,7 +210,7 @@ public class BPDeviceSession extends BPSession {
 			Util.logger(logger, Util.ERROR, e);
 		}
 		
-		setSignalId2InfoUnitMap(signalId2InfoUnitMapTmp);
+		return signalId2InfoUnitMapTmp;
 	}
 	
 	public void reportSignalValue2UserClient(byte[] reportData) {

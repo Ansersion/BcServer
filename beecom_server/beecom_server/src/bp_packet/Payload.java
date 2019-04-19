@@ -275,7 +275,7 @@ public class Payload {
 			SignalInfoUnitInterface signalInfoUnitInterfaceTmp;
 			if (null == signalInfoUnitInterfaceMap) {
 				if (null != bpError) {
-					bpError.setErrorCode(BPPacketGET.RET_CODE_INNER_ERR);
+					bpError.setErrorCode(BPPacketGETACK.RET_CODE_SERVER_ERROR);
 				}
 				return ret;
 			}
@@ -284,7 +284,7 @@ public class Payload {
 				int sysSigId = it.next();
 				if (sysSigId < BPPacket.SYS_SIG_START_ID || sysSigId > BPPacket.MAX_SIG_ID) {
 					if (null != bpError) {
-						bpError.setErrorCode(BPPacketGET.RET_CODE_SIGNAL_NOT_SUPPORT_ERR);
+						bpError.setErrorCode(BPPacketGETACK.RET_CODE_SIGNAL_NOT_SUPPORT_ERR);
 						bpError.setSigId(sysSigId);
 					}
 					return ret;
@@ -292,14 +292,14 @@ public class Payload {
 
 				if (!signalInfoUnitInterfaceMap.containsKey(sysSigId)) {
 					if (null != bpError) {
-						bpError.setErrorCode(BPPacketGET.RET_CODE_SIGNAL_NOT_SUPPORT_ERR);
+						bpError.setErrorCode(BPPacketGETACK.RET_CODE_SIGNAL_NOT_SUPPORT_ERR);
 						bpError.setSigId(sysSigId);
 					}
 					return ret;
 				}
 				if (sysSigValMap.containsKey(sysSigId)) {
 					if (null != bpError) {
-						bpError.setErrorCode(BPPacketGET.RET_CODE_SIGNAL_REPEAT_ERR);
+						bpError.setErrorCode(BPPacketGETACK.RET_CODE_SIGNAL_REPEAT_ERR);
 						bpError.setSigId(sysSigId);
 					}
 					return ret;
@@ -317,7 +317,7 @@ public class Payload {
 			Util.logger(logger, Util.ERROR, e);
 			ret = false;
 			if(null != bpError) {
-				bpError.setErrorCode(BPPacketGET.RET_CODE_INNER_ERR);
+				bpError.setErrorCode(BPPacketGETACK.RET_CODE_SERVER_ERROR);
 			}
 		}
 		return ret;
@@ -337,7 +337,7 @@ public class Payload {
 			int sigId = it.next();
 			if(sigId < 0 || sigId > BPPacket.MAX_SIG_ID) {
 				if(null != bpError) {
-					bpError.setErrorCode(BPPacketGET.RET_CODE_SIGNAL_NOT_SUPPORT_ERR);
+					bpError.setErrorCode(BPPacketGETACK.RET_CODE_SIGNAL_NOT_SUPPORT_ERR);
 					bpError.setSigId(sigId);
 				}
 				return ret;
@@ -345,14 +345,14 @@ public class Payload {
 			
 			if(!customSignalValueMap.containsKey(sigId)) {
 				if(null != bpError) {
-					bpError.setErrorCode(BPPacketGET.RET_CODE_SIGNAL_NOT_SUPPORT_ERR);
+					bpError.setErrorCode(BPPacketGETACK.RET_CODE_SIGNAL_NOT_SUPPORT_ERR);
 					bpError.setSigId(sigId);
 				}
 				return ret;
 			}
 			if(sigValMap.containsKey(sigId)) {
 				if(null != bpError) {
-					bpError.setErrorCode(BPPacketGET.RET_CODE_SIGNAL_REPEAT_ERR);
+					bpError.setErrorCode(BPPacketGETACK.RET_CODE_SIGNAL_REPEAT_ERR);
 					bpError.setSigId(sigId);
 				}
 				return ret;

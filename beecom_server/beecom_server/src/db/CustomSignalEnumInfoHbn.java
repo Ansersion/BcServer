@@ -1,10 +1,16 @@
 package db;
 
 import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import bc_server.BcDecoder;
 import bp_packet.BPPacket;
+import other.Util;
 
 public class CustomSignalEnumInfoHbn extends SignalInterface {
+	private static final Logger logger = LoggerFactory.getLogger(CustomSignalEnumInfoHbn.class); 
+	
     private Long id;
     private Short permission;
     private Integer defVal;
@@ -74,6 +80,7 @@ public class CustomSignalEnumInfoHbn extends SignalInterface {
 		try {
 			ret = (Long)session.save(this);
 		} catch(Exception e) {
+			Util.logger(logger, Util.ERROR, e);
 			ret = -1L;
 		}
 		return ret;

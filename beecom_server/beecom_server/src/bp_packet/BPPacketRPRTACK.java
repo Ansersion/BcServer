@@ -12,12 +12,16 @@ import other.CrcChecksum;
 public class BPPacketRPRTACK extends BPPacket {
 	
 	public static final int RET_CODE_OK = 0x00;
-	public static final int RET_CODE_FLAGS_INVALID = 0x01;
+	public static final int RET_CODE_VRB_HEADER_FLAG_ERR = 0x01;
 	public static final int RET_CODE_SIG_MAP_UNCHECK = 0x02;
 	public static final int RET_CODE_SIG_ID_INVALID = 0x03;
 	public static final int RET_CODE_SIG_VAL_INVALID = 0x04;
+	public static final int RET_CODE_SIGNAL_MAP_CHECKSUM_ERR = 0x05;
+	public static final int RET_CODE_SIGNAL_MAP_DAMAGED_ERR = 0x07;
+	public static final int RET_CODE_SIGNAL_MAP_ERR = 0x08;
 	
 	public static final int RET_CODE_SERVER_ERROR = 0xFF;
+	
 	
 	
 	protected BPPacketRPRTACK() {

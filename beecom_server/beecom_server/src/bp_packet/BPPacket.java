@@ -83,9 +83,12 @@ public class BPPacket implements BPPacketInterface {
 	public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_VALUE_MAX = 0x0020;
 	public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_VALUE_DEF = 0x0040;
 	public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM = 0x0080;
-	public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM_CLASS = 0x0100;
-	public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM_DELAY_BEF = 0x0200;
-	public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM_DELAY_AFT = 0x0400;
+	public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM_CLASS = 0x0200;
+	public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM_DELAY_BEF = 0x0400;
+	public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM_DELAY_AFT = 0x0800;
+	public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_UNIT_LANG = 0x1000;
+	public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_PERMISSION = 0x2000;
+	public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_DISPLAY = 0x4000;
 	
 	public static final short CUSTOM_SIGNAL_TABLE_FLAGS_DISPLAY = 0x0001;
 	public static final short CUSTOM_SIGNAL_TABLE_FLAGS_ALARM = 0x0002;
