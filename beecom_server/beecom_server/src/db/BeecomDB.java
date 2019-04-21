@@ -1021,35 +1021,10 @@ public class BeecomDB {
     		}catch(RuntimeException rbe){
     			Util.logger(logger, Util.ERROR, rbe);
     		}
+			serverChainHbn = null;
 		}
 		
 		return serverChainHbn;
-	}
-	
-	public List<SignalInfoHbn> getSysSigMapLst(long uniqDeviceId) {
-		/*
-		if(uniqDeviceId < 0) {
-			return null;
-		}
-
-		Transaction tx = null;
-		List<Integer> sysSigLst = null;
-		try (Session session = sessionFactory.openSession()) {
-			tx = session.beginTransaction();
-		    sysSigLst = session  
-		            .createQuery("select signalId from SignalInfoHbn where devId = ? and signalId > 57344")
-		            .setParameter(0, uniqDeviceId).list();
-		    
-			tx.commit();
-		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
-		}
-		return sysSigLst;
-		*/
-		return getSignalInfoHbnLst(uniqDeviceId, BPPacket.SYS_SIG_START_ID, BPPacket.MAX_SIG_ID);
 	}
 	
 	public List<SystemSignalInfoUnit> getSystemSignalUnitLst(long uniqDeviceId, List<SystemSignalInfoUnit> systemSignalInfoUnitLst) {
@@ -1088,8 +1063,13 @@ public class BeecomDB {
 					SignalInterface systemSignalInterface = null;
 					if(!ifConfigDef) {
 						BPSysSigTable sysSigTab = BPSysSigTable.getSysSigTableInstance();
+						SysSigInfo sysSigInfo = sysSigTab.getSysSigInfo(signalId - BPPacket.SYS_SIG_START_ID);
+						if(null == sysSigInfo) {
+							logger.error("Inner error: null == sysSigInfo->{}", signalId);
+							return null;
+						}
 						
-						switch(sysSigTab.getSysSigInfo(signalId - BPPacket.SYS_SIG_START_ID).getValType()) {
+						switch(sysSigInfo.getValType()) {
 							case BPPacket.VAL_TYPE_UINT32:
 								try (Session session = sessionFactory.openSession()) {
 									systemSignalInterface = (SystemSignalU32InfoHbn)session.createQuery("from SystemSignalU32InfoHbn where systemSignalId = :system_signal_id")
@@ -1554,6 +1534,7 @@ public class BeecomDB {
 									.createQuery(
 											"from CustomSignalEnumInfoHbn where customSignalId = :custom_signal_id")
 									.setParameter("custom_signal_id", customSignalInfoHbn.getId()).uniqueResult();
+							// cusSignalEnumLangMap = getCustomSignalEnumLangMap(customSignalInfoHbn.getId(), langSupportMask);
 
 						} catch (Exception e) {
 							Util.logger(logger, Util.ERROR, e);

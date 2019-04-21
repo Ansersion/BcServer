@@ -12,5 +12,7 @@ public class BPLanguageId {
 	public static final int RUSSIAN = 0x04; 
 	public static final int ARABIC = 0x03; 
 	public static final int SPANISH = 0x02; 
+	
+	public static final int STANDARD_ALL_LANG_MASK = 0xFE;
 
 }

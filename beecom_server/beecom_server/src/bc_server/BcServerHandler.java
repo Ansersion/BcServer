@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -34,6 +35,7 @@ import bp_packet.BPSession;
 import bp_packet.BPUserSession;
 import bp_packet.Payload;
 import bp_packet.VariableHeader;
+import db.BPLanguageId;
 import db.BeecomDB;
 import db.CustomSignalInfoUnit;
 import db.DevInfoHbn;
@@ -42,6 +44,7 @@ import db.ServerChainHbn;
 import db.SignalInfoUnitInterface;
 import db.SnInfoHbn;
 import db.SystemSignalCustomInfoUnit;
+import db.SystemSignalInfoUnit;
 import db.UserInfoUnit;
 import db.BeecomDB.LoginErrorEnum;
 import other.BPError;
@@ -238,7 +241,6 @@ public class BcServerHandler extends IoHandlerAdapter {
 				beecomDb.getUserId2SessionMap().put(userInfoUnit.getUserInfoHbn().getId(), bpSession);
 				beecomDb.updateUserDevRel(userInfoUnit.getUserInfoHbn());
 				packAck.getPld().setServerChainHbn(null);
-				// TODO: PUSH all unchecked signal values;->DESIGN(2019.04.18): APP to get all all signal values on duty; 
 
 			} else if (devClntFlag) {
 				BeecomDB.LoginErrorEnum loginErrorEnum;
@@ -325,6 +327,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 						deviceInfoUnit.getDevInfoHbn().getAdminId(), deviceInfoUnit.getDevInfoHbn().getSnId());
 				bpSession.setEncryptionType(decodedPack.getFxHead());
 				bpSession.setCrcType(decodedPack.getFxHead());
+				bpSession.setSessionReady(false);
 				BeecomDB.getInstance().getDevUniqId2SessionMap().put(devUniqId, bpSession);
 				session.setAttribute(SESS_ATTR_BP_SESSION, bpSession);
 				beecomDb.updateUserDevRel(deviceInfoUnit.getDevInfoHbn());
@@ -727,6 +730,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 			return;
 		}
 		
+		BeecomDB beecomDb = BeecomDB.getInstance();
 		VariableHeader vrb = decodedPack.getVrbHead();
 		VariableHeader vrbAck = packAck.getVrbHead();
 		Payload pld = decodedPack.getPld();
@@ -753,12 +757,33 @@ public class BcServerHandler extends IoHandlerAdapter {
 			 * Check the signal map checksum. 
 			 * If error occurred, then the device needs to report its new signal map
 			 */
-			if (!BeecomDB.getInstance().checkSignalMapChksum(uniqDevId, pld.getSigMapCheckSum())) {
+			if (!beecomDb.checkSignalMapChksum(uniqDevId, pld.getSigMapCheckSum())) {
 				vrbAck.setRetCode(BPPacketRPRTACK.RET_CODE_SIGNAL_MAP_CHECKSUM_ERR);
 			} else {
-				if(BeecomDB.getInstance().getSignalInfoUnitInterfaceMap(bpDeviceSession)) {
+				if(beecomDb.getSignalInfoUnitInterfaceMap(bpDeviceSession)) {
 					bpDeviceSession.setSessionReady(true);
-					/* TODO: update signal info of BPDeviceSession */
+					List<SystemSignalInfoUnit> systemSignalInfoUnitTmp = new ArrayList<>();
+					systemSignalInfoUnitTmp = beecomDb.getSystemSignalUnitLst(uniqDevId, systemSignalInfoUnitTmp);
+					List<CustomSignalInfoUnit> customSignalInfoUnitTmp = new ArrayList<>();
+					customSignalInfoUnitTmp = beecomDb.getCustomSignalUnitLst(uniqDevId, customSignalInfoUnitTmp, BPLanguageId.STANDARD_ALL_LANG_MASK);
+					Map<Integer, SignalInfoUnitInterface> signalId2InfoUnitMap = new HashMap<>();
+					int size;
+					SignalInfoUnitInterface signalInfoUnitInterfaceTmp;
+					if(null != systemSignalInfoUnitTmp) {
+						size = systemSignalInfoUnitTmp.size();
+						for(int i = 0; i < size; i++) {
+							signalInfoUnitInterfaceTmp = systemSignalInfoUnitTmp.get(i);
+							signalId2InfoUnitMap.put(signalInfoUnitInterfaceTmp.getSignalId(), signalInfoUnitInterfaceTmp);
+						}
+					}
+					if(null != customSignalInfoUnitTmp) {
+						size = customSignalInfoUnitTmp.size();
+						for(int i = 0; i < size; i++) {
+							signalInfoUnitInterfaceTmp = customSignalInfoUnitTmp.get(i);
+							signalId2InfoUnitMap.put(signalInfoUnitInterfaceTmp.getSignalId(), signalInfoUnitInterfaceTmp);
+						}
+					}
+					bpDeviceSession.setSignalId2InfoUnitMap(signalId2InfoUnitMap);
 				} else {
 					vrbAck.setRetCode(BPPacketRPRTACK.RET_CODE_SIGNAL_MAP_DAMAGED_ERR);
 				}
@@ -825,6 +850,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 			 * set the signal id and its info map 
 			 * */
 			Map<Integer, SignalInfoUnitInterface> signalId2InfoUnitMap = bpDeviceSession.parseSignalInfoUnitInterfaceMap(systemSignalEnabledList, systemSignalCustomInfoUnit, customSignalInfoUnitList);
+			bpDeviceSession.setSessionReady(true);
 			bpDeviceSession.setSignalId2InfoUnitMap(signalId2InfoUnitMap);
 			return;
 		}
