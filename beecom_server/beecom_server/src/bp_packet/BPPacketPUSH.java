@@ -76,13 +76,26 @@ public class BPPacketPUSH extends BPPacket {
 			}
 		} else if(vrb.getSigValFlag()) {
 			byte[] data = pld.getRelayData();
+			Map<Integer, Map.Entry<Byte, Object>> sigValMap = pld.getSigValMap();
 			long uniqDevId = pld.getUniqDevId();
 			buffer.putUnsignedInt(uniqDevId);
-			if(null == data) {
+			if(null != data) {
+				buffer.put(data);
+			} else if(null != sigValMap) {
+				buffer.putUnsigned(sigValMap.size());
+				Iterator<Map.Entry<Integer, Map.Entry<Byte, Object>>> it = sigValMap.entrySet().iterator();
+				while(it.hasNext()) {
+					Map.Entry<Integer, Map.Entry<Byte, Object>> entry = it.next();
+					if (!assembleSignalValue(buffer, entry.getKey(), entry.getValue().getKey(), (byte) 0,
+							entry.getValue().getValue())) {
+						return false;
+					}
+				}
+			} else {
 				buffer.putUnsigned(0);
 				return false;
 			}
-			buffer.put(data);
+		
 		} else {
 			/* deprecated */
 			buffer.putUnsignedShort(pld.getUniqDevId());

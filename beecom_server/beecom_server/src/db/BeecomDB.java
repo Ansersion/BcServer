@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,6 +44,7 @@ public class BeecomDB {
 	private static final Logger logger = LoggerFactory.getLogger(BcDecoder.class); 
 	private static final Long INVALID_LANGUAGE_ID = 0L;
 	private static final Long INVALID_SIG_MAP_CHECKSUM = 0x7FFFFFFFFFFFFFFFL;
+	private static final int DEVICE_LOAD = 10000;
 	
 	static BeecomDB bcDb = null;
 
@@ -64,6 +67,7 @@ public class BeecomDB {
 	private static Map<String, String> dbConfigMap;
 	
 	private Map<Long, BPSession> devUniqId2SessionMap;
+	private Lock devUniqId2SessionMapLock;
 	private Map<String, BPSession> userName2SessionMap;
 	private Map<Long, BPSession> userId2SessionMap;
 	/* maybe not always be updated, dynamically updated */
@@ -103,6 +107,7 @@ public class BeecomDB {
 		// String sql;
 		
 		devUniqId2SessionMap = new HashMap<>();
+		devUniqId2SessionMapLock = new ReentrantLock();
 		userName2SessionMap = new HashMap<>();
 		userId2SessionMap = new HashMap<>();
 
@@ -578,120 +583,8 @@ public class BeecomDB {
 		if(signalInterface.getValType() != sigType) {
 			return false;
 		}
-		boolean ret = true;
 
-		try {
-			switch (signalInterface.getValType()) {
-			case BPPacket.VAL_TYPE_UINT32:
-			{
-				CustomSignalU32InfoHbn customSignalU32InfoHbn = (CustomSignalU32InfoHbn)signalInterface;
-				Long v = (Long)value;
-				if(customSignalU32InfoHbn.getMaxVal() != BPPacket.VAL_U32_UNLIMIT && v > customSignalU32InfoHbn.getMaxVal()) {
-					ret = false;
-					break;
-				}
-				if(customSignalU32InfoHbn.getMinVal() != BPPacket.VAL_U32_UNLIMIT && v < customSignalU32InfoHbn.getMinVal()) {
-					ret = false;
-					break;
-				}
-				
-				break;
-			}
-			case BPPacket.VAL_TYPE_UINT16:
-			{
-				CustomSignalU16InfoHbn customSignalU16InfoHbn = (CustomSignalU16InfoHbn)signalInterface;
-				Integer v = (Integer)value;
-				if(customSignalU16InfoHbn.getMaxVal() != BPPacket.VAL_U16_UNLIMIT && v > customSignalU16InfoHbn.getMaxVal()) {
-					ret = false;
-					break;
-				}
-				if(customSignalU16InfoHbn.getMinVal() != BPPacket.VAL_U16_UNLIMIT && v < customSignalU16InfoHbn.getMinVal()) {
-					ret = false;
-					break;
-				}
-
-				break;
-			}
-			case BPPacket.VAL_TYPE_IINT32:
-			{
-				CustomSignalI32InfoHbn customSignalI32InfoHbn = (CustomSignalI32InfoHbn)signalInterface;
-				Integer v = (Integer)value;
-				if(customSignalI32InfoHbn.getMaxVal() != BPPacket.VAL_I32_UNLIMIT && v > customSignalI32InfoHbn.getMaxVal()) {
-					ret = false;
-					break;
-				}
-				if(customSignalI32InfoHbn.getMinVal() != BPPacket.VAL_I32_UNLIMIT && v < customSignalI32InfoHbn.getMinVal()) {
-					ret = false;
-					break;
-				}
-
-				break;
-			}
-			case BPPacket.VAL_TYPE_IINT16:
-			{
-				CustomSignalI16InfoHbn customSignalI16InfoHbn = (CustomSignalI16InfoHbn)signalInterface;
-				Short v = (Short)value;
-				if(customSignalI16InfoHbn.getMaxVal() != BPPacket.VAL_I16_UNLIMIT && v > customSignalI16InfoHbn.getMaxVal()) {
-					ret = false;
-					break;
-				}
-				if(customSignalI16InfoHbn.getMinVal() != BPPacket.VAL_I16_UNLIMIT && v < customSignalI16InfoHbn.getMinVal()) {
-					ret = false;
-					break;
-				}
-
-				break;
-			}
-			case BPPacket.VAL_TYPE_ENUM:
-			{
-				CustomSignalEnumInfoHbn customSignalEnumInfoHbn = (CustomSignalEnumInfoHbn)signalInterface;
-				Integer v = (Integer)value;
-				List<Integer> enumKeysLst = getCustomSignalEnumLangInfoEnumKeysLst(customSignalEnumInfoHbn);
-				ret = enumKeysLst.contains(v);
-
-				break;
-			}
-			case BPPacket.VAL_TYPE_FLOAT:
-			{
-				CustomSignalFloatInfoHbn customSignalFloatInfoHbn = (CustomSignalFloatInfoHbn)signalInterface;
-				Float v = (Float)value;
-				if(customSignalFloatInfoHbn.getMaxVal() != BPPacket.VAL_FLOAT_UNLIMIT && v > customSignalFloatInfoHbn.getMaxVal()) {
-					ret = false;
-					break;
-				}
-				if(customSignalFloatInfoHbn.getMinVal() != BPPacket.VAL_FLOAT_UNLIMIT && v < customSignalFloatInfoHbn.getMinVal()) {
-					ret = false;
-					break;
-				}
-
-				break;
-			}
-			case BPPacket.VAL_TYPE_STRING:
-			{
-				// CustomSignalStringInfoHbn customSignalStringInfoHbn = (CustomSignalStringInfoHbn)signalInterface;
-				String v = (String)value;
-				if(v.length() > 0xFF) {
-					ret = false;
-				}
-
-				break;
-			}
-			case BPPacket.VAL_TYPE_BOOLEAN:
-			{
-				// CustomSignalU16InfoHbn customSignalU16InfoHbn = (CustomSignalU16InfoHbn)signalInterface;
-				// Boolean v = (Boolean)value;
-				break;
-			}
-			default:
-				ret = false;
-			}
-		} catch (Exception e) {
-			Util.logger(logger, Util.ERROR, e);
-			ret = false;
-		}
-		
-		return ret;
-		
+		return signalInterface.checkSignalValueUnformed(value);
 	}
 	
 	private boolean checkSystemSignalValueUnformed(SysSigInfo sysSigInfo, Object value)
@@ -904,8 +797,74 @@ public class BeecomDB {
 		}
 	}
 
+	/*
 	public Map<Long, BPSession> getDevUniqId2SessionMap() {
 		return devUniqId2SessionMap;
+	}
+	*/
+	
+	public int putDevUnitId2SessioinMap(long uniqDevId, BPSession bpSession) {
+		int ret = 0;
+		try {
+			devUniqId2SessionMapLock.lock();
+			if(devUniqId2SessionMap.containsKey(uniqDevId)) {
+				/* already online */
+				return -1;
+			}
+			if(devUniqId2SessionMap.size() > DEVICE_LOAD) {
+				/* load ceiling */
+				return -2;
+			}
+			devUniqId2SessionMap.put(uniqDevId, bpSession);
+		} catch(Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+		} finally {
+			devUniqId2SessionMapLock.unlock();
+		}
+		
+		return ret;
+	}
+	
+	public boolean isDeviceOnline(long uniqDevId) {
+		boolean ret = false;
+		try {
+			devUniqId2SessionMapLock.lock();
+			if(devUniqId2SessionMap.containsKey(uniqDevId)) {
+				ret = true;
+			}
+		} catch(Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+		} finally {
+			devUniqId2SessionMapLock.unlock();
+		}
+		
+		return ret;
+	}
+	
+	public BPDeviceSession getBPDeviceSession(long uniqDevId) {
+		BPDeviceSession ret = null;
+		try {
+			devUniqId2SessionMapLock.lock();
+			if(devUniqId2SessionMap.containsKey(uniqDevId)) {
+				ret = (BPDeviceSession)devUniqId2SessionMap.get(uniqDevId);
+			}
+		} catch(Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+		} finally {
+			devUniqId2SessionMapLock.unlock();
+		}
+		return ret;
+	}
+	
+	public void removeBPDeviceSession(long uniqDevId) {
+		try {
+			devUniqId2SessionMapLock.lock();
+			devUniqId2SessionMap.remove(uniqDevId);
+		} catch(Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+		} finally {
+			devUniqId2SessionMapLock.unlock();
+		}
 	}
 
 	public Map<String, BPSession> getUserName2SessionMap() {
@@ -1069,99 +1028,17 @@ public class BeecomDB {
 							return null;
 						}
 						
-						switch(sysSigInfo.getValType()) {
-							case BPPacket.VAL_TYPE_UINT32:
-								try (Session session = sessionFactory.openSession()) {
-									systemSignalInterface = (SystemSignalU32InfoHbn)session.createQuery("from SystemSignalU32InfoHbn where systemSignalId = :system_signal_id")
-								            .setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
-								    
-								} catch (Exception e) {
-									Util.logger(logger, Util.ERROR, e);
-									systemSignalInterface = null;
-								}
-							break;
-							case BPPacket.VAL_TYPE_UINT16:
-								try (Session session = sessionFactory.openSession()) {
-									systemSignalInterface = (SystemSignalU16InfoHbn)session.createQuery("from SystemSignalU16InfoHbn where systemSignalId = :system_signal_id")
-								            .setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
-								    
-								} catch (Exception e) {
-									Util.logger(logger, Util.ERROR, e);
-									systemSignalInterface = null;
-								}
-								
-							break;
-							case BPPacket.VAL_TYPE_IINT32:
-								try (Session session = sessionFactory.openSession()) {
-									systemSignalInterface = (SystemSignalI32InfoHbn)session.createQuery("from SystemSignalI32InfoHbn where systemSignalId = :system_signal_id")
-								            .setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
-								    
-								} catch (Exception e) {
-									Util.logger(logger, Util.ERROR, e);
-									systemSignalInterface = null;
-								}
-							break;
-							case BPPacket.VAL_TYPE_IINT16:
-								try (Session session = sessionFactory.openSession()) {
-									systemSignalInterface = (SystemSignalI16InfoHbn)session.createQuery("from SystemSignalI16InfoHbn where systemSignalId = :system_signal_id")
-								            .setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
-								    
-								} catch (Exception e) {
-									Util.logger(logger, Util.ERROR, e);
-									systemSignalInterface = null;
-								}
-							break;
-							case BPPacket.VAL_TYPE_ENUM:
-								try (Session session = sessionFactory.openSession()) {
-									SystemSignalEnumInfoHbn systemSignalEnumInfoHbn = (SystemSignalEnumInfoHbn)session.createQuery("from SystemSignalEnumInfoHbn where systemSignalId = :system_signal_id")
-								            .setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
-									if(null != systemSignalEnumInfoHbn) {
-										systemSignalEnumLangInfoList = session.createQuery("from SystemSignalEnumLangInfoHbn where sysSigEnmId=?0")
-									            .setParameter("0", systemSignalEnumInfoHbn.getId())
-									            .list();
-									}
-																	
-									systemSignalInterface = systemSignalEnumInfoHbn;   
-								} catch (Exception e) {
-									Util.logger(logger, Util.ERROR, e);
-									systemSignalInterface = null;
-								}
-							break;
-							case BPPacket.VAL_TYPE_FLOAT:
-								try (Session session = sessionFactory.openSession()) {
-									systemSignalInterface = (SystemSignalFloatInfoHbn)session.createQuery("from SystemSignalFloatInfoHbn where systemSignalId = :system_signal_id")
-								            .setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
-								    
-								} catch (Exception e) {
-									Util.logger(logger, Util.ERROR, e);
-									systemSignalInterface = null;
-								}
-							break;
-							case BPPacket.VAL_TYPE_STRING:
-								try (Session session = sessionFactory.openSession()) {
-									systemSignalInterface = (SystemSignalStringInfoHbn)session.createQuery("from SystemSignalStringInfoHbn where systemSignalId = :system_signal_id")
-								            .setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
-								    
-								} catch (Exception e) {
-									Util.logger(logger, Util.ERROR, e);
-									systemSignalInterface = null;
-								}
-							break;
-							case BPPacket.VAL_TYPE_BOOLEAN:
-								try (Session session = sessionFactory.openSession()) {
-									systemSignalInterface = (SystemSignalBooleanInfoHbn)session.createQuery("from SystemSignalBooleanInfoHbn where systemSignalId = :system_signal_id")
-								            .setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
-								    
-								} catch (Exception e) {
-									Util.logger(logger, Util.ERROR, e);
-									systemSignalInterface = null;
-								}
-							break;
-							default:
-								return null;
+						systemSignalInterface = getSystemSignalInterface(systemSignalInfoHbn.getId(), sysSigInfo.getValType());
+						if(sysSigInfo.getValType() == BPPacket.VAL_TYPE_ENUM && null != systemSignalInterface) {
+							try (Session session = sessionFactory.openSession()) {
+							systemSignalEnumLangInfoList = session.createQuery("from SystemSignalEnumLangInfoHbn where sysSigEnmId=?0")
+						            .setParameter("0", systemSignalInterface.getId())
+						            .list();
+							} catch(Exception e) {
+								Util.logger(logger, Util.ERROR, e);
+								systemSignalEnumLangInfoList = null;
+							}
 						}
-
-						
 					}
 					systemSignalInfoUnitLst.add(new SystemSignalInfoUnit(signalId, ifNotifying, ifConfigDef, systemSignalEnumLangInfoList, systemSignalInterface));
 					break;
@@ -1482,103 +1359,7 @@ public class BeecomDB {
 						cusSignalEnumLangMap = getCustomSignalEnumLangMap(customSignalInfoHbn.getId(), langSupportMask);
 					}
 
-					switch (customSignalInfoHbn.getValType()) {
-					case BPPacket.VAL_TYPE_UINT32:
-						try (Session session = sessionFactory.openSession()) {
-							signalInterface = (CustomSignalU32InfoHbn) session
-									.createQuery("from CustomSignalU32InfoHbn where customSignalId = :custom_signal_id")
-									.setParameter("custom_signal_id", customSignalInfoHbn.getId()).uniqueResult();
-
-						} catch (Exception e) {
-							Util.logger(logger, Util.ERROR, e);
-							signalInterface = null;
-						}
-						break;
-					case BPPacket.VAL_TYPE_UINT16:
-						try (Session session = sessionFactory.openSession()) {
-							signalInterface = (CustomSignalU16InfoHbn) session
-									.createQuery("from CustomSignalU16InfoHbn where customSignalId = :custom_signal_id")
-									.setParameter("custom_signal_id", customSignalInfoHbn.getId()).uniqueResult();
-
-						} catch (Exception e) {
-							Util.logger(logger, Util.ERROR, e);
-							signalInterface = null;
-						}
-
-						break;
-					case BPPacket.VAL_TYPE_IINT32:
-						try (Session session = sessionFactory.openSession()) {
-							signalInterface = (CustomSignalI32InfoHbn) session
-									.createQuery("from CustomSignalI32InfoHbn where customSignalId = :custom_signal_id")
-									.setParameter("custom_signal_id", customSignalInfoHbn.getId()).uniqueResult();
-
-						} catch (Exception e) {
-							Util.logger(logger, Util.ERROR, e);
-							signalInterface = null;
-						}
-						break;
-					case BPPacket.VAL_TYPE_IINT16:
-						try (Session session = sessionFactory.openSession()) {
-							signalInterface = (CustomSignalI16InfoHbn) session
-									.createQuery("from CustomSignalI16InfoHbn where customSignalId = :custom_signal_id")
-									.setParameter("custom_signal_id", customSignalInfoHbn.getId()).uniqueResult();
-
-						} catch (Exception e) {
-							Util.logger(logger, Util.ERROR, e);
-							signalInterface = null;
-						}
-						break;
-					case BPPacket.VAL_TYPE_ENUM:
-						try (Session session = sessionFactory.openSession()) {
-							signalInterface = (CustomSignalEnumInfoHbn) session
-									.createQuery(
-											"from CustomSignalEnumInfoHbn where customSignalId = :custom_signal_id")
-									.setParameter("custom_signal_id", customSignalInfoHbn.getId()).uniqueResult();
-							// cusSignalEnumLangMap = getCustomSignalEnumLangMap(customSignalInfoHbn.getId(), langSupportMask);
-
-						} catch (Exception e) {
-							Util.logger(logger, Util.ERROR, e);
-							signalInterface = null;
-						}
-						break;
-					case BPPacket.VAL_TYPE_FLOAT:
-						try (Session session = sessionFactory.openSession()) {
-							signalInterface = (CustomSignalFloatInfoHbn) session
-									.createQuery(
-											"from CustomSignalFloatInfoHbn where customSignalId = :custom_signal_id")
-									.setParameter("custom_signal_id", customSignalInfoHbn.getId()).uniqueResult();
-
-						} catch (Exception e) {
-							Util.logger(logger, Util.ERROR, e);
-							signalInterface = null;
-						}
-						break;
-					case BPPacket.VAL_TYPE_STRING:
-						try (Session session = sessionFactory.openSession()) {
-							signalInterface = (CustomSignalStringInfoHbn) session
-									.createQuery(
-											"from CustomSignalStringInfoHbn where customSignalId = :custom_signal_id")
-									.setParameter("custom_signal_id", customSignalInfoHbn.getId()).uniqueResult();
-						} catch (Exception e) {
-							Util.logger(logger, Util.ERROR, e);
-							signalInterface = null;
-						}
-						break;
-					case BPPacket.VAL_TYPE_BOOLEAN:
-						try (Session session = sessionFactory.openSession()) {
-							signalInterface = (CustomSignalBooleanInfoHbn) session
-									.createQuery(
-											"from CustomSignalBooleanInfoHbn where customSignalId = :custom_signal_id")
-									.setParameter("custom_signal_id", customSignalInfoHbn.getId()).uniqueResult();
-
-						} catch (Exception e) {
-							Util.logger(logger, Util.ERROR, e);
-							signalInterface = null;
-						}
-						break;
-					default:
-						return null;
-					}
+					signalInterface = getCustomSignalInterface(customSignalInfoHbn.getId(), customSignalInfoHbn.getValType());
 
 					customSignalInfoUnitLst.add(new CustomSignalInfoUnit(signalId, ifNotifying, ifAlarm, signalInfoHbn.getAlmClass(), signalInfoHbn.getAlmDlyBef(), signalInfoHbn.getAlmDlyAft(), ifDisplay, cusSignalNameLangMap, cusSignalUnitLangMap, cusSignalGroupLangMap, cusSignalEnumLangMap, signalInterface));
 					break;
@@ -1627,120 +1408,34 @@ public class BeecomDB {
 					}
 					SignalInterface systemSignalInterface = null;
 					BPSysSigTable sysSigTab = BPSysSigTable.getSysSigTableInstance();
-
-					switch (sysSigTab.getSysSigInfo(signalId - BPPacket.SYS_SIG_START_ID).getValType()) {
-					case BPPacket.VAL_TYPE_UINT32:
+					SysSigInfo sysSigInfo = sysSigTab.getSysSigInfo(signalId - BPPacket.SYS_SIG_START_ID);
+					if(null == sysSigInfo) {
+						return null;
+					}
+					
+					systemSignalInterface = getSystemSignalInterface(systemSignalInfoHbn.getId(), sysSigInfo.getValType());
+					if ((systemSignalInfoHbn.getCustomFlags() & BPPacket.SYSTEM_SIGNAL_CUSTOM_FLAGS_ENUM_LANG) != 0) {
 						try (Session session = sessionFactory.openSession()) {
-							systemSignalInterface = (SystemSignalU32InfoHbn) session
-									.createQuery("from SystemSignalU32InfoHbn where systemSignalId = :system_signal_id")
-									.setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
-
-						} catch (Exception e) {
-							Util.logger(logger, Util.ERROR, e);
-							systemSignalInterface = null;
-						}
-						break;
-					case BPPacket.VAL_TYPE_UINT16:
-						try (Session session = sessionFactory.openSession()) {
-							systemSignalInterface = (SystemSignalU16InfoHbn) session
-									.createQuery("from SystemSignalU16InfoHbn where systemSignalId = :system_signal_id")
-									.setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
-
-						} catch (Exception e) {
-							Util.logger(logger, Util.ERROR, e);
-							systemSignalInterface = null;
-						}
-
-						break;
-					case BPPacket.VAL_TYPE_IINT32:
-						try (Session session = sessionFactory.openSession()) {
-							systemSignalInterface = (SystemSignalI32InfoHbn) session
-									.createQuery("from SystemSignalI32InfoHbn where systemSignalId = :system_signal_id")
-									.setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
-
-						} catch (Exception e) {
-							Util.logger(logger, Util.ERROR, e);
-							systemSignalInterface = null;
-						}
-						break;
-					case BPPacket.VAL_TYPE_IINT16:
-						try (Session session = sessionFactory.openSession()) {
-							systemSignalInterface = (SystemSignalI16InfoHbn) session
-									.createQuery("from SystemSignalI16InfoHbn where systemSignalId = :system_signal_id")
-									.setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
-
-						} catch (Exception e) {
-							Util.logger(logger, Util.ERROR, e);
-							systemSignalInterface = null;
-						}
-						break;
-					case BPPacket.VAL_TYPE_ENUM:
-						try (Session session = sessionFactory.openSession()) {
-							systemSignalInterface = (SystemSignalEnumInfoHbn) session
-									.createQuery(
-											"from SystemSignalEnumInfoHbn where systemSignalId = :system_signal_id")
-									.setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
-
-							if ((systemSignalInfoHbn.getCustomFlags()
-									& BPPacket.SYSTEM_SIGNAL_CUSTOM_FLAGS_ENUM_LANG) != 0) {
-								List<SystemSignalEnumLangInfoHbn> systemSignalEnumLangInfoHbnList = session
-										.createQuery(
-												"from SystemSignalEnumLangInfoHbn where sysSigEnmId = :sys_sig_enm_id")
-										.setParameter("sys_sig_enm_id", systemSignalInterface.getId()).list();
-								if(null != systemSignalEnumLangInfoHbnList && !systemSignalEnumLangInfoHbnList.isEmpty()) {
-									int size = systemSignalEnumLangInfoHbnList.size();
-									enumLangMap = new HashMap<>();
-									SystemSignalEnumLangInfoHbn systemSignalEnumLangInfoHbnTmp;
-									for(int i = 0; i < size; i++) {
-										systemSignalEnumLangInfoHbnTmp = systemSignalEnumLangInfoHbnList.get(i);
-										enumLangMap.put(systemSignalEnumLangInfoHbnTmp.getEnumKey(), systemSignalEnumLangInfoHbnTmp.getEnumVal());
-									}
+							List<SystemSignalEnumLangInfoHbn> systemSignalEnumLangInfoHbnList = session
+									.createQuery("from SystemSignalEnumLangInfoHbn where sysSigEnmId = :sys_sig_enm_id")
+									.setParameter("sys_sig_enm_id", systemSignalInterface.getId()).list();
+							if (null != systemSignalEnumLangInfoHbnList && !systemSignalEnumLangInfoHbnList.isEmpty()) {
+								int size = systemSignalEnumLangInfoHbnList.size();
+								enumLangMap = new HashMap<>();
+								SystemSignalEnumLangInfoHbn systemSignalEnumLangInfoHbnTmp;
+								for (int i = 0; i < size; i++) {
+									systemSignalEnumLangInfoHbnTmp = systemSignalEnumLangInfoHbnList.get(i);
+									enumLangMap.put(systemSignalEnumLangInfoHbnTmp.getEnumKey(),
+											systemSignalEnumLangInfoHbnTmp.getEnumVal());
 								}
 							}
 						} catch (Exception e) {
 							Util.logger(logger, Util.ERROR, e);
 							systemSignalInterface = null;
 						}
-						break;
-					case BPPacket.VAL_TYPE_FLOAT:
-						try (Session session = sessionFactory.openSession()) {
-							systemSignalInterface = (SystemSignalFloatInfoHbn) session
-									.createQuery(
-											"from SystemSignalFloatInfoHbn where systemSignalId = :system_signal_id")
-									.setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
-
-						} catch (Exception e) {
-							Util.logger(logger, Util.ERROR, e);
-							systemSignalInterface = null;
-						}
-						break;
-					case BPPacket.VAL_TYPE_STRING:
-						try (Session session = sessionFactory.openSession()) {
-							systemSignalInterface = (SystemSignalStringInfoHbn) session
-									.createQuery(
-											"from SystemSignalStringInfoHbn where systemSignalId = :system_signal_id")
-									.setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
-
-						} catch (Exception e) {
-							Util.logger(logger, Util.ERROR, e);
-							systemSignalInterface = null;
-						}
-						break;
-					case BPPacket.VAL_TYPE_BOOLEAN:
-						try (Session session = sessionFactory.openSession()) {
-							systemSignalInterface = (SystemSignalBooleanInfoHbn) session
-									.createQuery(
-											"from SystemSignalBooleanInfoHbn where systemSignalId = :system_signal_id")
-									.setParameter("system_signal_id", systemSignalInfoHbn.getId()).uniqueResult();
-
-						} catch (Exception e) {
-							Util.logger(logger, Util.ERROR, e);
-							systemSignalInterface = null;
-						}
-						break;
-					default:
-						return null;
 					}
+
+					
 					systemSignalCustomInfoUnitLst.add(new SystemSignalCustomInfoUnit(signalId, signalInfoHbn.getAlmClass(), signalInfoHbn.getAlmDlyBef(), signalInfoHbn.getAlmDlyAft(), systemSignalInfoHbn.getCustomFlags(), enumLangMap, systemSignalInterface, signalInfoHbn.getDisplay()));
 					break;
 				}
@@ -2267,29 +1962,7 @@ public class BeecomDB {
 					CustomSignalNameLangEntityInfoHbn customSignalNameLangEntityInfoHbn = new CustomSignalNameLangEntityInfoHbn();
 					while(itLangEntity.hasNext()) {
 						Map.Entry<Integer, String> entry = itLangEntity.next();
-						switch(entry.getKey()) {
-						case BPLanguageId.CHINESE:
-							customSignalNameLangEntityInfoHbn.setChinese(entry.getValue());
-							break;
-						case BPLanguageId.ENGLISH:
-							customSignalNameLangEntityInfoHbn.setEnglish(entry.getValue());
-							break;
-						case BPLanguageId.FRENCH:
-							customSignalNameLangEntityInfoHbn.setFrench(entry.getValue());
-							break;
-						case BPLanguageId.RUSSIAN:
-							customSignalNameLangEntityInfoHbn.setRussian(entry.getValue());
-							break;
-						case BPLanguageId.ARABIC:
-							customSignalNameLangEntityInfoHbn.setArabic(entry.getValue());
-							break;
-						case BPLanguageId.SPANISH:
-							customSignalNameLangEntityInfoHbn.setSpanish(entry.getValue());
-							break;
-						default:
-							Util.logger(logger, Util.ERROR, "invalid signal language type");
-							break;
-						}
+						customSignalNameLangEntityInfoHbn.setLang(entry.getKey(), entry.getValue());
 					}
 					session.save(customSignalNameLangEntityInfoHbn);
 					customSignalInfoHbn.setCusSigNameLangId(customSignalNameLangEntityInfoHbn.getId());
@@ -2302,29 +1975,7 @@ public class BeecomDB {
 					CustomSignalGroupLangEntityInfoHbn customSignalGroupLangEntityInfoHbn = new CustomSignalGroupLangEntityInfoHbn();
 					while(itLangEntity.hasNext()) {
 						Map.Entry<Integer, String> entry = itLangEntity.next();
-						switch(entry.getKey()) {
-						case BPLanguageId.CHINESE:
-							customSignalGroupLangEntityInfoHbn.setChinese(entry.getValue());
-							break;
-						case BPLanguageId.ENGLISH:
-							customSignalGroupLangEntityInfoHbn.setEnglish(entry.getValue());
-							break;
-						case BPLanguageId.FRENCH:
-							customSignalGroupLangEntityInfoHbn.setFrench(entry.getValue());
-							break;
-						case BPLanguageId.RUSSIAN:
-							customSignalGroupLangEntityInfoHbn.setRussian(entry.getValue());
-							break;
-						case BPLanguageId.ARABIC:
-							customSignalGroupLangEntityInfoHbn.setArabic(entry.getValue());
-							break;
-						case BPLanguageId.SPANISH:
-							customSignalGroupLangEntityInfoHbn.setSpanish(entry.getValue());
-							break;
-						default:
-							Util.logger(logger, Util.ERROR, "invalid signal language type");
-							break;
-						}
+						customSignalGroupLangEntityInfoHbn.setLang(entry.getKey(), entry.getValue());
 					}
 					if(customSignalGroupLangEntityInfoHbnMap.containsKey(customSignalGroupLangEntityInfoHbn.toString())) {
 						customSignalGroupLangEntityInfoHbn = customSignalGroupLangEntityInfoHbnMap.get(customSignalGroupLangEntityInfoHbn.toString());
@@ -2342,29 +1993,7 @@ public class BeecomDB {
 					CustomUnitLangEntityInfoHbn customUnitLangEntityInfoHbn = new CustomUnitLangEntityInfoHbn();
 					while(itLangEntity.hasNext()) {
 						Map.Entry<Integer, String> entry = itLangEntity.next();
-						switch(entry.getKey()) {
-						case BPLanguageId.CHINESE:
-							customUnitLangEntityInfoHbn.setChinese(entry.getValue());
-							break;
-						case BPLanguageId.ENGLISH:
-							customUnitLangEntityInfoHbn.setEnglish(entry.getValue());
-							break;
-						case BPLanguageId.FRENCH:
-							customUnitLangEntityInfoHbn.setFrench(entry.getValue());
-							break;
-						case BPLanguageId.RUSSIAN:
-							customUnitLangEntityInfoHbn.setRussian(entry.getValue());
-							break;
-						case BPLanguageId.ARABIC:
-							customUnitLangEntityInfoHbn.setArabic(entry.getValue());
-							break;
-						case BPLanguageId.SPANISH:
-							customUnitLangEntityInfoHbn.setSpanish(entry.getValue());
-							break;
-						default:
-							Util.logger(logger, Util.ERROR, "invalid signal language type");
-							break;
-						}
+						customUnitLangEntityInfoHbn.setLang(entry.getKey(), entry.getValue());
 					}
 					
 					if(customUnitLangEntityInfoHbnMap.containsKey(customUnitLangEntityInfoHbn.toString())) {
@@ -2399,29 +2028,7 @@ public class BeecomDB {
 							CustomSignalEnumLangEntityInfoHbn customSignalEnumLangEntityInfoHbn = new CustomSignalEnumLangEntityInfoHbn();
 							while(langIterator.hasNext()) {
 								langEntry = langIterator.next();
-								switch(langEntry.getKey()) {
-								case BPLanguageId.CHINESE:
-									customSignalEnumLangEntityInfoHbn.setChinese(langEntry.getValue());
-									break;
-								case BPLanguageId.ENGLISH:
-									customSignalEnumLangEntityInfoHbn.setEnglish(langEntry.getValue());
-									break;
-								case BPLanguageId.FRENCH:
-									customSignalEnumLangEntityInfoHbn.setFrench(langEntry.getValue());
-									break;
-								case BPLanguageId.RUSSIAN:
-									customSignalEnumLangEntityInfoHbn.setRussian(langEntry.getValue());
-									break;
-								case BPLanguageId.ARABIC:
-									customSignalEnumLangEntityInfoHbn.setArabic(langEntry.getValue());
-									break;
-								case BPLanguageId.SPANISH:
-									customSignalEnumLangEntityInfoHbn.setSpanish(langEntry.getValue());
-									break;
-								default:
-									Util.logger(logger, Util.ERROR, "invalid signal language type");
-									break;
-								}
+								customSignalEnumLangEntityInfoHbn.setLang(langEntry.getKey(), langEntry.getValue());
 							}
 							session.save(customSignalEnumLangEntityInfoHbn);
 							customSignalEnumLangInfoHbn.setEnumKey(enumLangEntry.getKey());
@@ -3382,5 +2989,166 @@ public class BeecomDB {
 			ret = false;
 		}
     	return ret;
+    }
+    
+    public SignalInterface getSystemSignalInterface(long systemSignalInterfaceId, int valType) {
+		SignalInterface systemSignalInterface = null;
+		
+		try (Session session = sessionFactory.openSession()) {
+			switch (valType) {
+			case BPPacket.VAL_TYPE_UINT32:
+				systemSignalInterface = (SystemSignalU32InfoHbn) session
+						.createQuery("from SystemSignalU32InfoHbn where systemSignalId = :system_signal_id")
+						.setParameter("system_signal_id", systemSignalInterfaceId).uniqueResult();
+				break;
+			case BPPacket.VAL_TYPE_UINT16:
+				systemSignalInterface = (SystemSignalU16InfoHbn) session
+						.createQuery("from SystemSignalU16InfoHbn where systemSignalId = :system_signal_id")
+						.setParameter("system_signal_id", systemSignalInterfaceId).uniqueResult();
+				break;
+			case BPPacket.VAL_TYPE_IINT32:
+				systemSignalInterface = (SystemSignalI32InfoHbn) session
+						.createQuery("from SystemSignalI32InfoHbn where systemSignalId = :system_signal_id")
+						.setParameter("system_signal_id", systemSignalInterfaceId).uniqueResult();
+				break;
+			case BPPacket.VAL_TYPE_IINT16:
+				systemSignalInterface = (SystemSignalI16InfoHbn) session
+						.createQuery("from SystemSignalI16InfoHbn where systemSignalId = :system_signal_id")
+						.setParameter("system_signal_id", systemSignalInterfaceId).uniqueResult();
+				break;
+			case BPPacket.VAL_TYPE_ENUM:
+				SystemSignalEnumInfoHbn systemSignalEnumInfoHbn = (SystemSignalEnumInfoHbn) session
+						.createQuery("from SystemSignalEnumInfoHbn where systemSignalId = :system_signal_id")
+						.setParameter("system_signal_id", systemSignalInterfaceId).uniqueResult();
+				systemSignalInterface = systemSignalEnumInfoHbn;
+				break;
+			case BPPacket.VAL_TYPE_FLOAT:
+				systemSignalInterface = (SystemSignalFloatInfoHbn) session
+						.createQuery("from SystemSignalFloatInfoHbn where systemSignalId = :system_signal_id")
+						.setParameter("system_signal_id", systemSignalInterfaceId).uniqueResult();
+				break;
+			case BPPacket.VAL_TYPE_STRING:
+				systemSignalInterface = (SystemSignalStringInfoHbn) session
+						.createQuery("from SystemSignalStringInfoHbn where systemSignalId = :system_signal_id")
+						.setParameter("system_signal_id", systemSignalInterfaceId).uniqueResult();
+				break;
+			case BPPacket.VAL_TYPE_BOOLEAN:
+				systemSignalInterface = (SystemSignalBooleanInfoHbn) session
+						.createQuery("from SystemSignalBooleanInfoHbn where systemSignalId = :system_signal_id")
+						.setParameter("system_signal_id", systemSignalInterfaceId).uniqueResult();
+				break;
+			default:
+				logger.error("Unknown value type {}", valType);
+			}
+		} catch (Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+			systemSignalInterface = null;
+		}
+
+		return systemSignalInterface;
+    }
+    
+    public SignalInterface getCustomSignalInterface(long customSignalInterfaceId, int valType) {
+		SignalInterface signalInterface = null;
+		
+    	switch (valType) {
+		case BPPacket.VAL_TYPE_UINT32:
+			try (Session session = sessionFactory.openSession()) {
+				signalInterface = (CustomSignalU32InfoHbn) session
+						.createQuery("from CustomSignalU32InfoHbn where customSignalId = :custom_signal_id")
+						.setParameter("custom_signal_id", customSignalInterfaceId).uniqueResult();
+
+			} catch (Exception e) {
+				Util.logger(logger, Util.ERROR, e);
+				signalInterface = null;
+			}
+			break;
+		case BPPacket.VAL_TYPE_UINT16:
+			try (Session session = sessionFactory.openSession()) {
+				signalInterface = (CustomSignalU16InfoHbn) session
+						.createQuery("from CustomSignalU16InfoHbn where customSignalId = :custom_signal_id")
+						.setParameter("custom_signal_id", customSignalInterfaceId).uniqueResult();
+
+			} catch (Exception e) {
+				Util.logger(logger, Util.ERROR, e);
+				signalInterface = null;
+			}
+
+			break;
+		case BPPacket.VAL_TYPE_IINT32:
+			try (Session session = sessionFactory.openSession()) {
+				signalInterface = (CustomSignalI32InfoHbn) session
+						.createQuery("from CustomSignalI32InfoHbn where customSignalId = :custom_signal_id")
+						.setParameter("custom_signal_id", customSignalInterfaceId).uniqueResult();
+
+			} catch (Exception e) {
+				Util.logger(logger, Util.ERROR, e);
+				signalInterface = null;
+			}
+			break;
+		case BPPacket.VAL_TYPE_IINT16:
+			try (Session session = sessionFactory.openSession()) {
+				signalInterface = (CustomSignalI16InfoHbn) session
+						.createQuery("from CustomSignalI16InfoHbn where customSignalId = :custom_signal_id")
+						.setParameter("custom_signal_id", customSignalInterfaceId).uniqueResult();
+
+			} catch (Exception e) {
+				Util.logger(logger, Util.ERROR, e);
+				signalInterface = null;
+			}
+			break;
+		case BPPacket.VAL_TYPE_ENUM:
+			try (Session session = sessionFactory.openSession()) {
+				signalInterface = (CustomSignalEnumInfoHbn) session
+						.createQuery(
+								"from CustomSignalEnumInfoHbn where customSignalId = :custom_signal_id")
+						.setParameter("custom_signal_id", customSignalInterfaceId).uniqueResult();
+				// cusSignalEnumLangMap = getCustomSignalEnumLangMap(customSignalInfoHbn.getId(), langSupportMask);
+
+			} catch (Exception e) {
+				Util.logger(logger, Util.ERROR, e);
+				signalInterface = null;
+			}
+			break;
+		case BPPacket.VAL_TYPE_FLOAT:
+			try (Session session = sessionFactory.openSession()) {
+				signalInterface = (CustomSignalFloatInfoHbn) session
+						.createQuery(
+								"from CustomSignalFloatInfoHbn where customSignalId = :custom_signal_id")
+						.setParameter("custom_signal_id", customSignalInterfaceId).uniqueResult();
+
+			} catch (Exception e) {
+				Util.logger(logger, Util.ERROR, e);
+				signalInterface = null;
+			}
+			break;
+		case BPPacket.VAL_TYPE_STRING:
+			try (Session session = sessionFactory.openSession()) {
+				signalInterface = (CustomSignalStringInfoHbn) session
+						.createQuery(
+								"from CustomSignalStringInfoHbn where customSignalId = :custom_signal_id")
+						.setParameter("custom_signal_id", customSignalInterfaceId).uniqueResult();
+			} catch (Exception e) {
+				Util.logger(logger, Util.ERROR, e);
+				signalInterface = null;
+			}
+			break;
+		case BPPacket.VAL_TYPE_BOOLEAN:
+			try (Session session = sessionFactory.openSession()) {
+				signalInterface = (CustomSignalBooleanInfoHbn) session
+						.createQuery(
+								"from CustomSignalBooleanInfoHbn where customSignalId = :custom_signal_id")
+						.setParameter("custom_signal_id", customSignalInterfaceId).uniqueResult();
+
+			} catch (Exception e) {
+				Util.logger(logger, Util.ERROR, e);
+				signalInterface = null;
+			}
+			break;
+		default:
+			logger.error("Unknown value type {}", valType);
+		}
+    	
+    	return signalInterface;
     }
 }

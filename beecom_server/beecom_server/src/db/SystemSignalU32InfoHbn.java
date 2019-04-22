@@ -3,6 +3,7 @@ package db;
 import org.hibernate.Session;
 
 import bp_packet.BPPacket;
+import other.Util;
 
 public class SystemSignalU32InfoHbn extends SignalInterface {
     private Long id;
@@ -99,4 +100,5 @@ public class SystemSignalU32InfoHbn extends SignalInterface {
 	public Object getDefaultValue() {
 		return getDefVal();
 	}
+	
 }

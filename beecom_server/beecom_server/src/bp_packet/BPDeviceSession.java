@@ -31,7 +31,6 @@ public class BPDeviceSession extends BPSession {
 	// private Long adminId;
 	private Map<Integer, List<Object> > signalValueMap;
 	private Map<Integer, SignalInfoUnitInterface> signalId2InfoUnitMap;
-	private boolean sigMapCheckOK;
 	private long snId;
 	
 	private List<RelayAckData> relayAckDataList;
@@ -43,7 +42,6 @@ public class BPDeviceSession extends BPSession {
 		password = "";
 		signalValueMap = new HashMap<>();
 		super.setSystemSignalValueMap(new HashMap<Integer, Object>());
-		sigMapCheckOK = false;
 		signalId2InfoUnitMap = null;
 		snId = 0L;
 		relayAckDataList = new ArrayList<>();
@@ -56,7 +54,6 @@ public class BPDeviceSession extends BPSession {
 		relayAckDataList = new ArrayList<>();
 		this.signalValueMap = new HashMap<>();
 		super.setSystemSignalValueMap(new HashMap<Integer, Object>());
-		sigMapCheckOK = false;
 		signalId2InfoUnitMap = null;
 		this.snId = snId;
 	}
@@ -140,7 +137,7 @@ public class BPDeviceSession extends BPSession {
 			Integer signalId;
 			while (itInteger.hasNext()) {
 				signalId = itInteger.next() + BPPacket.SYS_SIG_START_ID;
-				SystemSignalInfoUnit tmp = BPSysSigTable.getSysSigTableInstance().createNewSystemSignalInfoUnit(signalId);
+				SystemSignalInfoUnit tmp = BPSysSigTable.getSysSigTableInstance().createNewSystemSignalInfoUnit(signalId - BPPacket.SYS_SIG_START_ID);
 				if(null == tmp) {
 					logger.error("Inner Error: null == BPSysSigTable.getSysSigTableInstance().createNewSystemSignalInfoUnit({})", signalId);
 					continue;

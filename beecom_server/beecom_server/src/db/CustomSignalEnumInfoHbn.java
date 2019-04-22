@@ -1,10 +1,11 @@
 package db;
 
+import java.util.List;
+
 import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import bc_server.BcDecoder;
 import bp_packet.BPPacket;
 import other.Util;
 
@@ -88,5 +89,17 @@ public class CustomSignalEnumInfoHbn extends SignalInterface {
 	@Override
 	public Object getDefaultValue() {
 		return getDefVal();
+	}
+	
+	
+	@Override
+	public boolean checkSignalValueUnformed(Object v) {
+		boolean ret = false;
+		BeecomDB beecomDb = BeecomDB.getInstance();
+		List<Integer> enumKeysLst = beecomDb.getCustomSignalEnumLangInfoEnumKeysLst(this);
+		if(null == enumKeysLst || !enumKeysLst.contains(v)) {
+			ret = true;
+		}
+		return ret;
 	}
 }

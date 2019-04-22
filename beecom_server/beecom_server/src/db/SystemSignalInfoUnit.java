@@ -7,7 +7,10 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import bp_packet.BPPacket;
 import other.Util;
+import sys_sig_table.BPSysSigTable;
+import sys_sig_table.SysSigInfo;
 
 
 public class SystemSignalInfoUnit implements SignalInfoUnitInterface {
@@ -78,20 +81,17 @@ public class SystemSignalInfoUnit implements SignalInfoUnitInterface {
 
 	@Override
 	public int getSignalId() {
-		// TODO Auto-generated method stub
-		return 0;
+		return sysSigId;
 	}
 
 	@Override
 	public SignalInterface getSignalInterface() {
-		// TODO Auto-generated method stub
-		return null;
+		return systemSignalInterface;
 	}
 
 	@Override
 	public boolean ifConfigDef() {
-		// TODO Auto-generated method stub
-		return false;
+		return ifConfigDef;
 	}
 
 	@Override
@@ -151,6 +151,15 @@ public class SystemSignalInfoUnit implements SignalInfoUnitInterface {
 	}
 
 	public Object getSignalValue() {
+		if(null == signalValue) {
+			/* return default signal value */
+			BPSysSigTable sysSigTab = BPSysSigTable.getSysSigTableInstance();
+			SysSigInfo sysSigInfo = sysSigTab.getSysSigInfo(sysSigId - BPPacket.SYS_SIG_START_ID);
+			if (null == sysSigInfo) {
+				return null;
+			}
+			signalValue = sysSigInfo.getValDef();
+		}
 		return signalValue;
 	}
 

@@ -91,4 +91,10 @@ public class BPPacketPOSTACK extends BPPacket {
 		return 0;
 	}
 
+	public int getSignalIdWithErr() {
+		return signalIdWithErr;
+	}
+	
+	
+
 }

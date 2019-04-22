@@ -24,12 +24,10 @@ import bp_packet.BPPackFactory;
 import bp_packet.BPPacket;
 import bp_packet.BPPacketType;
 import bp_packet.BPPacketCONNACK;
-import bp_packet.BPPacketGET;
 import bp_packet.BPPacketGETACK;
 import bp_packet.BPPacketPINGACK;
 import bp_packet.BPPacketPOST;
 import bp_packet.BPPacketPUSH;
-import bp_packet.BPPacketREPORT;
 import bp_packet.BPPacketRPRTACK;
 import bp_packet.BPSession;
 import bp_packet.BPUserSession;
@@ -45,9 +43,11 @@ import db.SignalInfoUnitInterface;
 import db.SnInfoHbn;
 import db.SystemSignalCustomInfoUnit;
 import db.SystemSignalInfoUnit;
+import db.UserDevRelInfoInterface;
 import db.UserInfoUnit;
 import db.BeecomDB.LoginErrorEnum;
 import other.BPError;
+import other.CrcChecksum;
 import other.Util;
 import sys_sig_table.BPSysSigTable;
 import sys_sig_table.SysSigInfo;
@@ -165,14 +165,64 @@ public class BcServerHandler extends IoHandlerAdapter {
 		if(null == bpSession) {
 			return;
 		}
-		bpSession.setSessionReady(false);
 		/* TODO: not need to remove the sessions every time */
 		if(bpSession.ifUserSession()) {
+			bpSession.setSessionReady(false);
 			logger.info("user client {}: session closed", bpSession.getUserName());
 			BeecomDB.getInstance().getUserName2SessionMap().remove(bpSession.getUserName());
 		} else {
 			logger.info("device client {}: session closed", bpSession.getUniqDevId());
-			BeecomDB.getInstance().getDevUniqId2SessionMap().remove(bpSession.getUniqDevId());
+			BeecomDB.getInstance().removeBPDeviceSession(bpSession.getUniqDevId());
+			if(!bpSession.isSessionReady()) {
+				return;
+			}
+			bpSession.setSessionReady(false);
+			/* notify the users that the device is disconnected */
+			BPDeviceSession bpDeviceSession = (BPDeviceSession)bpSession;
+			try {
+				BPPacket bpPacket = BPPackFactory.createBPPack(BPPacketType.PUSH);
+				bpPacket.getVrbHead().setSigValFlag(true);
+				bpPacket.getFxHead().setCrcType(CrcChecksum.CRC32);
+				Payload pld = bpPacket.getPld();
+				pld.setDevUniqId(bpSession.getUniqDevId());
+				Map<Integer, Map.Entry<Byte, Object>> sigValMap = new HashMap<>();
+				Payload.MyEntry<Byte, Object> communicateStateEntry = new Payload.MyEntry<Byte, Object>((byte)BPPacket.VAL_TYPE_ENUM, Integer.valueOf(1));
+				sigValMap.put(0xE001, communicateStateEntry);
+				pld.setSigValMap(sigValMap);
+				
+				BeecomDB beecomDb = BeecomDB.getInstance();
+				List<UserDevRelInfoInterface> userDevRelInfoInterfaceList = beecomDb.getSn2UserDevRelInfoList(bpDeviceSession.getSnId());
+				if(null == userDevRelInfoInterfaceList) {
+					return;
+				}
+				int size = userDevRelInfoInterfaceList.size();
+				long userId;
+				BPUserSession userSession;
+				IoSession ioSession;
+				Map<Long, BPSession> userId2SessionMap = beecomDb.getUserId2SessionMap();
+				UserDevRelInfoInterface userDevRelInfoInterface;
+				for(int i = 0; i < size; i++) {
+					userDevRelInfoInterface = userDevRelInfoInterfaceList.get(i);
+					if(0 == (userDevRelInfoInterface.getAuth() & BPPacket.USER_AUTH_READ)) {
+						/* no read auth */
+						continue;
+					}
+					userId = userDevRelInfoInterface.getUserId();
+					userSession = (BPUserSession)userId2SessionMap.get(userId);
+					if(null == userSession) {
+						/* not logined yet */
+						continue;
+					}
+					ioSession = userSession.getSession();
+					if(null == ioSession || !ioSession.isConnected()) {
+						/* session is not active */
+						continue;
+					}
+					ioSession.write(bpPacket);
+				}
+			} catch(Exception e) {
+				Util.logger(logger, Util.ERROR, e);
+			}
 		}
 		
 	}
@@ -243,6 +293,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 				packAck.getPld().setServerChainHbn(null);
 
 			} else if (devClntFlag) {
+
 				BeecomDB.LoginErrorEnum loginErrorEnum;
 				DeviceInfoUnit deviceInfoUnit = new DeviceInfoUnit();
 				loginErrorEnum = beecomDb.checkSnPassword(userName, password, deviceInfoUnit);
@@ -314,6 +365,12 @@ public class BcServerHandler extends IoHandlerAdapter {
 					return;
 				}
 				devUniqId = deviceInfoUnit.getDevInfoHbn().getId();
+				if(BeecomDB.getInstance().isDeviceOnline(devUniqId)) {
+					packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_DEVICE_ONLINE);
+					session.write(packAck);
+					session.closeOnFlush();
+					return;
+				}
 
 				ServerChainHbn serverChainHbn = BeecomDB.getInstance().getServerChain(devUniqId);
 				if (null == serverChainHbn) {
@@ -328,7 +385,12 @@ public class BcServerHandler extends IoHandlerAdapter {
 				bpSession.setEncryptionType(decodedPack.getFxHead());
 				bpSession.setCrcType(decodedPack.getFxHead());
 				bpSession.setSessionReady(false);
-				BeecomDB.getInstance().getDevUniqId2SessionMap().put(devUniqId, bpSession);
+				if(0 != BeecomDB.getInstance().putDevUnitId2SessioinMap(devUniqId, bpSession)) {
+					packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_SERVER_LOADING_FULL);
+					session.write(packAck);
+					session.closeOnFlush();
+					return;
+				}
 				session.setAttribute(SESS_ATTR_BP_SESSION, bpSession);
 				beecomDb.updateUserDevRel(deviceInfoUnit.getDevInfoHbn());
 			} else {
@@ -452,13 +514,12 @@ public class BcServerHandler extends IoHandlerAdapter {
 			}
 			if (cusSigMapFlag) {
 				pldAck.packCusSigMap(uniqDevId);
-
 			}
 			BPError bpError = new BPError();
-			BPDeviceSession bpDeviceSession = (BPDeviceSession) beecomDb.getDevUniqId2SessionMap().get(devUniqId);
+			BPDeviceSession bpDeviceSession = beecomDb.getBPDeviceSession(devUniqId);
 
 			if (sigFlag) {
-				bpDeviceSession = (BPDeviceSession)beecomDb.getDevUniqId2SessionMap().get(uniqDevId);
+				bpDeviceSession = beecomDb.getBPDeviceSession(uniqDevId);
 				if(null == bpDeviceSession) {
 					packAck.getVrbHead().setRetCode(BPPacketGETACK.RET_CODE_OFF_LINE_ERR);
 					session.write(packAck);
@@ -485,7 +546,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 				while (it.hasNext()) {  
 					signalId = it.next(); 
 				    if(!signalId2InfoUnitMap.containsKey(signalId)) {
-				    	vrbAck.setRetCode(BPPacketRPRTACK.RET_CODE_SIG_ID_INVALID);
+				    	vrbAck.setRetCode(BPPacketGETACK.RET_CODE_SIGNAL_NOT_SUPPORT_ERR);
 				    	pldAck.setUnsupportedSignalId(signalId);
 				    	session.write(packAck);
 				    	return;
@@ -494,7 +555,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 			    	value = signalInfoUnitInterface.getSignalValue(); 
 			    	if(null == value) {
 			    		logger.error("Inner error: null == value");
-				    	vrbAck.setRetCode(BPPacketRPRTACK.RET_CODE_SERVER_ERROR);
+				    	vrbAck.setRetCode(BPPacketGETACK.RET_CODE_SERVER_ERROR);
 				    	pldAck.setUnsupportedSignalId(signalId);
 				    	session.write(packAck);
 				    	return;
@@ -502,7 +563,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 				    if(signalId < BPPacket.SYS_SIG_START_ID) {
 				    	if(null == signalInfoUnitInterface.getSignalInterface()) {
 				    		logger.error("Inner error: null == signalInfoUnitInterface.getSignalInterface())");
-					    	vrbAck.setRetCode(BPPacketRPRTACK.RET_CODE_SERVER_ERROR);
+					    	vrbAck.setRetCode(BPPacketGETACK.RET_CODE_SERVER_ERROR);
 					    	pldAck.setUnsupportedSignalId(signalId);
 					    	session.write(packAck);
 					    	return;
@@ -515,7 +576,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 						SysSigInfo sysSigInfo = bpSysSigTable.getSysSigInfo(systemSignalIdOffset);
 						if(null == sysSigInfo) {
 				    		logger.error("Inner error: null == sysSigInfo");
-					    	vrbAck.setRetCode(BPPacketRPRTACK.RET_CODE_SERVER_ERROR);
+					    	vrbAck.setRetCode(BPPacketGETACK.RET_CODE_SERVER_ERROR);
 					    	pldAck.setUnsupportedSignalId(signalId);
 					    	session.write(packAck);
 					    	return;
@@ -609,7 +670,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 		}
 		
 		if(sigValFlag) {
-			BPDeviceSession bpDeviceSession = (BPDeviceSession)beecomDb.getDevUniqId2SessionMap().get(devUniqId);
+			BPDeviceSession bpDeviceSession = beecomDb.getBPDeviceSession(devUniqId);
 			if(null == bpDeviceSession) {
 				packAck.getVrbHead().setRetCode(BPPacketPOST.RET_CODE_OFF_LINE_ERR);
 				session.write(packAck);
@@ -653,7 +714,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 		
 		if(sigAttrFlag) {
 			BPDeviceSession bpDeviceSesssion = null;
-			bpDeviceSesssion = (BPDeviceSession)BeecomDB.getInstance().getDevUniqId2SessionMap().get(devUniqId);
+			bpDeviceSesssion = BeecomDB.getInstance().getBPDeviceSession(devUniqId);
 
 			if(null == bpDeviceSesssion) {
 				packAck.getVrbHead().setRetCode(BPPacketPOST.RET_CODE_INVALID_DEVICE_ID_ERR);
@@ -784,6 +845,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 						}
 					}
 					bpDeviceSession.setSignalId2InfoUnitMap(signalId2InfoUnitMap);
+					bpDeviceSession.setSessionReady(true);
 				} else {
 					vrbAck.setRetCode(BPPacketRPRTACK.RET_CODE_SIGNAL_MAP_DAMAGED_ERR);
 				}
@@ -933,8 +995,6 @@ public class BcServerHandler extends IoHandlerAdapter {
 		packAck.getVrbHead().setRetCode(BPPacketPINGACK.RET_CODE_OK);
 
 		session.write(packAck);
-		
-
 	}
 	
 	private void onPushAck(IoSession session, BPPacket decodedPack) {

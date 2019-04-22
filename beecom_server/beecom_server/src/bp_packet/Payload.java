@@ -28,7 +28,7 @@ import other.Util;
  */
 public class Payload {
 	
-	final class MyEntry<K, V> implements Map.Entry<K, V> {
+	public static final class MyEntry<K, V> implements Map.Entry<K, V> {
 	    private final K key;
 	    private V value;
 
@@ -323,45 +323,6 @@ public class Payload {
 		return ret;
 	}
 	
-	public boolean packSignalValues(List<Integer> sigLst, BPDeviceSession bpDeviceSession, BPError bpError) {
-		boolean ret = false;
-		if(null == sigLst || null == bpDeviceSession) {
-			return ret;
-		}
-		sigValMap = new HashMap<>();
-		
-		Iterator<Integer> it = sigLst.iterator();
-		Map<Integer, Map.Entry<Byte, Object> > customSignalValueMap;
-		customSignalValueMap = bpDeviceSession.getCustomSignalValueMap();
-		while(it.hasNext()) {
-			int sigId = it.next();
-			if(sigId < 0 || sigId > BPPacket.MAX_SIG_ID) {
-				if(null != bpError) {
-					bpError.setErrorCode(BPPacketGETACK.RET_CODE_SIGNAL_NOT_SUPPORT_ERR);
-					bpError.setSigId(sigId);
-				}
-				return ret;
-			}
-			
-			if(!customSignalValueMap.containsKey(sigId)) {
-				if(null != bpError) {
-					bpError.setErrorCode(BPPacketGETACK.RET_CODE_SIGNAL_NOT_SUPPORT_ERR);
-					bpError.setSigId(sigId);
-				}
-				return ret;
-			}
-			if(sigValMap.containsKey(sigId)) {
-				if(null != bpError) {
-					bpError.setErrorCode(BPPacketGETACK.RET_CODE_SIGNAL_REPEAT_ERR);
-					bpError.setSigId(sigId);
-				}
-				return ret;
-			}
-			sigValMap.put(sigId, customSignalValueMap.get(sigId));
-		}
-		ret = true;
-		return ret;
-	}
 	
 	public boolean packCusSignal(long uniqDevId, List<Integer> sysSigLst, byte langFlags) {
 		return true;
@@ -498,6 +459,10 @@ public class Payload {
 
 	public Map<Integer, Map.Entry<Byte, Object>> getSigValMap() {
 		return sigValMap;
+	}
+
+	public void setSigValMap(Map<Integer, Map.Entry<Byte, Object>> sigValMap) {
+		this.sigValMap = sigValMap;
 	}
 
 	public byte[] getRelayData() {

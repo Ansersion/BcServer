@@ -3,8 +3,6 @@
  */
 package bp_packet;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -176,77 +174,6 @@ public abstract class BPSession {
 	// }
 
 	
-	
-	public boolean setSysSig(DevSigData devSigData) {
-		// error = new BPError();
-		boolean ret = true;
-		Integer key = null;
-		Object tmp = null;
-		
-		try {
-			Map<Integer, Short> sigVal = devSigData.get2ByteDataMap();
-			if (null != sigVal) {
-				Iterator<Map.Entry<Integer, Short>> entries = sigVal.entrySet().iterator();
-				while (entries.hasNext()) {
-					Map.Entry<Integer, Short> entry = entries.next();
-					key = entry.getKey();
-					// value = entry.getValue();
-					tmp = sysSigMap.get(key);
-					if (null == tmp) {
-						throw new SigIdNonExistException();
-					}
-					// tmp.setVal(value);
-				}
-			}
-		} catch(SigIdNonExistException e) {
-			Util.logger(logger, Util.ERROR, e);
-			ret = false;
-		}
-
-		try {
-			Map<Integer, Integer> sigVal = devSigData.get4ByteDataMap();
-			if (null != sigVal) {
-				Iterator<Map.Entry<Integer, Integer>> entries = sigVal.entrySet().iterator();
-				while (entries.hasNext()) {
-					Map.Entry<Integer, Integer> entry = entries.next();
-					key = entry.getKey();
-					tmp = sysSigMap.get(key);
-					if (null == tmp) {
-						throw new SigIdNonExistException();
-					}
-					// tmp.setVal(entry.getValue());
-				}
-			}
-		} catch(Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
-			ret = false;
-		}
-
-		try {
-			Map<Integer, Byte[]> sigVal = devSigData.getxByteDataMap();
-			if (null != sigVal) {
-				Iterator<Map.Entry<Integer, Byte[]>> entries = sigVal.entrySet().iterator();
-				while (entries.hasNext()) {
-					Map.Entry<Integer, Byte[]> entry = entries.next();
-					key = entry.getKey();
-					tmp = sysSigMap.get(key);
-					if (null == tmp) {
-						throw new SigIdNonExistException();
-					}
-				}
-			}
-		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
-			ret = false;
-		}
-		return ret;
-	}
 	
 	public IoSession getSession() {
 		return session;

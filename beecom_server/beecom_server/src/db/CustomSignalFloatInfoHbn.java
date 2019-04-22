@@ -1,10 +1,14 @@
 package db;
 
 import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import bp_packet.BPPacket;
+import other.Util;
 
 public class CustomSignalFloatInfoHbn extends SignalInterface {
+	private static final Logger logger = LoggerFactory.getLogger(CustomSignalFloatInfoHbn.class); 
     private Long id;
     private Short permission;
     private Short accuracy;
@@ -107,5 +111,24 @@ public class CustomSignalFloatInfoHbn extends SignalInterface {
 	@Override
 	public Object getDefaultValue() {
 		return getDefVal();
+	}
+	
+	@Override
+	public boolean checkSignalValueUnformed(Object v) {
+		boolean ret = false;
+		try {
+			Float value = (Float) v;
+			if (maxVal != BPPacket.VAL_FLOAT_UNLIMIT && value > maxVal) {
+				/* value too big */
+				ret = true;
+			} else if (minVal != BPPacket.VAL_FLOAT_UNLIMIT && value < minVal) {
+				/* value too small */
+				ret = true;
+			}
+		} catch (Exception e) {
+			ret = true;
+			Util.logger(logger, Util.ERROR, e);
+		}
+		return ret;
 	}
 }

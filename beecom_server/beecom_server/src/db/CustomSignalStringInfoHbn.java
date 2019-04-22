@@ -1,10 +1,14 @@
 package db;
 
 import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import bp_packet.BPPacket;
+import other.Util;
 
 public class CustomSignalStringInfoHbn extends SignalInterface {
+	private static final Logger logger = LoggerFactory.getLogger(CustomSignalStringInfoHbn.class); 
     private Long id;
     private Short permission;
     private String defVal;
@@ -77,5 +81,21 @@ public class CustomSignalStringInfoHbn extends SignalInterface {
 	@Override
 	public Object getDefaultValue() {
 		return getDefVal();
+	}
+	
+	
+	@Override
+	public boolean checkSignalValueUnformed(Object v) {
+		boolean ret = false;
+		try {
+			String value = (String) v;
+			if(value.getBytes().length > BPPacket.MAX_STR_LENGTH) {
+				ret = true;
+			}
+		} catch (Exception e) {
+			ret = true;
+			Util.logger(logger, Util.ERROR, e);
+		}
+		return ret;
 	}
 }

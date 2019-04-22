@@ -14,4 +14,6 @@ public interface SignalLanguageInterface {
 	String getRussian();
 	String getArabic();
 	String getSpanish();
+	
+	void setLang(int key, String lang);
 }

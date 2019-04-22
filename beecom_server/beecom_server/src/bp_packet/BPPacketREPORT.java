@@ -408,9 +408,7 @@ public class BPPacketREPORT extends BPPacket {
 							Util.logger(logger, Util.ERROR, "invalid signal type");
 							break;
 						}
-						if(signalInterface != null) {
-							signalInterface.setEnStatistics(ifStatistics);
-						}
+
 						if((customInfoFlags & SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM) != 0) {
 							alarmClass = ioBuffer.getUnsigned();
 							delayBeforeAlarm = ioBuffer.getUnsigned();
@@ -418,7 +416,6 @@ public class BPPacketREPORT extends BPPacket {
 						}
 						
 						if ((customInfoFlags & SYSTEM_SIGNAL_CUSTOM_FLAGS_UNIT_LANG) != 0) {
-							/* TODO: set unit language */
 							unitLangId = ioBuffer.getUnsignedShort();
 						}
 						if((customInfoFlags & SYSTEM_SIGNAL_CUSTOM_FLAGS_PERMISSION) != 0) {
@@ -426,6 +423,11 @@ public class BPPacketREPORT extends BPPacket {
 						}
 						if((customInfoFlags & SYSTEM_SIGNAL_CUSTOM_FLAGS_DISPLAY) != 0) {
 							ifDisplay = ioBuffer.get() != 0;
+						}
+						if(signalInterface != null) {
+							signalInterface.setEnStatistics(ifStatistics);
+							signalInterface.setGroupLangId(groupLangId);
+							signalInterface.setUnitLangId(unitLangId);
 						}
 						systemSignalCustomInfoUnitList.add(new SystemSignalCustomInfoUnit(signalId, alarmClass, delayBeforeAlarm, delayAfterAlarm, customInfoFlags, enumLangMap, signalInterface, ifDisplay));
 

@@ -1,10 +1,14 @@
 package db;
 
 import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import bp_packet.BPPacket;
+import other.Util;
 
 public class CustomSignalU32InfoHbn extends SignalInterface {
+	private static final Logger logger = LoggerFactory.getLogger(CustomSignalU32InfoHbn.class); 
     private Long id;
     private Short permission;
     private Long minVal;
@@ -94,5 +98,24 @@ public class CustomSignalU32InfoHbn extends SignalInterface {
 	@Override
 	public Object getDefaultValue() {
 		return getDefVal();
+	}
+	
+	@Override
+	public boolean checkSignalValueUnformed(Object v) {
+		boolean ret = false;
+		try {
+			Long value = (Long) v;
+			if (maxVal != BPPacket.VAL_U32_UNLIMIT && value > maxVal) {
+				/* value too big */
+				ret = true;
+			} else if (minVal != BPPacket.VAL_U32_UNLIMIT && value < minVal) {
+				/* value too small */
+				ret = true;
+			}
+		} catch (Exception e) {
+			ret = true;
+			Util.logger(logger, Util.ERROR, e);
+		}
+		return ret;
 	}
 }

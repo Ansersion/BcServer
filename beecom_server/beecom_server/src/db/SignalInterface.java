@@ -41,7 +41,24 @@ public abstract class SignalInterface {
 		return 0;
 	}
 	
+	public void setGroupLangId(int groupLangId) {
+		/* do nothing */
+	}
+	
+	public Integer getUnitLangId() {
+		return 0;
+	}
+	
+	public void setUnitLangId(int groupLangId) {
+		/* do nothing */
+	}
+	
 	public Short getAccuracy() {
 		return 0;
 	}
+	
+	public boolean checkSignalValueUnformed(Object v) {
+		return false;
+	}
+	
 }

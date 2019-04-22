@@ -20,16 +20,7 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import bp_packet.BPPacket;
 import bp_packet.BPParseCsvFileException;
-import db.CustomSignalBooleanInfoHbn;
-import db.CustomSignalEnumInfoHbn;
-import db.CustomSignalFloatInfoHbn;
-import db.CustomSignalI16InfoHbn;
-import db.CustomSignalI32InfoHbn;
-import db.CustomSignalStringInfoHbn;
-import db.CustomSignalU16InfoHbn;
-import db.CustomSignalU32InfoHbn;
 import db.SystemSignalInfoUnit;
 import other.BPValue;
 import other.Util;

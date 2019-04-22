@@ -3,12 +3,15 @@
  */
 package db;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Ansersion
  *
  */
 public class CustomUnitLangEntityInfoHbn implements SignalLanguageInterface {
-	
+	private static final Logger logger = LoggerFactory.getLogger(CustomUnitLangEntityInfoHbn.class); 
 	private Long id;
 	private String chinese;
 	private String english;
@@ -78,5 +81,31 @@ public class CustomUnitLangEntityInfoHbn implements SignalLanguageInterface {
 		return chinese + english + french
 				+ russian + arabic + spanish;
 	}
-
+	@Override
+	public void setLang(int key, String lang) {
+		switch(key) {
+		case BPLanguageId.CHINESE:
+			setChinese(lang);
+			break;
+		case BPLanguageId.ENGLISH:
+			setEnglish(lang);
+			break;
+		case BPLanguageId.FRENCH:
+			setFrench(lang);
+			break;
+		case BPLanguageId.RUSSIAN:
+			setRussian(lang);
+			break;
+		case BPLanguageId.ARABIC:
+			setArabic(lang);
+			break;
+		case BPLanguageId.SPANISH:
+			setSpanish(lang);
+			break;
+		default:
+			logger.error("invalid signal language type {}", key);
+			break;
+		}
+		
+	}
 }
