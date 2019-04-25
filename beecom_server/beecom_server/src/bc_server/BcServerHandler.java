@@ -111,7 +111,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 		} else if (BPPacketType.DISCONN == packType) {
 			onDisconn(session, decodedPack);
 		} else {
-			logger.info("Error: messageRecevied: Not supported packet type");
+			logger.error("Error: messageRecevied: Not supported packet type={}", packType);
 		}
 	}
 
@@ -280,6 +280,10 @@ public class BcServerHandler extends IoHandlerAdapter {
 				case LOGIN_OK:
 					packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_OK);
 					break;
+				}
+				
+				if(BeecomDB.LoginErrorEnum.LOGIN_OK != loginErrorEnum) {
+					return;
 				}
 
 				bpSession = new BPUserSession(session, userInfoUnit);

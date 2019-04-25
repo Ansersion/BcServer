@@ -187,15 +187,11 @@ public class BeecomDB {
 		}
 
 		LoginErrorEnum result = LoginErrorEnum.LOGIN_OK;
-		Transaction tx = null;
 		try (Session session = sessionFactory.openSession()) {
-			tx = session.beginTransaction();
 			UserInfoHbn userInfoHbn = (UserInfoHbn)session  
 		            .createQuery("from UserInfoHbn where name = :p_name and password = :p_password")
 		            .setParameter("p_name", name)
 		            .setParameter("p_password", password).uniqueResult();
-		    
-			tx.commit();
 			if(null == userInfoHbn) {
 				result = LoginErrorEnum.PASSWORD_INVALID;
 			} else {
