@@ -30,31 +30,6 @@ public class VariableHeader {
 	int packSeq = 0;
 	private byte langFlags;
 	
-	/*
-	Boolean bit0 = false;
-	Boolean bit1 = false;
-	Boolean bit2 = false;
-	Boolean bit3 = false;
-	Boolean bit4 = false;
-	Boolean bit5 = false;
-	Boolean bit6 = false;
-	Boolean bit7 = false;
-	*/
-	
-	/*
-	Boolean userFlag;
-	Boolean pwdFlag;
-	Boolean userLoginFlag;
-	Boolean deviceLoginFlag;
-	Boolean lanChinese;
-	Boolean lanEnglish;
-	Boolean lanFrench;
-	Boolean lanRussian;
-	Boolean lanArabic;
-	Boolean lanSpanish;
-	Boolean otherLanguageFlag;
-	*/
-	
     private static int generatePackSeq() {
     	int ret = 0;
     	try {
@@ -70,19 +45,6 @@ public class VariableHeader {
     }
 	
 	public VariableHeader() {
-		/*
-		userFlag = bit7;
-		pwdFlag = bit6;
-		userLoginFlag = bit2;
-		deviceLoginFlag = bit1;
-		lanChinese = bit7;
-		lanEnglish = bit6;
-		lanFrench = bit5;
-		lanRussian = bit4;
-		lanArabic = bit3;
-		lanSpanish = bit2;
-		otherLanguageFlag = bit1;
-		*/
 	}
 
     public void initPackSeq() {
@@ -98,16 +60,6 @@ public class VariableHeader {
 	}
 	
 	public void parseFlags(byte flags) {
-		/*
-		bit0 = (0x01 & flags) == 0x01;
-		bit1 = (0x02 & flags) == 0x02;
-		bit2 = (0x04 & flags) == 0x04;
-		bit3 = (0x08 & flags) == 0x08;
-		bit4 = (0x10 & flags) == 0x10;
-		bit5 = (0x20 & flags) == 0x20;
-		bit6 = (0x40 & flags) == 0x40;
-		bit7 = (0x80 & flags) == 0x80;
-		*/
 		this.flags = flags;
 	}
 	

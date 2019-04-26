@@ -210,7 +210,8 @@ public class BPPacketREPORT extends BPPacket {
 						signalId = ioBuffer.getUnsignedShort();
 						SysSigInfo sysSigInfo = BPSysSigTable.getSysSigTableInstance().getSysSigInfo(signalId - BPPacket.SYS_SIG_START_ID);
 						if(null == sysSigInfo) {
-							throw new Exception("null == sysSigInfo");
+							logger.error("null == sysSigInfo");
+							return -1;
 						}
 						ifStatistics = sysSigInfo.isEnStatistics();
 						ifDisplay = sysSigInfo.isIfDisplay();

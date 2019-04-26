@@ -45,7 +45,6 @@ public class PushSignalValuesProduct extends Product {
 				return ret;
 			}
 			int size = userDevRelInfoInterfaceList.size();
-			// long devUniqId = bpDeviceSession.getUniqDevId();
 			long userId;
 			BPUserSession userSession;
 			IoSession ioSession;

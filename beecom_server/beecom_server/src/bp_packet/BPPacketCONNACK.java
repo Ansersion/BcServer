@@ -19,7 +19,7 @@ public class BPPacketCONNACK extends BPPacket {
 	public static final int RET_CODE_OK = 0x00;
 	public static final int RET_CODE_LEVEL_ERR = 0x01;
 	public static final int RET_CODE_SERVER_ERR = 0x02;
-	public static final int RET_CODE_USER_OR_PASSWORD_INVALID = 0x03;
+	public static final int RET_CODE_USER_NAME_INVALID = 0x03;
 	public static final int RET_CODE_PWD_INVALID = 0x04;
 	public static final int RET_CODE_ENCRYPT_ERR = 0x05;
 	public static final int RET_CODE_CRC_UNSUPPORT = 0x06;

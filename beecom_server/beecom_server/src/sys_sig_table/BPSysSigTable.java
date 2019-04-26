@@ -54,12 +54,6 @@ public class BPSysSigTable {
 	protected BPSysSigTable() {
 		sysSigInfoLst = new ArrayList<>();
 	}
-
-	/*
-	private List<SysSigInfo> getSysSigInfoLst() {
-		return sysSigInfoLst;
-	}
-	*/
 	
 	public SysSigInfo getSysSigInfo(int signalIdOffset) {
 		if(signalIdOffset < sysSigInfoLst.size()) {

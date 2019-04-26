@@ -47,12 +47,10 @@ class PushPacketDeviceIDProduct extends Product {
 		}
 		try {
 			logger.info("PushPacketDeviceIDProduct producing");
-			// IoSession session = bpUserSession.getSession();
 			bpPacket = BPPackFactory.createBPPack(BPPacketType.PUSH);
 			bpPacket.getFxHead().setCrcType(bpUserSession.getCrcType());
 			bpPacket.getFxHead().setEncryptType(bpUserSession.getEncryptionType());
 			bpPacket.getVrbHead().setReqAllDeviceIdFlag(true);
-			// String userName = bpUserSession.getUserName();
 			Payload pld = bpPacket.getPld();
 			BeecomDB beecomDb = BeecomDB.getInstance();
 			Map<Long, Long> deviceIdMap = beecomDb.getDeviceIDMap(bpUserSession.getUserName());

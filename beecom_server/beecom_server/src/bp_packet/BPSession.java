@@ -151,9 +151,6 @@ public abstract class BPSession {
 	}
 
 	public BPSession(byte[] userName, byte[] password, int clientId, boolean userLogin, boolean devLogin, long uniqDevId) {
-		// isDevLogin = devLogin;
-		// isUserLogin = userLogin;
-		// seqIdDevClnt = 0;
 		seqIdUsrClnt = 0;
 		sysSigMap = new HashMap<>();
 	}
@@ -169,38 +166,9 @@ public abstract class BPSession {
 		return sysSigMap;
 	}
 	
-	// public String getDevName() {
-	//	return devName;
-	// }
-
-	
-	
 	public IoSession getSession() {
 		return session;
 	}
-
-	public boolean setSysSig(Integer sigId, BPValue val) {
-		boolean ret = false;
-		if(sysSigMap.containsKey(sigId)) {
-			sysSigMap.put(sigId, val);
-			ret = true;
-		}
-		return ret;
-	}
-	
-	public BPValue getSysSigVal(Integer sigId) {
-		BPValue val = null;
-		if(sysSigMap.containsKey(sigId)) {
-			// Object tmp = sysSigMap.get(sigId);
-			// val = new BPValue(tmp.getType());
-			// val.setValStr(tmp.getValStr());
-		}
-		return val;
-	}
-	
-	// public void setDevName(String devName) {
-	//	this.devName = devName;
-	// }
 	
 	public void dumpSysSig() {
 		Iterator<Map.Entry<Integer, Object>> entries = sysSigMap.entrySet().iterator(); 

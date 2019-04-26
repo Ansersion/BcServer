@@ -246,7 +246,6 @@ public class BPDeviceSession extends BPSession {
         	ret = true;
         } catch (Exception e) {
         	logger.error("Inner error: Exception in relayAckDataList");
-        	ret = false;
         }finally {
         	relayAckDataListLock.unlock();
         }
@@ -274,7 +273,6 @@ public class BPDeviceSession extends BPSession {
         	}
         } catch (Exception e) {
         	Util.logger(logger, Util.ERROR, e);
-        	ret = null;
         }finally {
         	relayAckDataListLock.unlock();
         }

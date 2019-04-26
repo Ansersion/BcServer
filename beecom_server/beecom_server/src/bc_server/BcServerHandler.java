@@ -128,7 +128,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 			sb.append(bpSession.isSessionReady());
 		}
 		logger.info(sb.toString());
-		session.closeOnFlush();
+		session.closeNow();
 
 	}
 	
@@ -186,7 +186,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 				Payload pld = bpPacket.getPld();
 				pld.setDevUniqId(bpSession.getUniqDevId());
 				Map<Integer, Map.Entry<Byte, Object>> sigValMap = new HashMap<>();
-				Payload.MyEntry<Byte, Object> communicateStateEntry = new Payload.MyEntry<Byte, Object>((byte)BPPacket.VAL_TYPE_ENUM, Integer.valueOf(1));
+				Payload.MyEntry<Byte, Object> communicateStateEntry = new Payload.MyEntry<>((byte)BPPacket.VAL_TYPE_ENUM, Integer.valueOf(1));
 				sigValMap.put(0xE001, communicateStateEntry);
 				pld.setSigValMap(sigValMap);
 				
@@ -267,7 +267,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 				switch (loginErrorEnum) {
 				case USER_INVALID:
 					logger.warn("Invalid user name:{}", userName);
-					packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_USER_OR_PASSWORD_INVALID);
+					packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_USER_NAME_INVALID);
 					session.write(packAck);
 					session.closeOnFlush();
 					break;
@@ -604,7 +604,6 @@ public class BcServerHandler extends IoHandlerAdapter {
 							bpDeviceSession.getTimeout())) {
 						packAck.getVrbHead().setRetCode(BPPacketPOST.RET_CODE_BUFFER_FILLED_ERR);
 						session.write(packAck);
-						return;
 					}
 				}
 			} else {
@@ -763,7 +762,6 @@ public class BcServerHandler extends IoHandlerAdapter {
 		}
 		
 		vrb = decodedPack.getVrbHead();
-		// pld = decodedPack.getPld();
 		
 		boolean sigAttrFlag = vrb.getSigAttrFlag();
 		
@@ -788,7 +786,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 		}
 		
 		BPSession bpSessionTmp = getBPSession(session);
-		if(null == bpSessionTmp || !(bpSessionTmp instanceof BPDeviceSession)) {
+		if(!(bpSessionTmp instanceof BPDeviceSession)) {
 			/* NOTE: 
 			 * not connected */
 			session.closeOnFlush();
@@ -971,11 +969,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 	
 	private void onPing(IoSession session, BPPacket decodedPack) {
 		VariableHeader vrb;
-		// Payload pld, pldAck;
-		// long devUniqId = 0;
 		BPSession bpSession;
-		// BPPacketType packType = decodedPack.getPackTypeFxHead();
-		// BeecomDB beecomDb = BeecomDB.getInstance();
 		
 		vrb = decodedPack.getVrbHead();
 		byte flags = vrb.getFlags();
@@ -1006,12 +1000,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 		
 		vrb = decodedPack.getVrbHead();
 		int retCode = vrb.getRetCode();
-		// int packSeq = vrb.getPackSeq();
-		/*
-		if(!checkPackSeq()) {
-			return;
-		}
-		*/
+
 		switch(retCode) {
 		case BPPacketPUSH.RET_CODE_OK:
 			logger.info("PUSHACK OK");
@@ -1032,9 +1021,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 			session.closeOnFlush();
 			return;
 		}
-		if(bpSession != null) {
-			logger.info("Disconn, {}", bpSession);
-		}
+		logger.info("Disconn, {}", bpSession);
 		session.closeOnFlush();
 	}
 	

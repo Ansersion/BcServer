@@ -20,7 +20,7 @@ public class BPPacketPOSTACK extends BPPacket {
 	public static final int RET_CODE_SIGNAL_ID_UNSUPPORTED = 0x03;
 	public static final int RET_CODE_SIGNAL_VALUE_UNFORMAL = 0x04;
 	
-	private byte[] signalValueRelay;
+
 	private int signalIdWithErr;
 	
 	protected BPPacketPOSTACK() {
@@ -82,7 +82,7 @@ public class BPPacketPOSTACK extends BPPacket {
 				int signalValuePositionEnd = ioBuffer.position();
 				ioBuffer.rewind();
 				ioBuffer.position(signalValuePositionStart);
-				signalValueRelay = new byte[signalValuePositionEnd - signalValuePositionStart];
+				byte[] signalValueRelay = new byte[signalValuePositionEnd - signalValuePositionStart];
 				ioBuffer.get(signalValueRelay);
 			}
 		} catch(Exception e) {

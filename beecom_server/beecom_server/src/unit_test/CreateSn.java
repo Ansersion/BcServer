@@ -10,13 +10,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import db.BeecomDB;
-import db.DevInfoHbn;
-import db.UserInfoUnit;
-import other.BeecomEncryption;
 import other.Util;
 
 /**
- * @author isdt
+ * @author Ansersion
  *
  */
 public class CreateSn {

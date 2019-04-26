@@ -1,5 +1,7 @@
 package bp_packet;
 
+import java.nio.charset.StandardCharsets;
+
 import org.apache.mina.core.buffer.IoBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,14 +82,14 @@ public class BPPacketCONNECT extends BPPacket {
 			
 			setSysSigTableVersion(ioBuffer.getUnsignedShort());
 			
-			pld.setUserName(new String(userName, "UTF-8"));
+			pld.setUserName(new String(userName, StandardCharsets.UTF_8));
 			pld.setPassword(new String(password));
 			
 			if(vrb.getDevIdFlag()) {
 				int adminNameLen = ioBuffer.getUnsignedShort();
 				if(adminNameLen > 0) {
 					byte[] adminName = new byte[adminNameLen];
-					pld.setAdminName(new String(adminName, "UTF-8"));
+					pld.setAdminName(new String(adminName, StandardCharsets.UTF_8));
 				} else {
 					pld.setAdminName(null);
 				}

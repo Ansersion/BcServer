@@ -54,7 +54,6 @@ public class BPPacketGETACK extends BPPacket {
 	private static final Logger logger = LoggerFactory.getLogger(BPPacketGETACK.class); 
 	
 	int deviceNum;
-	Vector<DevSigData> vctDevSigData;
 
 	protected BPPacketGETACK(FixedHeader fxHeader) {
 		super(fxHeader);

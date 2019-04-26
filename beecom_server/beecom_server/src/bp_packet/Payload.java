@@ -64,8 +64,6 @@ public class Payload {
 	public static final byte CUSTOM_SIGNAL_PUSH_SIGNAL_VALUE_END_MASK = 0x08;
 	private static final Logger logger = LoggerFactory.getLogger(Payload.class);
 
-	// byte[] userName = null;
-	// byte[] password = null;
 	private String userName;
 	private String password;
 	private String devName = null;
@@ -103,51 +101,6 @@ public class Payload {
 		this.error = error;
 	}
 
-	/*
-	public void setUserName(byte[] userName) {	
-		this.userName = userName;
-	}
-	
-	public void setPassword(byte[] password) {
-		this.password = password;
-	}
-	
-	public void getUserName(byte[] userName) {
-		if(userName.length < this.userName.length) {
-			return;
-		}
-		for(int i = 0; i < this.userName.length; i++) {
-			userName[i] = this.userName[i];
-		}
-	}
-	
-	public byte[] getUserName() {
-		byte[] userNameTmp = new byte[userName.length];
-		for(int i = 0; i < userName.length; i++) {
-			userNameTmp[i] = userName[i];
-		}
-		return userNameTmp;
-	}
-	
-	public void getPassword(byte[] password) {
-		if(password.length < this.password.length) {
-			return;
-		}
-		for(int i = 0; i < this.password.length; i++) {
-			password[i] = this.password[i];
-		}
-	}
-	public byte[] getPassword() {
-		byte[] passwordTmp = new byte[password.length];
-		for(int i = 0; i < password.length; i++) {
-			passwordTmp[i] = password[i];
-		}
-		return passwordTmp;
-	}
-	*/
-	
-	
-	
 	public void reset() {
 		userName = null;
 		password = null;
@@ -257,10 +210,6 @@ public class Payload {
 		return null;
 	}
 	
-	public boolean packSysSignal(long uniqDevId, List<Integer> sysSigLst) {
-		return true;
-	}
-	
 	public boolean packSysSignalValues(List<Integer> sysSigLst, BPDeviceSession bpDeviceSession, BPError bpError) {
 		boolean ret = false;
 		if (null == sysSigLst || null == bpDeviceSession) {
@@ -321,11 +270,6 @@ public class Payload {
 			}
 		}
 		return ret;
-	}
-	
-	
-	public boolean packCusSignal(long uniqDevId, List<Integer> sysSigLst, byte langFlags) {
-		return true;
 	}
 	
 	public Map<Integer, SignalAttrInfo> getSysSigAttrMap() {

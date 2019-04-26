@@ -12,9 +12,6 @@ public class SysSigInfo {
 	private byte permission;
 	private boolean ifDisplay;
 	private byte accuracy;
-	// private BPValue valMin;
-	// private BPValue valMax;
-	// private BPValue valDef;
 	private Object valMin;
 	private Object valMax;
 	private Object valDef;

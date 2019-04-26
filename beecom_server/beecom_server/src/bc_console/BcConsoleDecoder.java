@@ -16,7 +16,6 @@ import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 
 
 public class BcConsoleDecoder extends CumulativeProtocolDecoder {
-	// private static final Logger logger = LoggerFactory.getLogger(BcConsoleDecoder.class); 
 
 	public enum DecodeState {
 		DEC_INVALID, DEC_FX_HEAD, DEC_REMAINING_DATA;
