@@ -85,10 +85,11 @@ public class BPPacketCONNECT extends BPPacket {
 			pld.setUserName(new String(userName, StandardCharsets.UTF_8));
 			pld.setPassword(new String(password));
 			
-			if(vrb.getDevIdFlag()) {
+			if(vrb.getDevClntFlag()) {
 				int adminNameLen = ioBuffer.getUnsignedShort();
 				if(adminNameLen > 0) {
 					byte[] adminName = new byte[adminNameLen];
+					ioBuffer.get(adminName);
 					pld.setAdminName(new String(adminName, StandardCharsets.UTF_8));
 				} else {
 					pld.setAdminName(null);

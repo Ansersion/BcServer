@@ -323,7 +323,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 					}
 					
 					deviceInfoUnit.getDevInfoHbn().setAdminId(userId);
-					if(!beecomDb.updateHbn(deviceInfoUnit.getSnInfoHbn())) {
+					if(!beecomDb.updateHbn(deviceInfoUnit.getDevInfoHbn())) {
 						packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_SERVER_UNAVAILABLE);
 						session.write(packAck);
 						session.closeOnFlush();
@@ -916,7 +916,6 @@ public class BcServerHandler extends IoHandlerAdapter {
 			Map<Integer, SignalInfoUnitInterface> signalId2InfoUnitMap = bpDeviceSession.parseSignalInfoUnitInterfaceMap(systemSignalEnabledList, systemSignalCustomInfoUnit, customSignalInfoUnitList);
 			bpDeviceSession.setSessionReady(true);
 			bpDeviceSession.setSignalId2InfoUnitMap(signalId2InfoUnitMap);
-			return;
 		}
 		
 		if(sigValFlag) {
