@@ -63,6 +63,20 @@ public abstract class BcConsoleCommand {
 					tmp = null;
 				}
 				ret = tmp;
+			} else if(0 == array[0].trim().compareTo(BcConsoleCommandPayload.CMD_WORD)) {
+				BcConsoleCommandPayload tmp = new BcConsoleCommandPayload();
+				if (array.length > 2) {
+					int payloadTmp = BcConsole.maxDeviceClientPayload;
+					try {
+						payloadTmp = Integer.valueOf(array[1]);
+					} catch(Exception e) {
+						Util.logger(logger, Util.ERROR, e);
+					}
+					tmp.setPayload(payloadTmp);
+				} else {
+					tmp = null;
+				}
+				ret = tmp;
 			}
 		} catch (Exception e) {
 			Util.logger(logger, Util.ERROR, e);

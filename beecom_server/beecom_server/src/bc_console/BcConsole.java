@@ -36,7 +36,7 @@ public class BcConsole {
 	private static Map<String, ServerNode> serverChildrenMap = new HashMap<>();
 	private static ServerNode serverFather = ServerChain.SERVER_NODE_DEFAULT;
 	private static Lock serverLock = new ReentrantLock();
-	
+	public static int maxDeviceClientPayload = 30000; // 30000 device client payload for 4G memory
 	
 	public static String updateServerChildren(String file) {
     	/* load the configuration file if any:
@@ -96,6 +96,11 @@ public class BcConsole {
 		return ret;
 	}
 	
+	public static String updateDeviceClientPayload(int payload) {
+		maxDeviceClientPayload = payload;
+		return "* DevicePayload: " + maxDeviceClientPayload + "\r\n";
+	}
+	
 	public static String print() {
 		String ret = "";
 		serverLock.lock();
@@ -105,6 +110,7 @@ public class BcConsole {
 			for (Map.Entry<String, ServerNode> entry : serverChildrenMap.entrySet()) { 
 				ret += "* Child: "  + entry.getValue().getType() + "->" + entry.getValue().getAddress() + "\r\n";
 			}
+			ret += "* DevicePayload: " + maxDeviceClientPayload + "\r\n";
 		} catch (Exception e) {
 			Util.logger(logger, Util.DEBUG, e);
 			ret = e.getMessage();

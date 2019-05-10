@@ -24,6 +24,7 @@ import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import bc_console.BcConsole;
 import bc_server.BcDecoder;
 import bp_packet.BPDeviceSession;
 import bp_packet.BPPacket;
@@ -44,7 +45,6 @@ public class BeecomDB {
 	private static final Logger logger = LoggerFactory.getLogger(BcDecoder.class); 
 	private static final Long INVALID_LANGUAGE_ID = 0L;
 	private static final Long INVALID_SIG_MAP_CHECKSUM = 0x7FFFFFFFFFFFFFFFL;
-	private static final int DEVICE_LOAD = 10000;
 	
 	static BeecomDB bcDb = null;
 
@@ -733,11 +733,21 @@ public class BeecomDB {
 				/* already online */
 				return -1;
 			}
-			if(devUniqId2SessionMap.size() > DEVICE_LOAD) {
-				/* load ceiling */
-				return -2;
-			}
 			devUniqId2SessionMap.put(uniqDevId, bpSession);
+		} catch(Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+		} finally {
+			devUniqId2SessionMapLock.unlock();
+		}
+		
+		return ret;
+	}
+	
+	public boolean isDevicePayloadFull() {
+		boolean ret = false;
+		try {
+			devUniqId2SessionMapLock.lock();
+			ret = devUniqId2SessionMap.size() >= BcConsole.maxDeviceClientPayload;
 		} catch(Exception e) {
 			Util.logger(logger, Util.ERROR, e);
 		} finally {

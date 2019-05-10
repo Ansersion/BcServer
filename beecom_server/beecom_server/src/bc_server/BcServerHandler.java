@@ -313,6 +313,13 @@ public class BcServerHandler extends IoHandlerAdapter {
 				packAck.getPld().setServerChainHbn(null);
 
 			} else if (devClntFlag) {
+				if(beecomDb.isDevicePayloadFull()) {
+					packAck.getVrbHead().setRetCode(BPPacket.RET_CODE_SERVER_LOADING_FULL);
+					session.write(packAck);
+					session.closeOnFlush();
+					return;
+				}
+				
 				BeecomDB.LoginErrorEnum loginErrorEnum;
 				DeviceInfoUnit deviceInfoUnit = new DeviceInfoUnit();
 				loginErrorEnum = beecomDb.checkSnPassword(userName, password, deviceInfoUnit);
@@ -421,7 +428,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 				bpSession.setCrcType(decodedPack.getFxHead());
 				bpSession.setSessionReady(false);
 				if(0 != BeecomDB.getInstance().putDevUnitId2SessioinMap(devUniqId, bpSession)) {
-					packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_SERVER_LOADING_FULL);
+					packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_DEVICE_ONLINE);
 					session.write(packAck);
 					session.closeOnFlush();
 					return;
