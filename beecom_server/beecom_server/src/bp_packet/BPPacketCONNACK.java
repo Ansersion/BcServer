@@ -15,27 +15,23 @@ import sys_sig_table.BPSysSigTable;
  *
  */
 public class BPPacketCONNACK extends BPPacket {
-	
-	public static final int RET_CODE_OK = 0x00;
 	public static final int RET_CODE_LEVEL_ERR = 0x01;
-	public static final int RET_CODE_SERVER_ERR = 0x02;
+	// public static final int RESERVED = 0x02;
 	public static final int RET_CODE_USER_NAME_INVALID = 0x03;
 	public static final int RET_CODE_PWD_INVALID = 0x04;
 	public static final int RET_CODE_ENCRYPT_ERR = 0x05;
-	public static final int RET_CODE_CRC_UNSUPPORT = 0x06;
-	public static final int RET_CODE_CRC_CHECK_ERR = 0x07;
-	public static final int RET_CODE_CLNT_ID_INVALID = 0x08;
-	public static final int RET_CODE_CLNT_UNKNOWN = 0x09;
-	
-	public static final int RET_CODE_USER_INVALID = 0x10;
-	public static final int RET_CODE_REGISTER_FAILED = 0x11;
-	
-	public static final int RET_CODE_SERVER_CHAIN_INVALID = 0x12;
-	public static final int RET_CODE_ADMIN_NAME_INVALID = 0x13;
-	public static final int RET_CODE_DEVICE_ONLINE = 0x14;
-	
-	public static final int RET_CODE_SERVER_LOADING_FULL = 0xFE;
-	public static final int RET_CODE_SERVER_UNAVAILABLE = 0xFF;
+	// public static final int RESERVED = 0x06;
+	// public static final int RESERVED = 0x07;
+	public static final int RET_CODE_CLNT_UNKNOWN = 0x08;
+	public static final int RET_CODE_REGISTER_FAILED = 0x09;
+	// public static final int RET_CODE_CLNT_UNKNOWN = 0x0A;
+	// public static final int RET_CODE_CLNT_UNKNOWN = 0x0B;
+	// public static final int RET_CODE_CLNT_UNKNOWN = 0x0C;
+	// public static final int RET_CODE_CLNT_UNKNOWN = 0x0D;
+	// public static final int RET_CODE_CLNT_UNKNOWN = 0x0F;
+	public static final int RET_CODE_SERVER_CHAIN_INVALID = 0x10;
+	public static final int RET_CODE_ADMIN_NAME_INVALID = 0x11;
+	public static final int RET_CODE_DEVICE_ONLINE = 0x12;
 
 	protected BPPacketCONNACK(FixedHeader fxHeader) {
 		super(fxHeader);
@@ -46,24 +42,6 @@ public class BPPacketCONNACK extends BPPacket {
 		FixedHeader fxHead = getFxHead();
 		fxHead.setPacketType(BPPacketType.CONNACK);
 		fxHead.setCrcType(CrcChecksum.CRC32);
-	}
-	
-	protected BPPacketCONNACK(BPPacketCONNECT packConnnect) {
-		super();
-		FixedHeader fxHead = getFxHead();
-		fxHead.setPacketType(BPPacketType.CONNACK);
-		fxHead.setCrcType(packConnnect.getFxHead().getCrcChk());
-		VariableHeader vrbHead = getVrbHead();
-		if(packConnnect.getVrbHead().getLevel() > BPPacket.BP_LEVEL) {
-			vrbHead.setLevel(BPPacket.BP_LEVEL);
-			vrbHead.setRetCode(0x01);
-		} else {
-			vrbHead.setLevel(packConnnect.getVrbHead().getLevel());
-			if(0 == packConnnect.getVrbHead().getClientId()) {
-				vrbHead.setNewCliIdFlg();
-			}
-			vrbHead.setRetCode(0x00);
-		}
 	}
 
 	@Override

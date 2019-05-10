@@ -224,7 +224,7 @@ public class Payload {
 			SignalInfoUnitInterface signalInfoUnitInterfaceTmp;
 			if (null == signalInfoUnitInterfaceMap) {
 				if (null != bpError) {
-					bpError.setErrorCode(BPPacketGETACK.RET_CODE_SERVER_ERROR);
+					bpError.setErrorCode(BPPacketGETACK.RET_CODE_SERVER_UNAVAILABLE);
 				}
 				return ret;
 			}
@@ -233,7 +233,7 @@ public class Payload {
 				int sysSigId = it.next();
 				if (sysSigId < BPPacket.SYS_SIG_START_ID || sysSigId > BPPacket.MAX_SIG_ID) {
 					if (null != bpError) {
-						bpError.setErrorCode(BPPacketGETACK.RET_CODE_SIGNAL_NOT_SUPPORT_ERR);
+						bpError.setErrorCode(BPPacketGETACK.RET_CODE_SIG_ID_INVALID);
 						bpError.setSigId(sysSigId);
 					}
 					return ret;
@@ -241,7 +241,7 @@ public class Payload {
 
 				if (!signalInfoUnitInterfaceMap.containsKey(sysSigId)) {
 					if (null != bpError) {
-						bpError.setErrorCode(BPPacketGETACK.RET_CODE_SIGNAL_NOT_SUPPORT_ERR);
+						bpError.setErrorCode(BPPacketGETACK.RET_CODE_SIG_ID_INVALID);
 						bpError.setSigId(sysSigId);
 					}
 					return ret;
@@ -266,7 +266,7 @@ public class Payload {
 			Util.logger(logger, Util.ERROR, e);
 			ret = false;
 			if(null != bpError) {
-				bpError.setErrorCode(BPPacketGETACK.RET_CODE_SERVER_ERROR);
+				bpError.setErrorCode(BPPacketGETACK.RET_CODE_SERVER_UNAVAILABLE);
 			}
 		}
 		return ret;

@@ -6,12 +6,10 @@ package bp_packet;
 import other.CrcChecksum;
 
 /**
- * @author hubing
+ * @author Ansersion
  *
  */
 public class BPPacketPINGACK extends BPPacket {
-	
-	public static final int RET_CODE_OK = 0x00;
 	public static final int RET_CODE_CLNT_ID_INVALID = 0x02;
 	
 	
@@ -38,7 +36,10 @@ public class BPPacketPINGACK extends BPPacket {
 	}
 
 	@Override
-	public boolean assemblePayload() {		
+	public boolean assemblePayload() {	
+		if(RET_CODE_OK != getVrbHead().getRetCode()) {
+			return true;
+		}
 		return true;
 	}
 }

@@ -52,7 +52,7 @@ public class BcConsoleHandler extends IoHandlerAdapter {
 			throws Exception {
 		String s = "Over Alive time";
 		logger.info(s);
-		session.closeOnFlush();
+		session.closeNow();
 
 	}
 

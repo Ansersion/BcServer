@@ -3,8 +3,6 @@
  */
 package bp_packet;
 
-import java.util.Vector;
-
 import org.apache.mina.core.buffer.IoBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,41 +37,26 @@ import java.util.List;
  * 
  */
 public class BPPacketGETACK extends BPPacket {
-	
-	public static final int RET_CODE_OK = 0x00;
 	public static final int RET_CODE_VRB_HEADER_FLAG_ERR = 0x01;
-	public static final int RET_CODE_SIG_MAP_UNCHECK = 0x02;
+	// public static final int RESERVED = 0x02;
 	public static final int RET_CODE_SIG_ID_INVALID = 0x03;
-	public static final int RET_CODE_SIGNAL_NOT_SUPPORT_ERR = 0x03;
+	public static final int RET_CODE_LOAD_HEAVY = 0x04;
 	public static final int RET_CODE_SIGNAL_REPEAT_ERR = 0x05;
 	public static final int RET_CODE_GET_SN_PERMISSION_DENY_ERR = 0x06;
 	public static final int RET_CODE_ACCESS_DEV_PERMISSION_DENY_ERR = 0x07;
 	public static final int RET_CODE_OFF_LINE_ERR = 0x08;
-	public static final int RET_CODE_SERVER_ERROR = 0xFF;
 	
 	private static final Logger logger = LoggerFactory.getLogger(BPPacketGETACK.class); 
-	
-	int deviceNum;
 
 	protected BPPacketGETACK(FixedHeader fxHeader) {
 		super(fxHeader);
 	}
-
-	protected BPPacketGETACK(FixedHeader fxHeader, int devNum) {
-		super(fxHeader);
-		deviceNum = devNum;
-	}
-
 	
 	protected BPPacketGETACK() {
 		super();
 		FixedHeader fxHead = getFxHead();
 		fxHead.setPacketType(BPPacketType.GETACK);
 		fxHead.setCrcType(CrcChecksum.CRC32);
-	}
-	
-	public void setDevNum(int num) {
-		deviceNum = num;
 	}
 	
 	@Override
@@ -150,14 +133,18 @@ public class BPPacketGETACK extends BPPacket {
 		boolean ret = false;
 		try {
 			VariableHeader vrb = getVrbHead();
-			if (vrb.getReqAllDeviceId()) {
-				return true;
-			}
-
 			Payload pld = getPld();
 			IoBuffer buffer = getIoBuffer();
 			buffer.putUnsignedInt(pld.getUniqDevId());
 			
+			if(RET_CODE_OK != getVrbHead().getRetCode()) {
+				return true;
+			}
+			
+			if (vrb.getReqAllDeviceId()) {
+				return true;
+			}
+
 			if(vrb.getSigValFlag()) {
 				/* check ret code */
 				int retCode = vrb.getRetCode();

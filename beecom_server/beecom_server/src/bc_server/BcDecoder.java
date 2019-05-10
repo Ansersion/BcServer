@@ -40,6 +40,7 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 		if (!session.containsAttribute(OLD_CONNECTION)) {
 			session.setAttribute(OLD_CONNECTION, true);
 			session.setAttribute(DECODE_STATE, DecodeState.DEC_FX_HEAD);
+			session.setAttribute(CRC_CHECKSUM, true);
 		}
 
 		DecodeState currState = (DecodeState) session
@@ -82,9 +83,10 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 					crcGet = packIoBuf.getUnsignedShort();
 				}
 				if(!CrcChecksum.crcCheck(data, fxHead.getCrcChk(), crcGet)) {
+					session.setAttribute(CRC_CHECKSUM, false);
 					session.setAttribute(DECODE_STATE, DecodeState.DEC_FX_HEAD);
-					session.closeOnFlush();
-					return ret;
+					decoderOut.write(bpPack);
+					return true;
 				}
 				try {
 					packIoBuf.rewind();

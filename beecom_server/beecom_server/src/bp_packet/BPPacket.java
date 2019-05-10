@@ -103,6 +103,13 @@ public class BPPacket implements BPPacketInterface {
 	public static final short USER_AUTH_WRITE = 0x0002;
 	public static final short USER_AUTH_MANAGE = 0x0001;
 	
+	/* BP error code */
+	public static final int RET_CODE_OK = 0x00;
+	public static final int RET_CODE_CRC_CHECK_ERR = 0xFD;
+	public static final int RET_CODE_SERVER_LOADING_FULL = 0xFE;
+	public static final int RET_CODE_SERVER_UNAVAILABLE = 0xFF;
+	public static final int INNER_CODE_CLOSE_CONNECTION = -1;
+	
 	/* open register */
 	private static Lock openRegisterLock = new ReentrantLock(); 
 	private static boolean openRegister = false;

@@ -125,6 +125,34 @@ public class BPPackFactory {
 		return ret;
 	}
 	
+	public static boolean packetNeedAck(BPPacket pack) {
+		boolean ret = false;
+		try {
+			if(null == pack) {
+				return ret;
+			}
+			BPPacketType packReqType = pack.getPackTypeFxHead();
+
+			if (BPPacketType.CONNECT == packReqType) {
+				ret = true;
+			} else if (BPPacketType.GET == packReqType) {
+				ret = true;
+			} else if (BPPacketType.POST == packReqType) {
+				ret = true;
+			} else if (BPPacketType.REPORT == packReqType) {
+				ret = true;
+			} else if (BPPacketType.PING == packReqType) {
+				ret = true;
+			} else if (BPPacketType.PUSH == packReqType) {
+				ret = true;
+			}
+		} catch (Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+		}
+		
+		return ret;
+	}
+	
 	public static BPPacket createBPPack(BPPacketType type) {
 		
 		BPPacket ret;
