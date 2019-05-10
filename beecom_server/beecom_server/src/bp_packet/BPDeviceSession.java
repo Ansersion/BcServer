@@ -284,22 +284,33 @@ public class BPDeviceSession extends BPSession {
 	@Override
 	public void updateLoginTime() {
 		BeecomDB beecomDb = BeecomDB.getInstance();
+		SnInfoHbn snInfoHbn = beecomDb.getSnInfoHbn(getSnId());
 		long currentTimestamp = System.currentTimeMillis();
+		if(null == snInfoHbn) {
+			logger.error("Inner error: snId({}) not found", getSnId());
+			return;
+		}
+		if(snInfoHbn.getExpiredDate().getTime() > currentTimestamp) {
+			/* no need to update: the expired time is not reached*/
+			/* update the timestamp in order to make it smooth to exist time calculation*/
+			setLoginTimestamp(currentTimestamp);
+			return;
+		}
+		if(snInfoHbn.getExistTime() == 0) {
+			/* no need to update: the exist time is none already */
+			return;
+		}
+		
 		int loginPeriod = (int) ((currentTimestamp - getLoginTimestamp()) / 1000);
 		if(loginPeriod > 0) {
-			SnInfoHbn snInfoHbn = beecomDb.getSnInfoHbn(getSnId());
-			if(null == snInfoHbn) {
-				logger.error("Inner error: snId({}) not found", getSnId());
+			if(snInfoHbn.getExistTime() < loginPeriod) {
+				snInfoHbn.setExistTime(0);
 			} else {
-				if(snInfoHbn.getExistTime() < loginPeriod) {
-					snInfoHbn.setExistTime(0);
-				} else {
-					snInfoHbn.setExistTime(snInfoHbn.getExistTime() - loginPeriod);
-				}
-				beecomDb.updateHbn(snInfoHbn);
-				logger.info("LOGIN PERIOD: {}", loginPeriod);
-				setLoginTimestamp(currentTimestamp);
+				snInfoHbn.setExistTime(snInfoHbn.getExistTime() - loginPeriod);
 			}
+			beecomDb.updateHbn(snInfoHbn);
+			setLoginTimestamp(currentTimestamp);
+			logger.info("LOGIN PERIOD: {}", loginPeriod);
 		}
 		
 	}

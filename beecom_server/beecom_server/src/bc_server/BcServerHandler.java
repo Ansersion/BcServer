@@ -328,6 +328,20 @@ public class BcServerHandler extends IoHandlerAdapter {
 					break;
 				}
 				
+				/* check if the device if expired */
+				long timeTmp = deviceInfoUnit.getSnInfoHbn().getExpiredDate().getTime();
+				/* check the expired time first */
+				if(timeTmp < System.currentTimeMillis()) {
+					timeTmp = deviceInfoUnit.getSnInfoHbn().getExistTime();
+					/* check the exist time then */
+					if(timeTmp <= 0) {
+						packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_DEVICE_EXPIRED);
+						session.write(packAck);
+						session.closeOnFlush();
+						return;
+					}
+				}
+				
 				if(pld.getAdminName() != null) {
 					long userId = beecomDb.getUserIdByUserName(pld.getAdminName());
 					if(userId < 0) {

@@ -1,6 +1,6 @@
 package db;
 
-import java.util.Date;
+import java.sql.Date;
 
 public class SnInfoHbn {
 	private Long id;
@@ -12,8 +12,8 @@ public class SnInfoHbn {
     
 	public SnInfoHbn() {
 		super();
-		activiteDate = new Date();
-		expiredDate = new Date();
+		activiteDate = new Date(0);
+		expiredDate = new Date(0);
 		existTime = -1;
 	}
 	public Long getId() {
@@ -59,6 +59,4 @@ public class SnInfoHbn {
 				+ activiteDate + ", expiredDate=" + expiredDate + ", existTime=" + existTime + "]";
 	}
 
-    
-    
 }

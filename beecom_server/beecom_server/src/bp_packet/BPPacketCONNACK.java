@@ -32,6 +32,7 @@ public class BPPacketCONNACK extends BPPacket {
 	public static final int RET_CODE_SERVER_CHAIN_INVALID = 0x10;
 	public static final int RET_CODE_ADMIN_NAME_INVALID = 0x11;
 	public static final int RET_CODE_DEVICE_ONLINE = 0x12;
+	public static final int RET_CODE_DEVICE_EXPIRED = 0x13;
 
 	protected BPPacketCONNACK(FixedHeader fxHeader) {
 		super(fxHeader);
