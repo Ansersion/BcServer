@@ -19,35 +19,17 @@ import org.slf4j.LoggerFactory;
 import db.RelayData;
 import other.CrcChecksum;
 import other.Util;
-import sys_sig_table.BPSysSigTable;
 
 /**
  * @author Ansersion
  *
  */
 
-class SigIdNonExistException extends Exception {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -1342721670055052282L;
-	SigIdNonExistException(String msg) {
-		super(msg);
-	}
-	SigIdNonExistException() {
-		super();
-	}
-}
 public abstract class BPSession {
-	
 	private static final Logger logger = LoggerFactory.getLogger(BPSession.class);
+	public static final int LOGIN_TIME_UPDATE_TRIGGER_LIMIT = 30 * 60 * 1000; // 30 minites 
 	
-	IoSession session;
-	int seqIdUsrClnt = 0;
-	Map<Integer, Byte[]> mapDist2SysSigMap = null;
-	Map<Integer, Object> sysSigMap;
-	Map<Integer, Object> systemSignalValueMap;
-	Map<Integer, Map.Entry<Byte, Object>> customSignalValueMap;
+	private IoSession session;
 	
 	private int procLevel;
 	private int aliveTime;
@@ -56,6 +38,7 @@ public abstract class BPSession {
 	private byte performanceClass;
 	private long latestPingTimestamp;
 	private boolean sessionReady;
+	private long loginTimestamp;
 	
 	private Map<Integer, RelayData> seqId2TimerRelayMap;
 	private Lock relayMaplock = new ReentrantLock();
@@ -148,11 +131,6 @@ public abstract class BPSession {
 
 	public void setSn(String sn) {
 	}
-
-	public BPSession(byte[] userName, byte[] password, int clientId, boolean userLogin, boolean devLogin, long uniqDevId) {
-		seqIdUsrClnt = 0;
-		sysSigMap = new HashMap<>();
-	}
 	
 	public long getUniqDevId() {
 		return 0;
@@ -161,74 +139,8 @@ public abstract class BPSession {
 	public void setUniqDevId(long uniqDevId) {
 	}
 	
-	public Map<Integer, Object> getSysSigMap() {
-		return sysSigMap;
-	}
-	
 	public IoSession getSession() {
 		return session;
-	}
-	
-	public void dumpSysSig() {
-		Iterator<Map.Entry<Integer, Object>> entries = sysSigMap.entrySet().iterator(); 
-		while (entries.hasNext()) {    
-		    Map.Entry<Integer, Object> entry = entries.next();
-		    Integer key = entry.getKey();  
-		    Object value = entry.getValue();  
-		    logger.info("{}=>{}", key, value); 
-		}  
-	}
-	public void setSysSigMap(Map<Integer, Byte[]> sysSigMap) {
-		if(null == mapDist2SysSigMap) {
-			mapDist2SysSigMap = sysSigMap;
-		} else {
-			Iterator<Map.Entry<Integer, Byte[]>> entries = sysSigMap.entrySet().iterator(); 
-			while (entries.hasNext()) {    
-			    Map.Entry<Integer, Byte[]> entry = entries.next();
-			    Integer key = entry.getKey();  
-			    Byte[] value = entry.getValue();  
-			    mapDist2SysSigMap.put(key, value);  
-			  
-			}  
-		}
-	}
-	
-	public void initSysSigValDefault() {
-		sysSigMap.clear();
-		Iterator<Map.Entry<Integer, Byte[]>> entries = mapDist2SysSigMap.entrySet().iterator();
-		while(entries.hasNext()) {
-			Map.Entry<Integer, Byte[]> entry = entries.next();
-			Integer key = entry.getKey();
-			Byte[] value = entry.getValue();
-			int distSigStartId = BPPacket.SYS_SIG_START_ID + key * BPPacket.SYS_SIG_DIST_STEP;
-			BPSysSigTable sysSigTab = BPSysSigTable.getSysSigTableInstance();
-			for(int i = 0; i < value.length; i++) {
-				if(((1 << 0) & value[i]) == (1 << 0)) {
-					sysSigMap.put(distSigStartId + i * 8 + 7, sysSigTab.getSysSigInfo(i * 8 + 7).getValDef());
-				}
-				if(((1 << 1) & value[i]) == (1 << 1)) {
-					sysSigMap.put(distSigStartId + i * 8 + 6, sysSigTab.getSysSigInfo(i * 8 + 6).getValDef());
-				}
-				if(((1 << 2) & value[i]) == (1 << 2)) {
-					sysSigMap.put(distSigStartId + i * 8 + 5, sysSigTab.getSysSigInfo(i * 8 + 5).getValDef());
-				}
-				if(((1 << 3) & value[i]) == (1 << 3)) {
-					sysSigMap.put(distSigStartId + i * 8 + 4, sysSigTab.getSysSigInfo(i * 8 + 4).getValDef());
-				}
-				if(((1 << 4) & value[i]) == (1 << 4)) {
-					sysSigMap.put(distSigStartId + i * 8 + 3, sysSigTab.getSysSigInfo(i * 8 + 3).getValDef());
-				}
-				if(((1 << 5) & value[i]) == (1 << 5)) {
-					sysSigMap.put(distSigStartId + i * 8 + 2, sysSigTab.getSysSigInfo(i * 8 + 2).getValDef());
-				}
-				if(((1 << 6) & value[i]) == (1 << 6)) {
-					sysSigMap.put(distSigStartId + i * 8 + 1, sysSigTab.getSysSigInfo(i * 8 + 1).getValDef());
-				}
-				if(((1 << 7) & value[i]) == (1 << 7)) {
-					sysSigMap.put(distSigStartId + i * 8 + 0, sysSigTab.getSysSigInfo(i * 8 + 0).getValDef());
-				}
-			}
-		}
 	}
 
 	public boolean isDebugMode() {
@@ -245,22 +157,6 @@ public abstract class BPSession {
 
 	public void setPerformanceClass(byte performanceClass) {
 		this.performanceClass = performanceClass;
-	}
-
-	public Map<Integer, Object> getSystemSignalValueMap() {
-		return systemSignalValueMap;
-	}
-
-	public void setSystemSignalValueMap(Map<Integer, Object> systemSignalValueMap) {
-		this.systemSignalValueMap = systemSignalValueMap;
-	}
-
-	public Map<Integer, Map.Entry<Byte, Object>> getCustomSignalValueMap() {
-		return customSignalValueMap;
-	}
-
-	public void setCustomSignalValueMap(Map<Integer, Map.Entry<Byte, Object>> customSignalValueMap) {
-		this.customSignalValueMap = customSignalValueMap;
 	}
 
 	public int getRelayListSize() {
@@ -422,4 +318,18 @@ public abstract class BPSession {
 	public void setSessionReady(boolean sessionReady) {
 		this.sessionReady = sessionReady;
 	}
+
+	public long getLoginTimestamp() {
+		return loginTimestamp;
+	}
+
+	public void setLoginTimestamp(long loginTimestamp) {
+		this.loginTimestamp = loginTimestamp;
+	}
+	
+	public long getSnId() {
+		return 0;
+	}
+	
+	public abstract void updateLoginTime();
 }

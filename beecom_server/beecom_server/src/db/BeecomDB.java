@@ -149,25 +149,6 @@ public class BeecomDB {
 		}
 		return bcDb;
 	}
-
-	public static boolean chkUserName(String name) {
-		BeecomDB db = getInstance();
-		return db.getName2IDMap().containsKey(name);
-	}
-
-	public static boolean chkUserPwd(String name, byte[] password) {
-		BeecomDB db = getInstance();
-		if (!db.getName2IDMap().containsKey(name)) {
-			return false;
-		}
-		long id = db.getName2IDMap().get(name);
-
-		// Maybe truncate ID
-		DBUserInfoRec userDbRecord = db.getUserInfoRecLst().get((int) id);
-		String strTmp = new String(password);
-		logger.info("PWD mysql: {}", userDbRecord.getPassword());
-		return strTmp.equals(userDbRecord.getPassword());
-	}
 	
 	public LoginErrorEnum checkUserPassword(String name, String password, UserInfoUnit userInfoUnit) {
 
@@ -200,7 +181,6 @@ public class BeecomDB {
 	}
 	
 	public LoginErrorEnum checkSnPassword(String sn, String password, DeviceInfoUnit deviceInfoUnit) {
-
 		if(null == sn || sn.isEmpty()) {
 			return LoginErrorEnum.USER_INVALID;
 		}
@@ -237,6 +217,21 @@ public class BeecomDB {
 			Util.logger(logger, Util.ERROR, e);
 		}
 		return result;
+	}
+	
+	public SnInfoHbn getSnInfoHbn(long id) {
+		SnInfoHbn ret = null;
+		
+		if(id <= 0) {
+			return ret;
+		}
+
+		try (Session session = sessionFactory.openSession()) {
+			 ret = session.get(SnInfoHbn.class, id);
+		} catch (Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+		}
+		return ret;
 	}
 	
 	public GetSnErrorEnum checkGetSNPermission(long userId, String sn) {
@@ -718,34 +713,6 @@ public class BeecomDB {
 		
 		return false;
 		
-	}
-
-	public static boolean chkDevUniqId(long devUniqId) {
-		BeecomDB db = getInstance();
-		return devUniqId <= db.getDevInfoRecLst().size() + 1 && devUniqId > 0;
-	}
-
-	public static boolean chkDevPwd(long devUniqId, byte[] password) {
-		BeecomDB db = getInstance();
-		if (devUniqId > db.getDevInfoRecLst().size() + 1 || devUniqId <= 0) {
-			return false;
-		}
-		// Maybe truncate ID
-
-		DBDevInfoRec rec = db.getDevInfoRecLst().get((int) (devUniqId - 1));
-		String strTmp = new String(password);
-		logger.info("Dev PWD mysql: {}", new String(rec.getDevPwd()));
-		return strTmp.equals(new String(rec.getDevPwd()));
-	}
-
-	public static boolean updateDevInfoRec(DBDevInfoRec devInfoRec) {
-		BeecomDB db = getInstance();
-		long devUniqId = devInfoRec.getDevUniqId();
-		if (devUniqId <= 0 || devUniqId > db.devInfoRecLst.size()) {
-			return false;
-		}
-		db.setDevInfoRec(devUniqId, devInfoRec);
-		return true;
 	}
 	
 	public Connection getConn() {

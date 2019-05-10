@@ -80,4 +80,10 @@ public class BPUserSession extends BPSession {
 		return userInfoUnit;
 	}
 
+	@Override
+	public void updateLoginTime() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -25,7 +25,6 @@ import bp_packet.BPPacket;
 import bp_packet.BPPacketType;
 import bp_packet.BPPacketCONNACK;
 import bp_packet.BPPacketGETACK;
-import bp_packet.BPPacketPINGACK;
 import bp_packet.BPPacketPOST;
 import bp_packet.BPPacketPUSH;
 import bp_packet.BPPacketRPRTACK;
@@ -181,13 +180,16 @@ public class BcServerHandler extends IoHandlerAdapter {
 			return;
 		}
 		/* TODO: not need to remove the sessions every time */
+		BeecomDB beecomDb = BeecomDB.getInstance();
 		if(bpSession.ifUserSession()) {
 			bpSession.setSessionReady(false);
 			logger.info("user client {}: session closed", bpSession.getUserName());
-			BeecomDB.getInstance().getUserName2SessionMap().remove(bpSession.getUserName());
+			beecomDb.getUserName2SessionMap().remove(bpSession.getUserName());
 		} else {
 			logger.info("device client {}: session closed", bpSession.getUniqDevId());
-			BeecomDB.getInstance().removeBPDeviceSession(bpSession.getUniqDevId());
+			beecomDb.removeBPDeviceSession(bpSession.getUniqDevId());
+
+			bpSession.updateLoginTime();
 			if(!bpSession.isSessionReady()) {
 				return;
 			}
@@ -205,7 +207,6 @@ public class BcServerHandler extends IoHandlerAdapter {
 				sigValMap.put(0xE001, communicateStateEntry);
 				pld.setSigValMap(sigValMap);
 				
-				BeecomDB beecomDb = BeecomDB.getInstance();
 				List<UserDevRelInfoInterface> userDevRelInfoInterfaceList = beecomDb.getSn2UserDevRelInfoList(bpDeviceSession.getSnId());
 				if(null == userDevRelInfoInterfaceList) {
 					return;
@@ -312,7 +313,6 @@ public class BcServerHandler extends IoHandlerAdapter {
 				packAck.getPld().setServerChainHbn(null);
 
 			} else if (devClntFlag) {
-
 				BeecomDB.LoginErrorEnum loginErrorEnum;
 				DeviceInfoUnit deviceInfoUnit = new DeviceInfoUnit();
 				loginErrorEnum = beecomDb.checkSnPassword(userName, password, deviceInfoUnit);
@@ -431,6 +431,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 			byte performanceClass = vrb.getPerformanceClass();
 			bpSession.setTimeout(timeout);
 			bpSession.setPerformanceClass(performanceClass);
+			bpSession.setLoginTimestamp(System.currentTimeMillis() - 1000); // at least 1 second online 
 			session.getConfig().setIdleTime(IdleStatus.BOTH_IDLE, aliveTime);
 			session.write(packAck);
 		} catch (Exception e) {
@@ -990,7 +991,6 @@ public class BcServerHandler extends IoHandlerAdapter {
 		vrb = decodedPack.getVrbHead();
 		byte flags = vrb.getFlags();
 		int seqId = vrb.getPackSeq();
-		// boolean userOnLine = vrb.getUserOnLine();
 		logger.info("PING: flags={}, sid={}", flags, seqId);
 		
 		bpSession = getBPSession(session);
@@ -999,7 +999,13 @@ public class BcServerHandler extends IoHandlerAdapter {
 			session.closeNow();
 			return;
 		}
-
+		
+		long loginPeriod = System.currentTimeMillis() - bpSession.getLoginTimestamp();
+		
+		if(loginPeriod > BPSession.LOGIN_TIME_UPDATE_TRIGGER_LIMIT || loginPeriod < 0) {
+			bpSession.updateLoginTime();
+		}
+		
 		BPPacket packAck = BPPackFactory.createBPPackAck(decodedPack);
 		
 		packAck.getFxHead().setCrcType(bpSession.getCrcType());

@@ -15,9 +15,11 @@ import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import db.BeecomDB;
 import db.CustomSignalInfoUnit;
 import db.RelayData;
 import db.SignalInfoUnitInterface;
+import db.SnInfoHbn;
 import db.SystemSignalCustomInfoUnit;
 import db.SystemSignalInfoUnit;
 import other.Util;
@@ -41,7 +43,6 @@ public class BPDeviceSession extends BPSession {
 		uniqDeviceId = 0L;
 		password = "";
 		signalValueMap = new HashMap<>();
-		super.setSystemSignalValueMap(new HashMap<Integer, Object>());
 		signalId2InfoUnitMap = null;
 		snId = 0L;
 		relayAckDataList = new ArrayList<>();
@@ -53,7 +54,6 @@ public class BPDeviceSession extends BPSession {
 		this.password = password;
 		relayAckDataList = new ArrayList<>();
 		this.signalValueMap = new HashMap<>();
-		super.setSystemSignalValueMap(new HashMap<Integer, Object>());
 		signalId2InfoUnitMap = null;
 		this.snId = snId;
 	}
@@ -71,7 +71,7 @@ public class BPDeviceSession extends BPSession {
 					RelayData relayData = getRelayData(this);
 					BPPacket packAck = (BPPacket) relayData.getRelayData();
 					packAck.getVrbHead().setRetCode(BPPacketPOST.RET_CODE_TIMEOUT_ERR);
-					session.write(packAck);
+					getSession().write(packAck);
 					relayData.getIoSession().write(packAck);
 					relayData.setTimeoutRelayed(true);
 					removeRelayList(packAck.getVrbHead().getPackSeq());
@@ -215,6 +215,7 @@ public class BPDeviceSession extends BPSession {
 		 * and put a callback when get the response if notifying flag set */
 	}
 
+	@Override
 	public long getSnId() {
 		return snId;
 	}
@@ -278,6 +279,29 @@ public class BPDeviceSession extends BPSession {
         }
         
         return ret;
+	}
+
+	@Override
+	public void updateLoginTime() {
+		BeecomDB beecomDb = BeecomDB.getInstance();
+		long currentTimestamp = System.currentTimeMillis();
+		int loginPeriod = (int) ((currentTimestamp - getLoginTimestamp()) / 1000);
+		if(loginPeriod > 0) {
+			SnInfoHbn snInfoHbn = beecomDb.getSnInfoHbn(getSnId());
+			if(null == snInfoHbn) {
+				logger.error("Inner error: snId({}) not found", getSnId());
+			} else {
+				if(snInfoHbn.getExistTime() < loginPeriod) {
+					snInfoHbn.setExistTime(0);
+				} else {
+					snInfoHbn.setExistTime(snInfoHbn.getExistTime() - loginPeriod);
+				}
+				beecomDb.updateHbn(snInfoHbn);
+				logger.info("LOGIN PERIOD: {}", loginPeriod);
+				setLoginTimestamp(currentTimestamp);
+			}
+		}
+		
 	}
 	
 }
