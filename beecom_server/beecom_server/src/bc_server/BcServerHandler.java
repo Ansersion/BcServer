@@ -423,7 +423,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 				}
 				packAck.getPld().setServerChainHbn(serverChainHbn);
 				bpSession = new BPDeviceSession(session, devUniqId, password,
-						deviceInfoUnit.getDevInfoHbn().getAdminId(), deviceInfoUnit.getDevInfoHbn().getSnId());
+						deviceInfoUnit.getDevInfoHbn().getAdminId(), deviceInfoUnit.getDevInfoHbn().getSnId(), deviceInfoUnit.getDevInfoHbn().getDailySigTabChangeTimes());
 				bpSession.setEncryptionType(decodedPack.getFxHead());
 				bpSession.setCrcType(decodedPack.getFxHead());
 				bpSession.setSessionReady(false);
@@ -897,7 +897,13 @@ public class BcServerHandler extends IoHandlerAdapter {
 		
 		if(sysSigMapFlag || sysSigCusInfoFlag || cusSigMapFlag) {
 			/* TODO: not support save single signal map now */
-			BeecomDB.getInstance().clearDeviceSignalInfo(uniqDevId);
+			if(!beecomDb.updateDeviceReportRec(bpDeviceSession.getUniqDevId(), bpDeviceSession.getMaxReportSignalMapNumber())) {
+				vrbAck.setRetCode(BPPacketRPRTACK.RET_CODE_SIGNAL_MAP_LIMIT_ERR);
+				session.write(packAck);
+				session.closeOnFlush();
+				return;
+			}
+			beecomDb.clearDeviceSignalInfo(uniqDevId);
 		}
 		
 		List<Integer> systemSignalEnabledList = pld.getSystemSignalEnabledList();

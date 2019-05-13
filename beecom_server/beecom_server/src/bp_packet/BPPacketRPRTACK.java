@@ -18,6 +18,7 @@ public class BPPacketRPRTACK extends BPPacket {
 	// public static final int RET_CODE_SIGNAL_MAP_CHECKSUM_ERR = 0x06;
 	public static final int RET_CODE_SIGNAL_MAP_DAMAGED_ERR = 0x07;
 	public static final int RET_CODE_SIGNAL_MAP_ERR = 0x08;
+	public static final int RET_CODE_SIGNAL_MAP_LIMIT_ERR = 0x09;
 	
 	protected BPPacketRPRTACK() {
 		super();

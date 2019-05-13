@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import bp_packet.BPPacket;
+import db.BeecomDB;
 import other.Util;
 import server_chain.ServerChain;
 import server_chain.ServerNode;
@@ -110,7 +111,7 @@ public class BcConsole {
 			for (Map.Entry<String, ServerNode> entry : serverChildrenMap.entrySet()) { 
 				ret += "* Child: "  + entry.getValue().getType() + "->" + entry.getValue().getAddress() + "\r\n";
 			}
-			ret += "* DevicePayload: " + maxDeviceClientPayload + "\r\n";
+			ret += "* DevicePayload: " + maxDeviceClientPayload + "; current: " + BeecomDB.getInstance().getDevicePaylaod() + "\r\n";
 		} catch (Exception e) {
 			Util.logger(logger, Util.DEBUG, e);
 			ret = e.getMessage();

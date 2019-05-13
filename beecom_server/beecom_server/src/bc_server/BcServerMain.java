@@ -28,7 +28,7 @@ public class BcServerMain {
 
 	private static final int BC_SERVER_PORT = 8025;
 	private static final int BC_SOCK_BUFF_SIZE = 2048;
-	private static final int IDLE_READ_PROC_TIME = 30;
+	private static final int IDLE_BOTH_PROC_TIME = 30;
 	public static final int IDLE_TIME_MIN = 30;
 	public static final int IDLE_TIME_DEFAULT_USER_CLIENT = 600;
 	public static final int IDLE_TIME_DEFAULT_DEVICE_CLIENT = 60;
@@ -81,7 +81,7 @@ public class BcServerMain {
 
 		bcAcceptor.getSessionConfig().setReadBufferSize(BC_SOCK_BUFF_SIZE);
 		bcAcceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE,
-				IDLE_READ_PROC_TIME);
+				IDLE_BOTH_PROC_TIME);
 		
 		try {
 			bcAcceptor.bind(new InetSocketAddress(BC_SERVER_PORT));

@@ -29,6 +29,7 @@ public class BPDeviceSession extends BPSession {
 	private static final Logger logger = LoggerFactory.getLogger(BPDeviceSession.class); 
 	private static final int MAX_RELAY_LIST_SIZE = 10;
 	private Long uniqDeviceId;
+	private int maxReportSignalMapNumber;
 	private String password;
 	// private Long adminId;
 	private Map<Integer, List<Object> > signalValueMap;
@@ -48,7 +49,7 @@ public class BPDeviceSession extends BPSession {
 		relayAckDataList = new ArrayList<>();
 	}
 	
-	public BPDeviceSession(IoSession session, Long uniqDeviceId, String password, Long adminId, long snId) {
+	public BPDeviceSession(IoSession session, Long uniqDeviceId, String password, Long adminId, long snId, int maxReportSigTabNum) {
 		super(session);
 		this.uniqDeviceId = uniqDeviceId;
 		this.password = password;
@@ -56,6 +57,7 @@ public class BPDeviceSession extends BPSession {
 		this.signalValueMap = new HashMap<>();
 		signalId2InfoUnitMap = null;
 		this.snId = snId;
+		this.maxReportSignalMapNumber = maxReportSigTabNum;
 	}
 	
 	public boolean putRelayList(IoSession iosession, BPPacket bppacket, int timeout) {
@@ -314,5 +316,15 @@ public class BPDeviceSession extends BPSession {
 		}
 		
 	}
+
+	public int getMaxReportSignalMapNumber() {
+		return maxReportSignalMapNumber;
+	}
+
+	public void setMaxReportSignalMapNumber(int maxReportSignalMapNumber) {
+		this.maxReportSignalMapNumber = maxReportSignalMapNumber;
+	}
+	
+	
 	
 }

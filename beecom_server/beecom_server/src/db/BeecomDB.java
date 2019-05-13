@@ -45,6 +45,7 @@ public class BeecomDB {
 	private static final Logger logger = LoggerFactory.getLogger(BcDecoder.class); 
 	private static final Long INVALID_LANGUAGE_ID = 0L;
 	private static final Long INVALID_SIG_MAP_CHECKSUM = 0x7FFFFFFFFFFFFFFFL;
+	private static final long DAILY_SIG_TABLE_UPDATE_PERIOD = 24 * 60 * 60 * 1000; // milliseconds of a day
 	
 	static BeecomDB bcDb = null;
 
@@ -74,6 +75,8 @@ public class BeecomDB {
 	private Map<Long, List<UserDevRelInfoInterface> > userId2UserDevRelInfoListMap;
 	/* must always be updated */
 	private Map<Long, List<UserDevRelInfoInterface> > snId2UserDevRelInfoListMap;
+	private Map<Long, DeviceReportRec> devUniqId2DeviceReportRecMap;
+	private Lock devUniqId2DeviceReportRecMapLock;
 	
 	private SessionFactory sessionFactory;
 	
@@ -110,6 +113,50 @@ public class BeecomDB {
 
 		userId2UserDevRelInfoListMap = new HashMap<>();
 		snId2UserDevRelInfoListMap = new HashMap<>();
+		
+		devUniqId2DeviceReportRecMap = new HashMap<>();
+		devUniqId2DeviceReportRecMapLock = new ReentrantLock();
+	}
+	
+	   /**
+	   * Update the device report record
+	   * @param device info
+	   * @return true, update OK; false, update failed.
+	   */
+	public boolean updateDeviceReportRec(long devUniqId, int maxReportSigTabNum) {
+		boolean ret = false;
+		if(devUniqId <= 0) {
+			return ret;
+		}
+		
+		try {
+			long currentTimestamp = System.currentTimeMillis();
+			devUniqId2DeviceReportRecMapLock.lock();
+			if(!devUniqId2DeviceReportRecMap.containsKey(devUniqId)) {
+				DeviceReportRec deviceReportRec = new DeviceReportRec(currentTimestamp, maxReportSigTabNum);
+				devUniqId2DeviceReportRecMap.put(devUniqId, deviceReportRec);
+				ret = true;
+			} else {
+				DeviceReportRec deviceReportRec = devUniqId2DeviceReportRecMap.get(devUniqId);
+				if(currentTimestamp - deviceReportRec.getTimestamp() < 0 || currentTimestamp - deviceReportRec.getTimestamp() > DAILY_SIG_TABLE_UPDATE_PERIOD) {
+					deviceReportRec.setReportSigtableNum(maxReportSigTabNum);
+					deviceReportRec.setTimestamp(currentTimestamp);
+					ret = true;
+				} else {
+					int num = deviceReportRec.getReportSigtableNum();
+					if(num > 0) {
+						deviceReportRec.setReportSigtableNum(--num);
+						ret = true;
+					}
+				}
+			}
+		} catch(Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+		} finally {
+			devUniqId2DeviceReportRecMapLock.unlock();
+		}
+		
+		return ret;
 	}
 
 	public Map<String, Long> getName2IDMap() {
@@ -748,6 +795,20 @@ public class BeecomDB {
 		try {
 			devUniqId2SessionMapLock.lock();
 			ret = devUniqId2SessionMap.size() >= BcConsole.maxDeviceClientPayload;
+		} catch(Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+		} finally {
+			devUniqId2SessionMapLock.unlock();
+		}
+		
+		return ret;
+	}
+	
+	public int getDevicePaylaod() {
+		int ret = -1;
+		try {
+			devUniqId2SessionMapLock.lock();
+			ret = devUniqId2SessionMap.size();
 		} catch(Exception e) {
 			Util.logger(logger, Util.ERROR, e);
 		} finally {
