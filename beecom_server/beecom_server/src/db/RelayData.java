@@ -10,7 +10,7 @@ public class RelayData {
 	private TimerTask timerTask;
 	private IoSession ioSession;
 	private long timeStamp;
-	private Object relayData;
+	private Object relayContent;
 	private boolean timeoutRelayed;
 	
 	public RelayData(Timer timer, TimerTask timerTask, IoSession ioSession, long timeStamp, Object relayData) {
@@ -19,7 +19,7 @@ public class RelayData {
 		this.timerTask = timerTask;
 		this.ioSession = ioSession;
 		this.timeStamp = timeStamp;
-		this.relayData = relayData;
+		this.relayContent = relayData;
 		this.timeoutRelayed = false;
 	}
 	public Timer getTimer() {
@@ -35,10 +35,10 @@ public class RelayData {
 		return timeStamp;
 	}
 	public void setRelayData(Object relayData) {
-		this.relayData = relayData;
+		this.relayContent = relayData;
 	}
 	public Object getRelayData() {
-		return relayData;
+		return relayContent;
 	}
 	public void setTimeoutRelayed(boolean timeoutRelayed) {
 		this.timeoutRelayed = timeoutRelayed;

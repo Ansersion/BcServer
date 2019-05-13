@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 /**
  * @author Ansersion
@@ -50,7 +49,6 @@ public class BPPacketREPORT extends BPPacket {
 
 	int packSeq;
 	int devNameLen;
-	Vector<BPPartitation> partitation;
 	byte[] devName;
 	private byte[] signalValueRelay;
 
@@ -635,10 +633,6 @@ public class BPPacketREPORT extends BPPacket {
 			Util.logger(logger, Util.ERROR, e);
 		}
 		return 0;
-	}
-	
-	public Vector<BPPartitation> getPartitation() {
-		return partitation;
 	}
 
 	@Override

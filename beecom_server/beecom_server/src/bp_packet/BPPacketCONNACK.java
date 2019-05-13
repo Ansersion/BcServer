@@ -78,11 +78,11 @@ public class BPPacketCONNACK extends BPPacket {
 		
 		serverChainHbn = payload.getServerChainHbn();
 		if(null == serverChainHbn) {
-			// TODO: return true when user connect
-			if(!packServer(ioBuffer, ServerChain.TYPE_DEFAULT, null)) {
+			/* return true when user connect */
+			if(!packServer(ioBuffer, ServerChain.TYPE_DEFAULT, "")) {
 				return false;
 			}
-			if(!packServer(ioBuffer, ServerChain.TYPE_DEFAULT, null)) {
+			if(!packServer(ioBuffer, ServerChain.TYPE_DEFAULT, "")) {
 				return false;
 			}
 			return true;

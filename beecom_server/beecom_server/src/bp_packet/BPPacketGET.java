@@ -22,7 +22,6 @@ public class BPPacketGET extends BPPacket {
 	private static final Logger logger = LoggerFactory.getLogger(BPPacketGET.class); 
 	
 	int packSeq;
-	DeviceSignals devSigData = null;
 	int deviceNum;
 	private byte[] signalValueRelay;
 

@@ -202,14 +202,6 @@ public class Payload {
 		return ret;
 	}
 	
-	public List<Integer> getSysSig() {
-		return null;
-	}
-	
-	public List<Integer> getCusSig() {
-		return null;
-	}
-	
 	public boolean packSysSignalValues(List<Integer> sysSigLst, BPDeviceSession bpDeviceSession, BPError bpError) {
 		boolean ret = false;
 		if (null == sysSigLst || null == bpDeviceSession) {

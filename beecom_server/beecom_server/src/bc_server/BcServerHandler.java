@@ -65,6 +65,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 		PUSH_SIGNAL_VALUE,
 		POST_SIGNAL_VALUE,
 		POSTACK_SIGNAL_VALUE,
+		PUSH_NEW_DEVICE_ID,
 	}
 	
 	// 捕获异常
@@ -117,13 +118,13 @@ public class BcServerHandler extends IoHandlerAdapter {
 		} else if(BPPacketType.PUSH == packType) {
 			/* NOT SUPPORTED */
 		} else if (BPPacketType.PUSHACK == packType) {
-			onPushAck(session, decodedPack);
+			onPushAck(decodedPack);
 		} else if (BPPacketType.REPORT == packType) {
 			onReport(session, decodedPack);
 		} else if(BPPacketType.RPRTACK == packType) {
 			/* NOT SUPPORTED */
 		} else if (BPPacketType.DISCONN == packType) {
-			onDisconn(session, decodedPack);
+			onDisconn(session);
 		} else {
 			logger.error("Inner error: messageRecevied: Not supported packet type={}", packType);
 		}
@@ -151,7 +152,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 		try {
 			switch (productType) {
 			case PUSH_DEVICE_ID_LIST:
-				product = new PushPacketDeviceIDProduct((BPUserSession) bpSession);
+				product = new PushPacketAllDeviceIDProduct((BPUserSession) bpSession);
 				break;
 			case PUSH_SIGNAL_VALUE:
 				product = new PushSignalValuesProduct((BPDeviceSession) bpSession, para);
@@ -161,6 +162,27 @@ public class BcServerHandler extends IoHandlerAdapter {
 				break;
 			case POSTACK_SIGNAL_VALUE:
 				product = new PostackSignalValuesProduct((BPUserSession) bpSession, para, packSeq);
+				break;
+			default:
+				break;
+			}
+			if (product != null) {
+				product.produce();
+				BcServerMain.consumerTask.produce(product);
+			}
+		} catch (Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+		}
+	}
+	
+	private void pushMessage(BPSession bpSession, ProductType productType, long id) {
+		Product product = null;
+		try {
+			switch (productType) {
+			case PUSH_NEW_DEVICE_ID:
+				product = new PushPacketNewDeviceIDProduct((BPDeviceSession) bpSession, id);
+				break;
+			default:
 				break;
 			}
 			if (product != null) {
@@ -179,7 +201,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 		if(null == bpSession) {
 			return;
 		}
-		/* TODO: not need to remove the sessions every time */
+		/* TODO: not need to remove the sessions every time: PERFORMANCE */
 		BeecomDB beecomDb = BeecomDB.getInstance();
 		if(bpSession.ifUserSession()) {
 			bpSession.setSessionReady(false);
@@ -249,6 +271,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 		long devUniqId = 0;
 		BPSession bpSession = null;
 		BeecomDB beecomDb = BeecomDB.getInstance();
+		boolean isNotifyAdmin = false;
 
 		try {			
 			vrb = decodedPack.getVrbHead();
@@ -366,9 +389,8 @@ public class BcServerHandler extends IoHandlerAdapter {
 							session.closeOnFlush();
 							return;
 						}
+						isNotifyAdmin = true;
 					}
-					// TODO: push to the user online with the new device
-
 				}
 				
 				if(LoginErrorEnum.USER_INVALID == loginErrorEnum && vrb.getRegisterFlag() && BPPacket.isOpenRegister()) {
@@ -427,6 +449,9 @@ public class BcServerHandler extends IoHandlerAdapter {
 				bpSession.setEncryptionType(decodedPack.getFxHead());
 				bpSession.setCrcType(decodedPack.getFxHead());
 				bpSession.setSessionReady(false);
+				if(isNotifyAdmin) {
+					pushMessage(bpSession, ProductType.PUSH_NEW_DEVICE_ID, deviceInfoUnit.getDevInfoHbn().getAdminId());
+				}
 				if(0 != BeecomDB.getInstance().putDevUnitId2SessioinMap(devUniqId, bpSession)) {
 					packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_DEVICE_ONLINE);
 					session.write(packAck);
@@ -770,7 +795,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 				return;
 			}
 			
-			// TODO: check bpDeviceSession.getSession() active and assemble the packAck
+			// TODO: check bpDeviceSession.getSession() active and assemble the packAck: ADVANCED FUNCTION
 			
 
 			if(vrb.getSigAttrFlag()) {
@@ -780,8 +805,6 @@ public class BcServerHandler extends IoHandlerAdapter {
 		}
 		
 		session.write(packAck);
-		
-
 	}
 	
 	private void onPostAck(IoSession session, BPPacket decodedPack) {
@@ -896,7 +919,6 @@ public class BcServerHandler extends IoHandlerAdapter {
 		} 
 		
 		if(sysSigMapFlag || sysSigCusInfoFlag || cusSigMapFlag) {
-			/* TODO: not support save single signal map now */
 			if(!beecomDb.updateDeviceReportRec(bpDeviceSession.getUniqDevId(), bpDeviceSession.getMaxReportSignalMapNumber())) {
 				vrbAck.setRetCode(BPPacketRPRTACK.RET_CODE_SIGNAL_MAP_LIMIT_ERR);
 				session.write(packAck);
@@ -1044,7 +1066,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 		session.write(packAck);
 	}
 	
-	private void onPushAck(IoSession session, BPPacket decodedPack) {
+	private void onPushAck(BPPacket decodedPack) {
 		VariableHeader vrb;
 		
 		vrb = decodedPack.getVrbHead();
@@ -1062,7 +1084,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 		}
 	}
 	
-	private void onDisconn(IoSession session, BPPacket decodedPack) {
+	private void onDisconn(IoSession session) {
 		BPSession bpSession;
 		bpSession = getBPSession(session);
 		if(null == bpSession) {

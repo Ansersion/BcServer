@@ -3,7 +3,6 @@
  */
 package bc_console;
 
-import server_chain.ServerNode;
 
 /**
  * @author Ansersion

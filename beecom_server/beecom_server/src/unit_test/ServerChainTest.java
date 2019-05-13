@@ -5,7 +5,6 @@ package unit_test;
 
 import static org.junit.Assert.*;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,13 +30,6 @@ public class ServerChainTest {
 	@Before
 	public void setUp() {
 		BeecomDB.getInstance();
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@After
-	public void tearDown() throws Exception {
 	}
 
 	@Test

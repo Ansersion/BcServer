@@ -754,9 +754,7 @@ public class BeecomDB {
 			int systemSignalIdOffset = signalId - BPPacket.SYS_SIG_START_ID;
 			SysSigInfo sysSigInfo = bpSysSigTable.getSysSigInfo(systemSignalIdOffset);
 			return checkSystemSignalValueUnformed(sysSigInfo, value);
-		} else {
-			
-		}
+		} 
 		
 		return false;
 		
@@ -870,11 +868,6 @@ public class BeecomDB {
 
 	public Map<Long, List<UserDevRelInfoInterface>> getUserId2UserDevRelInfoListMap() {
 		return userId2UserDevRelInfoListMap;
-	}
-	
-	public List<UserDevRelInfoInterface> getUserId2UserDevRelInfoList(Long userId) {
-		// TODO:
-		return null;
 	}
 	
 	public long getUserIdByUserName(String name) {
@@ -1208,7 +1201,6 @@ public class BeecomDB {
 		boolean ifNotifying;
 		boolean ifAlarm;
 		boolean ifDisplay;
-		// CustomAlarmInfoUnit customAlarmInfoUnit = null;
 		Map<Integer, String> cusSignalNameLangMap = null;
 		Map<Integer, String> cusSignalUnitLangMap = null;
 		Map<Integer, String> cusSignalGroupLangMap = null;
@@ -1219,7 +1211,6 @@ public class BeecomDB {
 			SignalInfoHbn signalInfoHbn = itSI.next();
 			itCSI = customSignalInfoHbnLst.iterator();
 			while(itCSI.hasNext()) {
-				// customAlarmInfoUnit = null;
 				cusSignalNameLangMap = null;
 				cusSignalUnitLangMap = null;
 				cusSignalGroupLangMap = null;
@@ -1362,28 +1353,6 @@ public class BeecomDB {
 	}
 	
 	public List<SignalInfoHbn> getCusSigMapLst(long uniqDeviceId) {
-		/*
-		if(uniqDeviceId < 0) {
-			return null;
-		}
-
-		Transaction tx = null;
-		List<SignalInfoHbn> cusSigLst = null;
-		try (Session session = sessionFactory.openSession()) {
-			tx = session.beginTransaction();
-		    cusSigLst = session  
-		            .createQuery("from SignalInfoHbn where devId = ? and signalId < 57344")
-		            .setParameter(0, uniqDeviceId).list();
-		    
-			tx.commit();
-		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			String str = sw.toString();
-			logger.error(str);
-		}
-		return cusSigLst;
-		*/
 		return getSignalInfoHbnLst(uniqDeviceId, 0, BPPacket.SYS_SIG_START_ID - 1);
 	}
 	
@@ -1811,14 +1780,14 @@ public class BeecomDB {
 			
 			for(int i = 0; i < unitListSize; i++) {
 				CustomSignalInfoUnit customSignalInfoUnit = customSignalUnitInfoList.get(i); 
-				int valueType = customSignalInfoUnit.getCustomSignalInterface().getValType();
+				int valueType = customSignalInfoUnit.getSignalInterface().getValType();
 				SignalInfoHbn signalInfoHbn = (SignalInfoHbn) session
 						.createQuery("from SignalInfoHbn where signalId = :signal_id and devId = :dev_id")
-						.setParameter("signal_id", customSignalInfoUnit.getCusSigId())
+						.setParameter("signal_id", customSignalInfoUnit.getSignalId())
 						.setParameter("dev_id", uniqDevId).uniqueResult();
 				if (null == signalInfoHbn) {
 					signalInfoHbn = new SignalInfoHbn();
-					signalInfoHbn.setSignalId(customSignalInfoUnit.getCusSigId());
+					signalInfoHbn.setSignalId(customSignalInfoUnit.getSignalId());
 					signalInfoHbn.setDevId(uniqDevId);
 				}
 	
@@ -1838,7 +1807,7 @@ public class BeecomDB {
 					customSignalInfoHbn.setSignalId(signalKeyId);
 				}
 				customSignalInfoHbn.setIfAlarm(customSignalInfoUnit.isIfAlarm());
-				customSignalInfoHbn.setValType((short)(customSignalInfoUnit.getCustomSignalInterface().getValType() & 0xFFFF));
+				customSignalInfoHbn.setValType((short)(customSignalInfoUnit.getSignalInterface().getValType() & 0xFFFF));
 				Map<Integer, String> langMap = customSignalInfoUnit.getSignalNameLangMap();
 				if(null == langMap || langMap.isEmpty()) {
 					customSignalInfoHbn.setCusSigNameLangId(0L);
@@ -1892,7 +1861,7 @@ public class BeecomDB {
 
 				session.saveOrUpdate(customSignalInfoHbn);
 				
-				SignalInterface signalInterface = customSignalInfoUnit.getCustomSignalInterface();
+				SignalInterface signalInterface = customSignalInfoUnit.getSignalInterface();
 				signalInterface.setCustomSignalId(customSignalInfoHbn.getId());
 				if(signalInterface.saveToDb(session) < 0) {
 					logger.error("Internal error: null == devInfoHbn");
@@ -2000,7 +1969,7 @@ public class BeecomDB {
 						SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM_DELAY_BEF = 0x0200;
 						SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM_DELAY_AFT = 0x0400;
 						
-						public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_UNIT_LANG = 0x1000; // TODO
+						public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_UNIT_LANG = 0x1000;
 						SYSTEM_SIGNAL_CUSTOM_FLAGS_PERMISSION = 0x2000; // signalInterface.saveToDb(session)
 						SYSTEM_SIGNAL_CUSTOM_FLAGS_DISPLAY = 0x4000;
 				 */
@@ -2097,16 +2066,6 @@ public class BeecomDB {
 		Transaction tx = null;
 		try (Session session = sessionFactory.openSession()) {
 			tx = session.beginTransaction();
-			
-			/*
-			ServerChainHbn devServerChainHbn = (ServerChainHbn) session  
-		            .createQuery("from ServerChainHbn where clientId = :client_id")
-		            .setParameter("client_id", uniqDevId).uniqueResult();
-			if(null != devServerChainHbn) {
-				session.delete(devServerChainHbn);
-			}
-			*/
-
 			DevInfoHbn devInfoHbn = session.get(DevInfoHbn.class, uniqDevId);
 			if(null == devInfoHbn) {
 				return;
@@ -2131,18 +2090,6 @@ public class BeecomDB {
 					}
 					if (null != customSignalInfoHbn) {
 						if (0 != customSignalInfoHbn.getCusSigNameLangId()) {
-							/*
-							 * CustomSignalNameLangInfoHbn customSignalNameLangInfoHbn = session.get(
-							 * CustomSignalNameLangInfoHbn.class,
-							 * customSignalInfoHbn.getCusSigNameLangId()); if (null !=
-							 * customSignalNameLangInfoHbn) { CustomSignalNameLangEntityInfoHbn
-							 * customSignalNameLangEntityInfoHbn = session.get(
-							 * CustomSignalNameLangEntityInfoHbn.class,
-							 * customSignalNameLangInfoHbn.getCustomSignalName()); if (null !=
-							 * customSignalNameLangEntityInfoHbn) {
-							 * session.delete(customSignalNameLangEntityInfoHbn); }
-							 * session.delete(customSignalNameLangInfoHbn); }
-							 */
 
 							CustomSignalNameLangEntityInfoHbn customSignalNameLangEntityInfoHbn = session.get(
 									CustomSignalNameLangEntityInfoHbn.class, customSignalInfoHbn.getCusSigNameLangId());
@@ -2151,17 +2098,6 @@ public class BeecomDB {
 							}
 						}
 						if (0 != customSignalInfoHbn.getCusGroupLangId()) {
-							/*
-							 * CustomGroupLangInfoHbn customGroupLangInfoHbn = session
-							 * .get(CustomGroupLangInfoHbn.class, customSignalInfoHbn.getCusGroupLangId());
-							 * if (null != customGroupLangInfoHbn) { CustomSignalGroupLangEntityInfoHbn
-							 * customSignalGroupLangEntityInfoHbn = session.get(
-							 * CustomSignalGroupLangEntityInfoHbn.class,
-							 * customGroupLangInfoHbn.getGroupLang()); if (null !=
-							 * customSignalGroupLangEntityInfoHbn) {
-							 * session.delete(customSignalGroupLangEntityInfoHbn); }
-							 * session.delete(customGroupLangInfoHbn); }
-							 */
 							CustomSignalGroupLangEntityInfoHbn customSignalGroupLangEntityInfoHbn = session.get(
 									CustomSignalGroupLangEntityInfoHbn.class, customSignalInfoHbn.getCusGroupLangId());
 							if (null != customSignalGroupLangEntityInfoHbn) {
@@ -2169,16 +2105,6 @@ public class BeecomDB {
 							}
 						}
 						if (0 != customSignalInfoHbn.getCusSigUnitLangId()) {
-							/*
-							 * CustomUnitLangInfoHbn customUnitLangInfoHbn =
-							 * session.get(CustomUnitLangInfoHbn.class,
-							 * customSignalInfoHbn.getCusSigUnitLangId()); if (null !=
-							 * customUnitLangInfoHbn) { CustomUnitLangEntityInfoHbn
-							 * customUnitLangEntityInfoHbn = session.get( CustomUnitLangEntityInfoHbn.class,
-							 * customUnitLangInfoHbn.getUnitLang()); if (null !=
-							 * customUnitLangEntityInfoHbn) { session.delete(customUnitLangEntityInfoHbn); }
-							 * session.delete(customSignalInfoHbn); }
-							 */
 							CustomUnitLangEntityInfoHbn customUnitLangEntityInfoHbn = session
 									.get(CustomUnitLangEntityInfoHbn.class, customSignalInfoHbn.getCusSigUnitLangId());
 							if (null != customUnitLangEntityInfoHbn) {
@@ -2481,7 +2407,6 @@ public class BeecomDB {
         	configuration.setProperty("hibernate.connection.username", dbConfigMap.get("User"));
         	configuration.setProperty("hibernate.connection.password", dbConfigMap.get("Password"));
         	
-            //  return new Configuration().configure("db_config.xml").buildSessionFactory();  
         	return configuration.buildSessionFactory();  
         }  
         catch (Exception ex) {  
@@ -2559,37 +2484,6 @@ public class BeecomDB {
 					if(null == tableName) {
 						return ret;
 					}
-					/*
-					switch(valueType) {
-					case BPPacket.VAL_TYPE_UINT32:
-						tableName = "CustomSignalU32InfoHbn";
-						break;
-					case BPPacket.VAL_TYPE_UINT16:
-						tableName = "CustomSignalU16InfoHbn";
-						break;
-					case BPPacket.VAL_TYPE_IINT32:
-						tableName = "CustomSignalI32InfoHbn";
-						break;
-					case BPPacket.VAL_TYPE_IINT16:
-						tableName = "CustomSignalI16InfoHbn";
-						break;
-					case BPPacket.VAL_TYPE_ENUM:
-						tableName = "CustomSignalEnumInfoHbn";
-						break;
-					case BPPacket.VAL_TYPE_FLOAT:
-						tableName = "CustomSignalFloatInfoHbn";
-						break;
-					case BPPacket.VAL_TYPE_STRING:
-						tableName = "CustomSignalStringInfoHbn";
-						break;
-					case BPPacket.VAL_TYPE_BOOLEAN:
-						tableName = "CustomSignalBooleanInfoHbn";
-						break;
-					default:
-						logger.error("Inner error: invalid value type");
-						return ret;
-					}
-					*/
 					hql.append(tableName);
 					tag = "custom_signal_id";
 					hql.append(" where customSignalId=:");

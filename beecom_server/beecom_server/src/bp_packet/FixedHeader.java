@@ -103,7 +103,7 @@ public class FixedHeader {
 	}
 	
 	public EncryptType.EnType getEncryptType() {
-		byte encryptionType = (byte)((flags >> ENCRYPTION_FLAG_OFFSET) & ENCRYPTION_FLAG_MASK);
+		byte encryptionType = (byte)((flags >> ENCRYPTION_FLAG_OFFSET) & (ENCRYPTION_FLAG_MASK & 0xFF));
 		EncryptType.EnType ret;
 		switch(encryptionType) {
 			case 0:
@@ -129,10 +129,6 @@ public class FixedHeader {
 
 	public BPPacketType getPacketType() {
 		return packetType;
-	}
-	
-	public byte getFirstByte() {
-		return flags;
 	}
 	
 	public int getRemainingLen() {

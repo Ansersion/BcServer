@@ -182,13 +182,13 @@ public class BPPacketGETACK extends BPPacket {
 						
 						while (it.hasNext()) {
 							systemSignalInfoUnitTmp = it.next();
-							if (BPPacket.inDist(i, systemSignalInfoUnitTmp.getSysSigId())) {
-								classInfoTmp = BPPacket.whichClass(i, systemSignalInfoUnitTmp.getSysSigId());
+							if (BPPacket.inDist(i, systemSignalInfoUnitTmp.getSignalId())) {
+								classInfoTmp = BPPacket.whichClass(i, systemSignalInfoUnitTmp.getSignalId());
 								/* set the biggest classInfoTmp */
 								if(classInfoTmp > classInfo) {
 									classInfo = classInfoTmp;
 								}
-								BPPacket.setSystemSignalBit(i, systemSignalInfoUnitTmp.getSysSigId(), systemDistMask);
+								BPPacket.setSystemSignalBit(i, systemSignalInfoUnitTmp.getSignalId(), systemDistMask);
 								it.remove();
 							}
 							
@@ -439,7 +439,7 @@ public class BPPacketGETACK extends BPPacket {
 
 					while(it.hasNext()) {
 						CustomSignalInfoUnit customSignalInfoUnit = it.next();
-						signalIdTmp = customSignalInfoUnit.getCusSigId();
+						signalIdTmp = customSignalInfoUnit.getSignalId();
 						cusSignalFlag = 0;
 						if (customSignalInfoUnit.isIfAlarm()) {
 							cusSignalFlag |= Payload.CUSTOM_SIGNAL_ALARM_FLAG_MASK;
@@ -447,7 +447,7 @@ public class BPPacketGETACK extends BPPacket {
 						if (customSignalInfoUnit.isIfNotifing()) {
 							cusSignalFlag |= Payload.CUSTOM_SIGNAL_STATISTICS_FLAG_MASK;
 						}
-						switch (customSignalInfoUnit.getCustomSignalInterface().getPermission()) {
+						switch (customSignalInfoUnit.getSignalInterface().getPermission()) {
 						case BPPacket.SIGNAL_PERMISSION_CODE_RO:
 							/* need do nothing */
 							break;
@@ -458,7 +458,7 @@ public class BPPacketGETACK extends BPPacket {
 							logger.warn("inner warning: unknown permission code, force to set it RO");
 
 						}
-						valType = customSignalInfoUnit.getCustomSignalInterface().getValType();
+						valType = customSignalInfoUnit.getSignalInterface().getValType();
 						if (valType < 0 || valType >= BPPacket.MAX_VAL_TYPE_NUM) {
 							throw new Exception("inner error: invalid valType=" + valType);
 						}
@@ -573,7 +573,7 @@ public class BPPacketGETACK extends BPPacket {
 						switch (valType) {
 						case BPPacket.VAL_TYPE_UINT32: {
 							CustomSignalU32InfoHbn customSignalU32InfoHbn = (CustomSignalU32InfoHbn) customSignalInfoUnit
-									.getCustomSignalInterface();
+									.getSignalInterface();
 							if (null == customSignalU32InfoHbn) {
 								logger.error("inner error: null == customSignalU32InfoHbn");
 								break;
@@ -589,7 +589,7 @@ public class BPPacketGETACK extends BPPacket {
 						}
 						case BPPacket.VAL_TYPE_UINT16: {
 							CustomSignalU16InfoHbn customSignalU16InfoHbn = (CustomSignalU16InfoHbn) customSignalInfoUnit
-									.getCustomSignalInterface();
+									.getSignalInterface();
 							if (null == customSignalU16InfoHbn) {
 								logger.error("inner error: null == customSignalU16InfoHbn");
 								break;
@@ -603,7 +603,7 @@ public class BPPacketGETACK extends BPPacket {
 						}
 						case BPPacket.VAL_TYPE_IINT32: {
 							CustomSignalI32InfoHbn customSignalI32InfoHbn = (CustomSignalI32InfoHbn) customSignalInfoUnit
-									.getCustomSignalInterface();
+									.getSignalInterface();
 							if (null == customSignalI32InfoHbn) {
 								logger.error("inner error: null == customSignalI32InfoHbn");
 								break;
@@ -618,7 +618,7 @@ public class BPPacketGETACK extends BPPacket {
 						}
 						case BPPacket.VAL_TYPE_IINT16: {
 							CustomSignalI16InfoHbn customSignalI16InfoHbn = (CustomSignalI16InfoHbn) customSignalInfoUnit
-									.getCustomSignalInterface();
+									.getSignalInterface();
 							if (null == customSignalI16InfoHbn) {
 								logger.error("inner error: null == customSignalI16InfoHbn");
 								break;
@@ -633,7 +633,7 @@ public class BPPacketGETACK extends BPPacket {
 						}
 						case BPPacket.VAL_TYPE_ENUM: {
 							CustomSignalEnumInfoHbn customSignalEnumInfoHbn = (CustomSignalEnumInfoHbn) customSignalInfoUnit
-									.getCustomSignalInterface();
+									.getSignalInterface();
 							if (null == customSignalEnumInfoHbn) {
 								logger.error("inner error: null == customSignalEnumInfoHbn");
 								break;
@@ -645,7 +645,7 @@ public class BPPacketGETACK extends BPPacket {
 						}
 						case BPPacket.VAL_TYPE_FLOAT: {
 							CustomSignalFloatInfoHbn customSignalFloatInfoHbn = (CustomSignalFloatInfoHbn) customSignalInfoUnit
-									.getCustomSignalInterface();
+									.getSignalInterface();
 							if (null == customSignalFloatInfoHbn) {
 								logger.error("inner error: null == customSignalFloatInfoHbn");
 								break;
@@ -660,7 +660,7 @@ public class BPPacketGETACK extends BPPacket {
 						}
 						case BPPacket.VAL_TYPE_STRING: {
 							CustomSignalStringInfoHbn customSignalStringInfoHbn = (CustomSignalStringInfoHbn) customSignalInfoUnit
-									.getCustomSignalInterface();
+									.getSignalInterface();
 							if (null == customSignalStringInfoHbn) {
 								logger.error("inner error: null == customSignalStringInfoHbn");
 								break;
@@ -679,7 +679,7 @@ public class BPPacketGETACK extends BPPacket {
 						}
 						case BPPacket.VAL_TYPE_BOOLEAN:
 							CustomSignalBooleanInfoHbn customSignalBooleanInfoHbn = (CustomSignalBooleanInfoHbn) customSignalInfoUnit
-									.getCustomSignalInterface();
+									.getSignalInterface();
 							if (null == customSignalBooleanInfoHbn) {
 								logger.error("inner error: null == customSignalBooleanInfoHbn");
 								break;

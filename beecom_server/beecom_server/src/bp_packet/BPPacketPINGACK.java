@@ -37,9 +37,6 @@ public class BPPacketPINGACK extends BPPacket {
 
 	@Override
 	public boolean assemblePayload() {	
-		if(RET_CODE_OK != getVrbHead().getRetCode()) {
-			return true;
-		}
 		return true;
 	}
 }

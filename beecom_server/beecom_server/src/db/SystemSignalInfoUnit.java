@@ -45,10 +45,6 @@ public class SystemSignalInfoUnit implements SignalInfoUnitInterface {
 		this.systemSignalInterface = systemSignalInterface;
 	}
 
-	public int getSysSigId() {
-		return sysSigId;
-	}
-
 	public boolean isIfNotifing() {
 		return ifNotifing;
 	}
@@ -61,10 +57,6 @@ public class SystemSignalInfoUnit implements SignalInfoUnitInterface {
 		return systemSignalEnumLangInfoList;
 	}
 
-	public SignalInterface getSystemSignalInterface() {
-		return systemSignalInterface;
-	}
-
 
 	@Override
 	public String toString() {
@@ -75,8 +67,7 @@ public class SystemSignalInfoUnit implements SignalInfoUnitInterface {
 
 	@Override
 	public boolean ifNotifying() {
-		// TODO Auto-generated method stub
-		return false;
+		return ifNotifing;
 	}
 
 	@Override
@@ -96,31 +87,64 @@ public class SystemSignalInfoUnit implements SignalInfoUnitInterface {
 
 	@Override
 	public boolean ifAlarm() {
-		// TODO Auto-generated method stub
+		// TODO:
 		return false;
 	}
-
+	
 	@Override
 	public boolean ifDisplay() {
-		// TODO Auto-generated method stub
+		/*
+		 * TODO;
+		boolean ret = false;
+		try {
+			if ((customFlags & BPPacket.SYSTEM_SIGNAL_CUSTOM_FLAGS_DISPLAY) != 0) {
+				ret = systemSignalInterface.
+			} else {
+				BPSysSigTable sysSigTab = BPSysSigTable.getSysSigTableInstance();
+				SysSigInfo sysSigInfo = sysSigTab.getSysSigInfo(sysSigId - BPPacket.SYS_SIG_START_ID);
+				if (null == sysSigInfo) {
+					return ret;
+				}
+			}
+		} catch(Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+		}
+		return ret;
+		*/
 		return false;
 	}
 
 	@Override
 	public Map<Integer, String> getSignalNameLangMap() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Map<Integer, String> getGignalUnitLangMap() {
+	public Map<Integer, String> getSignalUnitLangMap() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Map<Integer, String> getGroupLangMap() {
-		// TODO Auto-generated method stub
+		/*
+		 * TODO:
+		boolean ret = false;
+		try {
+			if ((customFlags & BPPacket.SYSTEM_SIGNAL_CUSTOM_FLAGS_GROUP_LANG) != 0) {
+				ret = systemSignalInterface.
+			} else {
+				BPSysSigTable sysSigTab = BPSysSigTable.getSysSigTableInstance();
+				SysSigInfo sysSigInfo = sysSigTab.getSysSigInfo(sysSigId - BPPacket.SYS_SIG_START_ID);
+				if (null == sysSigInfo) {
+					return sysSigInfo.;
+				}
+			}
+		} catch(Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+		}
+		return ret;
+		*/
 		return null;
 	}
 
@@ -223,8 +247,4 @@ public class SystemSignalInfoUnit implements SignalInfoUnitInterface {
 	public short getAlarmDelayAft() {
 		return alarmDelayAft;
 	}
-
-	
-	
-	
 }

@@ -4,7 +4,6 @@ package unit_test;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -50,10 +49,6 @@ public class BeecomDBDeleteTest {
             String str = sw.toString();
             logger.error(str);
 		}
-	}
-
-	@After
-	public void tearDown() throws Exception {
 	}
 
 	@Test

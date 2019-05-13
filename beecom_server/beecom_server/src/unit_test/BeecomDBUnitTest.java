@@ -13,7 +13,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -64,10 +63,6 @@ public class BeecomDBUnitTest {
 		}
 	}
 
-	@After
-	public void tearDown() throws Exception {
-	}
-
 	@Test
 	public void test() {
 		BeecomDB beecomDB = BeecomDB.getInstance();
@@ -82,14 +77,14 @@ public class BeecomDBUnitTest {
 		List<SystemSignalInfoUnit> systemSignalInfoUnitLst = new ArrayList<>();
 		systemSignalInfoUnitLst = beecomDB.getSystemSignalUnitLst(3L, systemSignalInfoUnitLst);
 		assertEquals(systemSignalInfoUnitLst.size(), 2);
-		assertEquals(systemSignalInfoUnitLst.get(0).getSysSigId(), 0xE001);
-		assertEquals(systemSignalInfoUnitLst.get(1).getSysSigId(), 0xE002);
+		assertEquals(systemSignalInfoUnitLst.get(0).getSignalId(), 0xE001);
+		assertEquals(systemSignalInfoUnitLst.get(1).getSignalId(), 0xE002);
 		
 		List<CustomSignalInfoUnit> customSignalInfoUnitLst = new ArrayList<>();
 		customSignalInfoUnitLst = beecomDB.getCustomSignalUnitLst(3L, customSignalInfoUnitLst, 0x80);
 		assertEquals(customSignalInfoUnitLst.size(), 2);
-		assertEquals(customSignalInfoUnitLst.get(0).getCusSigId(), 1);
-		assertEquals(customSignalInfoUnitLst.get(1).getCusSigId(), 2);
+		assertEquals(customSignalInfoUnitLst.get(0).getSignalId(), 1);
+		assertEquals(customSignalInfoUnitLst.get(1).getSignalId(), 2);
 	}
 
 }

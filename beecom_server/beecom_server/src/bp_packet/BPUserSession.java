@@ -82,7 +82,7 @@ public class BPUserSession extends BPSession {
 
 	@Override
 	public void updateLoginTime() {
-		// TODO Auto-generated method stub
+		/* do nothing */
 		
 	}
 

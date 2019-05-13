@@ -1,6 +1,7 @@
 package bc_server;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +57,7 @@ public class ConsumerTask extends Thread {
         }
     }
 
-    public LinkedList<Product> getList()
+    public List<Product> getList()
     {
         return list;
     }

@@ -25,11 +25,7 @@ public class BeecomEncryption {
         }
         return beecomEncryption;
     }
-
-    public void init() {
-
-    }
-
+    
     public String getSHA256StrJava(String str){
 
         String encodeStr = "";

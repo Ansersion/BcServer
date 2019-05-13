@@ -14,12 +14,12 @@ import bp_packet.Payload;
 import db.BeecomDB;
 import other.Util;
 
-class PushPacketDeviceIDProduct extends Product {
-	private static final Logger logger = LoggerFactory.getLogger(PushPacketDeviceIDProduct.class);
+class PushPacketAllDeviceIDProduct extends Product {
+	private static final Logger logger = LoggerFactory.getLogger(PushPacketAllDeviceIDProduct.class);
 	private BPUserSession bpUserSession;
 	private BPPacket bpPacket;
 	
-	public PushPacketDeviceIDProduct(BPUserSession bpSession) {
+	public PushPacketAllDeviceIDProduct(BPUserSession bpSession) {
 		super();
 		this.bpUserSession = bpSession;
 		bpPacket = null;
@@ -29,7 +29,7 @@ class PushPacketDeviceIDProduct extends Product {
 	public boolean consume() {
 		boolean ret = false; 
 		try {
-			logger.info("PushPacketDeviceIDProduct consumed");
+			logger.info("PushPacketAllDeviceIDProduct consumed");
 			IoSession session = bpUserSession.getSession();
 			session.write(bpPacket);
 			ret = true;
@@ -46,7 +46,7 @@ class PushPacketDeviceIDProduct extends Product {
 			return ret;
 		}
 		try {
-			logger.info("PushPacketDeviceIDProduct producing");
+			logger.info("PushPacketAllDeviceIDProduct producing");
 			bpPacket = BPPackFactory.createBPPack(BPPacketType.PUSH);
 			bpPacket.getFxHead().setCrcType(bpUserSession.getCrcType());
 			bpPacket.getFxHead().setEncryptType(bpUserSession.getEncryptionType());

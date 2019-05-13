@@ -19,8 +19,6 @@ public class CustomSignalInfoUnit implements SignalInfoUnitInterface {
 	private short alarmDelayBef;
 	private short alarmDelayAft;
 	private boolean ifDisplay;
-	/* system group language ID */
-	// private int groupLangId;
 	/* custom signal name language map */
 	private Map<Integer, String> signalNameLangMap;
 	/* custom signal unit language map */
@@ -30,7 +28,6 @@ public class CustomSignalInfoUnit implements SignalInfoUnitInterface {
 	/* custom enumerate signal language map */
 	private Map<Integer, Map<Integer, String> > signalEnumLangMap;
 	/* custom alarm info */
-	// private CustomAlarmInfoUnit customAlarmInfoUnit;
 	
 	private SignalInterface customSignalInterface;
 	private Object signalValue;
@@ -55,9 +52,6 @@ public class CustomSignalInfoUnit implements SignalInfoUnitInterface {
 		this.customSignalInterface = customSignalInterface;
 	}
 	
-	public int getCusSigId() {
-		return cusSigId;
-	}
 	public boolean isIfNotifing() {
 		return ifNotifing;
 	}
@@ -67,14 +61,8 @@ public class CustomSignalInfoUnit implements SignalInfoUnitInterface {
 	public boolean isIfDisplay() {
 		return ifDisplay;
 	}
-	public SignalInterface getCustomSignalInterface() {
-		return customSignalInterface;
-	}
 	public Map<Integer, String> getSignalNameLangMap() {
 		return signalNameLangMap;
-	}
-	public Map<Integer, String> getSignalUnitLangMap() {
-		return signalUnitLangMap;
 	}
 	public Map<Integer, String> getGroupLangMap() {
 		return groupLangMap;
@@ -98,32 +86,27 @@ public class CustomSignalInfoUnit implements SignalInfoUnitInterface {
 	}
 	@Override
 	public int getSignalId() {
-		// TODO Auto-generated method stub
-		return 0;
+		return cusSigId;
 	}
 	@Override
 	public SignalInterface getSignalInterface() {
-		// TODO Auto-generated method stub
-		return null;
+		return customSignalInterface;
 	}
 	@Override
 	public boolean ifConfigDef() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 	@Override
 	public boolean ifAlarm() {
-		// TODO Auto-generated method stub
-		return false;
+		return ifAlarm;
 	}
 	@Override
 	public boolean ifDisplay() {
 		return ifDisplay;
 	}
 	@Override
-	public Map<Integer, String> getGignalUnitLangMap() {
-		// TODO Auto-generated method stub
-		return null;
+	public Map<Integer, String> getSignalUnitLangMap() {
+		return signalUnitLangMap;
 	}
 	
 	@Override
@@ -234,21 +217,14 @@ public class CustomSignalInfoUnit implements SignalInfoUnitInterface {
 	}
 	@Override
 	public short getAlarmClass() {
-		// TODO Auto-generated method stub
-		return 0;
+		return alarmClass;
 	}
 	@Override
 	public short getAlarmDelayBef() {
-		// TODO Auto-generated method stub
-		return 0;
+		return alarmDelayBef;
 	}
 	@Override
 	public short getAlarmDelayAft() {
-		// TODO Auto-generated method stub
-		return 0;
+		return alarmDelayAft;
 	}
-
-	
-
-
 }

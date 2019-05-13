@@ -43,9 +43,6 @@ public class VariableHeader {
     	}
         return ret;
     }
-	
-	public VariableHeader() {
-	}
 
     public void initPackSeq() {
     	packSeq = generatePackSeq();
@@ -56,7 +53,11 @@ public class VariableHeader {
 	}
 	
 	public void setSysSigMapFlag(boolean flag) {
-		flags |= 0x80;
+		if(flag) {
+			flags |= 0x80;
+		} else {
+			flags &= (~0x80);
+		}
 	}
 	
 	public void parseFlags(byte flags) {
@@ -238,7 +239,11 @@ public class VariableHeader {
 	}
 	
 	public void setSigValFlag(boolean sigValFlag) {
-		flags |= 0x10;
+		if(sigValFlag) {
+			flags |= 0x10;
+		} else {
+			flags &= (~0x10);
+		}
 	}
 	
 	public boolean getSysCusFlag() {
@@ -314,6 +319,14 @@ public class VariableHeader {
 			flags |= 0x02;
 		} else {
 			flags &= (~0x02);
+		}
+	}
+	
+	public void setReqNewDeviceIdFlag(boolean reqNewDeviceIdFlag) {
+		if(reqNewDeviceIdFlag) {
+			flags |= 0x04;
+		} else {
+			flags &= (~0x04);
 		}
 	}
 

@@ -7,9 +7,6 @@ import java.io.StringWriter;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,22 +27,11 @@ public class HibernateUnitTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(HibernateUnitTest.class);
 
-	@Before
-	public void setUp() throws Exception {
-	}
-
-	@After
-	public void tearDown() throws Exception {
-	}
-
 	@Test
 	public void test() {
 		boolean testResultAllOK = true;
 		SessionFactory sessionFactory = BeecomDB.buildSessionFactory();
-		Session session = sessionFactory.openSession();
-		Transaction tx = null;
-		try {
-			tx = session.beginTransaction();
+		try (Session session = sessionFactory.openSession()) {
 			UserInfoHbn userInfoHbn = session.load(UserInfoHbn.class, 1L);
 			assertNotEquals(null, userInfoHbn);
 			DevInfoHbn devInfoHbn = session.load(DevInfoHbn.class, 1L);
@@ -62,25 +48,17 @@ public class HibernateUnitTest {
 			assertNotEquals(null, systemSignalInfoHbn);
 			CustomSignalEnumInfoHbn customSignalEnumInfoHbn = session.load(CustomSignalEnumInfoHbn.class, 1L);
 			assertNotEquals(null, customSignalEnumInfoHbn);
-			// CustomSignalNameLangInfoHbn customSignalNameLangInfoHbn = session.load(CustomSignalNameLangInfoHbn.class,1L);
-			// assertNotEquals(null, customSignalNameLangInfoHbn);
 			CustomSignalEnumLangInfoHbn customSignalEnumLangInfoHbn = session.load(CustomSignalEnumLangInfoHbn.class,1L);
 			assertNotEquals(null, customSignalEnumLangInfoHbn);
 			SystemSignalStringInfoHbn systemSignalStringInfoHbn = session.load(SystemSignalStringInfoHbn.class, 1L);
 			assertNotEquals(null, systemSignalStringInfoHbn);
-			// tx.commit();
 		} catch (Exception e) {
-			if (tx != null) {
-				tx.rollback();
-			}
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw, true));
 			String str = sw.toString();
 			logger.error(str);
 			testResultAllOK = false;
-		} finally {
-			session.close();
-		}
+		} 
 		assertEquals(testResultAllOK, true);
 	}
 

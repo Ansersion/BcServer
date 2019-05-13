@@ -359,6 +359,6 @@ public class BPSysSigTable {
 		debugStr.append(sysSigInfo.isEnStatistics() + "," + sysSigInfo.getAlmClass() + ","
 				+ sysSigInfo.getDlyBefAlm() + "," + sysSigInfo.getDlyAftAlm());
 		
-		logger.info(debugStr.toString());
+		logger.info("{}", debugStr.toString());
 	}
 }

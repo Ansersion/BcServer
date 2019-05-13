@@ -31,7 +31,6 @@ public class BPDeviceSession extends BPSession {
 	private Long uniqDeviceId;
 	private int maxReportSignalMapNumber;
 	private String password;
-	// private Long adminId;
 	private Map<Integer, List<Object> > signalValueMap;
 	private Map<Integer, SignalInfoUnitInterface> signalId2InfoUnitMap;
 	private long snId;
@@ -168,7 +167,6 @@ public class BPDeviceSession extends BPSession {
 				if ((customFlags & BPPacket.SYSTEM_SIGNAL_CUSTOM_FLAGS_ENUM_LANG) != 0) {
 					/* in SignalInterface */
 					/* do nothing */
-					/* TODO: reconstruct SystemSignalCustomInfoUnit to have enum language */
 				}
 				if ((customFlags & BPPacket.SYSTEM_SIGNAL_CUSTOM_FLAGS_GROUP_LANG) != 0) {
 					/* in SignalInterface */
@@ -210,11 +208,6 @@ public class BPDeviceSession extends BPSession {
 		}
 		
 		return signalId2InfoUnitMapTmp;
-	}
-	
-	public void reportSignalValue2UserClient(byte[] reportData) {
-		/* TODO: push the signal value to the device
-		 * and put a callback when get the response if notifying flag set */
 	}
 
 	@Override

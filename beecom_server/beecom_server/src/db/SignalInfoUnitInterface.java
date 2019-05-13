@@ -26,7 +26,7 @@ public interface SignalInfoUnitInterface {
 	short getAlarmDelayBef();
 	short getAlarmDelayAft();
 	Map<Integer, String> getSignalNameLangMap();
-	Map<Integer, String> getGignalUnitLangMap();
+	Map<Integer, String> getSignalUnitLangMap();
 	Map<Integer, String> getGroupLangMap();
 	Map<Integer, Map<Integer, String> > getSignalEnumLangMap();
 	boolean checkSignalValueUnformed(Byte valueType, Object value);
