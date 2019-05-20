@@ -18,6 +18,7 @@ public class SystemSignalInfoUnit implements SignalInfoUnitInterface {
 	private int sysSigId;
 	private boolean ifNotifing;
 	private boolean ifConfigDef;
+	private boolean ifDisplay;
 	private int customFlags;
 	private short alarmClass;
 	private short alarmDelayBef;
@@ -33,14 +34,32 @@ public class SystemSignalInfoUnit implements SignalInfoUnitInterface {
 		this.ifConfigDef = false;
 		this.systemSignalEnumLangInfoList = null;
 		this.systemSignalInterface = null;
+		
+		try {
+			BPSysSigTable sysSigTab = BPSysSigTable.getSysSigTableInstance();
+			SysSigInfo sysSigInfo = sysSigTab.getSysSigInfo(sysSigId - BPPacket.SYS_SIG_START_ID);
+			if (null == sysSigInfo) {
+				return;
+			}
+			ifDisplay = sysSigInfo.isIfDisplay();
+			alarmClass = sysSigInfo.getAlmClass();
+			alarmDelayBef = (short)sysSigInfo.getDlyBefAlm();
+			alarmDelayAft = (short)sysSigInfo.getDlyAftAlm();
+		} catch(Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+		}
 	}
 
-	public SystemSignalInfoUnit(int sysSigId, boolean ifNotifing, boolean ifConfigDef,
+	public SystemSignalInfoUnit(int sysSigId, boolean ifNotifing, boolean ifConfigDef, boolean ifDisplay, short alarmClass, short alarmDelayBef, short alarmDelayAft, 
 			List<SystemSignalEnumLangInfoHbn> systemSignalEnumLangInfoList, SignalInterface systemSignalInterface) {
 		super();
 		this.sysSigId = sysSigId;
 		this.ifNotifing = ifNotifing;
 		this.ifConfigDef = ifConfigDef;
+		this.ifDisplay = ifDisplay;
+		this.alarmClass = alarmClass;
+		this.alarmDelayBef = alarmDelayBef;
+		this.alarmDelayAft = alarmDelayAft;
 		this.systemSignalEnumLangInfoList = systemSignalEnumLangInfoList;
 		this.systemSignalInterface = systemSignalInterface;
 	}
@@ -87,31 +106,12 @@ public class SystemSignalInfoUnit implements SignalInfoUnitInterface {
 
 	@Override
 	public boolean ifAlarm() {
-		// TODO:
-		return false;
+		return alarmClass != BPPacket.ALARM_CLASS_NONE;
 	}
 	
 	@Override
 	public boolean ifDisplay() {
-		/*
-		 * TODO;
-		boolean ret = false;
-		try {
-			if ((customFlags & BPPacket.SYSTEM_SIGNAL_CUSTOM_FLAGS_DISPLAY) != 0) {
-				ret = systemSignalInterface.
-			} else {
-				BPSysSigTable sysSigTab = BPSysSigTable.getSysSigTableInstance();
-				SysSigInfo sysSigInfo = sysSigTab.getSysSigInfo(sysSigId - BPPacket.SYS_SIG_START_ID);
-				if (null == sysSigInfo) {
-					return ret;
-				}
-			}
-		} catch(Exception e) {
-			Util.logger(logger, Util.ERROR, e);
-		}
-		return ret;
-		*/
-		return false;
+		return ifDisplay;
 	}
 
 	@Override
@@ -121,36 +121,19 @@ public class SystemSignalInfoUnit implements SignalInfoUnitInterface {
 
 	@Override
 	public Map<Integer, String> getSignalUnitLangMap() {
-		// TODO Auto-generated method stub
+		/* in systemSignalInterface */
 		return null;
 	}
 
 	@Override
 	public Map<Integer, String> getGroupLangMap() {
-		/*
-		 * TODO:
-		boolean ret = false;
-		try {
-			if ((customFlags & BPPacket.SYSTEM_SIGNAL_CUSTOM_FLAGS_GROUP_LANG) != 0) {
-				ret = systemSignalInterface.
-			} else {
-				BPSysSigTable sysSigTab = BPSysSigTable.getSysSigTableInstance();
-				SysSigInfo sysSigInfo = sysSigTab.getSysSigInfo(sysSigId - BPPacket.SYS_SIG_START_ID);
-				if (null == sysSigInfo) {
-					return sysSigInfo.;
-				}
-			}
-		} catch(Exception e) {
-			Util.logger(logger, Util.ERROR, e);
-		}
-		return ret;
-		*/
+		/* in systemSignalInterface */
 		return null;
 	}
 
 	@Override
 	public Map<Integer, Map<Integer, String>> getSignalEnumLangMap() {
-		// TODO Auto-generated method stub
+		/* in systemSignalInterface */
 		return null;
 	}
 
@@ -170,7 +153,7 @@ public class SystemSignalInfoUnit implements SignalInfoUnitInterface {
 
 	@Override
 	public boolean checkSignalValueUnformed(Byte valueType, Object value) {
-		// TODO Auto-generated method stub
+		// TODO: 
 		return false;
 	}
 

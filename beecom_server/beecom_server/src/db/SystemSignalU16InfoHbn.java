@@ -13,6 +13,7 @@ public class SystemSignalU16InfoHbn extends SignalInterface {
     private Integer groupLangId;
     private Boolean enStatistics;
     private Long systemSignalId;
+    private Integer unitLangId;
     
 	public SystemSignalU16InfoHbn() {
 		super();
@@ -73,7 +74,21 @@ public class SystemSignalU16InfoHbn extends SignalInterface {
 	public void setSystemSignalId(Long systemSignalId) {
 		this.systemSignalId = systemSignalId;
 	}
+	@Override
+	public Integer getUnitLangId() {
+		return unitLangId;
+	}
+	@Override
+	public void setUnitLangId(Integer unitLangId) {
+		this.unitLangId = unitLangId;
+	}
 	
+	@Override
+	public String toString() {
+		return "SystemSignalU16InfoHbn [id=" + id + ", permission=" + permission + ", minVal=" + minVal + ", maxVal="
+				+ maxVal + ", defVal=" + defVal + ", groupLangId=" + groupLangId + ", enStatistics=" + enStatistics
+				+ ", systemSignalId=" + systemSignalId + ", unitLangId=" + unitLangId + "]";
+	}
 	@Override
 	public int getValType() {
 		return BPPacket.VAL_TYPE_UINT16;

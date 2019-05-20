@@ -70,9 +70,9 @@ public class BPPacket implements BPPacketInterface {
 	public static final int ALARM_CLASS_SERIOUS = 0x01;
 	public static final int ALARM_CLASS_WARNING = 0x02;
 	public static final int ALARM_CLASS_ATTENTION = 0x03;
-	public static final short ALARM_CLASS_NOTE = 0x04;
-	public static final short ALARM_CLASS_NONE = 0xFF;
-	public static final short ALARM_DELAY_DEFAULT = 0x05;
+	public static final int ALARM_CLASS_NOTE = 0x04;
+	public static final int ALARM_CLASS_NONE = 0xFF;
+	public static final int ALARM_DELAY_DEFAULT = ALARM_CLASS_NONE;
 	
 	/* system signal custom flgs */
 	public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_STATISTICS = 0x0001;

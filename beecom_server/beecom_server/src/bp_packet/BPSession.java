@@ -46,6 +46,8 @@ public abstract class BPSession {
 	private EncryptType.EnType encryptionType;
 	private CrcChecksum crcType;
 	
+	private int langMask;
+	
 	public BPSession(IoSession session) {
 		this.session = session;
 		this.procLevel = 0;
@@ -332,4 +334,13 @@ public abstract class BPSession {
 	}
 	
 	public abstract void updateLoginTime();
+	
+
+	public int getLangMask() {
+		return langMask;
+	}
+
+	public void setLangMask(int langMask) {
+		this.langMask = langMask;
+	}
 }

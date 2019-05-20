@@ -37,7 +37,7 @@ import db.BeecomDB;
 import db.CustomSignalInfoUnit;
 import db.DevInfoHbn;
 import db.DeviceInfoUnit;
-import db.ServerChainHbn;
+import db.DevServerChainHbn;
 import db.SignalInfoUnitInterface;
 import db.SnInfoHbn;
 import db.SystemSignalCustomInfoUnit;
@@ -413,7 +413,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 						session.closeOnFlush();
 						return;
 					}
-					ServerChainHbn serverChainHbn = new ServerChainHbn();
+					DevServerChainHbn serverChainHbn = new DevServerChainHbn();
 					serverChainHbn.setClientId(devInfoHbn.getId());
 					if(!beecomDb.putNewServerChain(serverChainHbn)) {
 						packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_REGISTER_FAILED);
@@ -436,7 +436,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 					return;
 				}
 
-				ServerChainHbn serverChainHbn = BeecomDB.getInstance().getServerChain(devUniqId);
+				DevServerChainHbn serverChainHbn = BeecomDB.getInstance().getServerChain(devUniqId);
 				if (null == serverChainHbn) {
 					packAck.getVrbHead().setRetCode(BPPacketCONNACK.RET_CODE_SERVER_CHAIN_INVALID);
 					session.write(packAck);
@@ -446,6 +446,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 				packAck.getPld().setServerChainHbn(serverChainHbn);
 				bpSession = new BPDeviceSession(session, devUniqId, password,
 						deviceInfoUnit.getDevInfoHbn().getAdminId(), deviceInfoUnit.getDevInfoHbn().getSnId(), deviceInfoUnit.getDevInfoHbn().getDailySigTabChangeTimes());
+				bpSession.setLangMask(deviceInfoUnit.getDevInfoHbn().getLangSupportMask());
 				bpSession.setEncryptionType(decodedPack.getFxHead());
 				bpSession.setCrcType(decodedPack.getFxHead());
 				bpSession.setSessionReady(false);

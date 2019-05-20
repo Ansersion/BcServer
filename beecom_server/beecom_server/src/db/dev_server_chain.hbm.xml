@@ -4,7 +4,7 @@
         "http://www.hibernate.org/dtd/hibernate-mapping">  
  
 <hibernate-mapping package="db">    
-    <class name="ServerChainHbn" table="server_chain">  
+    <class name="DevServerChainHbn" table="dev_server_chain">  
         <id name="id" column="id">  
             <generator class="native" />
         </id>  

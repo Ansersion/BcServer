@@ -936,23 +936,23 @@ public class BeecomDB {
 		return deviceUniqId;
 	}
 	
-	public ServerChainHbn getServerChain(long uniqDevId) {
+	public DevServerChainHbn getServerChain(long uniqDevId) {
 		if(uniqDevId <= 0) {
 			return null;
 		}
 
-		ServerChainHbn serverChainHbn = null;
+		DevServerChainHbn serverChainHbn = null;
 		Transaction tx = null;
 
 		try (Session session = sessionFactory.openSession()) {
-			serverChainHbn = (ServerChainHbn)session  
-		            .createQuery(" from ServerChainHbn where clientId=?0 ")
+			serverChainHbn = (DevServerChainHbn)session  
+		            .createQuery(" from DevServerChainHbn where clientId=?0 ")
 		            .setParameter("0", uniqDevId)
 		            .uniqueResult();  
 			
 			if(null == serverChainHbn) {
 				tx = session.beginTransaction();
-				serverChainHbn = new ServerChainHbn();
+				serverChainHbn = new DevServerChainHbn();
 				serverChainHbn.setClientId(uniqDevId);
 				session.save(serverChainHbn);
 				tx.commit();
@@ -990,6 +990,10 @@ public class BeecomDB {
 		int signalId;
 		boolean ifNotifying;
 		boolean ifConfigDef;
+		boolean ifDisplay;
+		short alarmClass;
+		short alarmDelayBef;
+		short alarmDelayAft;
 		List<SystemSignalEnumLangInfoHbn> systemSignalEnumLangInfoList;
 		while(itSI.hasNext()) {
 			systemSignalEnumLangInfoList = null;
@@ -1005,15 +1009,19 @@ public class BeecomDB {
 					}
 					ifNotifying = signalInfoHbn.getNotifying();
 					ifConfigDef = systemSignalInfoHbn.getCustomFlags() == 0;
+					alarmClass = signalInfoHbn.getAlmClass();
+					alarmDelayBef = signalInfoHbn.getAlmDlyBef();
+					alarmDelayAft = signalInfoHbn.getAlmDlyAft();
+					BPSysSigTable sysSigTab = BPSysSigTable.getSysSigTableInstance();
+					SysSigInfo sysSigInfo = sysSigTab.getSysSigInfo(signalId - BPPacket.SYS_SIG_START_ID);
+					if(null == sysSigInfo) {
+						logger.error("Inner error: null == sysSigInfo->{}", signalId);
+						return null;
+					}
+					ifDisplay = sysSigInfo.isIfDisplay();
 					SignalInterface systemSignalInterface = null;
 					if(!ifConfigDef) {
-						BPSysSigTable sysSigTab = BPSysSigTable.getSysSigTableInstance();
-						SysSigInfo sysSigInfo = sysSigTab.getSysSigInfo(signalId - BPPacket.SYS_SIG_START_ID);
-						if(null == sysSigInfo) {
-							logger.error("Inner error: null == sysSigInfo->{}", signalId);
-							return null;
-						}
-						
+						ifDisplay = signalInfoHbn.getDisplay();
 						systemSignalInterface = getSystemSignalInterface(systemSignalInfoHbn.getId(), sysSigInfo.getValType());
 						if(sysSigInfo.getValType() == BPPacket.VAL_TYPE_ENUM && null != systemSignalInterface) {
 							try (Session session = sessionFactory.openSession()) {
@@ -1026,7 +1034,7 @@ public class BeecomDB {
 							}
 						}
 					}
-					systemSignalInfoUnitLst.add(new SystemSignalInfoUnit(signalId, ifNotifying, ifConfigDef, systemSignalEnumLangInfoList, systemSignalInterface));
+					systemSignalInfoUnitLst.add(new SystemSignalInfoUnit(signalId, ifNotifying, ifConfigDef, ifDisplay, alarmClass, alarmDelayBef, alarmDelayAft, systemSignalEnumLangInfoList, systemSignalInterface));
 					break;
 				}
 			}
@@ -1205,17 +1213,12 @@ public class BeecomDB {
 		Map<Integer, String> cusSignalUnitLangMap = null;
 		Map<Integer, String> cusSignalGroupLangMap = null;
 		Map<Integer, Map<Integer, String> > cusSignalEnumLangMap = null;
-		// int groupLangId = BPPacket.INVALID_LANGUAGE_ID;
 		
 		while(itSI.hasNext()) {
 			SignalInfoHbn signalInfoHbn = itSI.next();
 			itCSI = customSignalInfoHbnLst.iterator();
 			while(itCSI.hasNext()) {
-				cusSignalNameLangMap = null;
-				cusSignalUnitLangMap = null;
-				cusSignalGroupLangMap = null;
 				cusSignalEnumLangMap = null;
-				// groupLangId = BPPacket.INVALID_LANGUAGE_ID;
 				CustomSignalInfoHbn customSignalInfoHbn = itCSI.next();
 
 				if (customSignalInfoHbn.getSignalId().equals(signalInfoHbn.getId())) {
@@ -1226,9 +1229,6 @@ public class BeecomDB {
 					ifNotifying = signalInfoHbn.getNotifying();
 					ifDisplay = signalInfoHbn.getDisplay();
 					ifAlarm = customSignalInfoHbn.getIfAlarm();
-					if(ifAlarm) {
-						// customAlarmInfoUnit = getCustomSignalAlmInfoUnit(customSignalInfoHbn.getId(), langSupportMask);
-					}
 					
 					SignalInterface signalInterface = null;
 					cusSignalNameLangMap = getCustomSignalNameLangMap(customSignalInfoHbn.getCusSigNameLangId(), langSupportMask);
@@ -1687,7 +1687,7 @@ public class BeecomDB {
      * @param serverChainHbn the server chain info, its id must be 0 to indicate it's new
      * @return true OK, false error
      */
-    public boolean putNewServerChain(ServerChainHbn serverChainHbn) {
+    public boolean putNewServerChain(DevServerChainHbn serverChainHbn) {
     	boolean ret = false;
     	if(null == serverChainHbn) {
     		return ret;
@@ -1956,7 +1956,7 @@ public class BeecomDB {
 					logger.error("Inner error: null == devInfoHbn");
 					return ret;
 				}
-				/*
+				/**
 						SYSTEM_SIGNAL_CUSTOM_FLAGS_STATISTICS = 0x0001; // signalInterface.saveToDb(session) 
 						SYSTEM_SIGNAL_CUSTOM_FLAGS_ENUM_LANG = 0x0002;
 						SYSTEM_SIGNAL_CUSTOM_FLAGS_GROUP_LANG = 0x0004; // signalInterface.saveToDb(session) 
@@ -2447,14 +2447,26 @@ public class BeecomDB {
 	    	StringBuilder hql = new StringBuilder();
 	    	String tag;
 	    	List<SystemSignalEnumLangInfoHbn> systemSignalEnumLangInfoList;
-			// CustomSignalNameLangInfoHbn customSignalNameLangInfoHbn = null;
-			// CustomGroupLangInfoHbn customGroupLangInfoHbn = null;
-			// CustomUnitLangInfoHbn customUnitLangInfoHbn = null;
-			// CustomSignalEnumInfoHbn customSignalEnumInfoHbn = null;
+			Map<Integer, String> cusSignalNameLangMap = null;
+			Map<Integer, String> cusSignalUnitLangMap = null;
+			Map<Integer, String> cusSignalGroupLangMap = null;
+			Map<Integer, Map<Integer, String> > cusSignalEnumLangMap = null;
+			boolean ifDisplay;
+			short alarmClass;
+			short alarmDelayBef;
+			short alarmDelayAft;
 			while(itSih.hasNext()) {
+				cusSignalNameLangMap = null;
+				cusSignalUnitLangMap = null;
+				cusSignalGroupLangMap = null;
+				cusSignalEnumLangMap = null;
 				signalInterfaceTmp = null;
 				SignalInfoHbn signalInfoHbn = itSih.next();
 				signalIdTmp = signalInfoHbn.getSignalId();
+				ifDisplay = signalInfoHbn.getDisplay();
+				alarmClass = signalInfoHbn.getAlmClass();
+				alarmDelayBef = signalInfoHbn.getAlmDlyBef();
+				alarmDelayAft = signalInfoHbn.getAlmDlyAft();
 				if(signalIdTmp < BPPacket.SYS_SIG_START_ID) {
 					/* "from CustomSignalInfoHbn where signalId=:signal_id" */
 					hql.setLength(0);
@@ -2496,10 +2508,16 @@ public class BeecomDB {
 						return ret;
 					}
 					
-					// TODO: re-construct alarm data
-					// 			re-construct language resources
+					int langSupportMask = bpDeviceSession.getLangMask();
+					cusSignalNameLangMap = getCustomSignalNameLangMap(customSignalInfoHbn.getCusSigNameLangId(), langSupportMask);
+					cusSignalUnitLangMap = getCustomUnitLangMap(customSignalInfoHbn.getCusSigUnitLangId(), langSupportMask);
+					cusSignalGroupLangMap = getCustomGroupLangMap(customSignalInfoHbn.getCusGroupLangId(), langSupportMask);
+					
+					if(BPPacket.VAL_TYPE_ENUM == customSignalInfoHbn.getValType()) {
+						cusSignalEnumLangMap = getCustomSignalEnumLangMap(customSignalInfoHbn.getId(), langSupportMask);
+					}
 		
-					CustomSignalInfoUnit customSignalInfoUnit = new CustomSignalInfoUnit(signalIdTmp, signalInfoHbn.getNotifying(), false, BPPacket.ALARM_CLASS_NONE, BPPacket.ALARM_DELAY_DEFAULT, BPPacket.ALARM_DELAY_DEFAULT, signalInfoHbn.getDisplay(), null, null, null, null, signalInterfaceTmp);
+					CustomSignalInfoUnit customSignalInfoUnit = new CustomSignalInfoUnit(signalIdTmp, signalInfoHbn.getNotifying(), false, signalInfoHbn.getAlmClass(), signalInfoHbn.getAlmDlyBef(), signalInfoHbn.getAlmDlyAft(), signalInfoHbn.getDisplay(), cusSignalNameLangMap, cusSignalUnitLangMap, cusSignalGroupLangMap, cusSignalEnumLangMap, signalInterfaceTmp);
 					signalId2InfoUnitMap.put(signalIdTmp, customSignalInfoUnit);
 				} else {
 					systemSignalEnumLangInfoList = null;
@@ -2521,6 +2539,10 @@ public class BeecomDB {
 					if(systemSignalInfoHbn.getCustomFlags() != 0) {
 						sysSigInfoTmp = bpSysSigTable.getSysSigInfo(signalIdTmp - BPPacket.SYS_SIG_START_ID);
 						valueType = sysSigInfoTmp.getValType();
+						ifDisplay = sysSigInfoTmp.isIfDisplay();
+						if((systemSignalInfoHbn.getCustomFlags() & BPPacket.SYSTEM_SIGNAL_CUSTOM_FLAGS_DISPLAY) != 0) {
+							ifDisplay = signalInfoHbn.getDisplay();
+						}
 						
 						signalInterfaceTmp = null;
 				    	if(!BPPacket.ifSigTypeValid(valueType)) {
@@ -2535,37 +2557,7 @@ public class BeecomDB {
 						if(null == tableName) {
 							return ret;
 						}
-						/*
-						switch(valueType) {
-						case BPPacket.VAL_TYPE_UINT32:
-							tableName = "SystemSignalU32InfoHbn";
-							break;
-						case BPPacket.VAL_TYPE_UINT16:
-							tableName = "SystemSignalU16InfoHbn";
-							break;
-						case BPPacket.VAL_TYPE_IINT32:
-							tableName = "SystemSignalI32InfoHbn";
-							break;
-						case BPPacket.VAL_TYPE_IINT16:
-							tableName = "SystemSignalI16InfoHbn";
-							break;
-						case BPPacket.VAL_TYPE_ENUM:
-							tableName = "SystemSignalEnumInfoHbn";
-							break;
-						case BPPacket.VAL_TYPE_FLOAT:
-							tableName = "SystemSignalFloatInfoHbn";
-							break;
-						case BPPacket.VAL_TYPE_STRING:
-							tableName = "SystemSignalStringInfoHbn";
-							break;
-						case BPPacket.VAL_TYPE_BOOLEAN:
-							tableName = "SystemSignalBooleanInfoHbn";
-							break;
-						default:
-							logger.error("Inner error: invalid value type");
-							return ret;
-						}
-						*/
+	
 						hql.append(tableName);
 						tag = "system_signal_id";
 						hql.append(" where systemSignalId=:");
@@ -2591,7 +2583,7 @@ public class BeecomDB {
 						}
 							
 					}
-					SystemSignalInfoUnit systemSignalInfoUnit = new SystemSignalInfoUnit(signalIdTmp, signalInfoHbn.getNotifying(), systemSignalInfoHbn.getCustomFlags() != 0, systemSignalEnumLangInfoList, signalInterfaceTmp);
+					SystemSignalInfoUnit systemSignalInfoUnit = new SystemSignalInfoUnit(signalIdTmp, signalInfoHbn.getNotifying(), ifDisplay, systemSignalInfoHbn.getCustomFlags() != 0, alarmClass, alarmDelayBef, alarmDelayAft, systemSignalEnumLangInfoList, signalInterfaceTmp);
 					signalId2InfoUnitMap.put(signalIdTmp, systemSignalInfoUnit);
 				}
 			}

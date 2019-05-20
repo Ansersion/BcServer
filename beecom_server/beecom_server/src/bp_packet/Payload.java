@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import db.BeecomDB;
 import db.CustomSignalInfoUnit;
-import db.ServerChainHbn;
+import db.DevServerChainHbn;
 import db.SignalInfoUnitInterface;
 import db.SystemSignalCustomInfoUnit;
 import db.SystemSignalInfoUnit;
@@ -90,7 +90,7 @@ public class Payload {
 	private int customSignalLangSupportMask;
 	private long sigMapCheckSum;
 	private byte[] relayData;
-	private ServerChainHbn serverChainHbn;
+	private DevServerChainHbn serverChainHbn;
 	private List<Integer> signalLst;
 	
 	public BPError getError() {
@@ -409,11 +409,11 @@ public class Payload {
 		this.relayData = relayData;
 	}
 
-	public ServerChainHbn getServerChainHbn() {
+	public DevServerChainHbn getServerChainHbn() {
 		return serverChainHbn;
 	}
 
-	public void setServerChainHbn(ServerChainHbn serverChainHbn) {
+	public void setServerChainHbn(DevServerChainHbn serverChainHbn) {
 		this.serverChainHbn = serverChainHbn;
 	}
 

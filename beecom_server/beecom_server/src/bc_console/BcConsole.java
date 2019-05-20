@@ -40,7 +40,7 @@ public class BcConsole {
 	public static int maxDeviceClientPayload = 30000; // 30000 device client payload for 4G memory
 	
 	public static String updateServerChildren(String file) {
-    	/* load the configuration file if any:
+    	/** load the configuration file if any:
     	 * 1->192.168.1.2;
     	 * 3->hk.bcserver.site;
     	 * */

@@ -52,12 +52,14 @@
    <mapping resource="db/dev_info.hbm.xml"/>
    <mapping resource="db/sn_info.hbm.xml"/>
    <mapping resource="db/user_dev_rel_info.hbm.xml"/>
-   <mapping resource="db/server_chain.hbm.xml"/>
+   <mapping resource="db/dev_server_chain.hbm.xml"/>
+   <mapping resource="db/user_server_chain.hbm.xml"/>
    <mapping resource="db/signal_info.hbm.xml"/>
-   
-     
-   <mapping resource="db/custom_signal_group_lang_entity_info.hbm.xml"/>
+
+   <!--  
    <mapping resource="db/custom_signal_alm_info.hbm.xml"/>
+   -->
+   <mapping resource="db/custom_signal_group_lang_entity_info.hbm.xml"/>
    <mapping resource="db/custom_signal_boolean_info.hbm.xml"/>
    <mapping resource="db/custom_signal_enum_info.hbm.xml"/>
    <mapping resource="db/custom_signal_enum_lang_info.hbm.xml"/>
@@ -72,8 +74,9 @@
    <mapping resource="db/custom_signal_u32_info.hbm.xml"/>
    <mapping resource="db/custom_unit_lang_entity_info.hbm.xml"/>
      
-       
+   <!--  
    <mapping resource="db/system_signal_alm_info.hbm.xml"/>
+   -->
    <mapping resource="db/system_signal_boolean_info.hbm.xml"/>
    <mapping resource="db/system_signal_enum_info.hbm.xml"/>
    <mapping resource="db/system_signal_enum_lang_info.hbm.xml"/>
@@ -88,8 +91,8 @@
    <!--
    <mapping resource="db/system_signal_string_default_value_entity_info.hbm.xml"/>
    <mapping resource="db/custom_signal_string_default_value_entity_info.hbm.xml"/>
-   -->
    <mapping resource="db/custom_alarm_name_lang_entity_info.hbm.xml"/>
+      -->
    
 
 

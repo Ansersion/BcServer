@@ -13,10 +13,10 @@ public class ServerChain {
 	public static final ServerNode SERVER_NODE_DEFAULT = new ServerNode(TYPE_DEFAULT, "");
 	
 	// TODO: make SERVER_ROOT and SERVER_ME changeable: ADVANCED FUNCTION
-	public static final String SERVER_ROOT = "127.0.0.1";
-	public static final int TYPE_ROOT = 1;
-	public static final String SERVER_ME = SERVER_ROOT;
-	public static final int TYPE_ME = TYPE_ROOT;
+	public static String SERVER_ROOT = "127.0.0.1";
+	public static int TYPE_ROOT = 1;
+	public static String SERVER_ME = SERVER_ROOT;
+	public static int TYPE_ME = TYPE_ROOT;
 	
 	/* example:
 	 * 1<192.168.1.2>3<bcserver2.com */

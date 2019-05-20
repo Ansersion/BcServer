@@ -5,7 +5,7 @@ package bp_packet;
 
 import org.apache.mina.core.buffer.IoBuffer;
 
-import db.ServerChainHbn;
+import db.DevServerChainHbn;
 import other.CrcChecksum;
 import server_chain.ServerChain;
 import sys_sig_table.BPSysSigTable;
@@ -16,19 +16,19 @@ import sys_sig_table.BPSysSigTable;
  */
 public class BPPacketCONNACK extends BPPacket {
 	public static final int RET_CODE_LEVEL_ERR = 0x01;
-	// public static final int RESERVED = 0x02;
+	/** public static final int RESERVED = 0x02; */
 	public static final int RET_CODE_USER_NAME_INVALID = 0x03;
 	public static final int RET_CODE_PWD_INVALID = 0x04;
 	public static final int RET_CODE_ENCRYPT_ERR = 0x05;
-	// public static final int RESERVED = 0x06;
-	// public static final int RESERVED = 0x07;
+	/** public static final int RESERVED = 0x06;*/
+	/** public static final int RESERVED = 0x07;*/
 	public static final int RET_CODE_CLNT_UNKNOWN = 0x08;
 	public static final int RET_CODE_REGISTER_FAILED = 0x09;
-	// public static final int RET_CODE_CLNT_UNKNOWN = 0x0A;
-	// public static final int RET_CODE_CLNT_UNKNOWN = 0x0B;
-	// public static final int RET_CODE_CLNT_UNKNOWN = 0x0C;
-	// public static final int RET_CODE_CLNT_UNKNOWN = 0x0D;
-	// public static final int RET_CODE_CLNT_UNKNOWN = 0x0F;
+	/** public static final int RET_CODE_CLNT_UNKNOWN = 0x0A;*/
+	/** public static final int RET_CODE_CLNT_UNKNOWN = 0x0B;*/
+	/** public static final int RET_CODE_CLNT_UNKNOWN = 0x0C;*/
+	/** public static final int RET_CODE_CLNT_UNKNOWN = 0x0D;*/
+	/** public static final int RET_CODE_CLNT_UNKNOWN = 0x0F;*/
 	public static final int RET_CODE_SERVER_CHAIN_INVALID = 0x10;
 	public static final int RET_CODE_ADMIN_NAME_INVALID = 0x11;
 	public static final int RET_CODE_DEVICE_ONLINE = 0x12;
@@ -68,7 +68,7 @@ public class BPPacketCONNACK extends BPPacket {
 	public boolean assemblePayload() {
 		byte encodedByte;
 		Payload payload;
-		ServerChainHbn serverChainHbn;
+		DevServerChainHbn serverChainHbn;
 		IoBuffer ioBuffer = getIoBuffer();
 		if(RET_CODE_OK != getVrbHead().getRetCode()) {
 			return true;

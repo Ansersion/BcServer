@@ -138,7 +138,7 @@ public class BPDeviceSession extends BPSession {
 			Integer signalId;
 			while (itInteger.hasNext()) {
 				signalId = itInteger.next() + BPPacket.SYS_SIG_START_ID;
-				SystemSignalInfoUnit tmp = BPSysSigTable.getSysSigTableInstance().createNewSystemSignalInfoUnit(signalId - BPPacket.SYS_SIG_START_ID);
+				SystemSignalInfoUnit tmp = BPSysSigTable.getSysSigTableInstance().createNewSystemSignalInfoUnit(signalId);
 				if(null == tmp) {
 					logger.error("Inner Error: null == BPSysSigTable.getSysSigTableInstance().createNewSystemSignalInfoUnit({})", signalId);
 					continue;

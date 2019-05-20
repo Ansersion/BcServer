@@ -38,7 +38,7 @@ import java.util.List;
  */
 public class BPPacketGETACK extends BPPacket {
 	public static final int RET_CODE_VRB_HEADER_FLAG_ERR = 0x01;
-	// public static final int RESERVED = 0x02;
+	/** public static final int RESERVED = 0x02; */
 	public static final int RET_CODE_SIG_ID_INVALID = 0x03;
 	public static final int RET_CODE_LOAD_HEAVY = 0x04;
 	public static final int RET_CODE_SIGNAL_REPEAT_ERR = 0x05;
@@ -478,7 +478,6 @@ public class BPPacketGETACK extends BPPacket {
 						Map<Integer, String> unitLangMap = customSignalInfoUnit.getSignalUnitLangMap();
 						Map<Integer, String> groupLangMap = customSignalInfoUnit.getGroupLangMap();
 						Map<Integer, Map<Integer, String>> enumLangMap = customSignalInfoUnit.getSignalEnumLangMap();
-						// CustomAlarmInfoUnit customAlarmInfoUnit = customSignalInfoUnit.getCustomAlarmInfoUnit();
 						int langSupportMaskByte = 0;
 						int langSupportMaskTmp = langSupportMask;
 						for (int i = 7; i > 0; i--) {
@@ -501,9 +500,6 @@ public class BPPacketGETACK extends BPPacket {
 							buffer.putUnsigned(name.getBytes().length & 0xFF);
 							buffer.put(name.getBytes());
 							if (null == unitLangMap) {
-								/* 2 bytes */
-								/* TODO: temporary no support the system unit language unit */
-								// buffer.put(BPPacket.SYSTEM_UNIT_LANGUAGE_FLAG & 0x02);
 								buffer.putUnsigned(0);
 							} else {
 								String unit = unitLangMap.get(i);
@@ -515,9 +511,6 @@ public class BPPacketGETACK extends BPPacket {
 								buffer.put(unit.getBytes());
 							}
 							if (null == groupLangMap) {
-								/* 2 bytes */
-								/* TODO: temporary no support the system unit language unit */
-								// buffer.put(BPPacket.SYSTEM_UNIT_LANGUAGE_FLAG & 0x02);
 								buffer.putUnsigned(0);
 							} else {
 								String group = groupLangMap.get(i);
@@ -528,23 +521,6 @@ public class BPPacketGETACK extends BPPacket {
 								buffer.putUnsigned(group.getBytes().length & 0xFF);
 								buffer.put(group.getBytes());
 							}
-							if (customSignalInfoUnit.isIfAlarm()) {
-								//if (null == customAlarmInfoUnit || null == customAlarmInfoUnit.getCustomAlarmNameLangMap()) {
-									/* 2 bytes */
-									/* TODO: temporary no support the system unit language unit */
-									// buffer.put(BPPacket.SYSTEM_UNIT_LANGUAGE_FLAG & 0x02);
-									//buffer.putUnsigned(0);
-								//} else {
-								//	String alarmLang = customAlarmInfoUnit.getCustomAlarmNameLangMap().get(i);
-								//	if (null == alarmLang || alarmLang.getBytes().length > BPPacket.MAX_CUSTOM_SIGNAL_UNIT_LENGTH) {
-								//		logger.error("inner error: null == nameLangMap.get({})", i);
-								//		break;
-								//	}
-								//	buffer.put((byte) (alarmLang.getBytes().length & 0xFF));
-								//	buffer.put(alarmLang.getBytes());
-								//}
-							}
-
 
 							if (BPPacket.VAL_TYPE_ENUM == valType) {
 								int enumLangNum = enumLangMap.size();
@@ -693,20 +669,9 @@ public class BPPacketGETACK extends BPPacket {
 							break;
 						}
 						if (customSignalInfoUnit.isIfAlarm()) {
-							// if (null == customAlarmInfoUnit || null == customAlarmInfoUnit.getCustomSignalAlmInfoHbn()) {
-								/* 2 bytes */
-								/* TODO: temporary no support the system unit language unit */
-								// buffer.put(BPPacket.SYSTEM_UNIT_LANGUAGE_FLAG & 0x02);
-							//	buffer.putUnsigned(BPPacket.ALARM_CLASS_NONE);
-							//	buffer.putUnsigned(BPPacket.ALARM_DELAY_DEFAULT);
-							//	buffer.putUnsigned(BPPacket.ALARM_DELAY_DEFAULT);
-								
-							//} else {
-							//	CustomSignalAlmInfoHbn customSignalAlmInfoHbnTmp = customAlarmInfoUnit.getCustomSignalAlmInfoHbn();
-							//	buffer.putUnsigned(customSignalAlmInfoHbnTmp.getAlmClass());
-							//	buffer.putUnsigned(customSignalAlmInfoHbnTmp.getDlyBeforeAlm());
-							//	buffer.putUnsigned(customSignalAlmInfoHbnTmp.getDlyAfterAlm());
-							//}	
+							buffer.putUnsigned(customSignalInfoUnit.getAlarmClass());
+							buffer.putUnsigned(customSignalInfoUnit.getAlarmDelayBef());
+							buffer.putUnsigned(customSignalInfoUnit.getAlarmDelayAft());
 						}
 					}
 				}

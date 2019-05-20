@@ -18,11 +18,11 @@ import other.Util;
 public class BPPacketPOSTACK extends BPPacket {
 	private static final Logger logger = LoggerFactory.getLogger(BPPacketPOSTACK.class);
 	public static final int RET_CODE_VRB_HEADER_FLAG_ERR = 0x01;
-	// public static final int RESERVERED = 0x02;
+	/** public static final int RESERVERED = 0x02; */
 	public static final int RET_CODE_SIGNAL_ID_UNSUPPORTED = 0x03;
 	public static final int RET_CODE_SIGNAL_VALUE_UNFORMAL = 0x04;
 	public static final int RET_CODE_SIGNAL_ATTR_CHANGE_UNSUPPORTED = 0x05;
-	// public static final int RESERVERED = 0x06;
+	/** public static final int RESERVERED = 0x06; */
 	public static final int RET_CODE_PERMISSION_DENIED = 0x07;
 	public static final int RET_CODE_OFF_LINE_ERR = 0x08;
 	public static final int RET_CODE_TIMEOUT = 0x09;

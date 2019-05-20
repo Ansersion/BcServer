@@ -49,7 +49,7 @@ public abstract class SignalInterface {
 		return 0;
 	}
 	
-	public void setUnitLangId(int groupLangId) {
+	public void setUnitLangId(Integer unitLangId) {
 		/* do nothing */
 	}
 	

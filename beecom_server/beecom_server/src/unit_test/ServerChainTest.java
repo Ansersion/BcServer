@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import db.BeecomDB;
-import db.ServerChainHbn;
+import db.DevServerChainHbn;
 import server_chain.ServerChain;
 import server_chain.ServerNode;
 
@@ -61,7 +61,7 @@ public class ServerChainTest {
 		assertEquals(tmp.getType(), ServerChain.TYPE_DEFAULT);
 		assertEquals(0, tmp.getAddress().compareTo(""));
 		
-		ServerChainHbn serverChainHbn = BeecomDB.getInstance().getServerChain(1);
+		DevServerChainHbn serverChainHbn = BeecomDB.getInstance().getServerChain(1);
 		assertEquals(serverChainHbn.getUpperServerType(), ServerChain.TYPE_DEFAULT);
 		assertEquals(0, serverChainHbn.getUpperServer().compareTo(""));
 		assertEquals(serverChainHbn.getLowerServerType(), ServerChain.TYPE_IPV4);

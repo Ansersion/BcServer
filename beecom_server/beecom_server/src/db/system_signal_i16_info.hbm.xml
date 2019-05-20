@@ -15,5 +15,6 @@
         <property name="groupLangId" column="group_lang_id" />  
         <property name="enStatistics" column="en_statistics" />  
         <property name="systemSignalId" column="system_signal_id" /> 
+        <property name="unitLangId" column="unit_lang_id" /> 
     </class>    
 </hibernate-mapping>

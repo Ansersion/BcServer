@@ -9,7 +9,7 @@ import server_chain.ServerChain;
  * @author Ansersion
  *
  */
-public class ServerChainHbn {
+public class DevServerChainHbn {
     private Long id;
     private Long clientId;
     private String upperServer;
@@ -17,7 +17,7 @@ public class ServerChainHbn {
     private String lowerServer;
     private byte lowerServerType;
     
-	public ServerChainHbn() {
+	public DevServerChainHbn() {
 		super();
 		upperServer = "";
 		upperServerType = ServerChain.TYPE_DEFAULT;
@@ -62,14 +62,9 @@ public class ServerChainHbn {
 	}
 	@Override
 	public String toString() {
-		return "ServerChainHbn [id=" + id + ", clientId=" + clientId + ", upperServer=" + upperServer
+		return "DevServerChainHbn [id=" + id + ", clientId=" + clientId + ", upperServer=" + upperServer
 				+ ", upperServerType=" + upperServerType + ", lowerServer=" + lowerServer + ", lowerServerType="
 				+ lowerServerType + "]";
 	}
-    
 
-	
-
-    
-    
 }
