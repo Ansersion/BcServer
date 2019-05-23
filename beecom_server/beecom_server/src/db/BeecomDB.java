@@ -227,6 +227,66 @@ public class BeecomDB {
 		return LoginErrorEnum.LOGIN_OK;
 	}
 	
+	public LoginErrorEnum checkPhonePassword(String phone, String password, UserInfoUnit userInfoUnit) {
+
+		if(null == phone || phone.isEmpty()) {
+			return LoginErrorEnum.USER_INVALID;
+		}
+		if(null == password || password.isEmpty()) {
+			return LoginErrorEnum.PASSWORD_INVALID;
+		}
+
+		try (Session session = sessionFactory.openSession()) {
+			UserInfoHbn userInfoHbn = (UserInfoHbn)session  
+		            .createQuery("from UserInfoHbn where phone = :p_phone")
+		            .setParameter("p_phone", phone).uniqueResult();
+			if(null == userInfoHbn) {
+				return LoginErrorEnum.USER_INVALID;
+			} 
+
+			if(!userInfoHbn.getPassword().equals(password)) {
+				return LoginErrorEnum.PASSWORD_INVALID;
+			}
+			if(null != userInfoUnit) {
+				userInfoUnit.setUserInfoHbn(userInfoHbn);
+			}
+		} catch (Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+			userInfoUnit = null;
+		}
+		return LoginErrorEnum.LOGIN_OK;
+	}
+	
+	public LoginErrorEnum checkEmailPassword(String email, String password, UserInfoUnit userInfoUnit) {
+
+		if(null == email || email.isEmpty()) {
+			return LoginErrorEnum.USER_INVALID;
+		}
+		if(null == password || password.isEmpty()) {
+			return LoginErrorEnum.PASSWORD_INVALID;
+		}
+
+		try (Session session = sessionFactory.openSession()) {
+			UserInfoHbn userInfoHbn = (UserInfoHbn)session  
+		            .createQuery("from UserInfoHbn where eMail = :e_mail")
+		            .setParameter("e_mail", email).uniqueResult();
+			if(null == userInfoHbn) {
+				return LoginErrorEnum.USER_INVALID;
+			} 
+
+			if(!userInfoHbn.getPassword().equals(password)) {
+				return LoginErrorEnum.PASSWORD_INVALID;
+			}
+			if(null != userInfoUnit) {
+				userInfoUnit.setUserInfoHbn(userInfoHbn);
+			}
+		} catch (Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+			userInfoUnit = null;
+		}
+		return LoginErrorEnum.LOGIN_OK;
+	}
+	
 	public LoginErrorEnum checkSnPassword(String sn, String password, DeviceInfoUnit deviceInfoUnit) {
 		if(null == sn || sn.isEmpty()) {
 			return LoginErrorEnum.USER_INVALID;

@@ -300,8 +300,20 @@ public class BcServerHandler extends IoHandlerAdapter {
 			String password = pld.getPassword();
 			if (userClntFlag) {
 				UserInfoUnit userInfoUnit = new UserInfoUnit();
-				BeecomDB.LoginErrorEnum loginErrorEnum = beecomDb.checkUserPassword(userName, password,
-						userInfoUnit);
+				
+				BeecomDB.LoginErrorEnum loginErrorEnum;
+				if(userName.indexOf('@') >= 0) {
+					/* only email has '@' in */
+					loginErrorEnum = beecomDb.checkEmailPassword(userName, password,
+							userInfoUnit);
+				} else if(Util.isMobileNumber(userName)){
+					loginErrorEnum = beecomDb.checkPhonePassword(userName, password,
+							userInfoUnit);
+				} else {
+					loginErrorEnum = beecomDb.checkUserPassword(userName, password,
+							userInfoUnit);
+				}
+
 
 				switch (loginErrorEnum) {
 				case USER_INVALID:

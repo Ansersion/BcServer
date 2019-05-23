@@ -7,6 +7,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +22,8 @@ public class Util {
 	
 	private static final Logger logger = LoggerFactory.getLogger(Util.class);
 	private static Random random = new Random();
+	// "[1]"代表第1位为数字1，"[3578]"代表第二位可以为3、5、8中的一个，"\\d{9}"代表后面是可以是0～9的数字，有9位。
+	private static Pattern mobilePattern = Pattern.compile("[1][3578]\\d{9}");
 	
 	private Util() {
 		
@@ -158,4 +162,16 @@ public class Util {
         return password;
     }
 
+	public static boolean isMobileNumber(String mobiles) {
+		boolean ret = false;
+		
+		if (null != mobiles && !mobiles.isEmpty()) {
+			Matcher m = mobilePattern.matcher(mobiles);
+			if(m != null && m.find()) {
+				ret = true;
+			} 
+		}
+		
+		return ret;
+	}
 }
