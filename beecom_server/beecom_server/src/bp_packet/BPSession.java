@@ -58,14 +58,6 @@ public abstract class BPSession {
 		this.sessionReady = false;
 	}
 	
-	public BPSession(IoSession session, String userName, String password) {
-		this(session);
-	}
-	
-	public BPSession(IoSession session, Long uniqDeviceId, String password) {
-		this(session);    
-	}
-	
 	public abstract boolean ifUserSession(); 
 	
 	public Map<Integer, List<Object> > getSignalValueMap() {

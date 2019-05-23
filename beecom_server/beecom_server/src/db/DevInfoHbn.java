@@ -14,7 +14,7 @@ public class DevInfoHbn {
 	public DevInfoHbn() {
 		super();
 		sigMapChksum = BPPacket.INVALID_SIGNAL_MAP_CHECKSUM;
-		dailySigTabChangeTimes = 3;
+		dailySigTabChangeTimes = BPPacket.MAX_DAILY_SIG_TAB_CHANGE_TIMES;
 		/* Chinese and English enabled default */
 		langSupportMask = 0xC0;
 	}

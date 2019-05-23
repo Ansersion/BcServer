@@ -34,6 +34,7 @@ public class BPDeviceSession extends BPSession {
 	private Map<Integer, List<Object> > signalValueMap;
 	private Map<Integer, SignalInfoUnitInterface> signalId2InfoUnitMap;
 	private long snId;
+	private long adminId;
 	
 	private List<RelayAckData> relayAckDataList;
 	private Lock relayAckDataListLock = new ReentrantLock();
@@ -52,6 +53,7 @@ public class BPDeviceSession extends BPSession {
 		super(session);
 		this.uniqDeviceId = uniqDeviceId;
 		this.password = password;
+		this.adminId = adminId;
 		relayAckDataList = new ArrayList<>();
 		this.signalValueMap = new HashMap<>();
 		signalId2InfoUnitMap = null;
@@ -192,6 +194,10 @@ public class BPDeviceSession extends BPSession {
 				if ((customFlags & BPPacket.SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM) != 0) {
 					/* no use now */
 				}
+				if ((customFlags & BPPacket.SYSTEM_SIGNAL_CUSTOM_FLAGS_DISPLAY) != 0) {
+					systemSignalInfoUnit.setIfDisplay(systemSignalCustomInfoUnit.isDisplay());
+				}
+				
 				if ((customFlags & BPPacket.SYSTEM_SIGNAL_CUSTOM_FLAGS_ALARM_CLASS) != 0) {
 					systemSignalInfoUnit.setAlarmClass(systemSignalCustomInfoUnit.getAlarmClass());
 				}
@@ -202,6 +208,14 @@ public class BPDeviceSession extends BPSession {
 					systemSignalInfoUnit.setAlarmDelayAft(systemSignalCustomInfoUnit.getDelayAfterAlarm());
 				}
 
+			}
+			
+			Iterator<CustomSignalInfoUnit> itCustomSignalInfoUnit = customSignalInfoUnitList.iterator();
+			CustomSignalInfoUnit customSignalInfoUnit;
+			while(itCustomSignalInfoUnit.hasNext()) {
+				customSignalInfoUnit = itCustomSignalInfoUnit.next();
+				signalId = customSignalInfoUnit.getSignalId();
+				signalId2InfoUnitMapTmp.put(signalId, customSignalInfoUnit);
 			}
 		} catch (Exception e) {
 			Util.logger(logger, Util.ERROR, e);

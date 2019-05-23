@@ -460,15 +460,12 @@ public class BPPacketGETACK extends BPPacket {
 						}
 						valType = customSignalInfoUnit.getSignalInterface().getValType();
 						if (valType < 0 || valType >= BPPacket.MAX_VAL_TYPE_NUM) {
-							throw new Exception("inner error: invalid valType=" + valType);
+							logger.error("inner error: invalid valType={}", valType);
+							return ret;
 						}
 						cusSignalFlag |= (valType << 4);
 						buffer.putUnsignedShort(signalIdTmp);
 						buffer.put(cusSignalFlag);
-						/* default to add language end flag */
-						// langSupportMask |= 0x01;
-						// buffer.put((byte)(langSupportMask & 0xFF));
-
 						// TODO: not support other language now(2018.08.14)
 						Map<Integer, String> nameLangMap = customSignalInfoUnit.getSignalNameLangMap();
 						if (null == nameLangMap) {

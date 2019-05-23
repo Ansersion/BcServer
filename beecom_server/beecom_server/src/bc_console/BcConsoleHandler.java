@@ -55,10 +55,5 @@ public class BcConsoleHandler extends IoHandlerAdapter {
 		session.closeNow();
 
 	}
-
-	@Override
-	public void sessionClosed(IoSession session) throws Exception {
-		super.sessionClosed(session);
-	}
 	
 }

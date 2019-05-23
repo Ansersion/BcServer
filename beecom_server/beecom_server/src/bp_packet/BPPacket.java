@@ -64,6 +64,7 @@ public class BPPacket implements BPPacketInterface {
 	public static final int SYSTEM_UNIT_LANGUAGE_FLAG = 0x80;
 	
 	public static final long INVALID_SIGNAL_MAP_CHECKSUM = 0x7FFFFFFFFFFFFFFFL;
+	public static final short MAX_DAILY_SIG_TAB_CHANGE_TIMES = 10;
 	
 	/* alarm info */
 	public static final int ALARM_CLASS_EMERGANCY = 0x00;
