@@ -29,6 +29,7 @@ public class VariableHeader {
 	int retCode = 0;
 	int packSeq = 0;
 	private byte langFlags;
+    private int specsetType = 0;
 	
     private static int generatePackSeq() {
     	int ret = 0;
@@ -338,5 +339,15 @@ public class VariableHeader {
 	public boolean getSigMapChecksumOnly() {
 		return (flags & 0x02) != 0;
 	}
+
+	public int getSpecsetType() {
+		return specsetType;
+	}
+
+	public void setSpecsetType(int specsetType) {
+		this.specsetType = specsetType;
+	}
+	
+	
 	
 }

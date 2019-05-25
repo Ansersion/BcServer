@@ -92,6 +92,8 @@ public class Payload {
 	private byte[] relayData;
 	private DevServerChainHbn serverChainHbn;
 	private List<Integer> signalLst;
+    private int timestampType;
+    private long timestamp;
 	
 	public BPError getError() {
 		return error;
@@ -439,6 +441,22 @@ public class Payload {
 
 	public void setAdminName(String adminName) {
 		this.adminName = adminName;
+	}
+
+	public int getTimestampType() {
+		return timestampType;
+	}
+
+	public void setTimestampType(int timestampType) {
+		this.timestampType = timestampType;
+	}
+
+	public long getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
 	}
 
 

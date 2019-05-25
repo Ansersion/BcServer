@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,6 +29,7 @@ import bp_packet.BPPacketGETACK;
 import bp_packet.BPPacketPOST;
 import bp_packet.BPPacketPUSH;
 import bp_packet.BPPacketRPRTACK;
+import bp_packet.BPPacketSPECSET;
 import bp_packet.BPSession;
 import bp_packet.BPUserSession;
 import bp_packet.Payload;
@@ -125,6 +127,8 @@ public class BcServerHandler extends IoHandlerAdapter {
 			/* NOT SUPPORTED */
 		} else if (BPPacketType.DISCONN == packType) {
 			onDisconn(session);
+		} else if (BPPacketType.SPECSET == packType) {
+			onSpecset(session, decodedPack);
 		} else {
 			logger.error("Inner error: messageRecevied: Not supported packet type={}", packType);
 		}
@@ -1107,6 +1111,56 @@ public class BcServerHandler extends IoHandlerAdapter {
 		}
 		logger.info("Disconn, {}", bpSession);
 		session.closeNow();
+	}
+	
+	private void onSpecset(IoSession session, BPPacket decodedPack) {
+		VariableHeader vrb;
+		Payload pld;
+		BPSession bpSession;
+		
+		try {
+			vrb = decodedPack.getVrbHead();
+			pld = decodedPack.getPld();
+			int specType = vrb.getSpecsetType();
+			int seqId = vrb.getPackSeq();
+			
+			bpSession = getBPSession(session);
+			if(null == bpSession) {
+				/* not connected */
+				session.closeNow();
+				return;
+			}
+			
+			
+			BPPacket packAck = BPPackFactory.createBPPackAck(decodedPack);
+			
+			packAck.getFxHead().setCrcType(bpSession.getCrcType());
+			packAck.getFxHead().setEncryptType(bpSession.getEncryptionType());
+
+			packAck.getVrbHead().setPackSeq(seqId);
+			
+			switch(specType) {
+			case BPPacketSPECSET.SPEC_TYPE_SYNC_CHECKSUM_TIMESTAMP:
+				int timestampType = pld.getTimestampType();
+				if(BPPacketSPECSET.USER_INFO_TIMESTAMP == timestampType) {
+					BPUserSession userSession = (BPUserSession)bpSession;
+					Timestamp mtime = userSession.getUserInfoUnit().getUserInfoHbn().getmTime();
+					packAck.getPld().setTimestamp(mtime.getTime());
+					packAck.getVrbHead().setSpecsetType(specType);
+					packAck.getVrbHead().setRetCode(BPPacket.RET_CODE_OK);
+				}
+				break;
+				default:
+					/* TODO: error ret code*/
+					packAck.getVrbHead().setRetCode(1);
+					break;
+			}
+			
+
+			session.write(packAck);
+		} catch(Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+		}
 	}
 	
 	private int onCommonErrorHandle(IoSession session, BPPacket decodedPack) {

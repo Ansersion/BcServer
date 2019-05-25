@@ -1,8 +1,10 @@
 package db;
 
+import java.sql.Timestamp;
 
 public class UserInfoHbn {
     private Long id;
+    private Timestamp mTime;
     private String name;
     private String eMail;
     private String phone;
@@ -49,12 +51,20 @@ public class UserInfoHbn {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	
+	public Timestamp getmTime() {
+		return mTime;
+	}
+
+	public void setmTime(Timestamp mTime) {
+		this.mTime = mTime;
+	}
+
 	@Override
 	public String toString() {
-		return "UserInfoHbn [id=" + id + ", name=" + name + ", eMail=" + eMail + ", phone=" + phone + ", ifDeveloper="
-				+ ifDeveloper + ", password=" + password + "]";
+		return "UserInfoHbn [id=" + id + ", mTime=" + mTime + ", name=" + name + ", eMail=" + eMail + ", phone=" + phone
+				+ ", ifDeveloper=" + ifDeveloper + ", password=" + password + "]";
 	}
-    
-    
+
 
 }

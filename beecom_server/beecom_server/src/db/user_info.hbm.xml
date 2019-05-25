@@ -8,6 +8,7 @@
         <id name="id" column="id">  
             <generator class="native" />
         </id>  
+        <property name="mTime" column="mtime" />  
         <property name="name" column="name" />  
         <property name="eMail" column="e_mail" />  
         <property name="phone" column="phone" />  

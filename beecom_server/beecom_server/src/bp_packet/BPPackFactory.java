@@ -66,6 +66,10 @@ public class BPPackFactory {
             ret = new BPPacketPUSHACK();
 		} else if(((firstByte >> 4)& 0x0F) == BPPacketType.DISCONN.getType()) {
 			ret = new BPPacketDISCONN();
+		} else if(((firstByte >> 4)& 0x0F) == BPPacketType.SPECSET.getType()) {
+			ret = new BPPacketSPECSET();
+		} else if(((firstByte >> 4)& 0x0F) == BPPacketType.SPECACK.getType()) {
+			ret = new BPPacketSPECACK();
 		} else {
 			ret = null;
 		}
@@ -113,6 +117,8 @@ public class BPPackFactory {
 			ret = new BPPacketPINGACK();
 		} else if(BPPacketType.PUSH == packReqType) {
 			ret = new BPPacketPUSHACK();
+		} else if(BPPacketType.SPECSET == packReqType) {
+			ret = new BPPacketSPECACK();
 		} else {
 			ret = null;
 		}
@@ -145,6 +151,8 @@ public class BPPackFactory {
 				ret = true;
 			} else if (BPPacketType.PUSH == packReqType) {
 				ret = true;
+			} else if (BPPacketType.SPECSET == packReqType) {
+				ret = true;
 			}
 		} catch (Exception e) {
 			Util.logger(logger, Util.ERROR, e);
@@ -154,7 +162,6 @@ public class BPPackFactory {
 	}
 	
 	public static BPPacket createBPPack(BPPacketType type) {
-		
 		BPPacket ret;
 		
 		if(BPPacketType.CONNECT == type) {
@@ -183,6 +190,10 @@ public class BPPackFactory {
 			ret = new BPPacketPUSHACK();
 		} else if(BPPacketType.DISCONN == type) {
 			ret = new BPPacketDISCONN();
+		} else if(BPPacketType.SPECSET == type) {
+			ret = new BPPacketSPECSET();
+		} else if(BPPacketType.SPECACK == type) {
+			ret = new BPPacketSPECACK();
 		} else {
 			ret = null;
 		}

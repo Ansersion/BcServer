@@ -30,6 +30,8 @@ public class BPPacketType {
     public static final BPPacketType PUSH = new BPPacketType("PUSH", 11);
     public static final BPPacketType PUSHACK = new BPPacketType("PUSHACK", 12);
     public static final BPPacketType DISCONN = new BPPacketType("DISCONN", 13);
+    public static final BPPacketType SPECSET = new BPPacketType("SPECSET", 14);
+    public static final BPPacketType SPECACK = new BPPacketType("SPECACK", 15);
     
 	public static final BPPacketType INVALID_14 = INVALID;
 	public static final BPPacketType INVALID_15 = INVALID;
@@ -54,9 +56,8 @@ public class BPPacketType {
     	bpMap.put(11, PUSH);
     	bpMap.put(12, PUSHACK);
     	bpMap.put(13, DISCONN);
-    	
-    	bpMap.put(14, INVALID);
-    	bpMap.put(15, INVALID);
+    	bpMap.put(14, SPECSET);
+    	bpMap.put(15, SPECACK);
     }
     
     private final String strName;
