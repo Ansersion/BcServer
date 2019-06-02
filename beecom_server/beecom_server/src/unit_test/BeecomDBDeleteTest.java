@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import db.BeecomDB;
-import sys_sig_table.BPSysEnmLangResTable;
+import sys_sig_table.BPSysLangResTable;
 import sys_sig_table.BPSysSigLangResTable;
 import sys_sig_table.BPSysSigTable;
 
@@ -30,6 +30,7 @@ public class BeecomDBDeleteTest {
             logger.error(str);
 		}
 		
+		/*
 		BPSysEnmLangResTable enumLangResTab = BPSysEnmLangResTable.getSysEnmLangResTable();
 		try {
 			enumLangResTab.loadTab();
@@ -39,6 +40,7 @@ public class BeecomDBDeleteTest {
             String str = sw.toString();
             logger.error(str);
 		}
+		*/
 		
 		BPSysSigTable sysSigTab = BPSysSigTable.getSysSigTableInstance();
 		try {

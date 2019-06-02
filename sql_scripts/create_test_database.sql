@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.7.17, for macos10.12 (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
 --
--- Host: 127.0.0.1    Database: bc_server_db
+-- Host: localhost    Database: bc_server_db
 -- ------------------------------------------------------
--- Server version	8.0.11
+-- Server version	5.7.21-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -16,44 +16,6 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `custom_group_lang_entity_info`
---
-
-DROP TABLE IF EXISTS `custom_group_lang_entity_info`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `custom_group_lang_entity_info` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `ctime` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `mtime` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `chinese` varchar(128) NOT NULL DEFAULT '',
-  `english` varchar(128) NOT NULL DEFAULT '',
-  `french` varchar(128) NOT NULL DEFAULT '',
-  `russian` varchar(128) NOT NULL DEFAULT '',
-  `arabic` varchar(128) NOT NULL DEFAULT '',
-  `spanish` varchar(128) NOT NULL DEFAULT '',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `custom_group_lang_info`
---
-
-DROP TABLE IF EXISTS `custom_group_lang_info`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `custom_group_lang_info` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `ctime` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `mtime` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `group_lang` int(10) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `i_group_lang` (`group_lang`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `custom_signal_alm_info`
 --
 
@@ -64,8 +26,7 @@ CREATE TABLE `custom_signal_alm_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `mtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `cus_sig_name_lang_id` int(10) unsigned NOT NULL,
-  `alm_class` tinyint(4) NOT NULL DEFAULT '4',
+  `alm_class` tinyint(4) NOT NULL DEFAULT '2',
   `dly_before_alm` tinyint(3) unsigned NOT NULL DEFAULT '10',
   `dly_after_alm` tinyint(3) unsigned NOT NULL DEFAULT '10',
   `custom_signal_id` int(10) unsigned NOT NULL,
@@ -85,7 +46,7 @@ CREATE TABLE `custom_signal_boolean_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `mtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `permission` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `permission` tinyint(3) unsigned NOT NULL DEFAULT '1',
   `def_val` tinyint(1) NOT NULL DEFAULT '0',
   `en_statistics` tinyint(1) NOT NULL DEFAULT '1',
   `custom_signal_id` int(10) unsigned NOT NULL,
@@ -105,7 +66,7 @@ CREATE TABLE `custom_signal_enum_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `mtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `permission` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `permission` tinyint(3) unsigned NOT NULL DEFAULT '1',
   `def_val` smallint(5) unsigned NOT NULL DEFAULT '0',
   `en_statistics` tinyint(1) NOT NULL DEFAULT '1',
   `custom_signal_id` int(10) unsigned NOT NULL,
@@ -132,7 +93,7 @@ CREATE TABLE `custom_signal_enum_lang_entity_info` (
   `arabic` varchar(128) NOT NULL DEFAULT '',
   `spanish` varchar(128) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -166,7 +127,7 @@ CREATE TABLE `custom_signal_float_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `mtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `permission` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `permission` tinyint(3) unsigned NOT NULL DEFAULT '1',
   `accuracy` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `min_val` float NOT NULL DEFAULT '2147480000',
   `max_val` float NOT NULL DEFAULT '2147480000',
@@ -186,13 +147,15 @@ DROP TABLE IF EXISTS `custom_signal_group_lang_entity_info`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `custom_signal_group_lang_entity_info` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `chinese` varchar(255) DEFAULT NULL,
-  `english` varchar(255) DEFAULT NULL,
-  `french` varchar(255) DEFAULT NULL,
-  `russian` varchar(255) DEFAULT NULL,
-  `arabic` varchar(255) DEFAULT NULL,
-  `spanish` varchar(255) DEFAULT NULL,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ctime` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `mtime` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `chinese` varchar(128) NOT NULL DEFAULT '',
+  `english` varchar(128) NOT NULL DEFAULT '',
+  `french` varchar(128) NOT NULL DEFAULT '',
+  `russian` varchar(128) NOT NULL DEFAULT '',
+  `arabic` varchar(128) NOT NULL DEFAULT '',
+  `spanish` varchar(128) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -208,7 +171,7 @@ CREATE TABLE `custom_signal_i16_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `mtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `permission` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `permission` tinyint(3) unsigned NOT NULL DEFAULT '1',
   `min_val` smallint(6) NOT NULL DEFAULT '32767',
   `max_val` smallint(6) NOT NULL DEFAULT '32767',
   `def_val` smallint(6) NOT NULL DEFAULT '0',
@@ -230,7 +193,7 @@ CREATE TABLE `custom_signal_i32_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `mtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `permission` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `permission` tinyint(3) unsigned NOT NULL DEFAULT '1',
   `min_val` int(11) NOT NULL DEFAULT '2147483647',
   `max_val` int(11) NOT NULL DEFAULT '2147483647',
   `def_val` int(11) NOT NULL DEFAULT '0',
@@ -285,23 +248,6 @@ CREATE TABLE `custom_signal_name_lang_entity_info` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `custom_signal_name_lang_info`
---
-
-DROP TABLE IF EXISTS `custom_signal_name_lang_info`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `custom_signal_name_lang_info` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `ctime` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `mtime` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `custom_signal_name` int(10) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `i_custom_signal_name` (`custom_signal_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `custom_signal_string_info`
 --
 
@@ -312,8 +258,8 @@ CREATE TABLE `custom_signal_string_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ctime` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `mtime` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `permission` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `def_val` varchar(512) NOT NULL DEFAULT '',
+  `permission` tinyint(3) unsigned NOT NULL DEFAULT '1',
+  `def_val` varchar(256) NOT NULL DEFAULT '',
   `en_statistics` tinyint(1) NOT NULL DEFAULT '1',
   `custom_signal_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
@@ -332,7 +278,7 @@ CREATE TABLE `custom_signal_u16_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `mtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `permission` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `permission` tinyint(3) unsigned NOT NULL DEFAULT '1',
   `min_val` smallint(5) unsigned NOT NULL DEFAULT '65535',
   `max_val` smallint(5) unsigned NOT NULL DEFAULT '65535',
   `def_val` smallint(5) unsigned NOT NULL DEFAULT '0',
@@ -354,7 +300,7 @@ CREATE TABLE `custom_signal_u32_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `mtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `permission` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `permission` tinyint(3) unsigned NOT NULL DEFAULT '1',
   `min_val` int(10) unsigned NOT NULL DEFAULT '4294967295',
   `max_val` int(10) unsigned NOT NULL DEFAULT '4294967295',
   `def_val` int(10) unsigned NOT NULL DEFAULT '0',
@@ -387,23 +333,6 @@ CREATE TABLE `custom_unit_lang_entity_info` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `custom_unit_lang_info`
---
-
-DROP TABLE IF EXISTS `custom_unit_lang_info`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `custom_unit_lang_info` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `ctime` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `mtime` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `unit_lang` int(10) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `i_unit_lang` (`unit_lang`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `dev_info`
 --
 
@@ -418,7 +347,7 @@ CREATE TABLE `dev_info` (
   `admin_id` int(10) unsigned NOT NULL,
   `password` char(64) NOT NULL,
   `sig_map_chksum` bigint(20) NOT NULL DEFAULT '9223372036854775807',
-  `daily_sig_tab_change_times` tinyint(3) unsigned NOT NULL DEFAULT '3',
+  `daily_sig_tab_change_times` tinyint(3) unsigned NOT NULL DEFAULT '10',
   `lang_support_mask` tinyint(3) unsigned NOT NULL DEFAULT '192',
   PRIMARY KEY (`id`),
   UNIQUE KEY `i_sn_id` (`sn_id`),
@@ -503,7 +432,7 @@ CREATE TABLE `system_signal_boolean_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `mtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `permission` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `permission` tinyint(3) unsigned NOT NULL DEFAULT '1',
   `def_val` tinyint(1) NOT NULL DEFAULT '0',
   `group_lang_id` smallint(5) unsigned NOT NULL DEFAULT '0',
   `en_statistics` tinyint(1) NOT NULL DEFAULT '1',
@@ -524,7 +453,7 @@ CREATE TABLE `system_signal_enum_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `mtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `permission` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `permission` tinyint(3) unsigned NOT NULL DEFAULT '1',
   `def_val` smallint(5) unsigned NOT NULL DEFAULT '0',
   `group_lang_id` smallint(5) unsigned NOT NULL DEFAULT '0',
   `en_statistics` tinyint(1) NOT NULL DEFAULT '1',
@@ -546,7 +475,7 @@ CREATE TABLE `system_signal_enum_lang_info` (
   `ctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `mtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `enum_key` smallint(5) unsigned NOT NULL,
-  `enum_val` int(11) NOT NULL DEFAULT '0',
+  `enum_val` int(11) unsigned NOT NULL DEFAULT '0',
   `sys_sig_enm_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -563,7 +492,7 @@ CREATE TABLE `system_signal_float_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `mtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `permission` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `permission` tinyint(3) unsigned NOT NULL DEFAULT '1',
   `accuracy` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `min_val` float NOT NULL DEFAULT '2147480000',
   `max_val` float NOT NULL DEFAULT '2147480000',
@@ -588,7 +517,7 @@ CREATE TABLE `system_signal_i16_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `mtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `permission` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `permission` tinyint(3) unsigned NOT NULL DEFAULT '1',
   `min_val` smallint(6) NOT NULL DEFAULT '32767',
   `max_val` smallint(6) NOT NULL DEFAULT '32767',
   `def_val` smallint(6) NOT NULL DEFAULT '0',
@@ -612,7 +541,7 @@ CREATE TABLE `system_signal_i32_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `mtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `permission` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `permission` tinyint(3) unsigned NOT NULL DEFAULT '1',
   `min_val` int(11) NOT NULL DEFAULT '2147483647',
   `max_val` int(11) NOT NULL DEFAULT '2147483647',
   `def_val` int(11) NOT NULL DEFAULT '0',
@@ -654,8 +583,8 @@ CREATE TABLE `system_signal_string_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ctime` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `mtime` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `permission` tinyint(3) unsigned NOT NULL DEFAULT '4',
-  `def_val` varchar(512) NOT NULL DEFAULT '',
+  `permission` tinyint(3) unsigned NOT NULL DEFAULT '1',
+  `def_val` varchar(256) NOT NULL DEFAULT '',
   `group_lang_id` smallint(5) unsigned NOT NULL DEFAULT '0',
   `en_statistics` tinyint(1) NOT NULL DEFAULT '1',
   `system_signal_id` int(10) unsigned NOT NULL,
@@ -675,7 +604,7 @@ CREATE TABLE `system_signal_u16_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `mtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `permission` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `permission` tinyint(3) unsigned NOT NULL DEFAULT '1',
   `min_val` smallint(5) unsigned NOT NULL DEFAULT '65535',
   `max_val` smallint(5) unsigned NOT NULL DEFAULT '65535',
   `def_val` smallint(5) unsigned NOT NULL DEFAULT '0',
@@ -699,7 +628,7 @@ CREATE TABLE `system_signal_u32_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `mtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `permission` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `permission` tinyint(3) unsigned NOT NULL DEFAULT '1',
   `min_val` int(10) unsigned NOT NULL DEFAULT '4294967295',
   `max_val` int(10) unsigned NOT NULL DEFAULT '4294967295',
   `def_val` int(10) unsigned NOT NULL DEFAULT '0',
@@ -726,7 +655,6 @@ CREATE TABLE `user_dev_rel_info` (
   `user_id` int(10) unsigned NOT NULL,
   `sn_id` int(10) unsigned NOT NULL,
   `auth` tinyint(3) unsigned NOT NULL DEFAULT '6',
-  `unconfig_flag` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `i_user_id` (`user_id`),
   KEY `i_sn_id` (`sn_id`)
@@ -786,4 +714,4 @@ CREATE TABLE `user_server_chain` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-05-20 14:13:22
+-- Dump completed on 2019-06-02 22:37:31

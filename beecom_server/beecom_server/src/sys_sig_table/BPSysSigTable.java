@@ -20,7 +20,9 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import bp_packet.BPPacket;
 import bp_packet.BPParseCsvFileException;
+import bp_packet.BPUtils;
 import db.SystemSignalInfoUnit;
 import other.BPValue;
 import other.Util;
@@ -131,9 +133,9 @@ public class BPSysSigTable {
 		Map<Integer, Integer> mapEnumLangRes = null;
 		boolean enStatistics;
 		// 0-note, 1-warning, 2-serious, 3-emergency
-		byte almClass = (byte) 0xFF;
-		int dlyBefAlm = -1;
-		int dlyAftAlm = -1;
+		byte almClass;
+		int dlyBefAlm;
+		int dlyAftAlm;
 
 		try (BufferedReader sysSigIn = new BufferedReader(isr)) {
 			String s;
@@ -154,42 +156,30 @@ public class BPSysSigTable {
 					sysSigInfoLst.add(SYS_SIG_INFO_DEFAULT);
 					continue;
 				}
+				/** alarm attribute */
 				groupIndex = 4;
-				if(Util.isNull(m.group(groupIndex))) {
-					alm = false;
-				} else if (0 == m.group(groupIndex).compareToIgnoreCase("YES")) {
-					alm = true;
-				} else if(0 == m.group(groupIndex).compareToIgnoreCase("NO")){
-					alm = false;
-				} else {
-					throw new BPParseCsvFileException(m.group(1) + ":(" + m.group(groupIndex) + ") is alarm error");
+				strTmp = m.group(groupIndex++);
+				try {
+					alm = BPUtils.bpStr2Boolean(strTmp);
+				} catch(Exception e) {
+					throw new BPParseCsvFileException(m.group(1) + ":(" + strTmp + ") is alarm error");
+					
 				}
-				/* 0-u32, 1-u16, 2-i32, 3-i16, 4-enum, 5-float, 6-string */
-				groupIndex++;
-				if(Util.isNull(m.group(groupIndex))) {
-					valType = 0;
-				} else if (0 == m.group(groupIndex).compareToIgnoreCase("UINT32")) {
-					valType = 0;
-				} else if (0 == m.group(groupIndex).compareToIgnoreCase("UINT16")) {
-					valType = 1;
-				} else if (0 == m.group(groupIndex).compareToIgnoreCase("INT32")) {
-					valType = 2;
-				} else if (0 == m.group(groupIndex).compareToIgnoreCase("INT16")) {
-					valType = 3;
-				} else if (0 == m.group(groupIndex).compareToIgnoreCase("ENUM")) {
-					valType = 4;
-				} else if (0 == m.group(groupIndex).compareToIgnoreCase("FLOAT")) {
-					valType = 5;
-				} else if (0 == m.group(groupIndex).compareToIgnoreCase("STRING")) {
-					valType = 6;
-				} else {
-					throw new BPParseCsvFileException(m.group(1) + ":(" + m.group(groupIndex) + ") value type error");
+				
+				/** value type: 0-u32, 1-u16, 2-i32, 3-i16, 4-enum, 5-float, 6-string...*/
+				strTmp = m.group(groupIndex++);
+				/** default value type UINT32 */
+				valType = BPPacket.VAL_TYPE_UINT32;
+				if(!Util.isNull(strTmp)) {
+					valType = (byte)BPUtils.bpSignalTypeStr2Int(strTmp);
+				} 
+				if(BPPacket.VAL_TYPE_INVALID == valType) {
+					throw new BPParseCsvFileException(m.group(1) + ":(" + strTmp + ") value type error");
 				}
 
-				groupIndex++;
-				strTmp = m.group(groupIndex);
-
-				if(Util.isNull(m.group(groupIndex))) {
+				/** unit language */
+				strTmp = m.group(groupIndex++);
+				if(Util.isNull(strTmp)) {
 					unitLangRes = 0;
 				} else {
 					try (Scanner scannerUnit = new Scanner(strTmp)) {
@@ -205,59 +195,60 @@ public class BPSysSigTable {
 					}
 				}
 				
-				groupIndex++;
-				if(Util.isNull(m.group(groupIndex))) {
-					permission = 0;
-				} else if (0 == m.group(groupIndex).compareToIgnoreCase("RO")) {
-					permission = 0;
-				} else if(0 == m.group(groupIndex).compareToIgnoreCase("RW")) {
-					permission = 1;
-				} else {
-					throw new BPParseCsvFileException(m.group(1) + ":(" + m.group(groupIndex) + ") permission error");
+				/** permission RW/RO */
+				strTmp = m.group(groupIndex++);
+				/** default permission RW */
+				permission = BPPacket.SIGNAL_PERMISSION_CODE_RW;
+				if(!Util.isNull(strTmp)) {
+					permission = (byte)BPUtils.bpStr2Permission(strTmp);
+				} 
+				if(BPPacket.SIGNAL_PERMISSION_INVALID == permission) {
+					throw new BPParseCsvFileException(m.group(1) + ":(" + strTmp + ") permission error");
 				}
 				
-				groupIndex++;
-				if(Util.isNull(m.group(groupIndex))) {
-					ifDisplay = false;
-				} else if (0 == m.group(groupIndex).compareToIgnoreCase("YES")) {
-					ifDisplay = true;
-				} else if(0 == m.group(groupIndex).compareToIgnoreCase("NO")) {
-					ifDisplay = false;
-				} else {
-					throw new BPParseCsvFileException(m.group(1) + ":(" + m.group(groupIndex) + ") ifDisplay error");
+				/** display or not display */
+				strTmp = m.group(groupIndex++);
+				try {
+					ifDisplay = BPUtils.bpStr2Boolean(strTmp);
+				} catch(Exception e) {
+					throw new BPParseCsvFileException(m.group(1) + ":(" + strTmp + ") is ifDisplay error");
 				}
 
-				groupIndex++;
-				if(Util.isNull(m.group(groupIndex))) {
+				/** accuracy */
+				strTmp = m.group(groupIndex++);
+				if(Util.isNull(strTmp)) {
 					accuracy = 0;
 				} else {
-					accuracy = (byte) Integer.parseInt(m.group(groupIndex));
+					accuracy = (byte) Integer.parseInt(strTmp);
 				}
 
-				groupIndex++;
-				if (Util.isNull(m.group(groupIndex))) {
-					valMin = BPValue.setVal(valType, null, valMin);
+				/** min value */
+				strTmp = m.group(groupIndex++);
+				if (Util.isNull(strTmp)) {
+					valMin = BPValue.getVal(valType, null);
 				} else {
-					valMin = BPValue.setVal(valType, m.group(groupIndex), valMin);
+					valMin = BPValue.getVal(valType, strTmp);
 				}
 
-				groupIndex++;
-				if (Util.isNull(m.group(groupIndex))) {
-					valMax = BPValue.setVal(valType, null, valMax);
+				/** max value */
+				strTmp = m.group(groupIndex++);
+				if (Util.isNull(strTmp)) {
+					valMax = BPValue.getVal(valType, null);
 				} else {
-					valMax = BPValue.setVal(valType, m.group(groupIndex), valMax);
+					valMax = BPValue.getVal(valType, strTmp);
 				}
 				
-				groupIndex++;
-				if (Util.isNull(m.group(groupIndex))) {
-					valDef = BPValue.setVal(valType, null, valDef);
+				/** default value */
+				strTmp = m.group(groupIndex++);
+				if (Util.isNull(strTmp)) {
+					valDef = BPValue.getVal(valType, null);
 				} else {
-					valDef = BPValue.setVal(valType, m.group(groupIndex), valDef);
+					valDef = BPValue.getVal(valType, strTmp);
 				}
 
-				groupIndex++;
-				
-				if(Util.isNull(m.group(groupIndex))) {
+				/** group language resource */
+				strTmp = m.group(groupIndex++);
+				if(Util.isNull(strTmp)) {
 					classLangRes = 0;
 				} else {
 					try (Scanner scannerUnit = new Scanner(strTmp)) {
@@ -273,14 +264,13 @@ public class BPSysSigTable {
 					}
 				}
 
+				/** group language resource */
+				strTmp = m.group(groupIndex++);
 				if (null != mapEnumLangRes) {
 					mapEnumLangRes = null;
 				}
-
-				if (4 == valType) {
-					groupIndex++;
-					strTmp = m.group(groupIndex);
-					if(Util.isNull(m.group(groupIndex))) {
+				if (BPPacket.VAL_TYPE_ENUM == valType) {
+					if(Util.isNull(strTmp)) {
 						mapEnumLangRes = null;
 					} else {
 						try(Scanner scannerEnum = new Scanner(strTmp).useDelimiter("/")) {
@@ -305,24 +295,23 @@ public class BPSysSigTable {
 					}
 				}
 
-				groupIndex++;
-				if(Util.isNull(m.group(groupIndex))) {
-					enStatistics = true;
-				} else if(0 == m.group(groupIndex).compareToIgnoreCase("YES")) {
-					enStatistics = true;
-				} else if(0 == m.group(groupIndex).compareToIgnoreCase("NO")){
-					enStatistics = false;
-				} else {
-					throw new BPParseCsvFileException(m.group(1) + ":(" + m.group(groupIndex) + ") enStatistics error");
+				/** display or not display */
+				strTmp = m.group(groupIndex++);
+				try {
+					enStatistics = BPUtils.bpStr2Boolean(strTmp);
+				} catch(Exception e) {
+					throw new BPParseCsvFileException(m.group(1) + ":(" + strTmp + ") is enStatistics error");
 				}
 				
+				/** alarm info */
 				if (alm) {
-					groupIndex++;
-					almClass = Byte.parseByte(m.group(groupIndex));
-					groupIndex++;
-					dlyBefAlm = Integer.parseInt(m.group(groupIndex));
-					groupIndex++;
-					dlyAftAlm = Integer.parseInt(m.group(groupIndex));
+					almClass = Byte.parseByte(m.group(groupIndex++));
+					dlyBefAlm = Integer.parseInt(m.group(groupIndex++));
+					dlyAftAlm = Integer.parseInt(m.group(groupIndex++));
+				} else {
+					almClass = BPPacket.ALARM_CLASS_NONE;
+					dlyBefAlm = BPPacket.ALARM_DELAY_DEFAULT;
+					dlyAftAlm = BPPacket.ALARM_DELAY_DEFAULT;
 				}
 
 				sysSigInfoLst.add(new SysSigInfo(alm, valType, unitLangRes, permission, ifDisplay, accuracy, valMin, valMax,

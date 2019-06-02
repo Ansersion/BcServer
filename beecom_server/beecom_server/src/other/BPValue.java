@@ -19,63 +19,78 @@ public class BPValue {
 	
 	private BPValue() {}
 	
-	public static Object setVal(byte valType, String src, Object dst) {
+	public static Object getVal(byte valType, String str) {
+		Object ret = null;
 		try {
 			switch (valType) {
 			case BPPacket.VAL_TYPE_UINT32:
-				if (null == src) {
-					dst = Long.valueOf(BPPacket.VAL_U32_UNLIMIT);
+				if (null == str) {
+					ret = Long.valueOf(BPPacket.VAL_U32_UNLIMIT);
 				} else {
-					dst = Long.valueOf(src);
+					ret = Long.valueOf(str);
 				}
 				break;
 			case BPPacket.VAL_TYPE_UINT16:
-				if (null == src) {
-					dst = Integer.valueOf(BPPacket.VAL_U16_UNLIMIT);
+				if (null == str) {
+					ret = Integer.valueOf(BPPacket.VAL_U16_UNLIMIT);
 				} else {
-					dst = Integer.valueOf(src);
+					ret = Integer.valueOf(str);
 				}
 				break;
 			case BPPacket.VAL_TYPE_IINT32:
-				if (null == src) {
-					dst = Integer.valueOf(BPPacket.VAL_I32_UNLIMIT);
+				if (null == str) {
+					ret = Integer.valueOf(BPPacket.VAL_I32_UNLIMIT);
 				} else {
-					dst = Integer.valueOf(src);
+					ret = Integer.valueOf(str);
 				}
 				break;
 			case BPPacket.VAL_TYPE_IINT16:
-				if (null == src) {
-					dst = Short.valueOf(BPPacket.VAL_I16_UNLIMIT);
+				if (null == str) {
+					ret = Short.valueOf(BPPacket.VAL_I16_UNLIMIT);
 				} else {
-					dst = Short.valueOf(src);
+					ret = Short.valueOf(str);
 				}
 				break;
 			case BPPacket.VAL_TYPE_ENUM:
-				if (null == src) {
-					dst = Integer.valueOf(BPPacket.VAL_ENUM_UNLIMIT);
+				if (null == str) {
+					ret = Integer.valueOf(BPPacket.VAL_ENUM_UNLIMIT);
 				} else {
-					dst = Integer.valueOf(src);
+					ret = Integer.valueOf(str);
 				}
 				break;
 			case BPPacket.VAL_TYPE_FLOAT:
-				if (null == src) {
-					dst = Float.valueOf(BPPacket.VAL_FLOAT_UNLIMIT);
+				if (null == str) {
+					ret = Float.valueOf(BPPacket.VAL_FLOAT_UNLIMIT);
 				} else {
-					dst = Float.valueOf(src);
+					ret = Float.valueOf(str);
 				}
 				break;
 			case BPPacket.VAL_TYPE_STRING:
-				if (null == src) {
-					dst = BPPacket.VAL_STR_UNLIMIT;
+				if (null == str) {
+					ret = BPPacket.VAL_STR_UNLIMIT;
 				} else {
-					dst = String.valueOf(src);
+					ret = String.valueOf(str);
 				}
 				break;
 			case BPPacket.VAL_TYPE_BOOLEAN:
-				if (null == src) {
-					dst = Boolean.valueOf(BPPacket.VAL_BOOLEAN_UNLIMIT);
+				if (null == str) {
+					ret = Boolean.valueOf(BPPacket.VAL_BOOLEAN_UNLIMIT);
 				} else {
-					dst = Boolean.valueOf(src);
+					ret = Boolean.valueOf(str);
+				}
+				break;
+			case BPPacket.VAL_TYPE_DATE:
+				if (null == str) {
+					ret = BPPacket.VAL_DATE_UNLIMIT;
+				} else {
+					ret = Integer.valueOf(str);
+				}
+				break;
+			case BPPacket.VAL_TYPE_TIME:
+				if (null == str) {
+					ret = BPPacket.VAL_TIME_UNLIMIT;
+				} else {
+					ret = Integer.valueOf(str);
 				}
 				break;
 			default:
@@ -83,14 +98,10 @@ public class BPValue {
 			}
 		} catch (Exception e) {
 			Util.logger(logger, Util.ERROR, e);
-			dst = null;
+			ret = null;
 		}
 		
-		return dst;
-	}
-	
-	public static Object setVal(byte valType, String src) {
-		return setVal(valType, src, null);
+		return ret;
 	}
 
 }

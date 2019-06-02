@@ -23,39 +23,40 @@ import other.Util;
  * 
  */
 
-public class BPSysEnmLangResTable {
+public class BPSysLangResTable {
 
-	private static final Logger logger = LoggerFactory.getLogger(BPSysEnmLangResTable.class);
+	private static final Logger logger = LoggerFactory.getLogger(BPSysLangResTable.class);
+	
+	public static BPSysLangResTable enumLangResTab;
+	public static BPSysLangResTable unitLangResTab;
+	public static BPSysLangResTable groupLangResTab;
 
-	List<List<String>> sysEnmLangResLst;
-	static BPSysEnmLangResTable sysEnmLangTab = null;
+	private List<List<String>> sysLangResLst;
+	private BPSysLangResTable sysLangTab = null;
+	private String csvFile;
 
-	public static BPSysEnmLangResTable getSysEnmLangResTable() {
-		if (null == sysEnmLangTab) {
-			sysEnmLangTab = new BPSysEnmLangResTable();
-		}
-		return sysEnmLangTab;
-	}
-
-	protected BPSysEnmLangResTable() {
-		sysEnmLangResLst = new ArrayList<>();
+	public BPSysLangResTable(String csvFilePath) {
+		sysLangResLst = new ArrayList<>();
+		this.csvFile = csvFilePath;
 	}
 
 	public boolean loadTab() throws FileNotFoundException {
-		FileInputStream fis = new FileInputStream("config/sys_enum_language_resource.csv");
+		// FileInputStream fis = new FileInputStream("config/sys_enum_language_resource.csv");
+		logger.info("loading " + csvFile);
+		FileInputStream fis = new FileInputStream(csvFile);
 		InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
 
-		sysEnmLangResLst.clear();
+		sysLangResLst.clear();
 		boolean ret = false;
 
-		try (BufferedReader sysEnumLangIn = new BufferedReader(isr)) {
+		try (BufferedReader sysLangIn = new BufferedReader(isr)) {
 			String s;
 			String pattern = "^(.*),(.*),(.*),(.*),(.*),(.*),(.*)$";
 			Pattern r = Pattern.compile(pattern);
-			s = sysEnumLangIn.readLine();
-			s = sysEnumLangIn.readLine();
+			s = sysLangIn.readLine();
+			s = sysLangIn.readLine();
 
-			while ((s = sysEnumLangIn.readLine()) != null) {
+			while ((s = sysLangIn.readLine()) != null) {
 				List<String> langResTmp = new ArrayList<>();
 				Matcher m = r.matcher(s);
 				if (!m.find() || (m.group(2).length() == 0 && m.group(3).length() == 0 && m.group(4).length() == 0
@@ -69,12 +70,12 @@ public class BPSysEnmLangResTable {
 				langResTmp.add(m.group(5));
 				langResTmp.add(m.group(6));
 				langResTmp.add(m.group(7));
-				sysEnmLangResLst.add(langResTmp);
+				sysLangResLst.add(langResTmp);
 			}
 
-			for (int i = 0; i < sysEnmLangResLst.size(); i++) {
-				for (int j = 0; j < sysEnmLangResLst.get(i).size(); j++) {
-					logger.info("{},{}: {}", i, j, sysEnmLangResLst.get(i).get(j));
+			for (int i = 0; i < sysLangResLst.size(); i++) {
+				for (int j = 0; j < sysLangResLst.get(i).size(); j++) {
+					logger.info("{},{}: {}", i, j, sysLangResLst.get(i).get(j));
 				}
 			}
 
@@ -91,7 +92,7 @@ public class BPSysEnmLangResTable {
 	public String getLangRes(int offset, int lang) {
 		String ret;
 		try {
-			ret = sysEnmLangResLst.get(offset).get(lang);
+			ret = sysLangResLst.get(offset).get(lang);
 		} catch (Exception e) {
 			Util.logger(logger, Util.ERROR, e);
 			ret = "NULL";

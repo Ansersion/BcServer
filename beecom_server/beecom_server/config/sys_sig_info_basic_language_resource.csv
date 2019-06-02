@@ -5,18 +5,18 @@ E001,通信状态,CommState,Statut de communication,Состояние связ�
 E002,电源,Power,Alimentation,Электропитание,امدادات الطاقة,Fuente de alimentación
 E003,制造商,Manufacturer,Fabricant,производитель,مصنعين,Fabricante
 E004,型号,Model,Modèle,модель,نموذج,Modelo
-E005,强度,Strength,Force,Прочность,قوة,Fuerza
-E006,IPv4,IPv4,IPv4,IPv4,IPv4,IPv4
-E007,端口,Port,Port,порт,ميناء,Puerto
-E008,经度,Longitude,Longitude,Долгота,خط الطول,Longitud
-E009,纬度,Latitude,Latitude,широта,خط العرض,Latitud
-E00A,,,,,,
-E00B,,,,,,
-E00C,,,,,,
-E00D,,,,,,
-E00E,,,,,,
-E00F,,,,,,
-E010,,,,,,
+E005,硬件版本,Hardware version,Type de signal,Тип сигнала,نوع الإشارة,Tipo de señal
+E006,Boot版本,Boot version,Version de démarrage,Загрузочная версия,نسخة التمهيد,Versión de arranque
+E007,软件版本,Software version,Version du logiciel,Версия программного обеспечения,إصدار البرنامج,Versión de software
+E008,信号类型,Signal type,Type de signal,Тип сигнала,نوع الإشارة,Tipo de señal
+E009,信号强度,Signal strength,Force du signal,Мощность сигнала,قوة الإشارة,Fuerza de la señal
+E00A,IPv4,IPv4,IPv4,IPv4,عنوان الشبكة,IPv4
+E00B,IPv6,IPv6,IPv6,IPv6,عنوان الشبكة,IPv6
+E00C,电池电量,Battery power,Puissance de la batterie,Заряд батареи,طاقة البطارية,Energía de la batería
+E00D,经度,Longitude,Longitude,Долгота,خط الطول,Longitud
+E00E,纬度,Latitude,Latitude,широта,خط العرض,Latitud
+E00F,系统日期,System date,Date du système,Системная дата,تاريخ النظام,Fecha del sistema
+E010,系统时间,System time,Heure du système,Системное время,وقت النظام,Tiempo del sistema
 E011,,,,,,
 E012,,,,,,
 E013,,,,,,

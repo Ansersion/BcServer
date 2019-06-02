@@ -22,7 +22,7 @@ import db.BeecomDB;
 import db.CustomSignalInfoUnit;
 import db.SystemSignalCustomInfoUnit;
 import db.SystemSignalInfoUnit;
-import sys_sig_table.BPSysEnmLangResTable;
+import sys_sig_table.BPSysLangResTable;
 import sys_sig_table.BPSysSigLangResTable;
 import sys_sig_table.BPSysSigTable;
 
@@ -42,6 +42,7 @@ public class BeecomDBUnitTest {
             logger.error(str);
 		}
 		
+		/*
 		BPSysEnmLangResTable enumLangResTab = BPSysEnmLangResTable.getSysEnmLangResTable();
 		try {
 			enumLangResTab.loadTab();
@@ -51,6 +52,7 @@ public class BeecomDBUnitTest {
             String str = sw.toString();
             logger.error(str);
 		}
+		*/
 		
 		BPSysSigTable sysSigTab = BPSysSigTable.getSysSigTableInstance();
 		try {

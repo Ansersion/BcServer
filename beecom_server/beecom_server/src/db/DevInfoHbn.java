@@ -13,10 +13,10 @@ public class DevInfoHbn {
     
 	public DevInfoHbn() {
 		super();
-		sigMapChksum = BPPacket.INVALID_SIGNAL_MAP_CHECKSUM;
-		dailySigTabChangeTimes = BPPacket.MAX_DAILY_SIG_TAB_CHANGE_TIMES;
+		// sigMapChksum = BPPacket.INVALID_SIGNAL_MAP_CHECKSUM;
+		// dailySigTabChangeTimes = BPPacket.MAX_DAILY_SIG_TAB_CHANGE_TIMES;
 		/* Chinese and English enabled default */
-		langSupportMask = 0xC0;
+		// langSupportMask = 0xC0;
 	}
 	public Long getId() {
 		return id;

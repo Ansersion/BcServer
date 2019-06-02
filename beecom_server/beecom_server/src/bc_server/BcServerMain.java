@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import bc_console.BcConsole;
 import db.BeecomDB;
 import other.Util;
-import sys_sig_table.BPSysEnmLangResTable;
+import sys_sig_table.BPSysLangResTable;
 import sys_sig_table.BPSysSigLangResTable;
 import sys_sig_table.BPSysSigTable;
 
@@ -48,9 +48,31 @@ public class BcServerMain {
 			Util.logger(logger, Util.ERROR, e);
 		}
 		
+		/*
 		BPSysEnmLangResTable enumLangResTab = BPSysEnmLangResTable.getSysEnmLangResTable();
 		try {
 			enumLangResTab.loadTab();
+		} catch (Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+		}
+		*/
+		BPSysLangResTable.enumLangResTab = new BPSysLangResTable("config/sys_enum_language_resource.csv");
+		try {
+			BPSysLangResTable.enumLangResTab.loadTab();
+		} catch (Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+		}
+		
+		BPSysLangResTable.unitLangResTab = new BPSysLangResTable("config/sys_unit_language_resource.csv");
+		try {
+			BPSysLangResTable.unitLangResTab.loadTab();
+		} catch (Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+		}
+		
+		BPSysLangResTable.groupLangResTab = new BPSysLangResTable("config/sys_group_language_resource.csv");
+		try {
+			BPSysLangResTable.groupLangResTab.loadTab();
 		} catch (Exception e) {
 			Util.logger(logger, Util.ERROR, e);
 		}

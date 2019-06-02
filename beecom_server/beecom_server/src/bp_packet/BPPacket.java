@@ -35,9 +35,10 @@ public class BPPacket implements BPPacketInterface {
     /* 0-ro, 1-rw */
     public static final int SIGNAL_PERMISSION_CODE_RO = 0; 
     public static final int SIGNAL_PERMISSION_CODE_RW = 1; 
+    public static final int SIGNAL_PERMISSION_INVALID = 0x7F; 
 
 	/* 0-u32, 1-u16, 2-i32, 3-i16, 4-enum, 5-float, 6-string, 7-boolean */
-    public static final int MAX_VAL_TYPE_NUM = 8;
+    public static final int MAX_VAL_TYPE_NUM = 255;
 	public static final int VAL_TYPE_UINT32 = 0;
 	public static final int VAL_TYPE_UINT16 = 1;
 	public static final int VAL_TYPE_IINT32 = 2;
@@ -46,6 +47,8 @@ public class BPPacket implements BPPacketInterface {
 	public static final int VAL_TYPE_FLOAT = 5;
 	public static final int VAL_TYPE_STRING = 6;
 	public static final int VAL_TYPE_BOOLEAN = 7;
+	public static final int VAL_TYPE_DATE = 8;
+	public static final int VAL_TYPE_TIME = 9;
 	public static final int VAL_TYPE_MASK = 0x0F;
 	public static final int VAL_ALARM_FLAG = 0x80;
 	public static final int VAL_TYPE_INVALID = 0x7F;
@@ -59,21 +62,23 @@ public class BPPacket implements BPPacketInterface {
 	public static final float VAL_FLOAT_UNLIMIT =0x7FFFFFFF;
 	public static final String VAL_STR_UNLIMIT ="";
 	public static final boolean VAL_BOOLEAN_UNLIMIT =false;
+	public static final int VAL_DATE_UNLIMIT =20190101;
+	public static final int VAL_TIME_UNLIMIT =0;
 	public static final int INVALID_LANGUAGE_ID = 0;
 	public static final int MAX_STR_LENGTH = 255;
 	public static final int SYSTEM_UNIT_LANGUAGE_FLAG = 0x80;
 	
 	public static final long INVALID_SIGNAL_MAP_CHECKSUM = 0x7FFFFFFFFFFFFFFFL;
-	public static final short MAX_DAILY_SIG_TAB_CHANGE_TIMES = 10;
+	// public static final short MAX_DAILY_SIG_TAB_CHANGE_TIMES = 10;
 	
 	/* alarm info */
-	public static final int ALARM_CLASS_EMERGANCY = 0x00;
-	public static final int ALARM_CLASS_SERIOUS = 0x01;
-	public static final int ALARM_CLASS_WARNING = 0x02;
-	public static final int ALARM_CLASS_ATTENTION = 0x03;
+	public static final int ALARM_CLASS_FATAL = 0x00;
+	public static final int ALARM_CLASS_EMERGANCY = 0x01;
+	public static final int ALARM_CLASS_SERIOUS = 0x02;
+	public static final int ALARM_CLASS_WARNING = 0x03;
 	public static final int ALARM_CLASS_NOTE = 0x04;
-	public static final int ALARM_CLASS_NONE = 0xFF;
-	public static final int ALARM_DELAY_DEFAULT = ALARM_CLASS_NONE;
+	public static final int ALARM_CLASS_NONE = 0x7F;
+	public static final int ALARM_DELAY_DEFAULT = 10;
 	
 	/* system signal custom flgs */
 	public static final int SYSTEM_SIGNAL_CUSTOM_FLAGS_STATISTICS = 0x0001;
