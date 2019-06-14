@@ -32,7 +32,6 @@ public class BPSysLangResTable {
 	public static BPSysLangResTable groupLangResTab;
 
 	private List<List<String>> sysLangResLst;
-	private BPSysLangResTable sysLangTab = null;
 	private String csvFile;
 
 	public BPSysLangResTable(String csvFilePath) {

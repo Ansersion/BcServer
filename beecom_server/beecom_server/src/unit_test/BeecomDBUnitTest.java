@@ -8,8 +8,6 @@ package unit_test;
 
 import static org.junit.Assert.*;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +20,7 @@ import db.BeecomDB;
 import db.CustomSignalInfoUnit;
 import db.SystemSignalCustomInfoUnit;
 import db.SystemSignalInfoUnit;
+import other.Util;
 import sys_sig_table.BPSysLangResTable;
 import sys_sig_table.BPSysSigLangResTable;
 import sys_sig_table.BPSysSigTable;
@@ -36,32 +35,33 @@ public class BeecomDBUnitTest {
 		try {
 			sigLangResTab.loadTab();
 		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
+		}
+		BPSysLangResTable.enumLangResTab = new BPSysLangResTable("config/sys_enum_language_resource.csv");
+		try {
+			BPSysLangResTable.enumLangResTab.loadTab();
+		} catch (Exception e) {
+			Util.logger(logger, Util.ERROR, e);
 		}
 		
-		/*
-		BPSysEnmLangResTable enumLangResTab = BPSysEnmLangResTable.getSysEnmLangResTable();
+		BPSysLangResTable.unitLangResTab = new BPSysLangResTable("config/sys_unit_language_resource.csv");
 		try {
-			enumLangResTab.loadTab();
+			BPSysLangResTable.unitLangResTab.loadTab();
 		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+			Util.logger(logger, Util.ERROR, e);
 		}
-		*/
+		
+		BPSysLangResTable.groupLangResTab = new BPSysLangResTable("config/sys_group_language_resource.csv");
+		try {
+			BPSysLangResTable.groupLangResTab.loadTab();
+		} catch (Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+		}
 		
 		BPSysSigTable sysSigTab = BPSysSigTable.getSysSigTableInstance();
-		try {
-			sysSigTab.loadTab();
-		} catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String str = sw.toString();
-            logger.error(str);
+		if(!sysSigTab.loadTab()) {
+			logger.error("!sysSigTab.loadTab()");
+			System.exit(0);
 		}
 	}
 

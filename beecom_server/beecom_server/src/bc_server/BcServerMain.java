@@ -40,22 +40,12 @@ public class BcServerMain {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-
 		BPSysSigLangResTable sigLangResTab = BPSysSigLangResTable.getSysSigLangResTable();
 		try {
 			sigLangResTab.loadTab();
 		} catch (Exception e) {
 			Util.logger(logger, Util.ERROR, e);
 		}
-		
-		/*
-		BPSysEnmLangResTable enumLangResTab = BPSysEnmLangResTable.getSysEnmLangResTable();
-		try {
-			enumLangResTab.loadTab();
-		} catch (Exception e) {
-			Util.logger(logger, Util.ERROR, e);
-		}
-		*/
 		BPSysLangResTable.enumLangResTab = new BPSysLangResTable("config/sys_enum_language_resource.csv");
 		try {
 			BPSysLangResTable.enumLangResTab.loadTab();

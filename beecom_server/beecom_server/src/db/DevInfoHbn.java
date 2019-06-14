@@ -1,6 +1,5 @@
 package db;
 
-import bp_packet.BPPacket;
 
 public class DevInfoHbn {
     private Long id;

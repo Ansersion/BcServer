@@ -331,6 +331,10 @@ public class BPDeviceSession extends BPSession {
 	public void setMaxReportSignalMapNumber(int maxReportSignalMapNumber) {
 		this.maxReportSignalMapNumber = maxReportSignalMapNumber;
 	}
+
+	public long getAdminId() {
+		return adminId;
+	}
 	
 	
 	
