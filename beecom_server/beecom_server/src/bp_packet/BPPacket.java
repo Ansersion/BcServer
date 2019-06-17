@@ -116,6 +116,16 @@ public class BPPacket implements BPPacketInterface {
 	public static final int RET_CODE_SERVER_UNAVAILABLE = 0xFF;
 	public static final int INNER_CODE_CLOSE_CONNECTION = -1;
 	
+    /* special signal ID */
+    public static int SIGNAL_ID_DEVICE_NAME = 0;
+    public static int SIGNAL_ID_SN= 0xE000;
+    public static int SIGNAL_ID_COMMUNICATION_STATE = 0xE001;
+    
+    /* special signal value */
+    public static int SIGNAL_VALUE_COMMUNICATION_STATE_CONNECTED = 0;
+    public static int SIGNAL_VALUE_COMMUNICATION_STATE_CONNECTING = 1;
+    public static int SIGNAL_VALUE_COMMUNICATION_STATE_DISCONNECTED = 2;
+	
 	/* open register */
 	private static Lock openRegisterLock = new ReentrantLock(); 
 	private static boolean openRegister = false;
@@ -155,7 +165,7 @@ public class BPPacket implements BPPacketInterface {
 				ret = assembleString(ioBuffer, (String)value);
 				break;
 			case BPPacket.VAL_TYPE_BOOLEAN:
-				ioBuffer.put((Byte)value);
+				ioBuffer.putUnsigned((boolean)value ? 1 : 0);
 				ret = true;
 				break;
 			default:

@@ -29,7 +29,7 @@
    </property>
    
    <property name="dialect">
-  	 org.hibernate.dialect.MySQLInnoDBDialect
+  	 org.hibernate.dialect.MySQL5InnoDBDialect
    </property>
    
    <!-- Output sql of hibernate -->

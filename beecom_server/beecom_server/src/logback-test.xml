@@ -2,7 +2,7 @@
 <configuration scan="true" scanPeriod="60 seconds" debug="false">
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level [%file %line]: %logger{50} - %msg%n</pattern>
+            <pattern>%d{MM-dd HH:mm:ss.SSS} [%thread] %-5level [%file %line]: %logger{50} - %msg%n</pattern>
         </encoder>
     </appender>
     
@@ -14,7 +14,7 @@
 				<maxHistory>30</maxHistory>
 　　　　　　</rollingPolicy> 
 　　　　　　<encoder> 
-　　　　　　　　<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level [%file %line]: %logger{50} - %msg%n</pattern>
+　　　　　　　　<pattern>%d{MM-dd HH:mm:ss.SSS} [%thread] %-5level [%file %line]: %logger{50} - %msg%n</pattern>
 　　　　　　</encoder> 
 　　　</appender> 
     

@@ -926,7 +926,11 @@ public class BcServerHandler extends IoHandlerAdapter {
 						}
 					}
 					bpDeviceSession.setSignalId2InfoUnitMap(signalId2InfoUnitMap);
-					bpDeviceSession.setSessionReady(true);
+					bpDeviceSession.setSessionReady(true);			
+					if(signalId2InfoUnitMap.containsKey(BPPacket.SIGNAL_ID_COMMUNICATION_STATE)) {
+						SignalInfoUnitInterface tmp = signalId2InfoUnitMap.get(BPPacket.SIGNAL_ID_COMMUNICATION_STATE);
+						tmp.setSignalValue(BPPacket.SIGNAL_VALUE_COMMUNICATION_STATE_CONNECTED);
+					}
 				} else {
 					vrbAck.setRetCode(BPPacketRPRTACK.RET_CODE_SIGNAL_MAP_DAMAGED_ERR);
 				}
@@ -998,6 +1002,10 @@ public class BcServerHandler extends IoHandlerAdapter {
 			 * set the signal id and its info map 
 			 * */
 			Map<Integer, SignalInfoUnitInterface> signalId2InfoUnitMap = bpDeviceSession.parseSignalInfoUnitInterfaceMap(systemSignalEnabledList, systemSignalCustomInfoUnit, customSignalInfoUnitList);
+			if(signalId2InfoUnitMap.containsKey(BPPacket.SIGNAL_ID_COMMUNICATION_STATE)) {
+				SignalInfoUnitInterface tmp = signalId2InfoUnitMap.get(BPPacket.SIGNAL_ID_COMMUNICATION_STATE);
+				tmp.setSignalValue(BPPacket.SIGNAL_VALUE_COMMUNICATION_STATE_CONNECTED);
+			}
 			bpDeviceSession.setSessionReady(true);
 			bpDeviceSession.setSignalId2InfoUnitMap(signalId2InfoUnitMap);
 		}
