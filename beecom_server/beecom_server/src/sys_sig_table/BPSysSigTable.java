@@ -72,7 +72,7 @@ public class BPSysSigTable {
 		if (null == sysSigInfo) {
 			return ret;
 		}
-		ret = new SystemSignalInfoUnit(signalIdOffset);
+		ret = new SystemSignalInfoUnit(signalIdOffset + BPPacket.SYS_SIG_START_ID);
 		if (null == sysSigInfo.getValDef()) {
 			logger.error("Inner Error: null == sysSigInfo.getValDef()");
 			return ret;

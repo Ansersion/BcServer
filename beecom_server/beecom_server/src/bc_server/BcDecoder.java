@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import bp_packet.BPPackFactory;
 import bp_packet.BPPacket;
 import bp_packet.BPParseException;
-import bp_packet.BPParseFxHeaderException;
 import bp_packet.FixedHeader;
 import other.CrcChecksum;
 import other.Util;
@@ -51,11 +50,11 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 			if (ioIn.remaining() >= BPPacket.FIXED_HEADER_SIZE) { 
 				BPPacket bpPack = BPPackFactory.createBPPack(ioIn);
 				if(null == bpPack) {
-					throw new BPParseFxHeaderException("Error: cannot create BPPacket!");
+					break;
 				}
 				session.setAttribute(BP_PACKET, bpPack);
 				session.setAttribute(DECODE_STATE, DecodeState.DEC_REMAINING_DATA);
-				/* NO break here!!! */
+				/* no 'break' here for performance */
 			} else {
 				break;
 			}
@@ -72,6 +71,10 @@ public class BcDecoder extends CumulativeProtocolDecoder {
 				packIoBuf.limit();
 				int crcSize = (fxHead.getCrcChk() == CrcChecksum.CRC32 ? 4 : 2);
 				
+				if(packIoBuf.limit() < crcSize) {
+					session.setAttribute(DECODE_STATE, DecodeState.DEC_FX_HEAD);
+					return false;
+				}
 				byte[] data = new byte[packIoBuf.limit() - crcSize];
 				
 				packIoBuf.get(data);

@@ -139,12 +139,13 @@ public class BPDeviceSession extends BPSession {
 			Iterator<Integer> itInteger = systemSignalEnabledList.iterator();
 			Integer signalId;
 			while (itInteger.hasNext()) {
-				signalId = itInteger.next() + BPPacket.SYS_SIG_START_ID;
+				signalId = itInteger.next();
 				SystemSignalInfoUnit tmp = BPSysSigTable.getSysSigTableInstance().createNewSystemSignalInfoUnit(signalId);
 				if(null == tmp) {
 					logger.error("Inner Error: null == BPSysSigTable.getSysSigTableInstance().createNewSystemSignalInfoUnit({})", signalId);
 					continue;
 				}
+				signalId += BPPacket.SYS_SIG_START_ID;
 				signalId2InfoUnitMapTmp.put(signalId, tmp);
 			}
 			Iterator<SystemSignalCustomInfoUnit> itSystemSignalCustomInfoUnit = systemSignalCustomInfoUnitList
