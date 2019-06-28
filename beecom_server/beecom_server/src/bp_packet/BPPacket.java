@@ -123,8 +123,8 @@ public class BPPacket implements BPPacketInterface {
     
     /* special signal value */
     public static int SIGNAL_VALUE_COMMUNICATION_STATE_CONNECTED = 0;
-    public static int SIGNAL_VALUE_COMMUNICATION_STATE_CONNECTING = 1;
-    public static int SIGNAL_VALUE_COMMUNICATION_STATE_DISCONNECTED = 2;
+    public static int SIGNAL_VALUE_COMMUNICATION_STATE_DISCONNECTED = 1;
+    public static int SIGNAL_VALUE_COMMUNICATION_STATE_CONNECTING = 2;
 	
 	/* open register */
 	private static Lock openRegisterLock = new ReentrantLock(); 

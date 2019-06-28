@@ -1,6 +1,5 @@
 package db;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -234,7 +233,7 @@ public class SystemSignalInfoUnit implements SignalInfoUnitInterface {
 			}
 			case BPPacket.VAL_TYPE_ENUM: {
 				if((customFlags & BPPacket.SYSTEM_SIGNAL_CUSTOM_FLAGS_ENUM_LANG) != 0) {
-					SystemSignalEnumInfoHbn systemSignalEnumInfoHbn = (SystemSignalEnumInfoHbn)systemSignalInterface;
+					// SystemSignalEnumInfoHbn systemSignalEnumInfoHbn = (SystemSignalEnumInfoHbn)systemSignalInterface;
 					int size = systemSignalEnumLangInfoList.size();
 					Integer v = (Integer)value;
 					for(int i = 0; i < size; i++) {

@@ -205,7 +205,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 		if(null == bpSession) {
 			return;
 		}
-		/* TODO: not need to remove the sessions every time: PERFORMANCE */
+		/** TODO: not need to remove the sessions every time: PERFORMANCE */
 		BeecomDB beecomDb = BeecomDB.getInstance();
 		if(bpSession.ifUserSession()) {
 			bpSession.setSessionReady(false);
@@ -222,51 +222,58 @@ public class BcServerHandler extends IoHandlerAdapter {
 			bpSession.setSessionReady(false);
 			/* notify the users that the device is disconnected */
 			BPDeviceSession bpDeviceSession = (BPDeviceSession)bpSession;
-			try {
-				BPPacket bpPacket = BPPackFactory.createBPPack(BPPacketType.PUSH);
-				bpPacket.getVrbHead().setSigValFlag(true);
-				bpPacket.getFxHead().setCrcType(CrcChecksum.CRC32);
-				Payload pld = bpPacket.getPld();
-				pld.setDevUniqId(bpSession.getUniqDevId());
-				Map<Integer, Map.Entry<Byte, Object>> sigValMap = new HashMap<>();
-				Payload.MyEntry<Byte, Object> communicateStateEntry = new Payload.MyEntry<>((byte)BPPacket.VAL_TYPE_ENUM, Integer.valueOf(1));
-				sigValMap.put(0xE001, communicateStateEntry);
-				pld.setSigValMap(sigValMap);
-				
-				List<UserDevRelInfoInterface> userDevRelInfoInterfaceList = beecomDb.getSn2UserDevRelInfoList(bpDeviceSession.getSnId());
-				if(null == userDevRelInfoInterfaceList) {
-					return;
-				}
-				int size = userDevRelInfoInterfaceList.size();
-				long userId;
-				BPUserSession userSession;
-				IoSession ioSession;
-				Map<Long, BPSession> userId2SessionMap = beecomDb.getUserId2SessionMap();
-				UserDevRelInfoInterface userDevRelInfoInterface;
-				for(int i = 0; i < size; i++) {
-					userDevRelInfoInterface = userDevRelInfoInterfaceList.get(i);
-					if(0 == (userDevRelInfoInterface.getAuth() & BPPacket.USER_AUTH_READ)) {
-						/* no read auth */
-						continue;
-					}
-					userId = userDevRelInfoInterface.getUserId();
-					userSession = (BPUserSession)userId2SessionMap.get(userId);
-					if(null == userSession) {
-						/* not logined yet */
-						continue;
-					}
-					ioSession = userSession.getSession();
-					if(null == ioSession || !ioSession.isConnected()) {
-						/* session is not active */
-						continue;
-					}
-					ioSession.write(bpPacket);
-				}
-			} catch(Exception e) {
-				Util.logger(logger, Util.ERROR, e);
-			}
+			pushSignalValue2Users(bpDeviceSession, BPPacket.SIGNAL_ID_COMMUNICATION_STATE, BPPacket.VAL_TYPE_ENUM, Integer.valueOf(BPPacket.SIGNAL_VALUE_COMMUNICATION_STATE_DISCONNECTED));
 		}
-		
+	}
+	
+	private void pushSignalValue2Users(BPDeviceSession bpDeviceSession, int signalId, int valueType, Object value) {
+		if(null == bpDeviceSession || null == value) {
+			return;
+		}
+		try {
+			BeecomDB beecomDb = BeecomDB.getInstance();
+			BPPacket bpPacket = BPPackFactory.createBPPack(BPPacketType.PUSH);
+			bpPacket.getVrbHead().setSigValFlag(true);
+			bpPacket.getFxHead().setCrcType(CrcChecksum.CRC32);
+			Payload pld = bpPacket.getPld();
+			pld.setDevUniqId(bpDeviceSession.getUniqDevId());
+			Map<Integer, Map.Entry<Byte, Object>> sigValMap = new HashMap<>();
+			Payload.MyEntry<Byte, Object> communicateStateEntry = new Payload.MyEntry<>((byte)valueType, value);
+			sigValMap.put(signalId, communicateStateEntry);
+			pld.setSigValMap(sigValMap);
+			
+			List<UserDevRelInfoInterface> userDevRelInfoInterfaceList = beecomDb.getSn2UserDevRelInfoList(bpDeviceSession.getSnId());
+			if(null == userDevRelInfoInterfaceList) {
+				return;
+			}
+			int size = userDevRelInfoInterfaceList.size();
+			long userId;
+			BPUserSession userSession;
+			IoSession ioSession;
+			Map<Long, BPSession> userId2SessionMap = beecomDb.getUserId2SessionMap();
+			UserDevRelInfoInterface userDevRelInfoInterface;
+			for(int i = 0; i < size; i++) {
+				userDevRelInfoInterface = userDevRelInfoInterfaceList.get(i);
+				if(0 == (userDevRelInfoInterface.getAuth() & BPPacket.USER_AUTH_READ)) {
+					/** no read auth */
+					continue;
+				}
+				userId = userDevRelInfoInterface.getUserId();
+				userSession = (BPUserSession)userId2SessionMap.get(userId);
+				if(null == userSession) {
+					/** not logined yet */
+					continue;
+				}
+				ioSession = userSession.getSession();
+				if(null == ioSession || !ioSession.isConnected()) {
+					/** session is not active */
+					continue;
+				}
+				ioSession.write(bpPacket);
+			}
+		} catch(Exception e) {
+			Util.logger(logger, Util.ERROR, e);
+		}
 	}
 	
 	private void onConnect(IoSession session, BPPacket decodedPack) {
@@ -495,6 +502,10 @@ public class BcServerHandler extends IoHandlerAdapter {
 			bpSession.setTimeout(timeout);
 			bpSession.setPerformanceClass(performanceClass);
 			bpSession.setLoginTimestamp(System.currentTimeMillis() - 1000); // at least 1 second online 
+			if(bpSession instanceof BPDeviceSession) {
+				BPDeviceSession bpDeviceSession = (BPDeviceSession)bpSession;
+				pushSignalValue2Users(bpDeviceSession, BPPacket.SIGNAL_ID_COMMUNICATION_STATE, BPPacket.VAL_TYPE_ENUM, Integer.valueOf(BPPacket.SIGNAL_VALUE_COMMUNICATION_STATE_CONNECTING));
+			}
 			session.getConfig().setIdleTime(IdleStatus.BOTH_IDLE, aliveTime);
 			session.write(packAck);
 		} catch (Exception e) {
@@ -931,6 +942,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 						SignalInfoUnitInterface tmp = signalId2InfoUnitMap.get(BPPacket.SIGNAL_ID_COMMUNICATION_STATE);
 						tmp.setSignalValue(BPPacket.SIGNAL_VALUE_COMMUNICATION_STATE_CONNECTED);
 					}
+					pushSignalValue2Users(bpDeviceSession, BPPacket.SIGNAL_ID_COMMUNICATION_STATE, BPPacket.VAL_TYPE_ENUM, Integer.valueOf(BPPacket.SIGNAL_VALUE_COMMUNICATION_STATE_CONNECTED));
 				} else {
 					vrbAck.setRetCode(BPPacketRPRTACK.RET_CODE_SIGNAL_MAP_DAMAGED_ERR);
 				}
@@ -1007,6 +1019,7 @@ public class BcServerHandler extends IoHandlerAdapter {
 				tmp.setSignalValue(BPPacket.SIGNAL_VALUE_COMMUNICATION_STATE_CONNECTED);
 			}
 			bpDeviceSession.setSessionReady(true);
+			pushSignalValue2Users(bpDeviceSession, BPPacket.SIGNAL_ID_COMMUNICATION_STATE, BPPacket.VAL_TYPE_ENUM, Integer.valueOf(BPPacket.SIGNAL_VALUE_COMMUNICATION_STATE_CONNECTED));
 			bpDeviceSession.setSignalId2InfoUnitMap(signalId2InfoUnitMap);
 		}
 		
