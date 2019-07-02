@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <configuration scan="true" scanPeriod="60 seconds" debug="false">
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -10,7 +11,7 @@
     	  <file>bc.log</file> 
 　　　　　　<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy"> 
 　　　　　　　　　<fileNamePattern>logFile-%i-%d{yyyy-MM-dd}.log</fileNamePattern> 
-　　　　　　　　  <maxFileSize>10MB</maxFileSize>
+　　　　　　　　  <maxFileSize>20MB</maxFileSize>
 				<maxHistory>30</maxHistory>
 　　　　　　</rollingPolicy> 
 　　　　　　<encoder> 
