@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ $# != 1 ]; then
 echo "USAGE: $0 bc_server_jar_path"

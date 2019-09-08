@@ -25,7 +25,9 @@ import sys_sig_table.BPSysSigTable;
 public class BcServerMain {
 
 	private static final Logger logger = LoggerFactory.getLogger(BcServerMain.class); 
-
+	
+	public static final String BC_SERVER_VERSION = "1.0.0.1"; 
+			
 	private static final int BC_SERVER_PORT = 8025;
 	private static final int BC_SOCK_BUFF_SIZE = 2048;
 	private static final int IDLE_BOTH_PROC_TIME = 30;
@@ -40,6 +42,8 @@ public class BcServerMain {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		Util.logger(logger, Util.INFO, "BcServer Version: " + BC_SERVER_VERSION);
+		
 		BPSysSigLangResTable sigLangResTab = BPSysSigLangResTable.getSysSigLangResTable();
 		try {
 			sigLangResTab.loadTab();

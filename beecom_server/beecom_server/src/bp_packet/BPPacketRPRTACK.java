@@ -32,7 +32,7 @@ public class BPPacketRPRTACK extends BPPacket {
 		super.assembleVariableHeader();
 		byte flags = getVrbHead().getFlags();
 		getIoBuffer().put(flags);
-		int packSeq = (byte)getVrbHead().getPackSeq();
+		int packSeq = getVrbHead().getPackSeq();
 		getIoBuffer().putUnsignedShort(packSeq);	
 		byte retCode = (byte)getVrbHead().getRetCode();
 		getIoBuffer().put(retCode);

@@ -1032,6 +1032,7 @@ public class BeecomDB {
 		return serverChainHbn;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List<SystemSignalInfoUnit> getSystemSignalUnitLst(long uniqDeviceId, List<SystemSignalInfoUnit> systemSignalInfoUnitLst) {
 		if(null == systemSignalInfoUnitLst) {
 			return null;
