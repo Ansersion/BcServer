@@ -120,13 +120,13 @@ if ( __name__ == "__main__" ):
         snTmp = snList[i]
         # insert sn_info
         sql = "insert into sn_info(sn,develop_user_id,activite_date, \
-expired_date, exist_time) values(\"%s\",%s,CURDATE(), DATE_ADD(CURDATE(),INTERVAL 3 YEAR), %s)"
+expired_date, exist_time) values(%s,%s,CURDATE(), DATE_ADD(CURDATE(),INTERVAL 3 YEAR), %s)"
         # print(sql % (snTmp, Handler.developerId, Handler.snExistTime))
         cursor.execute(sql, (snTmp, Handler.developerId, Handler.snExistTime))
         snId = cursor.lastrowid
 
         # insert dev_info
-        sql = "insert into dev_info (sn_id, admin_id, password) values(%s, 0, \"%s\")"
+        sql = "insert into dev_info (sn_id, admin_id, password) values(%s, 0, %s)"
         # print(sql % (i+1, sn2PwdDict[snTmp]))
         cursor.execute(sql, (str(snId), sn2PwdDict[snTmp]))
     cursor.execute("SELECT VERSION()")

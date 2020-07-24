@@ -7,9 +7,15 @@
     <database>bc_server_db</database>
 </mysql>
 <device>
-    <type>bc light</type> <!--  character ':' is not allowed   -->
+    <type>bc_light</type> <!--  character ':' and ' ' is not allowed   -->
     <number>10</number>
     <developer_id>3</developer_id>
     <sn_exist_time comment="2147483647=0x7FFFFFFF">2147483647</sn_exist_time> <!--  0x7FFFFFFF==2147483647   -->
 </device>
+<client>
+    <bin>/bin/echo</bin>
+    <server>127.0.0.1</server>
+    <ping_interval>10</ping_interval> <!-- in unit of second -->
+    <create_interval>500</create_interval> <!-- in unit of millisecond -->
+</client>
 </collection>
