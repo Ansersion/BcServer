@@ -6,14 +6,12 @@
     <password>Ansersion</password>
     <database>bc_server_db</database>
 </mysql>
-<device>
-    <type>bc_light</type> <!--  character ':' and ' ' is not allowed   -->
-    <number>100</number>
-    <developer_id>3</developer_id>
-    <sn_exist_time comment="2147483647=0x7FFFFFFF">2147483647</sn_exist_time> <!--  0x7FFFFFFF==2147483647   -->
-</device>
+<user_client>
+    <phone_number>13400000000</phone_number> <!-- start phone number-->
+    <number>5</number>
+</user_client>
 <client>
-    <bin>/Users/isdt/abc/bclib/libbpclient/example/example3/example</bin>
+    <bin>/bin/echo</bin>
     <server>127.0.0.1</server>
     <ping_interval>10</ping_interval> <!-- in unit of second -->
     <create_interval>100</create_interval> <!-- in unit of millisecond -->

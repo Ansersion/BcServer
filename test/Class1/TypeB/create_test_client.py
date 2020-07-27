@@ -45,7 +45,7 @@ class TestClientConfigHandler( xml.sax.ContentHandler ):
 
 # 1. read config.xml
 # 2. read 'sn' and 'dev' records
-# 3. create client
+# 3. create clients
 
 if ( __name__ == "__main__" ):
     # 1. read config.xml
@@ -79,12 +79,20 @@ if ( __name__ == "__main__" ):
         print (e)
         sys.exit()
 
-    # 3. create client
-    pro = None
-    for snTmp in snList:
-        time.sleep(float(Handler.create_interval)/1000)
-        pro = subprocess.Popen([Handler.bin, Handler.server, snTmp, sn2PwdDict[snTmp], Handler.ping_interval])
-        # pro = subprocess.Popen(["sleep", "60"])
+    # 3. create clients
+    try:
+        with open('clients_pid.dat', mode='w') as file:
+
+            pro = None
+            for snTmp in snList:
+                time.sleep(float(Handler.create_interval)/1000)
+                pro = subprocess.Popen([Handler.bin, Handler.server, snTmp, sn2PwdDict[snTmp], Handler.ping_interval])
+                file.write(snTmp + ":" + sn2PwdDict[snTmp] + "->" + str(pro.pid) + "\r\n")
+                # pro = subprocess.Popen(["sleep", "60"])
+    except Exception as e:
+        print (e)
+        sys.exit()
+
 
     while(True):
         sleepSeconds = 10
