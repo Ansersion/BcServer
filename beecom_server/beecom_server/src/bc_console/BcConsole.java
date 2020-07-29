@@ -112,6 +112,8 @@ public class BcConsole {
 				ret += "* Child: "  + entry.getValue().getType() + "->" + entry.getValue().getAddress() + "\r\n";
 			}
 			ret += "* DevicePayload: " + maxDeviceClientPayload + "; current: " + BeecomDB.getInstance().getDevicePaylaod() + "\r\n";
+			ret += "* CurrentUsers: " + BeecomDB.getInstance().getUserName2SessionMap().size()
+					+ "\r\n";
 		} catch (Exception e) {
 			Util.logger(logger, Util.DEBUG, e);
 			ret = e.getMessage();

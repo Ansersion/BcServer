@@ -7,13 +7,13 @@
     <database>bc_server_db</database>
 </mysql>
 <user_client>
-    <phone_number>13400000000</phone_number> <!-- start phone number-->
-    <number>5</number>
+    <phone_number>13400000330</phone_number> <!-- start phone number-->
+    <number>100</number>
 </user_client>
 <client>
     <bin>/bin/echo</bin>
     <server>127.0.0.1</server>
     <ping_interval>10</ping_interval> <!-- in unit of second -->
-    <create_interval>100</create_interval> <!-- in unit of millisecond -->
+    <create_interval>200</create_interval> <!-- in unit of millisecond -->
 </client>
 </collection>

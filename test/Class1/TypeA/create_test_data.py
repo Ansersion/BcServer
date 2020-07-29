@@ -109,8 +109,6 @@ if ( __name__ == "__main__" ):
     cursor = db.cursor()
     # 使用 execute()  方法执行 SQL 查询 
     for pn in userList:
-        # insert sn_info
-# INSERT INTO user_info
         sql = "insert into user_info (name, e_mail, phone, password) values(%s, %s, %s, %s)"
         # print(sql % (pn, pn, hashlib.sha256(user2PwdDict[pn].encode("utf-8")).hexdigest()))
         cursor.execute(sql, (pn, pn+"@beecom.online", pn, hashlib.sha256(user2PwdDict[pn].encode("utf-8")).hexdigest()))
