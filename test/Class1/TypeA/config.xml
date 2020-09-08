@@ -11,7 +11,7 @@
     <number>100</number>
 </user_client>
 <client>
-    <bin>/bin/echo</bin>
+    <bin>/Users/ansersion/MacData/bc/libbpclient/example/example4/example</bin>
     <server>127.0.0.1</server>
     <ping_interval>10</ping_interval> <!-- in unit of second -->
     <create_interval>200</create_interval> <!-- in unit of millisecond -->

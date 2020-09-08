@@ -801,9 +801,10 @@ public class BcServerHandler extends IoHandlerAdapter {
 			} 
 			
 			byte[] relayData = decodedPack.getSignalValueRelay();
-			pushMessage(bpDeviceSession, ProductType.POST_SIGNAL_VALUE, relayData, vrb.getPackSeq());
+			int packSeqTmp = VariableHeader.generatePackSeq();
+			pushMessage(bpDeviceSession, ProductType.POST_SIGNAL_VALUE, relayData, packSeqTmp);
 			/* cache for POSTACK to find the user */
-			bpDeviceSession.putRelayList(bpUserSession, vrb.getPackSeq());
+			bpDeviceSession.putRelayList(bpUserSession, vrb.getPackSeq(), packSeqTmp);
 			return;
 		}
 		
@@ -861,8 +862,9 @@ public class BcServerHandler extends IoHandlerAdapter {
 		}
 		
 		byte[] relayData = decodedPack.getSignalValueRelay();
-		BPUserSession userSession = bpDeviceSession.getRelayUserSession(vrb.getPackSeq());
-		pushMessage(userSession, ProductType.POSTACK_SIGNAL_VALUE, relayData, vrb.getPackSeq());
+		Integer relayPackSeq = new Integer(0);
+		BPUserSession userSession = bpDeviceSession.getRelayUserSession(vrb.getPackSeq(), relayPackSeq);
+		pushMessage(userSession, ProductType.POSTACK_SIGNAL_VALUE, relayData, relayPackSeq);
 
 	}
 	

@@ -234,7 +234,7 @@ public class BPDeviceSession extends BPSession {
 		this.snId = snId;
 	}
 	
-	public boolean putRelayList(BPUserSession userSession, int packSeq) {
+	public boolean putRelayList(BPUserSession userSession, int packSeq, int packSeqTmp) {
 		boolean ret = false;
 		if(null == userSession) {
 			return ret;
@@ -253,7 +253,7 @@ public class BPDeviceSession extends BPSession {
         	    	break;
         	    }
         	}
-        	relayAckDataList.add(new RelayAckData(userSession, packSeq));
+        	relayAckDataList.add(new RelayAckData(userSession, packSeq, packSeqTmp));
         	ret = true;
         } catch (Exception e) {
         	logger.error("Inner error: Exception in relayAckDataList");
@@ -264,7 +264,7 @@ public class BPDeviceSession extends BPSession {
         return ret;
 	}
 	
-	public BPUserSession getRelayUserSession(int packSeq) {
+	public BPUserSession getRelayUserSession(int packSeq, Integer relayPackSeq) {
 		BPUserSession ret = null;
 		relayAckDataListLock.lock();
         try {
@@ -273,12 +273,13 @@ public class BPDeviceSession extends BPSession {
         	RelayAckData tmp;
         	while(it.hasNext()){
         		tmp = it.next();
-        	    if(tmp.getPackSeq() == packSeq) {
+        	    if(tmp.getPackSeqTmp() == packSeq) {
             	    if(tmp.getTimestamp() > timestamp || timestamp > tmp.getTimestamp() + tmp.getUserSession().getTimeout() * 1000){
             	        it.remove();
             	        continue;
             	    }
             	    ret = tmp.getUserSession();
+            	    relayPackSeq = tmp.getPackSeq();
         	    	break;
         	    }
         	}

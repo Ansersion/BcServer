@@ -13,7 +13,7 @@
     <sn_exist_time comment="2147483647=0x7FFFFFFF">2147483647</sn_exist_time> <!--  0x7FFFFFFF==2147483647   -->
 </device>
 <client>
-    <bin>/Users/isdt/abc/bclib/libbpclient/example/example3/example</bin>
+    <bin>/Users/Ansersion/MacData/bc/libbpclient/example/example3/example</bin>
     <server>127.0.0.1</server>
     <ping_interval>10</ping_interval> <!-- in unit of second -->
     <create_interval>100</create_interval> <!-- in unit of millisecond -->

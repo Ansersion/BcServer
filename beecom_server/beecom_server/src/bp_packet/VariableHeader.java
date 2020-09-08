@@ -31,7 +31,7 @@ public class VariableHeader {
 	private byte langFlags;
     private int specsetType = 0;
 	
-    private static int generatePackSeq() {
+    public static int generatePackSeq() {
     	int ret = 0;
     	try {
     		globalPackSeqLock.lock();
