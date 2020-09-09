@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -264,7 +265,7 @@ public class BPDeviceSession extends BPSession {
         return ret;
 	}
 	
-	public BPUserSession getRelayUserSession(int packSeq, Integer relayPackSeq) {
+	public BPUserSession getRelayUserSession(int packSeq, AtomicInteger relayPackSeq) {
 		BPUserSession ret = null;
 		relayAckDataListLock.lock();
         try {
@@ -279,7 +280,7 @@ public class BPDeviceSession extends BPSession {
             	        continue;
             	    }
             	    ret = tmp.getUserSession();
-            	    relayPackSeq = tmp.getPackSeq();
+            	    relayPackSeq.set(tmp.getPackSeq());
         	    	break;
         	    }
         	}

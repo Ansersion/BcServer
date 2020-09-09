@@ -7,6 +7,7 @@ package bc_server;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Timestamp;
@@ -862,9 +863,9 @@ public class BcServerHandler extends IoHandlerAdapter {
 		}
 		
 		byte[] relayData = decodedPack.getSignalValueRelay();
-		Integer relayPackSeq = new Integer(0);
+		AtomicInteger relayPackSeq = new AtomicInteger(0);
 		BPUserSession userSession = bpDeviceSession.getRelayUserSession(vrb.getPackSeq(), relayPackSeq);
-		pushMessage(userSession, ProductType.POSTACK_SIGNAL_VALUE, relayData, relayPackSeq);
+		pushMessage(userSession, ProductType.POSTACK_SIGNAL_VALUE, relayData, relayPackSeq.get());
 
 	}
 	
