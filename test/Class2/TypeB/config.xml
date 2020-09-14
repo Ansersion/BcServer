@@ -1,0 +1,20 @@
+<collection config="TypeA">
+    <bc_server>
+        <host>127.0.0.1</host>
+    </bc_server>>
+    <user_client>
+        <user_bin>/Users/ansersion/MacData/bc/libbpclient/example/example_user_with_device/example</user_bin>
+        <user_id>13400000330</user_id>
+        <user_pwd>13400000330PWD</user_pwd>
+        <post_interval>5</post_interval> <!-- in unit of second -->
+        <dev_id>1</dev_id>
+        <user_output_file>/Volumes/MacData/bc/BcServer/test/Class2/TypeB/user_output.txt</user_output_file>
+    </user_client>
+    <device_client>
+        <device_bin>/Users/ansersion/MacData/bc/libbpclient/example/example_device_bc_light/example</device_bin>
+        <device_sn>bc_light1599540101286220000</device_sn>
+        <device_pwd>bc_light1599540101286220000PWD</device_pwd>
+        <report_interval>1</report_interval> <!-- in unit of second -->
+        <device_output_file>/Volumes/MacData/bc/BcServer/test/Class2/TypeB/device_output.txt</device_output_file>
+    </device_client>
+</collection>
